@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "关于我"
+title: "关于破船"
 date: 2013-07-27 23:39
 comments: true
 sharing: true
