@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[破船之家]]></title>
+  <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
+  <link href="http://BeyondVincent.github.io/"/>
+  <updated>2013-07-29T00:13:19+08:00</updated>
+  <id>http://BeyondVincent.github.io/</id>
+  <author>
+    <name><![CDATA[破船(BeyondVincent)]]></name>
+    <email><![CDATA[beyondvincent@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[你好！github页面]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github/"/>
+    <updated>2013-07-27T14:44:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>
