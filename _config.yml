@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://BeyondVincent.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: 破船之家
+subtitle: 宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安 -------《易经》
+author: 破船(BeyondVincent)
 simple_search: http://google.com/search
 description:
 
@@ -15,11 +15,16 @@ description:
 # Additionally, %o will give you the ordinal representation of the day
 date_format: "ordinal"
 
+# 微博数字 ID 或域名 ID
+# weibo_user: beyondvincent 
+# 是否开启微博分享按钮
+# weibo_share: true 
+
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email:
+email: beyondvincent@gmail.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
@@ -67,10 +72,6 @@ github_user:
 github_repo_count: 0
 github_show_profile_link: true
 github_skip_forks: true
-
-# Twitter
-twitter_user:
-twitter_tweet_button: true
 
 # Google +1
 google_plus_one: false
