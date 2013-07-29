@@ -4,7 +4,7 @@
 
 url: http://BeyondVincent.github.io
 title: 破船之家
-subtitle: 宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安 -------《易经》
+subtitle: 宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安
 author: 破船(BeyondVincent)
 simple_search: http://google.com/search
 description:
@@ -101,4 +101,4 @@ google_analytics_tracking_id:
 facebook_like: false
 
 # Duoshuo Comments
-duoshuo_show_comment_count: true
+weibo_share: true

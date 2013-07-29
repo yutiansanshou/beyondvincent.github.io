@@ -7,9 +7,3 @@ single: true
 {% unless page.sharing == false %}
 	{% include post/sharing.html %}
 {% endunless %}
-{% if site.duoshuo_show_comment_count==true %}
-<section imagesd="comment">
-    <h1>添加一条评论</h1>
-    {% include post/duoshuo.html %}
-</section>
-{% endif %}
