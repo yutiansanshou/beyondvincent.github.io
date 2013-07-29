@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://BeyondVincent.github.io/sitemap.xml 
