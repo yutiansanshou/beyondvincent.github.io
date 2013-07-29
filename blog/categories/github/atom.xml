@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-07-29T21:51:15+08:00</updated>
+  <updated>2013-07-30T00:46:43+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -18,7 +18,7 @@
     <link href="http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github/"/>
     <updated>2013-07-27T14:44:00+08:00</updated>
     <id>http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/07/octopress.jpg"></p>
+    <content type="html"><![CDATA[<p><img src="/images/2013/07/octopress.jpg"></p>
 
 <h3>1、发表并部署博文</h3>
 
