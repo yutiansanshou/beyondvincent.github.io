@@ -7,8 +7,16 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content=" Jul 27th, 2013 你好！github页面 所有文章
-">
+	<meta name="description" content="Jul 27th, 2013 github 你好！github页面 1、发表并部署博文 1
+2
+3
+4
+5
+6
+$ rake new_post["New Post"]
+$ rake generate
+$ git add .
+$ git commit -am "Some comment here &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,12 +100,34 @@
 <time datetime="2013-07-27T14:44:00+08:00" data-updated="true" itemprop="datePublished">Jul 27<span>th</span>, 2013</time></div>
 		<div class="tags">
 
+
+	<a class='category' href='/blog/categories/github/'>github</a>
+
+
 </div>
 		
 	</div>
 	<h1 class="title" itemprop="name"><a href="/blog/2013/07/27/hello-page-of-github/" itemprop="url">你好！github页面</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		
+		<p><img class="center" src="/images/2013/07/octopress.jpg"></p>
+
+<h3>1、发表并部署博文</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake new_post["New Post"]
+</span><span class='line'>$ rake generate
+</span><span class='line'>$ git add .
+</span><span class='line'>$ git commit -am "Some comment here." 
+</span><span class='line'>$ git push origin source
+</span><span class='line'>$ rake deploy</span></code></pre></td></tr></table></div></figure>
+
+
+
 
 		
 		
