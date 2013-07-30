@@ -100,5 +100,6 @@ google_analytics_tracking_id:
 # Facebook Like
 facebook_like: false
 
-# Duoshuo Comments
-weibo_share: true
+# duoshuo comments
+duoshuo_comments: true
+duoshuo_short_name: beyondvincent
