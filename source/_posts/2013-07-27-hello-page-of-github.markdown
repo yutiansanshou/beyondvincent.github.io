@@ -10,11 +10,17 @@ categories: github
 {% img /images/2013/07/octopress.jpg %}
 
 
-#进入写博新时代
 我写博文经历了这些平台：
 百度空间->[devdiv](http://www.devdiv.com/home.php?mod=space&uid=12&do=blog&view=me&from=space)>[新浪博客](http://blog.sina.com.cn/beyondvincent)->[CSDN](http://blog.csdn.net/beyondvincent)->wordpress->octopress(现在)
 
-<!-more->
+<!--more-->
+
+下面是一些在mac机器上用octopress写博文需要用到的操作
+###目录
+
+* 发表并部署博文
+* 添加多说评论功能
+
 
 ###1、发表并部署博文
 
