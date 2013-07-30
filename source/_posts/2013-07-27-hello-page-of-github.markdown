@@ -4,16 +4,25 @@ title: "你好！github页面"
 date: 2013-07-27 14:44
 comments: true
 categories: github
+
 ---
 
 
 {% img /images/2013/07/octopress.jpg %}
 
+###也欢迎大家关注我的小站！
 
 我写博文经历了这些平台：
-百度空间->[devdiv](http://www.devdiv.com/home.php?mod=space&uid=12&do=blog&view=me&from=space)>[新浪博客](http://blog.sina.com.cn/beyondvincent)->[CSDN](http://blog.csdn.net/beyondvincent)->wordpress->octopress(现在)
+百度空间->[`devdiv`](http://www.devdiv.com/home.php?mod=space&uid=12&do=blog&view=me&from=space)>[`新浪博客`](http://blog.sina.com.cn/beyondvincent)->[`CSDN`](http://blog.csdn.net/beyondvincent)->`wordpress`->`octopress`(现在)
 
 <!--more-->
+
+用wordpress搭建的博客，用了4个月，由于有好多麻烦事(备份、空间和流量等各种不爽)，现在果断在github上配合octopress搭建一个博客。
+
+由于git和markdown对我来说就是小白，所以搭建的时间断断续续持续了约一周。其实网上已经有很好的参考资料了，只要照着弄，很容易就能搭建好的。
+
+这篇文章是第一篇，我用的markdown编辑器是[`Mou`](http://mouapp.com/)，感觉不错。
+
 
 下面是一些在mac机器上用octopress写博文需要用到的操作
 ###目录
@@ -35,7 +44,7 @@ $ rake deploy
 
 ###2、添加多说评论功能
 ####A 获取short_name
-去多说网注册账号，获取站点的short_name
+去多说网注册账号，获取站点的`short_name`
 ####B 在_config.yml文件中添加如下内容
 
 ```
