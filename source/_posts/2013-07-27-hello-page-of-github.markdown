@@ -19,7 +19,7 @@ categories: github
 
 用wordpress搭建的博客，用了4个月，由于有好多麻烦事(备份、空间和流量等各种不爽)，现在果断在github上配合octopress搭建一个博客。
 
-由于git和markdown对我来说就是小白，所以搭建的时间断断续续持续了约一周。其实网上已经有很好的参考资料了，只要照着弄，很容易就能搭建好的。
+由于`git`和[`markdown`](http://en.wikipedia.org/wiki/Markdown)对我来说就是小白，所以搭建的时间断断续续持续了约一周。其实网上已经有很好的参考资料了，只要照着弄，很容易就能搭建好的。
 
 这篇文章是第一篇，我用的markdown编辑器是[`Mou`](http://mouapp.com/)，感觉不错。
 
@@ -43,16 +43,16 @@ $ rake deploy
 ```
 
 ###2、添加多说评论功能
-####A 获取short_name
-去多说网注册账号，获取站点的`short_name`
-####B 在_config.yml文件中添加如下内容
+####A 获取`short_name`
+去多说网注册账号，获取站点的short_name
+####B 在`_config.yml`文件中添加如下内容
 
 ```
 # duoshuo comments
 duoshuo_comments: true
 duoshuo_short_name: yourname
 ```
-####C 在source/_layouts/post.html中添加多说评论模块
+####C 在`source/_layouts/post.html`中添加多说评论模块
 
 ```
 ｛% if site.duoshuo_short_name and site.duoshuo_comments == true and page.comments == true %｝
@@ -62,7 +62,7 @@ duoshuo_short_name: yourname
   </section>
 ｛% endif %｝
 ```
-####D 创建source/_includes/post/duoshuo.html，并填入如下内容
+####D 创建`source/_includes/post/duoshuo.html`，并填入如下内容
 
 ```
 <!-- Duoshuo Comment BEGIN -->
