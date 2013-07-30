@@ -10,7 +10,11 @@ categories: github
 {% img /images/2013/07/octopress.jpg %}
 
 
+#进入写博新时代
+我写博文经历了这些平台：
+百度空间->[devdiv](http://www.devdiv.com/home.php?mod=space&uid=12&do=blog&view=me&from=space)>[新浪博客](http://blog.sina.com.cn/beyondvincent)->[CSDN](http://blog.csdn.net/beyondvincent)->wordpress->octopress(现在)
 
+<!-more->
 
 ###1、发表并部署博文
 
