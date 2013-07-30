@@ -29,6 +29,8 @@ categories: github
 
 * 发表并部署博文
 * 添加多说评论功能
+* 起草文章 暂不公开
+
 
 
 ###1、发表并部署博文
@@ -89,4 +91,7 @@ $ git commit -am "添加多说评论"
 $ git push origin source
 $ rake deploy
 ```
+
+###1、起草文章暂不公开
+在文章头部添加`published: false`，就能起到暂时不公开文章了(即使已经部署到了github中)，要公开文章只需要将false修改`true`即可。
 
