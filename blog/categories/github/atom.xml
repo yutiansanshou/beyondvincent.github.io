@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-07-30T16:52:59+08:00</updated>
+  <updated>2013-07-30T17:09:04+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -20,12 +20,21 @@
     <id>http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github</id>
     <content type="html"><![CDATA[<p><img src="/images/2013/07/octopress.jpg"></p>
 
-<h1>进入写博新时代</h1>
-
 <p>我写博文经历了这些平台：
 百度空间-><a href="http://www.devdiv.com/home.php?mod=space&amp;uid=12&amp;do=blog&amp;view=me&amp;from=space">devdiv</a>><a href="http://blog.sina.com.cn/beyondvincent">新浪博客</a>&ndash;><a href="http://blog.csdn.net/beyondvincent">CSDN</a>&ndash;>wordpress->octopress(现在)</p>
 
-<p>&lt;!-more-></p>
+<!--more-->
+
+
+<p>下面是一些在mac机器上用octopress写博文需要用到的操作</p>
+
+<h3>目录</h3>
+
+<ul>
+<li>发表并部署博文</li>
+<li>添加多说评论功能</li>
+</ul>
+
 
 <h3>1、发表并部署博文</h3>
 
