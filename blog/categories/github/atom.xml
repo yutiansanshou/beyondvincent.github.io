@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-07-30T15:52:42+08:00</updated>
+  <updated>2013-07-30T16:18:19+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -27,6 +27,74 @@ $ rake new_post["New Post"]
 $ rake generate
 $ git add .
 $ git commit -am "Some comment here."
+$ git push origin source
+$ rake deploy
+</code></p>
+
+<h3>2、添加多说评论功能</h3>
+
+<h4>A 获取short_name</h4>
+
+<p>去多说网注册账号，获取站点的short_name</p>
+
+<h4>B 在_config.yml文件中添加如下内容</h4>
+
+<p>```</p>
+
+<h1>duoshuo comments</h1>
+
+<p>duoshuo_comments: true
+duoshuo_short_name: yourname
+```</p>
+
+<h4>C 在source/_layouts/post.html中添加多说评论模块</h4>
+
+<p>```
+｛% if site.duoshuo_short_name and site.duoshuo_comments == true and page.comments == true %｝
+  <section></p>
+
+<pre><code>&lt;h1&gt;Comments&lt;/h1&gt;
+&lt;div id="comments" aria-live="polite"&gt;｛% include post/duoshuo1.html %｝&lt;/div&gt;
+</code></pre>
+
+<p>  </section>
+｛% endif %｝
+```</p>
+
+<h4>D 创建source/_includes/post/duoshuo.html，并填入如下内容</h4>
+
+<p>```</p>
+
+<!-- Duoshuo Comment BEGIN -->
+
+
+<div class="ds-thread"></div>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"beyondvincent"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+<!-- Duoshuo Comment END -->
+
+
+<p>```</p>
+
+<h4>E 发布到站点</h4>
+
+<p><code>
+$ rake generate
+$ git add .
+$ git commit -am "添加多说评论"
 $ git push origin source
 $ rake deploy
 </code></p>
