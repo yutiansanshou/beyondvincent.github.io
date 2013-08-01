@@ -1,0 +1,192 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍 本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中，我将介绍如何在程序中添加SemanticZoom控件，以使我们的程序支持语义缩放。 1、语义缩放( &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/05/63/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍</h1>
+	<div class="entry-content" itemprop="articleBody"><p>本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中，我将介绍如何在程序中添加SemanticZoom控件，以使我们的程序支持语义缩放。</p>
+
+<p>1、语义缩放(Semantic Zoom)概述</p>
+
+<p>&#160;&#160;&#160; 语义缩放(Semantic Zoom)是一项触控优化技术，用于Windows 8中的Windows Store apps，在一个画面中（如相册、程序列表或地址簿）展示和导航大量的数据或内容集合。</p>
+
+<p>&#160;&#160;&#160; 语义缩放使用两种不同的模式来呈现内容：low-level(zoomed in)模式用于在一个平面中显示所有的结构，而high-level(zoomed out)模式则显示分组中的items，使用户可以快速的导航和浏览内容。</p>
+
+<p>&#160;&#160;&#160; 如下图所示：左边是zoom in模式，右边是zoom out模式</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.png" width="682" height="169" /></a></p>
+
+<p>语义缩放的交互方式有如下几种：</p>
+
+<p>&#160;&#160;&#160; A、捏合与拉伸手势(手指移动距离变远为zoom in，手指距离变近则是zoom out)</p>
+
+<p>&#160;&#160;&#160; B、按下Ctrl键，同时滚动鼠标的滚轮</p>
+
+<p>&#160;&#160;&#160; C、按下Ctrl键，同时按下+或者-。</p>
+
+<p>&#160;&#160;&#160; 语义缩放的应用场景</p>
+
+<p>&#160;&#160;&#160; A、地址薄：通讯录以字母顺序组织(或者其它的)，使用字母来展现数据，用户可以将某个字母“放大”，以看到该字母相关联的联系人。</p>
+
+<p>&#160;&#160;&#160; B、相册：以元数据（如日期）来组织图片，用户可以放大（zoom in）某个具体的日期来显示与那个日期相关的图片集合。</p>
+
+<p>&#160;&#160;&#160; C、产品目录：按照类别组织items。</p>
+
+<p>&#160;&#160;&#160; 语义缩放布局示例：</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Zoom in</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.png" width="682" height="463" /></a></p>
+
+<p>&#160;</p>
+
+<p>注意：语义缩放跟光学缩放(参考<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465307.aspx"><u>Guidelines fore optical zoom and resizing</u></a>)是不同的。虽然它们具有类似的交互方式和基本的行为（基于缩放因子显示更多或者更少的内容），光学缩放是对一个内容区域或者对象（如相片）进行缩放。</p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

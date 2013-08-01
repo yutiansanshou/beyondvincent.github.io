@@ -1,0 +1,655 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>iOS7新特征汇总[04]新特征介绍4 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="iOS7新特征汇总[04]新特征介绍4 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[03]新特征介绍3）中，笔者介绍了在iOS7中关于程序间的音频（inter-App Audio）、点对点的连接、新增的Framework相关内容。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/14/87/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS7新特征汇总[04]新特征介绍4</h1>
+	<div class="entry-content" itemprop="articleBody"><p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/ios-7-logo.png"><img class="alignnone size-full wp-image-1345" alt="ios-7-logo" src="http://beyondvincent.com/wp-content/uploads/2013/06/ios-7-logo.png" width="1018" height="483" /></a></p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>上一篇文章（<a href="http://beyondvincent.com/?p=1321" target="_blank"><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[03]新特征介绍3</span></span></span></strong></a>）中，笔者介绍了在iOS7中关于程序间的音频（inter-App Audio）、点对点的连接、新增的Framework相关内容。本文将继续介绍iOS7中的新特征，包括：已有Framework的改进、Objective-C和已经过时的API。</p>
+
+<p><strong><span style="color: #339966;">注1：本文是关于新特征介绍的最后一篇，随后的博文，以wwdc2013内容为主，欢迎大家关注！</span></strong></p>
+
+<h2><strong><span style="color: #339966;">已有Framework的改进（19个）</span></strong></h2>
+
+<p>下面我们来看看iOS7中有明显修改的一些framework。如果要查看完整的新接口，请查看iOS 7.0 API Diffs。本部分内容看起来可能稍显枯燥，并且我没有对其做配图，所以读者可以挑选自己感兴趣的部分进行阅读也不妨。</p>
+
+<div title="Page 16">
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">UIKit</span> <span style="color: #339966;">Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    UIKit Framework(UIKit.framework)主要做了如下改进：<br /> 1、所有的用户界面控件都做了更新，以与iOS7相适应。<br /> 2、UIKit动力可以让开发者模拟现实世界中的一些效果，例如在动画中使用重力行为。<br /> 3、Text Kit提供了复杂的文字编辑和显示功能。<br /> 4、UIView类新增加了如下内容：<br /> tintColor属性：可以使用一个tint color，并对view和它的subview有影响。关于如何使用tint colors，请看iOS 7 UI Transition Guide。
+  </p>
+  
+  <pre class="wp-code-highlight prettyprint linenums:1">/*
+-tintColor always returns a color. The color returned is the first non-default value in the receiver&#039;s superview chain (starting with itself).
+If no non-default value is found, a system-defined color is returned.
+If this view&#039;s -tintAdjustmentMode returns Dimmed, then the color that is returned for -tintColor will automatically be dimmed.
+If your view subclass uses tintColor in its rendering, override -tintColorDidChange in order to refresh the rendering if the color changes.
+*/
+@property(nonatomic,retain) UIColor *tintColor NS_AVAILABLE_IOS(7_0);
+
+/*</pre>
+  
+  <p>
+    通过view可以创建基于关键帧的动画。同样也可以对view做出改变——特别是阻止任意正在执行的动画。<br /> 5、UIViewController类新增了如下内容：<br /> View controller之间的切换(transition)可以自定义、驱动式交互(driven interactively)，或者完全根据自己指定的切换方式来替换。<br /> 可以通过编程的方式指定View controller的status bar和visibility。系统会根据提供的信息来管理status bar style。当然，在程序的info.plist文件中，设置UIViewControllerBasedStatusBarAppearance键值也是可以的。如下代码是iOS7中新增的几个用来指定status bar的方法
+  </p>
+  
+  <pre class="wp-code-highlight prettyprint linenums:1">// These methods control the attributes of the status bar when this view controller is shown. They can be overridden in view controller subclasses to return the desired status bar attributes.
+- (UIStatusBarStyle)preferredStatusBarStyle;
+- (BOOL)prefersStatusBarHidden;
+
+// This should be called whenever the return values for the view controller&#039;s status bar attributes have changed. If it is called from within an animation block, the changes will be animated along with the rest of the animation block.
+- (void)setNeedsStatusBarAppearanceUpdate;</pre>
+  
+  <p>
+    6、UIMotionEffect类为运动效果定义了一些基本的行为——定义了一个view如何响应基于设备的运动。<br /> 7、Collection view支持UIKit动力(UIKit Dynamic)——这样可以将一些行为对象(behavior object)应用到Collection view的layout attribute中，以对collection view中的item做出相应的动画。<br /> 8、UIImage的ImageNamed:方法可以把检索存储在asset目录中的图片，这就提供了一种方法——管理并优化具有多种尺寸和分辨率的资源。<br /> 9、UIView和UIScreen提供了一个新的方法：snapshot——返回一个view，可以用来显示程序的内容。
+  </p>
+  
+  <pre class="wp-code-highlight prettyprint linenums:1">/* Creating snapshots from existing snapshots (as a method to duplicate, crop or create a resizable variant) is supported. In cases where many snapshots are needed, creating a snapshot from a common superview and making subsequent snapshots from it can be more performant.
+*/
+@interface UIView (UISnapshotting)
+- (UIView *)snapshot NS_AVAILABLE_IOS(7_0);
+- (UIView *)resizableSnapshotFromRect:(CGRect)rect withCapInsets:(UIEdgeInsets)capInsets NS_AVAILABLE_IOS(7_0); // Resizable snapshots will default to stretching the center
+@end</pre>
+  
+  <pre class="wp-code-highlight prettyprint linenums:1">@interface UIScreen (UISnapshotting)
+- (UIView *)snapshot NS_AVAILABLE_IOS(7_0);
+@end</pre>
+  
+  <p>
+    10、UIKeyCommand类封装了从外围硬件键盘接收到的键盘事件。这些事件会被分发(delivered)到程序的响应链(responder chain)中以被处理。<br /> 11、UIFontDescriptor对象使用一个属性字典来描述字体。通过font descriptor可以与其它平台相互交互。<br /> 12、UIFont和UIFontDescriptor类支持动态调整字体大小，这样可以增加程序中文字的易读性——用户可以控制所有程序的字体大小。<br /> 13、UIActivity类现在支持新的一些activity类型，包括通过AirDrop发送数据，给内容到Safari阅读列表中，把数据发送到Flickr、Tencent Weibo和Vimeo。<br /> 14、UIApplicationDelegate协议新增了处理后台获取数据的操作。
+  </p>
+  
+  <pre class="wp-code-highlight prettyprint linenums:1">/*! This delegate method offers an opportunity for applications with the "remote-notification" background mode to fetch appropriate new data in response to an incoming remote notification. You should call the fetchCompletionHandler as soon as you&#039;re finished performing that operation, so the system can accurately estimate its power and data cost.
+
+This method will be invoked even if the application was launched or resumed because of the remote notification. The respective delegate methods will be invoked first. Note that this behavior is in contrast to application:didReceiveRemoteNotification:, which is not called in those cases, and which will not be invoked if this method is implemented. !*/
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler NS_AVAILABLE_IOS(7_0);
+
+/// Applications with the "fetch" background mode may be given opportunities to fetch updated content in the background or when it is convenient for the system. This method will be called in these situations. You should call the fetchCompletionHandler as soon as you&#039;re finished performing that operation, so the system can accurately estimate its power and data cost.
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler NS_AVAILABLE_IOS(7_0);
+
+// Applications using an NSURLSession with a background configuration may be launched or resumed in the background in order to handle the
+// completion of tasks in that session, or to handle authentication. This method will be called with the identifier of the session needing
+// attention. Once a session has been created from a configuration object with that identifier, the session&#039;s delegate will begin receiving
+// callbacks. If such a session has already been created (if the app is being resumed, for instance), then the delegate will start receiving
+// callbacks without any action by the application. You should call the completionHandler as soon as you&#039;re finished handling the callbacks.
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler NS_AVAILABLE_IOS(7_0);</pre>
+  
+  <p>
+    15、UIKit新增了引导访问模式(guided-access mode)——运行程序自己锁定，以防止被用户修改。这样的功能主要是为一些机构设计的，例如在学校——学生虽然携带了他们的设备，但是需要运行由学校提供的程序。<br /> 16、State还原功能运行保存和还原任意的对象。遵循UIStateRestoring协议的对象，当程序被切换到后台(background)时，可以把状态信息保存起来 ，之后程序被启动时，这些状态可以被还原。<br /> 17、Table view支持对row或其他元素高度的评估(estimating)，这样可以提升Table view的滚动性能。<br /> 更多关于UIKit framework的内容，请阅读UIKit Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Store Kit Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Store Kit framework(StoreKit.framework)已经迁移到新的订单系统(receipt system)，这样一来，开发者可以在自己的设备上验证内购(in-app purchase)。同样也可以在服务器上进行程序购买订单的验证。<br /> 更多关于新订单系统的使用，请阅读：Receipt Validation Programming Guide。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Security Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Security Framework(Security.framework)现在支持：通过iCloud，可以把密码在用户两台设备间进行同步。通过新的keychain属性((kSecAttrSyncronizable)，程序可以为iCloud标记它们的keychain item。<br /> 更多相关这个属性的内容，请看该framework的头文件。关于keychain更多信息，请看Keychain Services Programming Guide。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Pass Kit Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Pass Kit Framework(PassKit.ramework)新增了一些API——针对同时添加多个通行证(pass)，通行证文件的格式也做了相应的调整：
+  </p>
+  
+  <ol>
+    <li>
+      新的key指定通行证的截止日期
+    </li>
+    <li>
+      可以指定通行证只与特定的蓝牙信号相关
+    </li>
+    <li>
+      利用新的属性来控制通行证的显示。可以把通行证进行归类，并在通行证的背面显示自定义的文字内容，以及控制显示在通行证上的时间值
+    </li>
+    <li>
+      可以给通行证附带一些额外的数据信息，在程序中可以使用这些数据，不过并直接显示给用户
+    </li>
+    <li>
+      可以指定那些data detector用于通行证的字段中
+    </li>
+  </ol>
+  
+  <p>
+    更多关于如何在程序中使用Pass Kit的信息，请阅读Passbook Programming Guide。关于通行证文件的格式，请阅读Passbook Package Format Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">OpenGL ES</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    OpenGL ES做了如下新的扩展：
+  </p>
+  
+  <ol>
+    <li>
+      <span style="color: #339966;">EXT_SRGB</span>支持sRBG帧缓冲区(framebuffer)操作
+    </li>
+    <li>
+      <span style="color: #339966;">GL_APPLE_pvrtc_sRGB</span>支持将sRGB纹理数据压缩为PVRTC纹理格式
+    </li>
+    <li>
+      <span style="color: #339966;">GL_APPLE_draw_instanced</span>和<span style="color: #339966;">GL_APPLE_draw_arrays</span>可以提升渲染的速度->当程序在绘制多个相同的实例对象时。
+    </li>
+  </ol>
+  
+  <p>
+    现在可以在vertex shaders中访问纹理了；通过MAX_VERTEX_TEXTURE_IMAGE_UNITS属性决定你可以访问纹理的准确数目。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">MessageUI Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    在MessageUI framework中，<span style="color: #339966;">MFMessageComposeViewController</span>现在可以支持将附件添加到信息中。关于新接口内容，可以参看framework头文件。
+  </p>
+  
+  <p>
+    关于这个framework的类，请阅读Message UI Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Media Player Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    在Media Player framework中，<span style="color: #339966;">MPVolumeView</span>类可以判断用户选择的无线路由(wireless route，例如AirPlay和Bluetooth)是否可用。你也可以判断无线路由当前是否可用。关于新接口信息，请参看framework的头文件。关于Media Player framework涉及到的类，请参看Media Player Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Map Kit Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    关于Map Kit framework相关修改，笔者已经在这里介绍过：<span style="text-decoration: underline;"><span style="color: #339966;"><a title="固定链接到 iOS7新特征汇总[02]新特征介绍2" href="http://beyondvincent.com/2013/06/12/ios7%e6%96%b0%e7%89%b9%e5%be%81%e6%b1%87%e6%80%bb02%e6%96%b0%e7%89%b9%e5%be%81%e4%bb%8b%e7%bb%8d2/" target="_blank" rel="bookmark"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[02]新特征介绍2</span></a></span></span>
+  </p>
+  
+  <p>
+    更多相关信息，请查阅Map Kit Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Image I/O Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Image I/O Framework(ImageIO.framework)现在提供了获取和设置image metadata的接口。
+  </p>
+  
+  <p>
+    更多相关接口信息，请看framework的头文件。关于framework类的介绍，请看Image I/O Reference Collection。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">iAd Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    iAd framework(iAd.framework)做了如下修改——让广告更好的融入到程序中：
+  </p>
+  
+  <ol>
+    <li>
+      在<span style="color: #339966;">MPMoviePlayerController</span>类中的新方法可以让你在播放电影之前运行广告
+    </li>
+    <li>
+      framework对<span style="color: #339966;">UIViewController</span>进行了扩展，让其更容易创建广告内容。现在，你可以对view controller进行适当的配置——在实际内容显示之前先显示出广告内容。
+    </li>
+  </ol>
+  
+  <p>
+    关于新接口请看framework中的头文件。关于framework的介绍，请看Ad Support Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Game Kit Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    关于Game Kit Framework(GameKit.framework)的改变，已经在这里介绍过：<span style="text-decoration: underline;"><span style="color: #339966;"><a title="固定链接到 iOS7新特征汇总[02]新特征介绍2" href="http://beyondvincent.com/2013/06/12/ios7%e6%96%b0%e7%89%b9%e5%be%81%e6%b1%87%e6%80%bb02%e6%96%b0%e7%89%b9%e5%be%81%e4%bb%8b%e7%bb%8d2/" target="_blank" rel="bookmark"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[02]新特征介绍2</span></a></span></span>
+  </p>
+  
+  <p>
+    更多相关介绍，请看Game Kit Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Foundation Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Foundation framework(Foundation.framework)主要做了如下改进：
+  </p>
+  
+  <ol>
+    <li>
+      <span style="color: #339966;">NSURLSession</span>类是一个新增的类，主要用于程序在后台运行时，对网络资源的操作。这个类替换了NSURLConnection和相关delegate；同样也替换了NSURLDownload和相关delegate。
+    </li>
+    <li>
+      <span style="color: #339966;">NSURLComponents</span>类也是一个新增类——用来解析URL的构建。这个类在解析URL的时候支持URI标准(rfc3986/STD66)。
+    </li>
+    <li>
+      <span style="color: #339966;">NSNetService</span>和<span style="color: #339966;">NSNetServiceBrowser</span>用于在蓝牙和Wi-Fi中点对点的查找。
+    </li>
+    <li>
+      <span style="color: #339966;">NSURLCredential</span>和<span style="color: #339966;">NSURLCredentialStorage</span>两个类可以用来创建同步策略的证书，并可以从iCloud中移除相关同步策略证书。
+    </li>
+    <li>
+      <span style="color: #339966;">NSURLCache</span>、<span style="color: #339966;">NSURLCredentialStorage</span>和<span style="color: #339966;">NSHTTPCookieStorage</span>三个类支持存储请求的异步处理。
+    </li>
+    <li>
+      <span style="color: #339966;">NSCalendar</span>类支持新的日历类型。
+    </li>
+  </ol>
+  
+  <p>
+    更多关于新的接口，请看framework中 大头文件和Foundation release notes。关于该framework类的介绍，请看Foundation Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Core Telephony Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Core Telephony framework(CoreTelephony.framework)现在可以获取到设备使用的无线电信息：当前的信号强度、cell ID。由运营商开发的相关程序，同样可以通过预定运营商相关服务，来对他们的程序进行验证。
+  </p>
+  
+  <p>
+    更多相关信息请看Core Telephony Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Core Motion Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Core Motion framework(CoreMotion.framework)现在支持step counting(类似计步器)和运动的跟踪。关于step counting——framework通过检测用户的运动，然后根据运动信息计算出步数（貌似很牛叉的样子，不知道准确度如何了）。由于运动信息是由系统检测的，所以即使当程序没有运行的时候，系统也可以持续的收集step数据。通过这样的功能，framework也能区分出不同的运动类型，例如walking、running或者automobile——这对于导航类程序来说，就可以使用这些数据，直接修改用户的运动类型。
+  </p>
+  
+  <p>
+    更多相关信息，请看Core Motion Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Core Location Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Core Location framework(CoreLocation.framework)可以通过蓝牙设备来测距。通过测距可以确定附近蓝牙设备的范围，并作出相应的反应。例如，在博物馆的画廊里面，可能有一些蓝牙信号，供参观者通过相关程序显示出画廊的入口和出口。framework还支持推迟位置的更新的通知，直到特定的时间或者用户移动距离超过了最小值。
+  </p>
+  
+  <p>
+    更多相关信息，请看Core Location Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Core Foundation Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Core Foundation framework(CoreFoundation.framework)现在支持在派送队列(dispatch queues)中进行流对象的调度。
+  </p>
+  
+  <p>
+    更多相关信息，请看Core Foundation Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Core Bluetooth Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Core Bluetooth framework(CoreBluetooth.framework)做了如下改进：
+  </p>
+  
+  <ol>
+    <li>
+      <span style="line-height: 13px;">该framework现在可以把<span style="color: #339966;">CBCentral</span>和<span style="color: #339966;">CBPeripheral</span>对象的状态信息进行保存，并且在程序启动的时候还原——这个功能可以支持相关蓝牙设备的长期行为。</span>
+    </li>
+    <li>
+      CBCentral和CBPeripheral类现在使用NSUUID对象来存储唯一标示。
+    </li>
+    <li>
+      现在可以从<span style="color: #339966;">CBCentralManager</span>中同步的获取一个CBPeripheral对象。
+    </li>
+  </ol>
+  
+  <p>
+    更多相关信息，请看Core Bluetooth Framework Reference。
+  </p>
+  
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">AV Foundation Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    AV Foundation framework(AVFoundation.framework)做了如下改进：
+  </p>
+  
+  <ul>
+    <li>
+      <span style="color: #339966;">AVAudioSession</span>支持一些新的行为：可以选择音频输入的首选项，包括来自内置麦克风的音频；支持多通道的输入和输出
+    </li>
+  </ul>
+</div>
+
+
+
+
+<div title="Page 16">
+  <ul>
+    <li>
+      <span style="line-height: 13px;"><span style="color: #339966;">AVVideoCompositing</span>和相关的类支持自定义视频合成器(video compositor)</span>
+    </li>
+    <li>
+      <span style="color: #339966;">AVSpeechSynthesizer</span>和相关的类提供了语音合成功能
+    </li>
+    <li>
+      <span style="color: #339966;">capture</span>类新增支持的功能有：查找camaera支持的格式、支持60fps录制、在录制和预览的时候，Video的放大(真实和数字化)、实时查找机器可读的条形码数据、自动对焦范围的限制、采集录制过程中访问时钟。
+    </li>
+  </ul>
+  
+  <p>
+    另外还有很多信息，笔者就不在这里一一列出，读者可以查阅AV Foundation Framework Reference。
+  </p>
+</div>
+
+
+
+
+<div title="Page 16">
+  <ul>
+    <li>
+      <strong><span style="color: #339966;">Accelerate Framework</span></strong>
+    </li>
+  </ul>
+  
+  <p>
+    Accelerate framework(Accelerate.framework)做了如下改进：
+  </p>
+  
+  <ol>
+    <li>
+      支持Core Graphics数据类型的操作
+    </li>
+    <li>
+      支持灰度图片：每个像素为1、2或4位
+    </li>
+    <li>
+      可以在不同图像格式之间进行转换
+    </li>
+    <li>
+      支持biguad(IIR)操作
+    </li>
+  </ol>
+  
+  <p>
+    更多相关信息请看Accelerate Framework Reference。
+  </p>
+  
+  <div title="Page 17">
+    <div title="Page 18">
+      <div title="Page 18">
+        <div title="Page 18">
+          <h2 title="Page 19">
+            <span style="color: #339966;"><b>Objective-C</b></span>
+          </h2>
+          
+          <p>
+            Objective-C加强了对模块(module)的支持，这样可以加快build时间，以及工程索引的时间。用Xcode 5创建的新工程，默认支持模块，如果是之前的一个工程，必须明确的启动模块的支持：通过修改该工程的Enable Modules设置。
+          </p>
+          
+          <div title="Page 18">
+            <div>
+              <div>
+                <p>
+                  <strong style="font-size: 1.5em;"><span style="color: #339966;">已经过时的API</span></strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<p>时不时的，苹果会对一些API增加deprecation 宏，表示在开发中，相关的API不应该继续被使用了。当然，遇到deprecation时，相关api并不是立即就过时了，相反，在一定期限内，苹果会提供相关功能的api，进行过渡。</p>
+
+<p>作为开发者来说，尽量避免在代码中使用过时的api是非常重要的——至少，在新写的代码中不要继续使用过时的api了，另外，对于已有的工程中，如果使用了过时的api，也尽量对代码进行更新。</p>
+
+<p>目前，在iOS7中，过时的api有如下一些：</p>
+
+<ol>
+<li>Map Kit framework中的<span style="color: #339966;">MKOverlayView</span>和它相关的子类都已经过时了。并且使用<span style="color: #339966;">MKOverlayRenderer</span>类来代替。更多相关资料，请看Map Kit Framework Reference。</li>
+<li>在Audio Toolbox framework中的<span style="color: #339966;">AudioSession</span> API已经过时了。程序中应该使用AV Foundation framework中的<span style="color: #339966;">AVAudioSession</span>类来代替。</li>
+<li>在Core Location framework中的<span style="color: #339966;">CLRegion</span>类已经被<span style="color: #339966;">CLCircularRegion</span>类取代了。只不过CLRegion类还继续存在着——当做一个抽象的基类——以对geographic和beacon region的支持。</li>
+<li><span style="color: #339966;">CBCentral</span>中的属性<span style="color: #339966;">UUID</span>已经过时了。现在使用<span style="color: #339966;">identifier</span>属性来对central对象进行唯一标示。</li>
+<li>Game Kit framework中也有一些过时的api，主要是为了新功能提供更好的支持。相关信息请看上面提到的参考资料。</li>
+<li>UIKit中有如下一些过时的内容：<span style="color: #339966;">UIViewController</span>的<span style="color: #339966;">wantsFullScreenLayout</span>属性已经过时。在iOS7以及之后的版本中，view controller一直都是全屏布局；<span style="color: #339966;">UIPopovercontroller</span>类不再支持箭头朝向的概念；现在支持内容呈现（presentation）朝向。<span style="color: #339966;">UIColor</span>对象提供的背景纹理已经不存在了。NSString中的许多功能已经过时，建议使用新的功能。</li>
+<li>在<span style="color: #339966;">libsyscall</span>库中的<span style="color: #339966;">gethostuuid</span>方法已经过时。</li>
+<li>iOS7以及之后的版本中，如果请求获取iOS设备的MAC地址，系统会返回02:00:00:00:00:00。如果需要唯一标示设备，使用UIDevice的identifierForVendor属性代替。（在程序中，如果需要自己的广告标示符，那么应该考虑使用ASIdentifierManager的advertisingIdentifier属性替代。）</li>
+</ol>
+
+
+<p>关于过时API完整的列表，请看iOS 7.0 API Diffs。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
+
+<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
+
+<p>来自唐巧的一个微信公众账号：<span style="color: #339966;">iosDevTips</span>——基本每天都会有关于iOS开发的精彩内容分享。<br/>
+来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
+
+<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
+
+<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
+新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+微信公众账号：<strong>破船之家</strong><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-14</time>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

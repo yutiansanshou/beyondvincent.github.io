@@ -1,0 +1,338 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>打造轻量化的View Controller - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="打造轻量化的View Controller &nbsp; 本文由破船译自objc转载请注明出处！ 小引 很早以前就看到了这篇文章，该文是Lighter View Controllers中比较重要的一篇，来自http://www.objc.io/%EF%BC% &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/07/05/97/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">打造轻量化的View Controller</h1>
+	<div class="entry-content" itemprop="articleBody"><p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/JC4Yc.png"><img class="alignnone size-full wp-image-1538" alt="JC4Yc" src="http://beyondvincent.com/wp-content/uploads/2013/07/JC4Yc.png" width="800" height="322" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.objc.io/issue-1/lighter-view-controllers.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>很早以前就看到了这篇文章，该文是<strong><span style="color: #339966;">Lighter View Controllers</span></strong>中比较重要的一篇，来自<strong><span style="color: #339966;"><a href="http://www.objc.io/%EF%BC%8C">http://www.objc.io/%EF%BC%8C</a></span></strong>该站点的目标是致力于介绍Objective-C中最佳的实践技能和高级技术，以期刊的形式发表，每期一个主题，第一期就是以Lighter View Controllers为主。共有5篇文章，由于老破船精力有限，可能不会全部翻译，感兴趣的读者可以前往官方站点，进行阅读，千万别苦等破船进港时，万一等到花谢草枯了，可不好哟。</p>
+
+<p><strong><span style="color: #339966;">友情提醒</span></strong>：大家平常除了写代码，会有锻炼身体吗？明天就是周末了，记得少加班，多锻炼身体哟，这周我只打了一次篮球，运动量有点少了，计划明天早上去跑10公里。</p>
+
+<h2><span style="color: #ff0000;"><strong>本文目录如下：</strong></span></h2>
+
+<ul>
+<li><strong><span style="color: #339966;">简介</span></strong></li>
+<li><strong><span style="color: #339966;">剥离Data Source和其它Protocols</span></strong></li>
+<li><strong><span style="color: #339966;">将业务逻辑移至Model Layer</span></strong></li>
+<li><strong><span style="color: #339966;">创建Store类</span></strong></li>
+<li><strong><span style="color: #339966;">将Web Service逻辑移至Model Layer</span></strong></li>
+<li><strong><span style="color: #339966;">将View代码移至View Layer</span></strong></li>
+<li><strong><span style="color: #339966;">与别的对象进行通讯</span></strong></li>
+<li><strong><span style="color: #339966;">小结</span></strong></li>
+<li><strong><span style="color: #339966;">延伸阅读</span></strong></li>
+</ul>
+
+
+<h2><strong><span style="color: #339966;">简介</span></strong></h2>
+
+<p>在iOS工程中，view controllers经常是最大的文件，引起这样的主要原因是开发者在view controllers中编写了大量非必须代码，实际上，view controllers可以重用其中的许多代码。下面我们就来看看，有什么好的办法可以对view controllers进行瘦身，加强代码的可重用性(reusable)，并将代码放到适当的地方。<br/>
+提醒：本文涉及到的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://github.com/objcio/issue-1-lighter-view-controllers" target="_blank"><span style="color: #339966; text-decoration: underline;">示例工程</span></a></span></strong></span>已经放到GitHub上了。</p>
+
+<h2><strong><span style="color: #339966;">剥离Data Source和其它Protocols</span></strong></h2>
+
+<p>对view controllers瘦身最佳的方法之一就是将UITableViewDataSource涉及到的代码从view controllers中抽取出来，并封装到自己的一个类中。如果不止在一个view controllers中使用到UITableViewDataSource，那么会提高封装出来这个类的可重用性。<br/>
+译者注：此处有一个前提条件原作者没有说明，我们需要注意一下——这里的view controllers是使用到了UITableView。</p>
+
+<p>下面我们来看一个例子，在上面给出的示例工程中，有一个类PhotosViewController，里面原本有如下3个方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1"># pragma mark Pragma
+
+- (Photo*)photoAtIndexPath:(NSIndexPath*)indexPath {
+return photos[(NSUInteger)indexPath.row];
+}
+
+- (NSInteger)tableView:(UITableView*)tableView
+numberOfRowsInSection:(NSInteger)section {
+return photos.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+PhotoCell* cell = [tableView dequeueReusableCellWithIdentifier:PhotoCellIdentifier
+forIndexPath:indexPath];
+Photo* photo = [self photoAtIndexPath:indexPath];
+cell.label.text = photo.name;
+return cell;
+}</pre>
+
+
+<p>上面3个方法中都涉及到了数组，并且在最后一个方法中利用索引(indexPatha)给UITableViewCell指定了相应的图片(view controllers管理着这些图片资源)。下面我们就来试着把与数组相关的代码封装到我们自己的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/objcio/issue-1-lighter-view-controllers/blob/master/PhotoData/ArrayDataSource.h" target="_blank"><span style="color: #339966; text-decoration: underline;">一个类</span></a></span></span></strong>中。<br/>
+如下代码所示，这里通过一个block来配置UITableViewCell，当然，也可以使用delegate对UITableViewCell进行配置，这主要取决于开发者。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation ArrayDataSource
+
+- (id)itemAtIndexPath:(NSIndexPath*)indexPath {
+return items[(NSUInteger)indexPath.row];
+}
+
+- (NSInteger)tableView:(UITableView*)tableView
+numberOfRowsInSection:(NSInteger)section {
+return items.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+id cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
+forIndexPath:indexPath];
+id item = [self itemAtIndexPath:indexPath];
+configureCellBlock(cell,item);
+return cell;
+}
+
+@end</pre>
+
+
+<p>有了上面这个自定义的类，我们就可以把view controllers中的那3个方法移除掉，并创建自定义类的一个示例对象，然后将其设置为table view的data source，如下代码所示。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void (^configureCell)(PhotoCell*, Photo*) = ^(PhotoCell* cell, Photo* photo) {
+cell.label.text = photo.name;
+};
+photosArrayDataSource = [[ArrayDataSource alloc] initWithItems:photos
+cellIdentifier:PhotoCellIdentifier
+configureCellBlock:configureCell];
+self.tableView.dataSource = photosArrayDataSource;</pre>
+
+
+<p>现在，当每次希望将数组中的内容显示到table view中时，不必再考虑如何将index path映射到数组中的准确位置了，只需要重新上面的代码即可。另外，我们也可以在自定义类中，实现另外的一些方法(例如tableView:commitEditingStyle:forRowAtIndexPath:)，以共享给所有的table view controllers。</p>
+
+<p>这也会带来一个好处：可以单独的对自定义的这个类进行测试，而不用担心要重新写一些测试代码。其实，如果我们写的代码跟这里的情况类似，那么也可以这样做。</p>
+
+<p>今年我在工作中写的一个应用程序，大量使用了Core Data。我也创建了类似的类。该类实现了动画更新的所有逻辑，section header处理，以及相关删除操作等。你可以创建该类的一个示例，然后设置一下对其调用的方法，以及配置cell的一个block，剩下的任务就能自动处理了。</p>
+
+<p>此外，上面介绍的这种方法可以延伸到别的protocols，这能够给程序开发中带来很大的灵活性。例如UICollectionViewDataSource，在开发过程中，如果希望用UICollectionView替换已有的UITableView，我们几乎不需要对view controllers做很大的改动，甚至还能使我们的data source同时支持两种protocols(UITableViewDataSource和UICollectionViewDataSource)。</p>
+
+<h2><strong><span style="color: #339966;">将业务逻辑移至Model Layer</span></strong></h2>
+
+<p>下面的示例代码(另外一个工程)位于view controller，作用是找出针对用户active priority的一个列表。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)loadPriorities {
+NSDate* now = [NSDate date];
+NSString* formatString = @"startDate &lt;= %@ AND endDate &gt;= %@";
+NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
+NSSet* priorities = [self.user.priorities filteredSetUsingPredicate:predicate];
+self.priorities = [priorities allObjects];
+}</pre>
+
+
+<p>实际上，如果把这个方法移至User类的一个category中，会让代码更加清晰。此时，在View Controller.m文件中看起来应该是这样的：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)loadPriorities {
+self.priorities = [user currentPriorities];
+}
+
+而在User+Extensions.m中则如下代码：
+- (NSArray*)currentPriorities {
+NSDate* now = [NSDate date];
+NSString* formatString = @"startDate &lt;= %@ AND endDate &gt;= %@";
+NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
+return [[self.priorities filteredSetUsingPredicate:predicate] allObjects];
+}</pre>
+
+
+<p>实际开发中，有一些代码很难将其移至model对象中，但是，很明显这些代码与model是相关的，针对这样的情况，我们可以单独为其写一个类，例如下面的store类。</p>
+
+<h2><strong><span style="color: #339966;">创建Store类</span></strong></h2>
+
+<p>本文给出示例工程的第一版代码中，有一部分代码是用来从文件中加载数据，并对其进行解析的，这些代码是在view controller中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)readArchive {
+NSBundle* bundle = [NSBundle bundleForClass:[self class]];
+NSURL *archiveURL = [bundle URLForResource:@"photodata"
+withExtension:@"bin"];
+NSAssert(archiveURL != nil, @"Unable to find archive in bundle.");
+NSData *data = [NSData dataWithContentsOfURL:archiveURL
+options:0
+error:NULL];
+NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+_users = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"users"];
+_photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
+[unarchiver finishDecoding];
+}</pre>
+
+
+<p>实际上，view controller不应该关心这些事情的。在示例工程中，我创建了一个Store类来做这些事情——通过将这些代码从view controller中剥离出来，不仅可以对其重用和单独测试，另外还能对view controller瘦身。Store类专注于数据的加载、缓存，以及对数据库进行配置。这里的Store也经常叫做service layer或者repository。</p>
+
+<h2><strong><span style="color: #339966;">将Web Service逻辑移至Model Layer</span></strong></h2>
+
+<p>这里的方法实际上跟上面介绍的非常类似：不要在view controller中做web service逻辑处理，而是将相关的逻辑处理封装到不同的类中。然后我们的view controller通过callback handler(例如一个completion block)来调用这些类的方法。<br/>
+这样做带来的一个好处就是我们可以方便在这些封装类中做缓存和错误处理。</p>
+
+<h2><strong><span style="color: #339966;">将View代码移至View Layer</span></strong></h2>
+
+<p>切记不要在view controller中构建复杂的view结构。可选方案是：要么利用interface builder，或者就是将view的构建封装到一个UIView子类中。例如，如果你要构建一个date picker控件，可以基于DatePickerView类来构建，而不要把所有构建逻辑都放入view controller中。这样不仅能增加控件的可重用性，还能让代码简单化。<br/>
+如果你喜欢用interface builder，那么也同样可以在interface builder中做这些事情。我们的一些开发者可能认为只有view controller才能在interface builder中使用，其实我们可以通过加载一个单独的nib文件，来加载我们在nib文件中定制的view。在本文给出的示例工程中，我创建了一个PhotoCell.xib文件，该文件中定制了一个photo cell：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/photocell.png"><img class="alignnone size-full wp-image-1539" alt="photocell" src="http://beyondvincent.com/wp-content/uploads/2013/07/photocell.png" width="1168" height="838" /></a></p>
+
+<p>如上图所示，我在这个view中创建了两个属性：photoDateLable和photoTitleLable(注意：在这里的xib文件中没有使用File&#8217;s Owner object)，并将这两个属性连接到制定的subview中。<br/>
+上面介绍的技巧同样可以方便的用于别的一些custom view。</p>
+
+<h2><strong><span style="color: #339966;">与别的对象进行通讯</span></strong></h2>
+
+<p>在view controller中与别的view controller、model和view通讯是非常频繁的。虽然这确实是由controller负责的，不过，我们还是希望用最少的代码来完成相关的事情。<br/>
+目前已经有许多技术可以用于view controller和model对象之间的通讯(例如KVO)，不过view controller之间通讯的技术貌似不太明朗。<br/>
+我们可能会经常遇到这样的问题：一个view controller有许多状态需要与其它多个view controller进行勾兑。通常，需要把这些状态封装到一个单独的对象中，然后将其传送到对应的view controller中，在这些view controller中对这些状态进行观察并修改即可——这样带来的优点是所有的状态都在一个地方，开发者不用纠结于delegate的callback。<br/>
+实际上，关于对象间的通讯是一个复杂的topic，在今后的文章中，我们可能会对其进行深度分析。<span style="color: #339966;"><br /> </span></p>
+
+<h2><strong><span style="color: #339966;">小结</span></strong></h2>
+
+<p>上面我们学习了一些对view controller瘦身的技巧。这些技巧并不强求用与所有的地方，其实只有一个目标：编写可维护的代码。大家通过了解这些方法，可以知道有更多的方法来应对复杂的view controller，让其看起来更加清晰。</p>
+
+<h2><strong><span style="color: #339966;">延伸阅读</span></strong></h2>
+
+<ul>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#featuredarticles/ViewControllerPGforiPhoneOS/BasicViewControllers/BasicViewControllers.html"><span style="color: #339966; text-decoration: underline;">View Controller Programming Guide for iOS</span></a></span></span></li>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/mac/#documentation/General/Conceptual/DevPedia-CocoaCore/ControllerObject.html"><span style="color: #339966; text-decoration: underline;">Cocoa Core Competencies: Controller Object</span></a></span></span></li>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://subjective-objective-c.blogspot.de/2011/08/writing-high-quality-view-controller.html"><span style="color: #339966; text-decoration: underline;">Writing high quality view controllers</span></a></span></span></li>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://programmers.stackexchange.com/questions/184396/mvcs-model-view-controller-store"><span style="color: #339966; text-decoration: underline;">Stack Overflow: Model View Controller Store</span></a></span></span></li>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://speakerdeck.com/trianglecocoa/unburdened-viewcontrollers-by-jay-thrash"><span style="color: #339966; text-decoration: underline;">Unburdened View Controllers</span></a></span></span></li>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://programmers.stackexchange.com/questions/177668/how-to-avoid-big-and-clumsy-uitableviewcontroller-on-ios"><span style="color: #339966; text-decoration: underline;">Stack Overflow: How to avoid big and clumsy UITableViewControllers on iOS</span></a></span></span></li>
+</ul>
+
+
+<p>&nbsp;</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-05</time></p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

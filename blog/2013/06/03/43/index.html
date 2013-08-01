@@ -1,0 +1,288 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[016]如何获取设备当前位置 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[016]如何获取设备当前位置 在程序中如何获取设备当前位置 目录： &#160;&#160;&#160; 1、位置能力声明 &#160;&#160;&#160; 2、单次位置访问 &#160;&#160;&#160; 3、持续位置访问 1、位置能力声明 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/03/43/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[016]如何获取设备当前位置</h1>
+	<div class="entry-content" itemprop="articleBody"><p><strong>在程序中如何获取设备当前位置</strong></p>
+
+<p><strong>目录：</strong></p>
+
+<p><strong>&#160;&#160;&#160; 1、位置能力声明</strong></p>
+
+<p><strong>&#160;&#160;&#160; 2、单次位置访问</strong></p>
+
+<p><strong>&#160;&#160;&#160; 3、持续位置访问</strong></p>
+
+<p><strong><font color="#666666"></font></strong></p>
+
+<hr />
+
+<p><strong>1、位置能力声明</strong></p>
+
+<p>&#160;&#160;&#160; 在程序中添加位置的支持是很容易和直接的事情。首先需要在程序的manifest文件中添加位置功能的声明。声明的作用是让系统知道这个应用程序可能会尝试方位当前的位置。当然，最终程序是否有权限访问当前位置是由用户控制的。可以通过Visual Studio添加这个声明（双击解决方案资源管理器中的Package.appxmanifest文件,单击功能tab,然后在列表中勾上位置复选框）</p>
+
+<p>&#160;&#160;&#160; 下面是在manifest编辑器中声明位置功能之后的样子:</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/12.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb2.jpg" width="632" height="545" /></a></p>
+
+<p>下面的代码片段是当声明了位置功能后，在打开Package.appxmanifest.xml文件中看到的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;capabilities&gt;
+  &lt;devicecapability name="location"&gt;
+&lt;/devicecapability&gt;&lt;/capabilities&gt;</pre>
+
+
+<p>只要在程序中声明了位置能力,那么就可以立马通过编写代码来访问位置数据。位置功能被构建在Windows Runtime APIs中了，可以通过名称空间Windows.Devices.Geolocation来访问，或者可以通过JavaScript使用W3C API提供的相关位置功能。关于使用W3C API 提供的位置功能的更多信息，请看：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh452746.aspx"><u>使用HTML5检测位置（使用JavaScript和HTML开发Metro style Apps）</u></a></p>
+
+<p>&#160;&#160;&#160; 这里有两种基本的方法可以访问位置数据:一次查询,或者当系统检测到位置的改变引发相应的事件流。我们来看看每一种访问模型,之后就可以决定在程序中使用哪种模型更好。</p>
+
+<p>**</p>
+
+<p>**</p>
+
+<p><strong>2、单次位置访问</strong></p>
+
+<p>&#160;&#160;&#160; 如果只是按需访问位置数据,例如在用户所在区域发现用户感兴趣的点,注释与位置信息相关的内容,在地图上显示用户的位置等。只需要少数的几行代码就能搞定了,并且还能够延长电池的寿命。下面来看看相关的代码：</p>
+
+<p>JavaScript:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">var loc = new Windows.Devices.Geolocation.Geolocator();
+loc.positionAccuracy = Windows.Devices.Geolocation.PositionAccuracy.high;
+loc.getGeopositionAsync().done(getPositionHandler, errorHandler);
+
+function getPositionHandler(pos) {
+    var lat = pos.coordinate.latitude;
+    var long = pos.coordinate.longitude;
+    var acc = pos.coordinate.accuracy;
+}
+
+function errorHandler(err) {
+    // handle error
+}</pre>
+
+
+<p><strong>C#:</strong></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">using Windows.Devices.Geolocation;
+
+var loc = new Geolocator();
+
+try
+{
+    loc.DesiredAccuracy = PositionAccuracy.High;
+    Geoposition pos = await loc.GetGeopositionAsync();
+
+    var lat = pos.Coordinate.Latitude;
+    var long = pos.Coordinate.Longitude;
+    var acc = pos.Coordinate.Accuracy;
+}
+catch (System.UnauthorizedAccessException)
+{
+    // handle error
+}</pre>
+
+
+<p>通过上面的代码,我们可以看到获取单次位置信息,需要如下步骤:</p>
+
+<h4>1、创建一个Geolocator对象(位置的根对象)</h4>
+
+<p>2、异步调用一个操作来获取当前的位置,并且如果访问位置被拒绝了会有相关的错误处理</p>
+
+<p>注意:</p>
+
+<p>&#160;&#160;&#160; 如果需要，可以取消GetGeopositionAsync操作。这个例子有相关的演示：<a href="http://code.msdn.microsoft.com/windowsapps/Geolocation-2483de66">Windows Runtime Geolocation SDK 示例</a> ,关于单次位置访问信息,请查看<a href="http://msdn.microsoft.com/en-US/library/windows/apps/br225537">Geolocator.GetGeopositionAsync() | getGeopositionAsync() 方法</a>和Geolocation SDK示例.</p>
+
+<p><strong>3、持续位置访问</strong></p>
+
+<p>&#160;&#160;&#160; 如果你的程序需要持续访问位置数据,例如导航,当用户接近感兴趣的位置时提醒做出提醒,路线记录等.你想要添加一个事件监听器,以便当系统位置服务检测到位置改变时,程序会被通知.下面的代码是如何监听位置的改变:</p>
+
+<p>JavaScript:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">var loc = new Windows.Devices.Geolocation.Geolocator();
+loc.desiredAccuracy = Windows.Devices.Geolocation.PositionAccuracy.high;
+loc.addEventListener(&quot;positionchanged&quot;, onPositionChanged);
+
+function onPositionChanged(e) {
+    var lat = e.position.coordinate.latitude;
+    var long = e.position.coordinate.longitude;
+    var acc = e.position.accuracy;
+}</pre>
+
+
+<p>C#:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">using Windows.Devices.Geolocation;
+
+private Geolocator loc = new Geolocator();
+
+private void StartTracking(object sender, RoutedEventArgs e)
+{
+    loc.DesiredAccuracy = PositionAccuracy.High;
+    loc.PositionChanged += new TypedEventHandler&lt;geolocator, positionchangedeventargs=&quot;\\&quot;\\&quot;&quot;&gt;(OnPositionChanged);
+}
+
+private void OnPositionChanged(Geolocator sender, PositionChangedEventArgs e)
+{
+    Geoposition pos = e.Position;
+
+    var lat = pos.Coordinate.Latitude;
+    var long = pos.Coordinate.Longitude;
+    var acc = pos.Coordinate.Accuracy;
+}</pre>
+
+
+<p>上面给出的代码,本质上与单次访问相同,只不过在单次访问中使用了异步操作,而在这里,我们添加了事件监听器,并传递一个代理以处理事件.现在每当检测到一个位置改变,代理就会被调用,通过该代理方法我们可以获得位置数据.如果你想设置移动事件的敏感度,可以通过设置Geolocator对象的<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.devices.geolocation.geolocator.movementthreshold.aspx">MovementThreshold</a>属性.</p>
+
+<p>&#160;&#160;&#160; 另外,可以通过设置Geolocator对象的<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.devices.geolocation.geolocator.desiredaccuracy.aspx">DesiredAccuracy</a>属性,对位置API进行微调.如果程序不需要达到非常精确的GPS-level(例如天气程序),可以把该属性设置为Default，以通过限制使用GPS设备在确定位置来节省电量.</p>
+
+<p>&#160;&#160;&#160; 更多关于添加位置提醒到程序中,请看<a href="http://code.msdn.microsoft.com/windowsapps/Geolocation-2483de66">Geolocation示例</a>，<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465148.aspx">位置提醒程序开发指南</a>和MSDN上的文档名称空间<a href="http://msdn.microsoft.com/en-us/library/windows/apps/br225603.aspx">Windows.Devices.Geolocation</a>。</p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-03</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

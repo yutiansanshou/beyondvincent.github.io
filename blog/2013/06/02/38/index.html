@@ -1,0 +1,208 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[011]浅谈Windows 8 中的合约(contracts) - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[011]浅谈Windows 8 中的合约(contracts) 在Windows 8 Metro App开发中，你很快就会使用到合约功能，合约是Windows 8中至关重要的全新概念，作为Metro开发者，有必要掌握。目前关于合约的相关资料还比较少，在这里 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/02/38/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[011]浅谈Windows 8 中的合约(contracts)</h1>
+	<div class="entry-content" itemprop="articleBody"><p>在Windows 8 Metro App开发中，你很快就会使用到合约功能，合约是Windows 8中至关重要的全新概念，作为Metro开发者，有必要掌握。目前关于合约的相关资料还比较少，在这里，我主要参考了msdn提供的一些文档，写此贴的目的是希望大家对合约有一个初步的了解，同时也欢迎大家来交流。</p>
+
+<p>&#160;&#160;&#160;&#160;&#160; 在这篇文章中，我主要对合约进行一个概述。在下一篇文章中，我会通过编程的方式，向大家介绍如何使用合约。</p>
+
+<p>本文，我主要介绍如下内容：</p>
+
+<p>1、合约概述</p>
+
+<p>2、合约类型</p>
+
+<p>&#160;</p>
+
+<p><strong>1、合约概述</strong></p>
+
+<p>Metro 风格的应用程序使用合约来声明它们支持哪些与其他应用程序和 Windows 进行的交互。对于其中的一些合约，您可能早有耳闻，如“搜索”合约和“共享”合约。通过各种合约，应用程序不仅可以通过与系统协作来提高运行速度，而且在用户安装了多个实施合约的应用程序时，它们还可以彼此配合来保持良好的运行状态。</p>
+
+<p>合约：针对特定目的启动 Metro 风格的应用程序（包含上下文）</p>
+
+<p>&#160;&#160;&#160; Windows 8 合约发挥着纽带的作用，它可以将您的应用程序与其他 Metro 风格的应用程序以及系统 UI 相关联。例如，“文件打开选取器”合约允许用户将文件从一个应用程序导入到另一个。使用“搜索”合约，用户能够在系统中的任意位置搜索应用程序，并在多个应用程序之间快速传输查询。在这些案例以及许多其他合约定应用场景中，Windows 都需要具备可通过应用程序 UI 启动应用程序的功能，这样用户才能快速高效地完成特定任务。这正是我们的激活平台和 API 发挥其作用的平台。</p>
+
+<p>&#160;&#160;&#160; Windows 8已经定义了一些合约。最重要的合约有：搜索合约（search contract）、共享合约（share contract）、设置合约（settings contract）和App To App picker合约。这里也有更多的何用合约，在应用中使用这些合约时，一定要注意用户体验。</p>
+
+<p>下面我们就来分别看看Windows 8中的合约类型。</p>
+
+<p>&#160;</p>
+
+<p><strong>2、合约类型</strong></p>
+
+<p>&#160;&#160;&#160; 在介绍合约之前，先跟大家分享一个热键组合——Windows键+C键（或将鼠标移到屏幕的最右上角或右下角），就可以启动系统的Charm面板，Charm面板里面有搜索、共享、设定等相关功能，这些功能与下面介绍的合约有密切关系。</p>
+
+<p>接下来，我们对各种合约进行初步的认识：</p>
+
+<p>Search contract</p>
+
+<p>&#160;&#160;&#160; Search contract 可以用来建立针对 Metro Style Apps 中内容的搜索功能。我们可以轻松的使用Search contract ，让用户能直接通过 Windows 8 里的 Search Charm 对我们开发的 Metro Style Apps 的内容里的字符串或是文字进行查找。</p>
+
+<p>&#160;&#160;&#160; 一旦我们的 App 实现了Search contract，当使用者打开 Windows 8 的 Search Charm 时，我们的 App 就会出现在右下方的 Apps 列表，使用者就可以直接在该接口点选我们的 App 的 Icon，针对我们的 App 中的数据内容进行s搜索，如此一来，我们也不用特别去多花心思去为我们的每一个 App 设计个自的搜索接口，一切都交给 Windows 8 的 Search Charm 就行了。</p>
+
+<p>&#160;&#160; 不过，通过Search contract 并不能针对 App 中特定文件的内容进行搜索，如果要实现特定文件内容的搜索的话，就得自己在 App 中写搜索的接口和相关逻辑开启 Windows 8 内置的 Search 面版热键为 Windows键 + Q键</p>
+
+<p>Share contract <br/>
+&#160;&#160;&#160; Share contract 比较特别的地方是，它有「来源端 App」及「目标端 App」。如果我们开发的 Metro Style Apps 里会有文档可以当作数据源给其他的 Metro Style Apps 使用，那么这个 App 就会是来源端 App；相反的，如果我们的 Metro Style Apps 允许接受其他 Metro Style Apps 的数据作为数据的输入来源的话，这个 App 就是目标端 App，可以借助Share Target contract 来操作让它可以透过 Share Charm 接受其他 App 的数据源的功能。通过 Share Contract，我们就能使用 Windows 8 的 Share Charm，让用户更轻松的进行数据间的分享及传递了。 <br/>
+开启 Windows 8 内置的 Share 面版的热键为 Windows 键 + H 键。 <br/>
+Settings contract <br/>
+&#160;&#160;&#160; 通过 Settings contract功能，我们可以让用户通过 Windows 8 的 Settings Charm 来针对我们开发的 Metro Style Apps 进行设定，如此一来，我们不用费心去特别设计一个设定专用的画面，其次，整个用户体验也和操作系统本身更为贴近。 <br/>
+开启 Windows 8 内置的 Settings 面版的热键为 Windows 键 + I 键。 <br/>
+Play To contract <br/>
+&#160;&#160;&#160; 通过 Play To contract，我们可以轻松的让用户在我们开发的 Metro Style Apps 中进行播放的影片、音乐或是相片等等媒体文件，以串流的方式，通过兼容于 DLNA 的装置进行播放。若操作系统侦测到有支持相关功能的其他装置，会自动将那些装置显示在 Devices Charm 里，而我们就可以通过 Play To 功能，将媒体以串流的传输方式传送过去。 <br/>
+开启 Windows 8 内置的 Devices 面版的热键为 Windows 键 + K 键。 <br/>
+App to App Picking contract <br/>
+&#160;&#160;&#160; 我们可以通过 App to App Picking contract，让我们的 App 开启文件系统、网络上或是其它在线服务中的文件，甚至使某个 App 具备能通过其他 App 进行浏览或是开启特定类型文件的能力；除此之外，使用者在开启特定类型文件时，也可以自行决定要使用哪一个 App 来开启。 <br/>
+更多的合约类型参考下面的链接： <br/>
+<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh464906.aspx"><u>App contracts and extensions (Metro style apps)</u></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-31</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

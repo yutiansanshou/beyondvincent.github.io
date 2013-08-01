@@ -1,0 +1,2016 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果 小引 在Windows 8的开始屏幕上全是一些方块，当我们用鼠标或者手去触摸时，会有不同的按下倾斜效果，移动的时候也会有放大+ &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/page/4/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/77/" itemprop="url">Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在Windows 8的开始屏幕上全是一些方块，当我们用鼠标或者手去触摸时，会有不同的按下倾斜效果，移动的时候也会有放大+半透明的效果。这效果非常的cool。那么这篇博文，我就在自定义一下Button，让其具有类似的效果（Tile内容更新的效果不在此范围，或许在以后的文章中我会写，此文只讨论按下、移动效果）。</p>
+
+<p>注：我在这里称这样的按钮为TileButton</p>
+
+<h3><a name="t4"></a>自定义TileButton的关键技术</h3>
+
+<p>A、继承自Button，这样会方便很多，只需要做极少部分的处理</p>
+
+<p>B、截获按下事件，首先分析按下位置，然后根据位置做不同的效果</p>
+
+<p>C、移动过程中，对按钮做放大和半透明处理，增加用户体验</p>
+
+<h3><a name="t5"></a>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_TileButton</p>
+
+<p>2、在项目工程上单击右键，选择添加->选择类->输入BV_TileButton，然后确定</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/117.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb15.jpg" width="682" height="415" /></a></p>
+
+<p>3、打开BV_TileButton.cs文件：</p>
+
+<p>里面的内容如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">/*
+* ==============================================================================
+* Filename: BV_TileButton.cs
+ * 
+* Description: 
+* TileButton实现了按下、拖动等效果，有点类似开始屏幕那些磁贴的按下、拖动效果、还支持缩放、旋转等。
+ * 还存在的问题：在边界按下时，进行拖动没有效果，暂时不知道如何处理
+ * 
+* Version: 1.0
+* Created: 2012/11/15 21:32:23
+*
+* Author: BeyondVincent(破船)
+* http://weibo.com/beyondvincent
+* qq:77973689
+* ==============================================================================
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+
+namespace BV_TileButton
+{
+    class BV_TileButton : Button
+    {
+        // 翻转效果
+        PlaneProjection projection;
+
+        // 移动、缩放、旋转等转换
+        CompositeTransform transform;
+
+        // 按下时，倾斜的角度
+        int angle = 10;
+
+        // 拖动多远时，开始移动空间
+        double dragoffx = 5;
+        double dragoffy = 5;
+
+        // 构造函数 做一些初始化工作
+        public BV_TileButton()
+        {
+            projection = new PlaneProjection();
+            Projection = projection;
+            transform = new CompositeTransform();
+            RenderTransform = transform;
+
+            ManipulationMode = ManipulationModes.Rotate | ManipulationModes.Scale | ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+        }
+
+        /*
+         * 按下时的事件处理，两个步骤
+         * 1、首先判断当前按下去的位置在控件的那个区域（控件共分为9个区域，详见PressPointLocation定义）
+         * 2、根据按下去的位置，对控件做不同的效果
+         */
+        protected override void OnPointerPressed(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            // 获得当前区域位置
+            PressPointLocation location = GetPointLocation(e.GetCurrentPoint(this).Position);
+
+
+            // 开始对控件做效果处理
+
+            
+            if (location == (PressPointLocation.Left | PressPointLocation.YCenter))
+            {// 左中
+                projection.RotationY = angle;
+                projection.CenterOfRotationX = 1;
+            }
+            else if (location == (PressPointLocation.Left | PressPointLocation.Top))
+            {// 左上
+                projection.RotationX = -angle;
+                projection.RotationY = angle;
+                projection.CenterOfRotationX = 1;
+                projection.CenterOfRotationY = 1;
+
+            }
+            else if (location == (PressPointLocation.Top | PressPointLocation.XCenter))
+            {// 上中
+                projection.RotationX = -angle * 2;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.Top))
+            {// 右上
+                projection.RotationY = projection.RotationX = -angle;
+                projection.CenterOfRotationX = 0;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.YCenter))
+            {// 右中
+                projection.RotationY = -angle;
+                projection.CenterOfRotationX = 0;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.Bottom))
+            {// 右下
+                projection.RotationX = angle;
+                projection.RotationY = -angle;
+
+                projection.CenterOfRotationX = 0;
+                projection.CenterOfRotationY = 0;
+            }
+            else if (location == (PressPointLocation.Bottom | PressPointLocation.XCenter))
+            {// 下中
+                projection.RotationX = angle * 2;
+
+                projection.CenterOfRotationY = 0;
+            }
+            else if (location == (PressPointLocation.Left | PressPointLocation.Bottom))
+            {// 左下
+                projection.RotationY = projection.RotationX = angle;
+
+                projection.CenterOfRotationX = 1;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.XCenter | PressPointLocation.YCenter))
+            {// 正中
+                CompositeTransform transform = RenderTransform as CompositeTransform;
+
+                transform.CenterX = ActualWidth/2;
+                transform.CenterY = ActualHeight/2;
+                transform.ScaleX = 0.9;
+                transform.ScaleY = 0.9;
+            }
+        }
+
+        /*
+         * 按下放开时的事件处理
+         * 主要是做一些还原处理（旋转角度归零、缩放还原、透明度设置等）
+         */
+        protected override void OnPointerReleased(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            projection.RotationX = 0;
+            projection.RotationY = 0;
+
+            CompositeTransform transform = RenderTransform as CompositeTransform;
+
+            transform.CenterX = ActualWidth / 2;
+            transform.CenterY = ActualHeight / 2;
+            transform.ScaleX = 1;
+            transform.ScaleY = 1;
+
+            Opacity = 1;
+
+            dragoffx = 0;
+            dragoffy = 0;
+        }
+
+        /*
+         * 有移动等操作时的事件处理
+         * 主要包括移动、放大、透明等
+         */
+        protected override void OnManipulationDelta(ManipulationDeltaRoutedEventArgs e)
+        {
+            dragoffx += e.Delta.Translation.X;
+            dragoffy += e.Delta.Translation.Y;
+
+            if (-10 &lt;= dragoffx &amp;&amp; dragoffx &lt;= 10 &amp;&amp; -10 &lt;= dragoffy &amp;&amp; dragoffy &lt;= 10)
+                return;
+
+            transform.CenterX = ActualWidth / 2;
+            transform.CenterY = ActualHeight / 2;
+            transform.ScaleX = 1.1;
+            transform.ScaleY = 1.1;
+
+            Opacity = 0.5;
+
+            projection.RotationX = 0;
+            projection.RotationY = 0;
+
+            transform.TranslateX += e.Delta.Translation.X;
+            transform.TranslateY += e.Delta.Translation.Y;
+
+            transform.ScaleX *= e.Delta.Scale;
+            transform.ScaleY *= e.Delta.Scale;
+
+            transform.Rotation += e.Delta.Rotation;
+
+            base.OnManipulationDelta(e);
+        }
+
+        /*
+         * 获取控件所在的区域算法
+         */
+        PressPointLocation GetPointLocation(Point point)
+        {
+            PressPointLocation location = PressPointLocation.None;
+
+            double tempwidth = ActualWidth / 3;
+            if (point.X &lt; tempwidth)
+            {
+                location |= PressPointLocation.Left;
+            }
+            else if (point.X &gt; tempwidth * 2)
+            {
+                location |= PressPointLocation.Right;
+            }
+            else
+            {
+                location |= PressPointLocation.XCenter;
+            }
+
+            double tempheight = ActualHeight / 3;
+            if (point.Y &lt; tempheight)
+            {
+                location |= PressPointLocation.Top;
+            }
+            else if (point.Y &gt; tempheight * 2)
+            {
+                location |= PressPointLocation.Bottom;
+            }
+            else
+            {
+                location |= PressPointLocation.YCenter;
+            }
+            Debug.WriteLine(location.ToString());
+            return location;
+        }
+    }
+
+    public enum PressPointLocation
+    {
+        None = 0,
+        Left = 1,
+        Top = 2,
+        Right = 4,
+        Bottom = 8,
+        XCenter = 16,
+        YCenter = 32
+    }
+
+    /*
+         * 获取指定控件的Rect
+         */
+    public static class BV_ToolAPI
+    {
+        public static Rect GetElementRect(this FrameworkElement element)
+        {
+            GeneralTransform buttonTransform = element.TransformToVisual(null);
+            Point point = buttonTransform.TransformPoint(new Point());
+            return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
+        }
+    }
+}</pre>
+
+
+<p>代码有详细注释，在此不过多讲解。</p>
+
+<p>4、在MainPage.xaml文件中，添加如下代码：</p>
+
+<p>注意：其中3行3列的girid控件是为了演示效果，为控件划分不同的区域。在实际开发中，不需要。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" mc:ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="using:BV_TileButton" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="BV_TileButton.MainPage"&gt;
+
+    &lt;grid background="Green"&gt;
+        &lt;local:bv_tilebutton width="310" verticalalignment="Center" height="150" horizontalalignment="Center"&gt;
+            &lt;local:bv_tilebutton.content&gt;
+                &lt;grid margin="0 0 0 0"&gt;
+                   
+                    &lt;img margin="-15,-9,-16,-10" source="Assets/widelogo.png" /&gt;
+                    &lt;img margin="-19,94,234,-6" source="Assets/logo.png" /&gt;
+                    &lt;textblock margin="244,90,0,0" foreground="Red" fontsize="30" text="5"&gt;&lt;/textblock&gt;
+                    &lt;textblock margin="7,20,10,72" foreground="Magenta" fontsize="25" text="读书的女孩子，很好噢" fontfamily="宋体"&gt;&lt;/textblock&gt;
+                    &lt;grid margin="-15,-9,-16,-10" visibility="Visible"&gt;
+                        &lt;grid.columndefinitions&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                        &lt;/grid.columndefinitions&gt;
+                        &lt;grid.rowdefinitions&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                        &lt;/grid.rowdefinitions&gt;
+                        &lt;border grid.row="0" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="0" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="0" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                    &lt;/grid&gt;
+                &lt;/grid&gt;
+            &lt;/local:bv_tilebutton.content&gt;
+        &lt;/local:bv_tilebutton&gt;
+    &lt;/grid&gt;
+&lt;/page&gt;</pre>
+
+
+<p>5、运行效果展示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/213.jpg"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb12.jpg" width="402" height="232" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/39.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb9.jpg" width="390" height="220" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.jpg" width="424" height="247" /></a> </p></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/TileButton" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/76/" itemprop="url">Windows Store App开发[047]自定义Popup</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在<a href="http://beyondvincent.com/2013/06/06/windows-store-app%e5%bc%80%e5%8f%91044%e8%87%aa%e5%ae%9a%e4%b9%89messagedialog/"><u>上一篇</u></a>文章中，我利用Popup和UserControl自定义了MessageDialog。那么这篇文章我接着自定义Popup。这次的效果是在画面内弹出一个对话框，对话框会以不同的方式弹出。当点击对话框以外的位置时，对话框会自动消失。</p>
+
+<h3><a name="t4"></a><a name="t4"></a><a name="t4"></a>自定义Popup的关键技术点</h3>
+
+<p>利用UserControl控件，在里面添加Popup，然后对外界暴露一个是否显示对话框的接口。</p>
+
+<p>准备好Popup是用到的图片资源，如下两个图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/116.jpg"><img title="1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb14.jpg" width="204" height="201" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/213.png"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb14.png" width="244" height="164" /></a></p>
+
+<p>&#160;</p>
+
+<h3>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_CustomPopup</p>
+
+<p>2、在项目工程上单击右键，选择添加->新建项->选择用户控件->输入名称BV_CustomPopup.xaml，然后确定</p>
+
+<p>3、在BV_CustomPopup.xaml中输入如下内容：</p>
+
+<p>&lt;UserControl</p>
+
+<p>&#160;&#160;&#160; x:Class=&ldquo;BV_WindowsRuntimeComponent.UI.BV_CustomPopup&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml/presentation">http://schemas.microsoft.com/winfx/2006/xaml/presentation</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:x=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml">http://schemas.microsoft.com/winfx/2006/xaml</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:local=&ldquo;using:BV_WindowsRuntimeComponent.UI&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:d=&ldquo;<a href="http://schemas.microsoft.com/expression/blend/2008">http://schemas.microsoft.com/expression/blend/2008</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:mc=&ldquo;<a href="http://schemas.openxmlformats.org/markup-compatibility/2006">http://schemas.openxmlformats.org/markup-compatibility/2006</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; mc:Ignorable=&ldquo;d&rdquo; Height=&ldquo;200&rdquo; Width=&ldquo;300&rdquo;></p>
+
+<p>&#160;&#160;&#160; <Popup x:Name="popup" IsLightDismissEnabled="True" ></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Popup.ChildTransitions></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TransitionCollection></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<PaneThemeTransition Edge="Bottom" />&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<AddDeleteThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ContentThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EntranceThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EdgeUIThemeTransition Edge="Bottom"/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ReorderThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<RepositionThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </TransitionCollection></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Popup.ChildTransitions></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Grid Width="300" Height="200" ></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Grid.Background></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ImageBrush ImageSource="../picture/PopupBackground.png"></ImageBrush></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Grid.Background></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Image HorizontalAlignment="Left" Height="57" Margin="220,116,0,0" VerticalAlignment="Top" Width="59" Source="ms-appx:///BV_WindowsRuntimeComponent/picture/1.jpg"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TextBlock FontSize="30"&#160; HorizontalAlignment="Center" Height="47" Margin="38,64,0,0" TextWrapping="Wrap" Text="世界破船最大" VerticalAlignment="Top" Width="180"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; </Grid></p>
+
+<p>&#160;&#160;&#160; </Popup></p>
+
+<p></UserControl></p>
+
+<p>大家注意，上面代码中，我们可以给Popup添加如下一些动画效果：</p>
+
+<p><PaneThemeTransition Edge="Bottom" /></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <AddDeleteThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ContentThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EntranceThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EdgeUIThemeTransition Edge="Bottom"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ReorderThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <RepositionThemeTransition/></p>
+
+<p>4、在BV_CustomPopup.xaml.cs文件中，添加如下代码：</p>
+
+<p>using System;</p>
+
+<p>using System.Collections.Generic;</p>
+
+<p>using System.IO;</p>
+
+<p>using System.Linq;</p>
+
+<p>using Windows.Foundation;</p>
+
+<p>using Windows.Foundation.Collections;</p>
+
+<p>using Windows.UI.Xaml;</p>
+
+<p>using Windows.UI.Xaml.Controls;</p>
+
+<p>using Windows.UI.Xaml.Controls.Primitives;</p>
+
+<p>using Windows.UI.Xaml.Data;</p>
+
+<p>using Windows.UI.Xaml.Input;</p>
+
+<p>using Windows.UI.Xaml.Media;</p>
+
+<p>using Windows.UI.Xaml.Navigation;</p>
+
+<p>// The User Control item template is documented at <a href="http://go.microsoft.com/fwlink/?LinkId=234236">http://go.microsoft.com/fwlink/?LinkId=234236</a></p>
+
+<p>namespace BV_WindowsRuntimeComponent.UI</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; public sealed partial class BV_CustomPopup : UserControl</p>
+
+<p>&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public BV_CustomPopup()</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; this.InitializeComponent();</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public bool IsOpen</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; get { return popup.IsOpen; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; set { popup.IsOpen = value; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
+
+<p>&#160;&#160;&#160; }</p>
+
+<p>}</p>
+
+<p>5、在MainPage.xaml.cs文件中，添加如下代码：</p>
+
+<p>private void btn1_Copy2_Click(object sender, RoutedEventArgs e)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; BV_WindowsRuntimeComponent.UI.BV_CustomPopup popup = new BV_WindowsRuntimeComponent.UI.BV_CustomPopup();</p>
+
+<p>&#160;&#160;&#160; grid.Children.Add(popup);</p>
+
+<p>&#160;&#160;&#160; popup.IsOpen = true;</p>
+
+<p>}</p>
+
+<p>6、运行效果如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/38.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb8.jpg" width="534" height="414" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/CustomPopup" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/75/" itemprop="url">Windows Store App开发[046]调用自己的异步函数</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>注1：本文译自Programming Windows, 6th Edition Charpter 7 Calling Your Own Async Methods</p>
+
+<p>&#160;&#160;&#160; 假设你用类似下面的这个方法进行隔离存贮中文件保存的逻辑：</p>
+
+<p>async void SaveFile(string text)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; FileSavePicker picker = new FileSavePicker();</p>
+
+<p>&#160;&#160;&#160; picker.DefaultFileExtension = &ldquo;.txt&rdquo;;</p>
+
+<p>&#160;&#160;&#160; picker.FileTypeChoices.Add(&ldquo;Text&rdquo;, new List<string> { &ldquo;.txt&rdquo; });</p>
+
+<p>&#160;&#160;&#160; StorageFile storageFile = await picker.PickSaveFileAsync();</p>
+
+<p>&#160;&#160;&#160; if (storageFile == null)</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; return;</p>
+
+<p>&#160;&#160;&#160; await FileIO.WriteTextAsync(storageFile, txtbox.Text);</p>
+
+<p>}</p>
+
+<p>这个方法必须标记为async，因为它有await关键字。然后你可以在OnSaveAsAppBarButtonClick函数中这样调用：</p>
+
+<p>void OnSaveAsAppBarButtonClick(object sender, RoutedEventArgs args)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; SaveFile(txtbox.Text);</p>
+
+<p>}</p>
+
+<p>OnSaveAsAppBarButtonClick调用SaveFile发生什么呢：SaveFile开始执行，直到第一个await后的PickSaveFileAsync被调用，在这里，SaveFile函数终止并将控制权返回给OnSaveAsAppBarButtonClick函数。当PickSaveFileAsync结果准备好了，SaveFile剩余的代码继续被执行。</p>
+
+<p>&#160;&#160;&#160; 在这种特殊情况下，是正确的。然而，如果如果你想要OnSaveAsAppBarButtonClick方法等待SaveFile的执行，必须包含await关键字，并用async标识OnSaveAsAppBarButtonClick方法：</p>
+
+<p>async void OnSaveAsAppBarButtonClick(object sender, RoutedEventArgs args)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; await SaveFile(txtbox.Text);</p>
+
+<p>}</p>
+
+<p>但是，当你这样做的话，SaveFile必须要改变一下。它不能再返回void。你可以有许多种方法修改SaveFile，但是可能最简单方法就是将返回类型修改为Task：</p>
+
+<p>async Task SaveFile(string text)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; &#8230;</p>
+
+<p>}</p>
+
+<p>&#160; 在这里，你可能想将方法的名字改为SaveFileAsync，标识这是一个异步方法，可以被等待。即使在SaveFileAsync方法中没有写明运行在别的线程里，但是调用SaveFileAsync的异步方法会在另外的线程中处理。</p>
+
+<p>下面的OnOpenAppBarButtonClick与ReadFileAsync方法又有点不同。你可能希望ReadFileAsync方法返回文件中的文本内容，所以返回类型不是Task，而是Task<string>:</p>
+
+<p>async Task<string> ReadFileAsync()</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; FileOpenPicker picker = new FileOpenPicker();</p>
+
+<p>&#160;&#160;&#160; picker.FileTypeFilter.Add(&ldquo;.txt&rdquo;);</p>
+
+<p>&#160;&#160;&#160; StorageFile storageFile = await picker.PickSingleFileAsync();</p>
+
+<p>&#160;&#160;&#160; if (storageFile == null)</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; return null;</p>
+
+<p>&#160;&#160;&#160; return await FileIO.ReadTextAsync(storageFile);</p>
+
+<p>}</p>
+
+<p>然后可以像如下调用ReadFileAsync：</p>
+
+<p>async void OnOpenAppBarButtonClick(object sender, RoutedEventArgs args)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; string text = await ReadFileAsync();</p>
+
+<p>&#160;&#160;&#160; if (text != null)</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; txtbox.Text = text;</p>
+
+<p>}</p>
+
+<p>认识到这些所有的代码都在用户界面线程执行很重要。你不用担心UI对象的访问。FileIO的两个方法是在别的线程中运行的，由于ReadFileAsync方法调用了其它的异步方法，所以它也是异步的。方法中的其它代码则在UI线程运行。</p>
+
+<p>如果你自己写的代码需要很长的处理时间，而你不希望在UI线程中处理，替代传统的技术（创建并执行线程）是考虑使用与Windows Runtime一样的基于任务的方法。你可以将要执行的代码以函数的方式传递给静态方法Task.Run。如下示例：</p>
+
+<p>Task<double> BigJobAsync(int arg1, int arg2)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; return Task.Run<double>(() =></p>
+
+<p>&#160;&#160;&#160; { double val = 0;</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; // &#8230; lengthy code</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; return val;</p>
+
+<p>&#160;&#160;&#160; });</p>
+
+<p>}</p>
+
+<p>在匿名方法中的所执行的内容都是在另外一个线程中进行的。这也会引起一个问题：它不能访问UI对象。然后，你可以按照下面的代码来访问这个方法：</p>
+
+<p>double value = await BigJobAsync(22, 33);</p>
+
+<p>如果，BigJobAsync中的匿名方法包含了await操作，那么需要将匿名方法标记为async：</p>
+
+<p>Task<double> BigJobAsync(int arg1, int arg2)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; return Task.Run<double>(async () =></p>
+
+<p>&#160;&#160;&#160; { double val = 0;</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; // &#8230; lengthy code</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; return val;</p>
+
+<p>&#160;&#160;&#160; });</p>
+
+<p>}</p>
+
+<p>在后面的章节中，我会详细介绍异步处理。</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/74/" itemprop="url">Windows Store App开发[045]Await和Async</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>注1：本文译自Programming Windows, 6th Edition Charpter 7 Await and Async</p>
+
+<p>&#160;&#160;&#160; 注2：本文内容是关于Await和Async的一个简介，关于详细内容，我会在后续文章中进行介绍</p>
+
+<p>&#160;&#160;&#160; 注3：通过本文的阅读，你可以知道如何在Windows 8中进行简单的异步调用，以及一些注意事项。</p>
+
+<p>&#160;&#160;&#160; C# 5.0的关键字await允许我们对异步的操作就如同正常方法的调用一样。SimplePad2程序除了在应用程序栏中的按钮处理打开和保存外，跟SimplePad1一样。下面是Save按钮的Click事件处理代码：</p>
+
+<p>工程：SimplePad2 | 文件：MainPage.xaml.cs(节选)</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void OnSaveAsAppBarButtonClick(object sender, RoutedEventArgs args)
+{
+    FileSavePicker picker = new FileSavePicker();
+    picker.DefaultFileExtension = &quot;.txt&quot;;
+    picker.FileTypeChoices.Add(&quot;Text&quot;, new List&lt;string&gt; { &quot;.txt&quot; });
+
+    // Asynchronous call!
+    StorageFile storageFile = await picker.PickSaveFileAsync();
+
+    if (storageFile == null)
+        return;
+
+    // Asynchronous call!
+    await FileIO.WriteTextAsync(storageFile, txtbox.Text);
+}&lt;/string&gt;</pre>
+
+
+<p>注意两个await前面的注释。PickSaveFileAsync实际上是返回一个IAsyncOperation，一般你需要给它设置一个完成处理的函数，然后在这个完成处理回调中调用GetResults以获取StorageFile对象。await操作看似绕过了所有复杂的东西，而是直接简单的返回 StorageFile。这究竟是怎么回事呢？</p>
+
+<p>&#160;&#160;&#160; 这看起来很神奇，但是许多杂乱的实现细节已经隐藏起来了。C#编译器生成回调(callback)，并且调用GetResults。但是await操作同样将该方法转入一个状态机。（But what the await operator also does is turn the method in which it’s used into a state machine.）OnSaveAsAppBarButtonClick方法开始执行很正常，直到PickSaveFileAsync被调用以及await第一次出现。</p>
+
+<p>&#160;&#160;&#160; 虽然名为await，但是await并不等待操作完成。相反，Click处理函数在这里退出了。控制权回到Windows。其它的代码，可以在程序用户界面线程继续执行，同时也可以对进行文件选取(file-picker)。当文件选取器消失了，即用户对文件选取的结果已经出来了，那么UI线程就准备执行一些代码——继续执行Click处理函数：赋值storageFile变量，然后继续往下执行，直到下一个await操作。就像这样，可以一直往下执行许多await操作（如果有），直到函数完成。</p>
+
+<p>&#160;&#160;&#160; 在Click处理函数中的最后一行代码调用了静态方法FileIO.WriteTextAsync。严格来将，这里的await操作符可以不需要，因为在这里并不需要这个方法的执行结果。File.WriteTextAsync方法不返回任何内容，并且在Click处理函数中，并没有其它代码依赖于此的。因此在这种ing狂下，await操作符可以移除，程序代码如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">FileIO.WriteTextAsync(storageFile, txtbox.Text);  </pre>
+
+
+<p>你会收到一条来自编译器的警告消息，但是这没问题。await操作符只在下面两种情况比较关键：你需要从异步方法中获得一个返回值，再者就是在程序逻辑上继续执行之前，异步方法必须完成则需要使用await操作符。</p>
+
+<p>&#160;&#160;&#160; 下面是Open按钮的Click事件处理函数，使用了静态方法FileIO.ReadTextAsync：</p>
+
+<p>工程：SimplePad2 | 文件：MainPage.xaml.cs(节选)</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void OnOpenAppBarButtonClick(object sender, RoutedEventArgs args)
+{
+    FileOpenPicker picker = new FileOpenPicker();
+    picker.FileTypeFilter.Add(&quot;.txt&quot;);
+
+    // Asynchronous call!
+    StorageFile storageFile = await picker.PickSingleFileAsync();
+
+    if (storageFile == null)
+        return;
+
+    // Asynchronous call!
+    txtbox.Text = await FileIO.ReadTextAsync(storageFile);
+}</pre>
+
+
+<p>在await出现之前，C#中异步操作的调用总是有悖于语言的必要组织结构。await操作符带来了必要组织结构，并将异步调用转换为一系列普通方法的调用。而且在Click处理函数中的所有事情都是在UI线程中进行的，因此必用考虑用户界面对象的访问。虽然await的使用，更加简单，但是你要记住的是如果一个函数中出现了await，那么实际上在后端是将该函数分片处理的。</p>
+
+<p>&#160;&#160;&#160; 这里有一些await的使用条款。await不能出现在异常处理的catch或finally语句中。而它可以出现在try语句中，这也是捕获异步函数发生错误的方法。同关键字，样还提供了取消操作，以及一些异步函数的进度通知。这些具体细节我将在后面的异步操作章节中介绍。</p>
+
+<p>&#160;&#160;&#160; 如果函数中出现了await操作符，那么该函数必须用async标识，但是async并不做其它更多的事情。在早期的C#版本中，await并不是一个关键字，所以程序员可以将这个单词(await)用作变量名或属性名，或者其它任何内容。C#5.0中添加了await关键字将改变这一现状，不过使用async标识来限制函数中的await。async不会改变函数的签名——上面的方法任然是Click的处理方法。但是async(以及await)不能被用在入口点，如Main或者类的构造函数中。</p>
+
+<p>&#160;&#160;&#160; 如果你需要在初始化一个FrameworkElement子类时调用异步方法，那么请在Loaded事件处理函数中进行，并将处理函数标记为async：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public MainPage()
+{
+    this.InitializeComponent();
+    ...
+    Loaded += OnLoaded;
+}
+async void OnLoaded(object sender, RoutedEventArgs arg)
+{
+    ...
+}</pre>
+
+
+<p>或者，如果你喜欢的话，可以按照下面的代码，将Loaded处理函数定义为一个异步函数：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public MainPage()
+{
+    this.InitializeComponent();
+
+    ...
+
+    Loaded += async (sender, args) =&gt;
+    {
+        ...
+    };
+}</pre>
+
+
+<p>看到参数列表前的async了吗？</p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/SimplePad2" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/73/" itemprop="url">Windows Store App开发[044]自定义MessageDialog</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>上一篇文章介绍了Windows Store app中自带的MessageDialog的使用。那个控件使用起来是很方便，但有时候我们想要自己风格的MessageDialog，这时候自带的就满足不了我们的需求。那么在这篇文章中，我将介绍如何自定义MessageDialog。</p>
+
+<h3><a name="t4"></a><a name="t4"></a>自定义MessageDialog关键技术点</h3>
+
+<p>1、自定义控件，在该控件可以写我们想要的对话框。</p>
+
+<p>2、使用Popup来显示自定义控件</p>
+
+<h3><a name="t5"></a>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_CustomizeMessageDialog</p>
+
+<p>2、在项目工程上单击右键，选择添加->新建项->选择用户控件->输入名称MyUserControl，然后确定</p>
+
+<p>如下图</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/115.jpg"><img title="1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb13.jpg" width="561" height="384" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/212.jpg"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.jpg" width="682" height="415" /></a></p>
+
+<p>在MyUserControl.xaml文件中，设计自己的对话框</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/37.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb7.jpg" width="682" height="546" /></a></p>
+
+<p>在MyUserControl.xaml.cs中，添加如下代码.当点击按钮时，把popup隐藏</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/48.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb8.jpg" width="579" height="532" /></a></p>
+
+<p>这样就完成了自定义控件</p>
+
+<p>2、在Main.xaml布局中添加一个Popup控件，先别显示出来，即IsLightDismissEnabled= “False”，等需要的时候在显示出来。这里注册了一个Closed事件，用于处理当对话框关闭时，的事件逻辑。</p>
+
+<p><Popup Name="popup" Closed="popup\_Closed\_1" IsLightDismissEnabled="False"> <br/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160; </Popup></p>
+
+<p>在Main.xaml.cs文件中，添加如下代码，将自定义控件通过Popup显示出来。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/56.jpg"><img title="5" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb6.jpg" width="634" height="399" /></a>
+&#160;</p>
+
+<p>至此，代码完毕</p>
+
+<h3><a name="t6"></a>运行效果</h3>
+
+<p>show按钮</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/65.jpg"><img title="6" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb5.jpg" width="608" height="457" /></a> </p></p>
+
+<p>&#160;</p>
+
+<p>点击show按钮，对话框显示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/75.jpg"><img title="7" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb5.jpg" width="632" height="436" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/CustomizeMessageDialog" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/72/" itemprop="url">Windows Store App开发[043]MessageDialog的使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows Store app中自带的对话框MessageDialog，实际上非常简单。在下一篇文章中，我将介绍如何使用Popup自定义对话框。</p>
+
+<h3><a name="t4"></a>MessageDialog介绍</h3>
+
+<p>MessaDialog类代表了一个对话框，该对话框中最多可以有3个Command。默认情况下有一个关闭命令。当MessageDialog显示出来时，会对屏幕进行灰度处理，并阻止其它操作。</p>
+
+<p>关于对话框的详细资料，可以来参考msdn上的介绍，如下链接：</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog</u></a></p>
+
+<h3><a name="t5"></a>默认MessageDialog的使用</h3>
+
+<p>如下代码，直接构造，然后设置Title即可，然后调用ShowAsync进行显示。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_1(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(\\&quot;你好，这里是Windows Store app学习之旅！\\&quot;);
+    dialog.Title = \\&quot;温馨提示\\&quot;;
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/115.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb13.png" width="682" height="389" /></a></p>
+
+<h3>带Command的MessageDialog</h3>
+
+<p>MessageDialog中有一个Command列表，如下定义：</p>
+
+<p>IList<IUICommand> Commands</p>
+
+<p>我们可以往这个列表中添加自己的Command，注意，最多只能是3个。如下代码：</p>
+
+<p>在下面代码中，Command对应的操作是通过lambda表达式进行的，当然，这里也可以把操作内容单独封装在一个函数里面，此处略。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_2(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, command =&gt;
+    {
+        //在这里做相关操作
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, command =&gt;
+    {
+        //在这里做相关操作
+    }));
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/212.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb13.png" width="682" height="386" /></a></p>
+
+<h3>获取MessageDialog的返回值</h3>
+
+<p>我们可以获取MessageDialog的返回值，以根据返回内容，做相应的操作，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_3(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/314.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb14.png" width="682" height="386" /></a></p>
+
+<h3>设置MessageDialog中Command的index</h3>
+
+<p>MessageDialog中的index有：</p>
+
+<p>CancelCommandIndex：当按Esc键时，会触发该index对应的Command</p>
+
+<p>DefaultCommandIndex：当按Enter键时，会触发该index对应的Command</p>
+
+<p>如下代码：</p>
+
+<p>当按Enter键时，访问DevDiv主页</p>
+
+<p>当按Esc键时，做关闭命令</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_4(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+
+    dialog.DefaultCommandIndex = 0;
+    dialog.CancelCommandIndex = 2;
+
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        //OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 1)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<h3>程序主画面运行效果</h3>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/411.png"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb11.png" width="682" height="386" /></a></p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/MessageDialog" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/71/" itemprop="url">Windows Store App开发[042]修改ProgressBar的颜色</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>如果你想要修改ProgressBar的foreground 颜色，用下面的方法是不行的：</h3>
+
+<p><ProgressBar IsIndeterminate="True" Foreground="Aquamarine" /></p>
+
+<p>要修改ProgressBar的颜色，需要override默认主题资源字典中的如下值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;resourcedictionary.themedictionaries&gt;
+    &lt;resourcedictionary x:key="Default"&gt;
+        &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
+    &lt;/resourcedictionary&gt;
+&lt;/resourcedictionary.themedictionaries&gt;</pre>
+
+
+<p>可以将这个override添加到App.xaml中，或者创建一个新的资源字典，并合并到App.xaml中：</p>
+
+<p>A、直接添加到App.xaml中，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;application.resources&gt;
+    &lt;resourcedictionary&gt;
+        &lt;resourcedictionary.themedictionaries&gt;
+            &lt;resourcedictionary x:key="Default"&gt;
+                &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
+            &lt;/resourcedictionary&gt;
+        &lt;/resourcedictionary.themedictionaries&gt;
+        &lt;resourcedictionary.mergeddictionaries&gt;
+
+            &lt;!-- 
+                Styles that define common aspects of the platform look and feel
+                Required by Visual Studio project and item templates
+                --&gt;
+            &lt;resourcedictionary source="Common/StandardStyles.xaml"&gt;
+        &lt;/resourcedictionary&gt;&lt;/resourcedictionary.mergeddictionaries&gt;
+
+    &lt;/resourcedictionary&gt;
+&lt;/application.resources&gt;</pre>
+
+
+<p>B、创建了一个CustomStyles.xaml，并将该文件合并到App.xaml中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="Sample.App"&gt;
+    
+    &lt;application.resources&gt;
+        &lt;resourcedictionary&gt;
+            &lt;resourcedictionary.mergeddictionaries&gt;
+                &lt;resourcedictionary source="Common/StandardStyles.xaml"&gt;
+                &lt;resourcedictionary source="Common/CustomStyles.xaml"&gt;
+            &lt;/resourcedictionary&gt;&lt;/resourcedictionary&gt;&lt;/resourcedictionary.mergeddictionaries&gt;
+        &lt;/resourcedictionary&gt;
+    &lt;/application.resources&gt;
+&lt;/application&gt;</pre>
+
+
+<p>CustomStyles.xaml:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;resourcedictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
+    &lt;!-- Global Overrides --&gt;
+    &lt;resourcedictionary.themedictionaries&gt;
+        &lt;resourcedictionary x:key="Default"&gt;
+            &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
+        &lt;/resourcedictionary&gt;
+    &lt;/resourcedictionary.themedictionaries&gt;
+&lt;/resourcedictionary&gt;</pre>
+
+
+<p>运行效果如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/56.png"><img title="5" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb6.png" width="565" height="221" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/ChangeProgressBar" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/70/" itemprop="url">Windows Store App开发[041]AppBar总结</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>1、小引</h3>
+
+<p>在之前的博文中，我已经给大家简单的介绍了AppBar的使用，参考下面的两篇文章</p>
+
+<h4><a href="http://beyondvincent.com/2013/05/31/windows-store-app%e5%bc%80%e5%8f%91003%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e6%a0%8fappbar%e7%9a%84%e4%bd%bf%e7%94%a8/">Windows Store App开发[003]应用程序栏(AppBar)的使用</a></h4>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91005%e5%af%bc%e8%88%aa%e6%a0%8fappbar%e7%9a%84%e4%bd%bf%e7%94%a8/">Windows Store App开发[005]导航栏(AppBar)的使用</a></h4>
+
+<p>在这篇文章中，我对AppBar使用进行一个小结，设涉及到两个方面：AppBar的基本使用和AppBar的扩展</p>
+
+<h3>2、AppBar的基本使用</h3>
+
+<p>在Windows Phone与Windows store app之间，有好多相似的内容，比如AppBar就是其一。在Windows store app中，使用并扩展了appbar，让其变得更加的灵活和可扩展性。在Windows Phone中，appbar定位在屏幕的底部，并且最多只能包含4个按钮和有限的menu item数目，而在windows 8中，有两类appbar，分别在屏幕的顶部和底部。从开发者的角度来考虑，appbar相当于屏幕的扩展，一般情况下是隐藏起来的，当用户从底部或者顶部swipe的时候，会显示出来。顶部的appbar主要用于页面的导航，而底部则是一些命令。</p>
+
+<p>Windows 8的Page公开了两个属性：TopAppBar和BottomAppBar。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.topappbar&gt;
+    &lt;appbar&gt;
+        &lt;!-- 在这里放置top appbar --&gt;
+    &lt;/appbar&gt;
+&lt;/page.topappbar&gt;
+&lt;page.bottomappbar&gt;
+    &lt;appbar&gt;
+        &lt;!-- 在这里放置 bottom appbar --&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;</pre>
+
+
+<p>AppBar的继承关系如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/114.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb12.png" width="287" height="462" /></a></p>
+
+<p>AppBar有两个重要的属性，你可以进行处理：IsOpen和IsSticky。其中IsOpen用来处理appbar的，允许以编程的方式打开或关闭appbar。而IsSticky不是很好理解，它的目的是获取或设置appbar是否完全关闭。</p>
+
+<p>在appbar里面，可以放置任何你需要的内容,并且appbar的size也没有任何限制。例如下面的例子是在appbar中放置一组button按钮，并且使用StackPanel水平放置这些button：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+        &lt;appbar background="Orange"&gt;
+            &lt;stackpanel orientation="Horizontal"&gt;
+                &lt;button skipbackappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button playappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button isenabled="False" pauseappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button skipaheadappbarbuttonstyle}?&gt;
+   &lt;/button&gt;&lt;/stackpanel&gt;&lt;/appbar&gt;&lt;/page.bottomappbar&gt; </pre>
+
+
+<p>运行效果如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/211.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb12.png" width="682" height="100" /></a></p>
+
+<p>可以将button分为2组，放置在不同的地方，以表示不同的意思。如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+    &lt;appbar background="Orange" name="appBar"&gt;
+        &lt;grid&gt;
+            &lt;grid.columndefinitions&gt;
+                &lt;columndefinition width="*" /&gt;
+                &lt;columndefinition width="*" /&gt;
+            &lt;/grid.columndefinitions&gt;
+            &lt;stackpanel orientation="Horizontal" grid.column="0" horizontalalignment="Left"&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+                &lt;button isenabled="False"&gt;
+                &lt;button&gt;
+            &lt;/stackpanel&gt;
+            &lt;stackpanel orientation="Horizontal" grid.column="1" horizontalalignment="Right"&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+            &lt;/stackpanel&gt;
+        &lt;/grid&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;
+&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>效果如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/313.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb13.png" width="682" height="84" /></a></p>
+
+<h3>3、AppBar的扩展</h3>
+
+<p>有时候，为了减小appbar的size，我们可以使用Context menu与某个button相关联，来表示更多的行为。当需要使用context menu时，可以通过编码实现。有点小麻烦就是你需要知道menu所放置的位置——与相关按钮的位置。下面我们来看看如何做到：</p>
+
+<p>在xaml中如下定义appbar</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+    &lt;appbar background="Orange" name="appBar"&gt;
+        &lt;stackpanel orientation="Horizontal" grid.column="0" horizontalalignment="Left"&gt;
+            &lt;button click="MoreButton_Click"&gt;
+        &lt;/stackpanel&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;
+&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>实现MoreButton_Click方法</p>
+
+<p>当MoreButton_Click事件触发后，就创建一个PopupMenu并将其放在被单击的button上面</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void MoreButton_Click(object sender, RoutedEventArgs e)
+{
+    FrameworkElement element = (FrameworkElement)sender;
+
+    PopupMenu menu = new PopupMenu();
+    menu.Commands.Add(new UICommand(&quot;姓名&quot;, FilterButton_Click, &quot;name&quot;));
+    menu.Commands.Add(new UICommand(&quot;日期&quot;, FilterButton_Click, &quot;date&quot;));
+
+    var clicked = await menu.ShowForSelectionAsync(element.GetElementRect(0, -10), Placement.Above);
+}</pre>
+
+
+<p>上面的代码注意看：我使用了一个GetElementRect方法。这个方法是我对FrameworkEment进行扩展的一个方法，用来返回FrameworkEment的rect。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public static class Positioning
+{
+    public static Rect GetElementRect(this FrameworkElement element, int hOffset, int vOffset)
+    {
+        Rect rect = Positioning.GetElementRect(element);
+        rect.Y += vOffset;
+        rect.X += hOffset;
+        return rect;
+    }
+
+    public static Rect GetElementRect(this FrameworkElement element)
+    {
+        GeneralTransform buttonTransform = element.TransformToVisual(null);
+        Point point = buttonTransform.TransformPoint(new Point());
+        return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
+    }
+}</pre>
+
+
+<p>再看看FilterButton_Click的实现：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void FilterButton_Click(IUICommand command)
+{
+    appBar.IsOpen = false;
+}</pre>
+
+
+<p>代码写完，我们来看看运行效果,点击More按钮时，会弹出姓名和日期，当点击姓名时，appbar会隐藏。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/410.png"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb10.png" width="365" height="162" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/AppBar2" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/69/" itemprop="url">Windows Store App开发[040]使用默认程序打开文件</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接，这时候我们就需要用到Windows.System.Launcher。今天我就通过代码示例，来介绍如何打开文件或者链接。</p>
+
+<p>本文参考了：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-SG/library/hh779671"></a><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher"><u>http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher</u></a></p>
+
+<h3><a name="t4"></a>打开文件</h3>
+
+<h4><a name="t5"></a>通过默认程序打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DefaultLaunch(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\[DevDiv翻译]Metro Revealed_ Building Windows 8 apps with XAML and C#中文翻译合集_2012_09_03.pdf&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Launch the retrieved file
+        var success = await Windows.System.Launcher.LaunchFileAsync(file);
+
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.png" width="682" height="403" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.png" width="682" height="386" /></a></p>
+
+<h4>通过程序列表打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DisplayApplicationPicker(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\7.jpg&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the option to show the picker
+        var options = new Windows.System.LauncherOptions();
+        options.DisplayApplicationPicker = true;
+
+        // Launch the retrieved file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.png" width="682" height="527" /></a></p>
+
+<h4>去商店搜索对应的程序来打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void RecommendedApp(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\1.BeyondVincent&quot;;
+
+    // Get the image file from the package&#039;s image directory
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the recommended app
+        var options = new Windows.System.LauncherOptions();
+
+        // 设置为应用商店中要推荐的应用的程序包系列名称
+        options.PreferredApplicationPackageFamilyName = &quot;BeyondVincent格式文件程序&quot;;
+
+        // 设置为该应用的名称
+        options.PreferredApplicationDisplayName = &quot;BV_Launcher&quot;;
+
+
+        // Launch the retrieved file pass in the recommended app 
+        // in case the user has no apps installed to handle the file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.png" width="682" height="354" /></a></p>
+
+<h3>打开链接</h3>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void OpenDevDiv(object sender, RoutedEventArgs e)
+{
+    // The URI to launch
+    string uriToLaunch = @&quot;http://www.DevDiv.com&quot;;
+
+    // Create a Uri object from a URI string 
+    var uri = new Uri(uriToLaunch);
+
+    // Launch the URI
+    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+
+    if (success)
+    {
+        // URI launched
+    }
+    else
+    {
+        // URI launch failed
+    }
+}</pre>
+
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Launcher" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/68/" itemprop="url">Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在之前的博文中，我曾对Toast通知进行了介绍，如下链接，建议不清楚Toast通知的可以去看看</p>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91009%e9%80%9a%e7%9f%a5%e6%a6%82%e8%bf%b0toasttile%e5%92%8cbadge/"><u>Windows Store App开发[009]通知概述(Toast,Tile和Badge)</u></a></h4>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91010%e9%80%9a%e7%9f%a5%e4%bd%bf%e7%94%a8toasttile%e5%92%8cbadge/"><u>Windows Store App开发[010]通知使用(Toast,Tile和Badge)</u></a></h4>
+
+<p>在这篇文章中，我将对Toast通知进行深入的介绍：如何让Toast通知携带参数，并且在程序中如何获取Toast通知的携带的参数。</p>
+
+<p>这个主题在有些时候非常有用：当用户点击Toast通知时，根据Toast通知的内容，直接使程序打开某个特定的画面。</p>
+
+<h3><a name="t4"></a>Toast通知的数据走向步骤</h3>
+
+<p>我们先来看看Toast通知的数据走向步骤</p>
+
+<p>1、程序或者web service创建并发送一个包含launch字符串的toast通知</p>
+
+<p>2、toast通知到达</p>
+
+<p>3、用户选择toast通知(单击或者触摸)</p>
+
+<p>4、OnLaunched事件被触发</p>
+
+<p>5、在程序的OnLaunched处理函数中读取launch字符串</p>
+
+<p>6、程序根据launch字符串做出响应的处理（打开指定画面、进行数据请求等）</p>
+
+<h3><a name="t5"></a>如何创建并发送一个带launch字符串的toast通知</h3>
+
+<p>看下面的代码：注意在这里为了创建toast的方便：使用了NotificationsExtensions，关于NotificationsExtensions的使用，参考下面的链接：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/hh969156.aspx"><u>使用 NotificationsExtensions 填充锁屏提醒、磁贴和 Toast 模板</u></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void sendToast(object sender, RoutedEventArgs e)
+{
+    IToastImageAndText01 toastContent = ToastContentFactory.CreateToastImageAndText01();
+    toastContent.Launch = &quot;this is launch string test&quot;;
+    toastContent.TextBodyWrap.Text = &quot;破船，恭喜你，中500W！&quot;;
+    toastContent.Image.Src = &quot;/Assets/98_avatar_big.jpg&quot;;
+
+    ToastNotificationManager.CreateToastNotifier().Show(toastContent.CreateNotification());
+}</pre>
+
+
+<h3>在程序中获得launch字符串</h3>
+
+<p>当用户点击或者触摸Toast通知，都会启动相应的程序。并触发OnLaunched事件。</p>
+
+<p>一定要注意：如果在toast通知中没有包含launch字符串，那么OnLaunched是不会被触发的。</p>
+
+<p>下面的代码演示了如何在程序中获得launch字符串</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">protected override void OnLaunched(LaunchActivatedEventArgs args)
+{
+    string launchString = args.Arguments
+    ....
+}</pre>
+
+
+<h3>运行效果</h3>
+
+<p>1、发送toast通知</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/114.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb12.jpg" width="404" height="150" /></a></p>
+
+<p>2、触发toast通知</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb10.jpg" width="471" height="277" /></a></p>
+
+<p>3、获取launch字符串</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/36.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb6.jpg" width="682" height="436" /></a></p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Toast" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+</div>
+<nav id="pagenavi">
+    
+        <a href="/blog/page/3/" class="prev">Prev</a>
+    
+    
+        <a href="/blog/page/5/" class="next">Next</a>
+    
+    <div class="center"><a href="/blog/archives">所有文章</a></div>
+</nav></div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

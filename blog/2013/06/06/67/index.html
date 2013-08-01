@@ -1,0 +1,292 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[55]修改锁屏背景图片 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[55]修改锁屏背景图片 小引：有时候用户有这样的需求：在程序中看到某个图片时，希望将该图片直接设置为锁屏背景图片，而不用将图片保存下来，然后在设置锁屏背景图片。通过本文，你可以学习到如何获取锁屏背景图片，已经如何将本地图片或网络中的图片设置为锁屏背景图片 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/67/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[55]修改锁屏背景图片</h1>
+	<div class="entry-content" itemprop="articleBody"><p>小引：有时候用户有这样的需求：在程序中看到某个图片时，希望将该图片直接设置为锁屏背景图片，而不用将图片保存下来，然后在设置锁屏背景图片。通过本文，你可以学习到如何获取锁屏背景图片，已经如何将本地图片或网络中的图片设置为锁屏背景图片。</p>
+
+<h2><span style="color: #339966;">简介</span></h2>
+
+<p>在Windows 8中，我们可以通过编程的方式来修改锁屏背景图片。微软在“Windows.System.UserProfile”名称空间里面提供了与锁屏交互的APIs——LockScreen类，该类的定义如下图所示： <a href="http://beyondvincent.com/wp-content/uploads/2013/05/LockScreen.png"><img class="alignnone size-full wp-image-710" alt="LockScreen" src="http://beyondvincent.com/wp-content/uploads/2013/05/LockScreen.png" width="627" height="283" /></a> &nbsp; 有4个方法，分别如下：
+1.  OriginalImageFile：实际上这是一个属性。表示锁屏背景图片的Uri。如果是以流的方式设置锁屏背景，该值为null。
+2.  GetImageStream：以流的方式获取锁屏背景图片
+3.  SetImageFileAsync：从文件中设置锁屏背景图片
+4.  SetImageStreamAsync：从流中设置锁屏背景图片</p>
+
+<p>这4个方法都是static的，也就是类方法，可以直接访问，不用实例化LockScreen。 提醒：如果是普通用户的话可以通过：Charms Bar->设置->更改电脑设置->个性化设置->选择锁屏背景图片即可。</p>
+
+<h2><span style="color: #339966;">LockScreen使用介绍</span></h2>
+
+<p>下面我就通过一个示例ChangeLockScreen，介绍如何获取和设置锁屏背景图片。该示例演示了介绍中提到的4个方法如何使用。 具体步骤如下所示：
+1.  新建工程。打开Visual Studio 2012 For Windows 8，新建一个空白工程，并命名为ChangeLockScreen，如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/new.png"><img class="alignnone size-full wp-image-711" alt="new" src="http://beyondvincent.com/wp-content/uploads/2013/05/new.png" width="902" height="527" /></a> &nbsp; <ol start="2">
+  <li></p>
+
+<pre><code>&lt;span style="line-height: 13px;"&gt; UI设计。打开MainPage.xaml文件，并利用如下代码替换Grid：&lt;/span&gt;
+</code></pre>
+
+<p>  </li>
+</ol></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529230837.png"><img class="alignnone size-full wp-image-713" alt="QQ截图20130529230837" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529230837.png" width="555" height="417" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529230906.png"><img class="alignnone size-full wp-image-714" alt="QQ截图20130529230906" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529230906.png" width="546" height="322" /></a> &nbsp; 在上面的代码中，定义了4个Button，1个Image和1个TextBlock。4个Button分别用来获取和设置锁屏背景图片，Image用来显示锁屏背景图片，TextBlock显示背景图片的Uri。界面效果如下图所示： <a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529231136.png"><img class="alignnone size-full wp-image-715" alt="QQ截图20130529231136" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529231136.png" width="352" height="286" /></a> &nbsp; <ol start="3">
+  <li></p>
+
+<pre><code>&lt;span style="line-height: 13px;"&gt;behind code实现。打开MainPage.xaml.cs文件，分别实现4个Button对应的Click事件。具体实现如下所示：&lt;/span&gt;
+</code></pre>
+
+<p>  </li>
+</ol></p>
+
+<ul>
+<li>获取锁屏背景图片的Uri，通过<span style="font-family: Consolas, Monaco, monospace; font-size: 12px; line-height: 18px;">OriginalImageFile属性获取Uri，并将该Uri显示到界面中。</span></li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void getUri_LockScreen_Click(object sender, RoutedEventArgs e)
+{
+    Uri uri = LockScreen.OriginalImageFile;
+    if (uri != null)
+    {
+        screenImageUri.Text = uri.ToString();
+    }
+}</pre>
+
+
+<ul>
+<li>流的方式获取锁屏图片，并显示到界面中。</li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void getStream_LockScreen_Click(object sender, RoutedEventArgs e)
+{
+    IRandomAccessStream randomAccessStream = LockScreen.GetImageStream();
+    BitmapImage image = new BitmapImage();
+    image.SetSource(randomAccessStream);
+    imageview.Source = image;
+}</pre>
+
+
+<ul>
+<li>以文件的方式设置锁屏背景图片。如下代码所示，通过文件打开选取器，获取一个图片，然后将其设置为锁屏背景图片。</li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void setFile_LockScreen_Click(object sender, RoutedEventArgs e)
+{
+    var imagePicker = new FileOpenPicker
+    {
+        ViewMode = PickerViewMode.Thumbnail,
+        SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+        FileTypeFilter = { ".jpg", ".jpeg", ".png", ".bmp" },
+    };
+
+    var MyImage = await imagePicker.PickSingleFileAsync();
+    if (MyImage != null)
+    {
+        await LockScreen.SetImageFileAsync(MyImage);
+    }
+}</pre>
+
+
+<ul>
+<li>以流的方式设置锁屏背景图片。首先从网络中下载一个图片，然后将该图片设置为锁屏背景图片。</li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void setStream_LockScreen_Click(object sender, RoutedEventArgs e)
+{
+    // 从网络中下载图片
+    HttpClient httpClient = new HttpClient();
+    httpClient.BaseAddress = new Uri("http://img1.gtimg.com/6/665/66549/6654963_1200x1000_0.jpg");
+    HttpRequestMessage request = new HttpRequestMessage();
+    HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+    InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
+    DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
+    writer.WriteBytes(await response.Content.ReadAsByteArrayAsync());
+    await writer.StoreAsync();
+
+    // 将下载的图片显示到界面中
+    BitmapImage image = new BitmapImage();
+    image.SetSource(randomAccessStream);
+    imageview.Source = image; 
+
+    // 将下载的图片设置为锁屏背景图片
+    await LockScreen.SetImageStreamAsync(randomAccessStream);
+}</pre>
+
+
+
+
+<ol start="4">
+  <li>
+     运行效果。现在运行程序，可以看到如下界面效果：
+  </li>
+</ol>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529232539.png"><img class="alignnone size-full wp-image-716" alt="QQ截图20130529232539" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529232539.png" width="977" height="466" /></a></p>
+
+<p>此时如果切换到锁屏界面，会看到已经设置好的锁屏背景图片。如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE201305292333371.png"><img class="alignnone size-full wp-image-723" alt="QQ截图20130529233337" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图201305292333371.png" width="901" height="560" /></a></p>
+
+<h2><strong><span style="color: #339966;">小结</span></strong></h2>
+
+<p>从上面对LockScreen的使用来看，在Window Store App开发中，对锁屏界面的获取与设置是比较方便的。</p>
+
+<p>本文的代码工程下载地址：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/ChangeLockScreen" target="_blank"><img class="alignnone size-full wp-image-718" alt="" src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" width="150" height="150" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.c-sharpcorner.com/UploadFile/7e39ca/change-windows-8-lock-screen-programmatically-in-windows-sto/" target="_blank"><span style="color: #339966; text-decoration: underline;">Change Windows 8 Lock Screen Programmatically in Windows Store Apps</span></a></span></span></p>
+
+<p>&nbsp;</p>
+
+<div style="text-align: left;">
+  <span style="color: #339966;">本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-29</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

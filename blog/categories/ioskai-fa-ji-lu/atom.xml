@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS开发记录 | 破船之家]]></title>
+  <link href="http://BeyondVincent.github.io/blog/categories/ioskai-fa-ji-lu/atom.xml" rel="self"/>
+  <link href="http://BeyondVincent.github.io/"/>
+  <updated>2013-08-01T16:03:43+08:00</updated>
+  <id>http://BeyondVincent.github.io/</id>
+  <author>
+    <name><![CDATA[破船(BeyondVincent)]]></name>
+    <email><![CDATA[beyondvincent@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Could not change executable permissions on the application]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/05/30/26/"/>
+    <updated>2013-05-30T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/05/30/26</id>
+    <content type="html"><![CDATA[<h2><strong><span style="color: #339966;">Bug描述</span></strong></h2>
+
+<p>利用Xcode编译调试程序的时候提示：Could not change executable permissions on the application。如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130530-1.png"><img class="alignnone size-full wp-image-727" alt="QQ20130530-1" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130530-1.png" width="420" height="153" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">Bug再现步骤</span></strong></h2>
+
+<p>首先通过企业级部署，在一台iOS设备上安装一个程序，然后再通过Xcode对同一个程序（相同的Bundle Identifier）在相同的设备上进行编译调试，就会遇到这个问题。</p>
+
+<h2><strong><span style="color: #339966;">Bug原因分析</span></strong></h2>
+
+<p>可能是由于企业级部署的时候用的是发布证书，而Xcode调试的时候用的是开发者证书，在遇到上面的情况时，Xcode无法正确识别文件，因此出现问题。</p>
+
+<h2><strong><span style="color: #339966;">Bug修复</span></strong></h2>
+
+<p>删除设备上通过企业级部署安装的程序，在用Xcode进行编译调试即可正确启动程序。</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<ul>
+<li><span style="text-decoration: underline;"><a href="http://stackoverflow.com/questions/12547706/could-not-change-executable-permissions-on-the-application" target="_blank"><span style="color: #339966; text-decoration: underline;">Could not change executable permissions on the application</span></a></span></li>
+<li><span style="text-decoration: underline;"><a href="http://www.cocoachina.com/bbs/read.php?tid=116477" target="_blank"><span style="color: #339966; text-decoration: underline;">could not change executable permissions怎么办</span></a></span></li>
+</ul>
+
+
+<div style="text-align: left;">
+  <span style="color: #339966;">本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-30</time></span>
+</div>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Xcode升级之后编译错误提示：PCH file built from a different branch ((clang-425.0.27)) than the compiler ((clang-425.0.28))]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/23/14/"/>
+    <updated>2013-04-23T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/23/14</id>
+    <content type="html"><![CDATA[<h2><span style="color: #339966;"><strong>Bug描述：</strong></span></h2>
+
+<p>PCH file built from a different branch ((clang-425.0.27)) than the compiler ((clang-425.0.28))。如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130423-1.png"><img class="alignnone size-full wp-image-458" alt="QQ20130423-1" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130423-1.png" width="732" height="112" /></a></p>
+
+<h2><strong><span style="color: #339966;">Bug再现步骤：</span></strong></h2>
+
+<ol>
+<li>将Xcode升级到（Version 4.6.2 (4H1003)）版本。</li>
+<li>再次编译之前的项目</li>
+<li>在错误窗口就会看到上图中的错误提示</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">Bug修复：</span></strong></h2>
+
+<p>在Xcode中选择Product > Clean：清除一下Xcode之前生成的临时数据即可。</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p itemprop="name">
+  <span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/16027725/xcode-version-4-6-2-4h1003-compiler-error" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode version 4.6.2 (4H1003) compiler error</span></a></span></span>
+</p>
+
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/#releasenotes/DeveloperTools/RN-Xcode/index.html" target="_blank" rel="nofollow"><span style="color: #339966; text-decoration: underline;">XCode 4.6.2 Release Notes</span></a></span></span></p>
+
+<p><span style="color: #999999;">Known Issues</span><section></p>
+
+<p><span style="color: #999999;"><a name="//apple_ref/doc/uid/TP40001051-SW240"></a>Building</span></p>
+*   <span style="color: #999999;">When building a product previously built with Xcode 4.6.1 or earlier, the build fails with an error similar to this one:</span></p>
+
+<pre><code>&lt;section&gt; &lt;div&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;pre class="wp-code-highlight prettyprint linenums:1"&gt;&amp;lt;span style="color: #999999;"&amp;gt;PCH file built from a different branch ((clang-425.0.27)) than the compiler ((clang-425.0.28))&amp;lt;/span&amp;gt;&lt;/pre&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;&lt;/section&gt; 
+
+&lt;span style="color: #999999;"&gt;To address this issue, choose Product &gt; Clean before building your product. 13663167&lt;/span&gt;&lt;/li&gt; &lt;/ul&gt; &lt;/section&gt; 
+&amp;nbsp;
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[在Xcode4.6中如何将xib for iPhone的文件转换为for iPad]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/18/10/"/>
+    <updated>2013-04-18T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/18/10</id>
+    <content type="html"><![CDATA[<h2><strong><span style="color: #339966;">在Xcode4.6中将xib for iPhone的文件转换为for iPad</span></strong></h2>
+
+<p>有时候你已经开发了iPhone项目，但是没有针对iPad开发，现在需要iPhone程序也能iPad上很好的运行，那么直接将之前的项目拿过来进行改造，是最好的。本文的内容对你或许有用。<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2.png"><img class="alignright size-medium wp-image-372" alt="QQ20130418-2" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2-300x162.png" width="300" height="162" /></a></p>
+
+<h2><strong><span style="color: #339966;">我的操作步骤如下：</span></strong></h2>
+
+<ol>
+<li>在Xcode中选中要转换的xib文件，然后选择File->Duplicate，复制一份xib文件。</li>
+<li>在新复制出来的这个xib文件上，右键单击->Open As->Source Code。</li>
+<li>将打开源码文件中&#8221;com.apple.InterfaceBuilder3.CocoaTouch.XIB&#8221;替换为&#8221;com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB&#8221;。</li>
+<li>将所有的&#8221;IBCocoaTouchFramework&#8221;替换为&#8221;IBIPadFramework&#8221;</li>
+<li>保存并关闭Source Code，重新将这个xib文件用IB打开（选中xib文件，右键单击->Open As->Interface Builder &#8211; iOS）</li>
+<li>选中针对这个xib文件的main viewcontroller或者UIView，然后打开attributes inspector(在xcode的右边)，在Size里面选择“iPad Full Screen”。就可以根据自己的设计来调整UI界面了。</li>
+</ol>
+
+
+<p>如果需要将iPad的xib文件转换为iPhone的，那么反过来操作3和4步骤中的内容也同样可以。</p>
+
+<p>关于xib文件的转换，如果你有任何问题或者更好的办法，请留言告诉我！:]</p>
+
+<p>本文参考了stackoverflow上面的一个QA：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5347198/xcode-4-xib-create-ipad-version" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode 4 .xib Create iPad Version</span></a></span></span></p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">破船撰写于@2013.04.18</span>
+</p>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Xcode 4.6.1遇到链接错误‘ File is universal (2 slices) but does not contain a(n) armv7s slice’]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/11/7/"/>
+    <updated>2013-04-11T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/11/7</id>
+    <content type="html"><![CDATA[<p>今天在新系统OS X10.8.3安装了最新版本的Xcode(Version 4.6.1 (4H512))，尝试把之前的iOS项目运行到iPad 2 上面，Xcode在编译的时候遇到了如下问题：</p>
+
+<p><span style="color: #999999;"><em>(null): File is universal (2 slices) but does not contain a(n) armv7s slice: /Users/beyondvincent/Desktop/IOS/iPhone/iPhone/YYJK/libCorePlot-CocoaTouch.a for architecture armv7s</em></span></p>
+
+<p><span style="color: #800080;"><em>Linker command failed with exit code 1(use -v to see invocation)</em></span></p>
+
+<p>如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-1.png"><img class="alignnone size-medium wp-image-219" alt="QQ20130408-1" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-1-300x25.png" width="300" height="25" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>这是什么原因引起的呢？</p>
+
+<p>实际上是因为Xcode4.6.1增加了对armv7s架构的支持，此时如果工程中使用到的库没有编译为armv7s，而工程又是设置了支持armv7s，那么就会得到上面的错误。在我编译的工程中，我使用Core Plot库就是没有编译为armv7s，所以引起了上面的错误。</p>
+
+<p>修改这个问题有两种方法</p>
+
+<ol>
+<li><span style="line-height: 13px;">把Core Plot库编译为armv7s架构即可。</span></li>
+<li>把valid architectures设置项中的armv7s移除即可。如下步骤：</li>
+</ol>
+
+
+<p>在工程导航面板中选中工程</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-3.png"><img class="alignnone size-full wp-image-220" alt="QQ20130408-3" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-3.png" width="261" height="40" /></a></p>
+
+<p>在target列表中，选中对于的target</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-4.png"><img class="alignnone size-full wp-image-221" alt="QQ20130408-4" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-4.png" width="111" height="48" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>选中build settings选项</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-5.png"><img class="alignnone size-full wp-image-222" alt="QQ20130408-5" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-5.png" width="297" height="64" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>找到Valid Architectures设置，现在显示的是<strong>armv7 armv7s</strong></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-6.png"><img class="alignnone size-medium wp-image-223" alt="QQ20130408-6" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-6-300x39.png" width="300" height="39" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>在armv7 armv7s上双击，选中armv7s，选择－按钮</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-7.png"><img class="alignnone size-medium wp-image-224" alt="QQ20130408-7" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-7-300x157.png" width="300" height="157" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>现在valid architectures设置项看起来如下所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-8.png"><img class="alignnone size-medium wp-image-225" alt="QQ20130408-8" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-8-300x46.png" width="300" height="46" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>再次编译并运行程序，可以看到iPad 2上已经能够运行了。:]</p>
+]]></content>
+  </entry>
+  
+</feed>

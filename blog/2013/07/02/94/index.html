@@ -1,0 +1,166 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>让UIViewController中的viewDidLoad和viewWillAppear各司其责 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="让UIViewController中的viewDidLoad和viewWillAppear各司其责 注：本文由破船译自：thejoeconwayblog 你是否有过这样的感觉：有时某些代码是放到viewDidLoad还是viewWillAppear:中，这很容易让人混淆。在Stack &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/07/02/94/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">让UIViewController中的viewDidLoad和viewWillAppear各司其责</h1>
+	<div class="entry-content" itemprop="articleBody"><p>注：本文由破船译自：<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://thejoeconwayblog.wordpress.com/2013/06/25/uiviewcontroller-viewdidload-vs-viewwillappear/" target="_blank"><span style="color: #339966; text-decoration: underline;">thejoeconwayblog</span></a></span></strong></span></p>
+
+<p>你是否有过这样的感觉：有时某些代码是放到<strong><span style="color: #339966;">viewDidLoad</span></strong>还是<span style="color: #339966;"><strong>viewWillAppear</strong></span>:中，这很容易让人混淆。在Stack Overflow上经常会遇到这样的问题：<strong><span style="color: #339966;">viewDidLoad和viewWillAppear到底哪个方法先被调用？</span></strong>实际上，理解这些方法的去向，以及为什么会这样并不重要，重要的是需要知道这些方法的作用，以及它们是如何与程序协调分工的。</p>
+
+<p>我们知道，一般iOS应用程序都是由多个view controller构成的，每个view controller代表一个屏幕的信息。而当程序与用户交互时，根据程序中不同的状态，显示不同的view controller。例如，如果用户需要注册一个账号时，屏幕上应该显示出允许用户输入个人信息的界面，当用户完成注册之后，应该能够看到相应的主页面。</p>
+
+<p><strong><span style="color: #339966;">viewWillAppear:方法的作用是与屏幕中改变的内容进行交互。</span></strong>告诉view controller将对应的界面内容显示到屏幕最前端：确保view controller中所有的文本控件显示出最新的信息、必要的数据是可访问的、并对适当的通知(notification)进行观察等。当viewWillAppear:被触发时，说明对应的view controller变为&#8221;active&#8221;状态。</p>
+
+<p><strong><span style="color: #339966;">那么viewDidLoad方法存在的理由又是什么呢？</span></strong>唯一的原因——有时无法或者不能有效的在XIB文件中对用户界面进行100%的配置。例如，有时希望给view设置一个特殊的属性(该属性在XIB中不可用)、有时在给一个button设置背景图片之前，希望能先对该图片进行修改、再比如，在使用auto layout时，有时你可能会意识到在XIB中进行相关操作还不如用代码来写auto layout相关的代码。</p>
+
+<p>我们不能根据viewDidLoad方法的调用情况，来推断出应用程序的状态相关信息。viewDidLoad方法实际上就是简单的一个文件加载后处理机制。换句话说，作为开发者，应该<span style="color: #339966;"><strong>把viewDidLoad方法当做XIB文件的一个有效扩展</strong></span>，而不要理解为应用程序运转流程中的一部分。</p>
+
+<p>这到底是什么意思呢？——我们应该在viewWillAppear:方法中对view中显示的内容进行变更，而不是在viewDidLoad中。view中的内容是程序实际运行时由controller传递给view来显示的数据(模型对象)。</p>
+
+<p>下面我们来看一个示例：一个银行应用程序，可以显示用户当前的余额。当用户点击一个按钮时，可以在一个modal view controller中显示一个列表：该列表列出了用户附近的ATM机。在此，为了获得附近的ATM机列表信息，程序必须使用core location已经web service请求。在上面这种情况下，如果程序员把从服务器请求用户附近ATM列表的操作放到viewDidLoad中。此时，由于view controller只显示一次(viewDidLoad和viewWillAppear都只会被调用一次)，所以，从服务器请求用户附近ATM列表的操作，放到viewDidLoad与viewWillAppear中，对程序的效果都是一样的。</p>
+
+<p>但是这样做法是不好的。想一下，如果把这个ATM view controller移到tab bar controller中，会是什么情况。现在，ATM view controller——在viewDidLoad中获取ATM信息的代码只会获取一次。所以，如果你周二在亚特兰大打开该程序查找ATM，然后查询一下余额。接着周三你去了纽约，再次打开该程序时，只能看到亚特兰大的ATM信息——view已经加载过了，所以不会再调用viewDidLoad方法。<br/>
+<strong><span style="color: #ff0000;">注意：在这里应该有这样的前提条件：程序没有退出。</span></strong></p>
+
+<p>实际上，在这种情况下，写代码时犯下了一个最大的错误：<strong><span style="color: #339966;">the easiest way is the easiest way</span></strong>。应用程序是会发生变化的，而用户界面也会发生改变。刚开始使用简单的方法，可能会在以后引发各种问题。</p>
+
+<div style="text-align: left;">
+  <span style="color: #808080;">本文由<strong><span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></strong>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-02</time></span>
+</div>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

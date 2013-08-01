@@ -1,0 +1,248 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>iOS7新特征汇总[02]新特征介绍2 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="iOS7新特征汇总[02]新特征介绍2 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[01]新特征介绍1）中，笔者介绍了在iOS7中用户界面的改变和多任务的增强。本文将继续介绍iOS7中的新特征：游戏、地图和AirDrop。 游戏 在iOS7中， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/12/85/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS7新特征汇总[02]新特征介绍2</h1>
+	<div class="entry-content" itemprop="articleBody"><p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>上一篇文章（<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB01%E6%96%B0%E7%89%B9%E5%BE%81%E4%BB%8B%E7%BB%8D/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[01]新特征介绍1</span></a></span></span></strong>）中，笔者介绍了在iOS7中用户界面的改变和多任务的增强。本文将继续介绍iOS7中的新特征：游戏、地图和AirDrop。</p>
+
+<h2><strong><span style="color: #339966;">游戏</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/251.jpg"><img class="alignnone size-full wp-image-1316" alt="25" src="http://beyondvincent.com/wp-content/uploads/2013/06/251.jpg" width="600" height="450" /></a></p>
+
+<p>在iOS7中，苹果加强了对游戏开发的支持。这主要体现在如下三个方面：</p>
+
+<ul>
+<li><span style="color: #339966; font-size: 1.17em;">Sprite Kit Framework</span></li>
+</ul>
+
+
+<p>Sprite Kit Framework (SpriteKit.framework)提供了一个优化了的硬件加速动画系统——用于创建2D和2.5D游戏。包括了游戏开发中许多重要的基本内容：图形渲染、动画系统、声音播放，并还有一个物理模拟引擎。通过Sprite Kit Framework可以让开发者把工作重点放在游戏内容的设计和交互上。</p>
+
+<p>Sprite Kit Framework中，内容是以场景（scenes）的形式组织的。一个场景可以包括：纹理对象、视频、基于路径的形状、图片滤镜以及其它有些特殊的效果。Sprite Kit以最有效的方式来决定这些对象在屏幕上的渲染。当需要在场景中对某个对象进行动画时，可以使用Sprite Kit来明确的指定一个动作，或者使用物理模拟引擎给某个对象定义一个物理行为（例如重力、吸附和排斥）。</p>
+
+<p>除了Sprite  Kit Framework，苹果还提供了Xcode工具来创建粒子发射效果和纹理集合。通过Xcode工具可以管理程序的assets，以及快速的更新Sprite Kit场景。</p>
+
+<p>更多关于如何使用Sprite Kit，读者可以参考Sprite Kit Programming Guide。苹果也提供了一个示例演示如何使用Sprite Kit：Explained Adventure(From <span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/prerelease/ios/samplecode/Adventure/Introduction/Intro.html#//apple_ref/doc/uid/DTS40013420" target="_blank"><span style="color: #339966; text-decoration: underline;">Apple</span></a></span></span>)。</p>
+
+<ul>
+<li><span style="color: #339966; font-size: 1.17em;">Game Controller Framework</span></li>
+</ul>
+
+
+<p>Game Controller Framework (GameController.framework)可以让你在程序中发现并对游戏控制器硬件进行配置。通过Game Controller Framework可以让iOS设备通过无线或者蓝牙进行连接。当控制器可用的时候，该Framework会通知你的程序。</p>
+
+<p>更多相关信息可以参考Game Controller Programming Guide。</p>
+
+<ul>
+<li><span style="color: #339966; font-size: 1.17em;">Game Center 改进</span></li>
+</ul>
+
+
+<p>在iOS7中，苹果对游戏中心（Game Center）做了如下改进：</p>
+
+<ol>
+<li>给玩家提供一个与其它玩家互动的机会，即使目前还没有轮到该玩家。通过该功能，可以实现玩家之间的聊天、交易等（即使没有轮到玩家）。</li>
+<li>每个程序的排行榜限制已经从原来的25变为100.通过GKLeaderboardSet对象，可以对你的排行榜进行组织，并把上限增加只500。</li>
+<li>在游戏中进行挑战（做任务）的时候，可以为这个挑战添加条件限制。例如，在驾驶游戏中，指定必须使用相同的车辆。</li>
+<li>为了防止作弊，增加了认证的支持，以及其它有些功能。</li>
+</ol>
+
+
+<p>更多关于如何使用新的Game Center功能，请参考Game Center Programming Guide 。</p>
+
+<p>关于Game Kit Framework，请参考Game Kit Framework。</p>
+
+<p><strong style="font-size: 1.5em;"><span style="color: #339966;">地图</span></strong></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/1_image-large.jpg"><img class="alignnone size-full wp-image-1315" alt="1_image-large" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_image-large.jpg" width="650" height="365" /></a></p>
+
+<p>基于地图信息，苹果对Map Kit framework (MapKit.framework)做了大量的改进，并新增了不少功能。使用地图来显示的位置信息现在可以利用3D地图了，可以通过编程的方式来控制地图的视角。Map Kit还做了其它一些重要的改变：</p>
+
+<ol>
+<li>图层（Overlay）可以被放置在地图中不同的层中，这样就可以将图层放置在相关数据的上面或者下面。</li>
+<li>可以使用<span style="color: #339966;">MKMapCamera</span>对象在地图中增加一个位置、倾斜和航向信息。摄像头信息可以给地图增加3D视图体验。</li>
+<li>通过<span style="color: #339966;">MKDirection</span>类可以从苹果那里请求获得方向相关的线路信息。通过获得的线路信息可以创建一个图层并显示到地图中。</li>
+<li><span style="color: #339966;">MKGeodesicPolyline</span>类可以参照地球的曲率，创建一个基于线条的图层。</li>
+<li>使用<span style="color: #339966;">MKMapSnapshotter</span>类可以捕捉基于地图的图片。</li>
+<li>目前可视化的图层是基于<span style="color: #339966;">MKOverlayRenderer</span>的，这取代了之前的图层视图，并提供了一个简单的渲染方法。</li>
+<li>可以使用<span style="color: #339966;">MKTileOverlay</span>和<span style="color: #339966;">MKTileOverlayRenderer</span>类来取代地图上已有的大头针（tile）。</li>
+</ol>
+
+
+<p>更多相关信息，请阅读Map Kit Framework Reference 。</p>
+
+<h2><strong><span style="color: #339966;">AirDrop</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/ios-7-air-drop.jpg"><img class="alignnone size-full wp-image-1318" alt="ios-7-air-drop" src="http://beyondvincent.com/wp-content/uploads/2013/06/ios-7-air-drop.jpg" width="621" height="565" /></a></p>
+
+<p>通过AirDrop，用户可以给附近的iOS设备分享图片、文档、URL以及其它有些数据。AirDrop支持内置到已有的<span style="color: #339966;">UIActivityViewController</span>中——这个类会根据分享的不同数据显示出不同的选项。苹果建议：如果你的程序中还没有使用这个类，请考虑将其添加到程序中。</p>
+
+<p>更多关于利用activity view controller来访分享数据的信息，请参考UIActivityViewController Class Reference。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
+
+<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
+
+<p>来自唐巧的一个微信公众账号：iosDevTips——基本每天都会有关于iOS开发的精彩内容分享。<br/>
+来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
+
+<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
+
+<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
+新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+微信公众账号：<strong>破船之家</strong><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-12</time>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

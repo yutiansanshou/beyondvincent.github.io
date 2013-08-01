@@ -1,0 +1,2013 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="May 31st, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[001]平台简介  谈到Windows 8开发，虽然开发者可以直接使用VS来编写代码，但是了解一下Windows 8开发平台是最好的，哪怕只做稍微了解， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/page/9/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/31/27/" itemprop="url">Windows Store App开发[001]平台简介</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;"> 谈到Windows 8开发，虽然开发者可以直接使用VS来编写代码，但是了解一下</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台是最好的，哪怕只做稍微了解，所谓知己知彼百战百胜嘛。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    这里我就首先稍微与大家分享一下我所了解的</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    同时，也欢迎各位大牛来拍砖。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">首先上一个图吧，相信看了图，你对</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8的开发会有所了解。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <a href="http://beyondvincent.com/wp-content/uploads/2013/05/111.png"><img class="alignnone size-full wp-image-685" alt="111" src="http://beyondvincent.com/wp-content/uploads/2013/05/111.png" width="614" height="441" /></a>
+</p>
+
+
+
+
+<p><p align="left">
+  <p align="left"></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;如你所看到的，在Windows 8中有两种基本的方法来创建应用程序，即&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Desktop Apps&lt;/span&gt;和&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Metro style apps&lt;/span&gt;。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    右边的桌面应用程序（Desktop Apps）与现在的情况一样，同样包含WinForms，ASP.NET，C++，WPF，Silverlight等应用程序，也就是说，除了.NET被升级到4.5了，桌面应用程序没有改变。在这里，我们的重点不是桌面应用程序。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    上图中，左边才是最大的变化，Metro style apps本质上是一种新型的应用程序，并且它的开发方法也是新的。HTML5/JavaScript是开发Metro app的一种方法，同时，开发者同样可以结合XAML/C#(或XAML/VB，&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C-C++&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;)来进行开发。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;   &lt;span style="color: #ff0000;"&gt; 注意：&lt;/span&gt;在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C#下面，添加了新的一层——WinRT（Windows Runtime library）。也就是说，在创建Metro app时，WinRT给开发者提供了Windows强大的功能，在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;WinRT之上，开发者可以选择C#，VB,C++或者JavaScript。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-30T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 30<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/30/26/" itemprop="url">Could Not Change Executable Permissions on the Application</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><strong><span style="color: #339966;">Bug描述</span></strong></h2>
+
+<p>利用Xcode编译调试程序的时候提示：Could not change executable permissions on the application。如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130530-1.png"><img class="alignnone size-full wp-image-727" alt="QQ20130530-1" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130530-1.png" width="420" height="153" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">Bug再现步骤</span></strong></h2>
+
+<p>首先通过企业级部署，在一台iOS设备上安装一个程序，然后再通过Xcode对同一个程序（相同的Bundle Identifier）在相同的设备上进行编译调试，就会遇到这个问题。</p>
+
+<h2><strong><span style="color: #339966;">Bug原因分析</span></strong></h2>
+
+<p>可能是由于企业级部署的时候用的是发布证书，而Xcode调试的时候用的是开发者证书，在遇到上面的情况时，Xcode无法正确识别文件，因此出现问题。</p>
+
+<h2><strong><span style="color: #339966;">Bug修复</span></strong></h2>
+
+<p>删除设备上通过企业级部署安装的程序，在用Xcode进行编译调试即可正确启动程序。</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<ul>
+<li><span style="text-decoration: underline;"><a href="http://stackoverflow.com/questions/12547706/could-not-change-executable-permissions-on-the-application" target="_blank"><span style="color: #339966; text-decoration: underline;">Could not change executable permissions on the application</span></a></span></li>
+<li><span style="text-decoration: underline;"><a href="http://www.cocoachina.com/bbs/read.php?tid=116477" target="_blank"><span style="color: #339966; text-decoration: underline;">could not change executable permissions怎么办</span></a></span></li>
+</ul>
+
+
+<div style="text-align: left;">
+  <span style="color: #339966;">本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-30</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-22T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 22<span>nd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/22/25/" itemprop="url">iOS设计速查表</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130522204855.png"><img class="alignnone size-full wp-image-658" alt="QQ截图20130522204855" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130522204855.png" width="1279" height="701" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>PDF文档下载地址（访问密码：af99）</p>
+
+<p><a href="http://yunpan.cn/Q5MBetKcSNm8A" target="_blank"><img class="alignnone size-full wp-image-563" alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a><br/>
+参考文档：</p>
+
+<p><span style="color: #339966;"><a href="http://taybenlor.com/2013/05/21/designing-for-ios.html" target="_blank"><span style="color: #339966;">Starters Guide to iOS Design</span></a></span></p>
+
+<p><span style="color: #339966;"><a href="http://ivomynttinen.com/blog/the-ios-design-cheat-sheet-volume-2/" target="_blank"><span style="color: #339966;">The iOS Design Cheat Sheet</span></a></span></p>
+
+<p>&nbsp;</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-17T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 17<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/17/24/" itemprop="url">在iOS中使用FlatUIKit</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-3.png"><img class="alignnone size-full wp-image-647" alt="QQ20130517-3" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-3.png" width="1021" height="334" /></a></h2>
+
+<h2><strong><span style="color: #339966;">简介</span></strong></h2>
+
+<p>FlatUIKit是iOS中具有扁平化风格的UI（Flat UI）组件。FlatUIKit的设计灵感来源于<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://designmodo.github.io/Flat-UI/" target="_blank"><span style="color: #339966; text-decoration: underline;">Flat UI</span></a></span></span>和<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://kylemillercreative.com/#item=grouper" target="_blank"><span style="color: #339966; text-decoration: underline;">Kyle Miller</span></a></span></span>。FlatUIKit中的组件是通过扩展(category)或继承iOS SDK中已有的UIKit组件来实现的，因此在我们的程序中使用FlatUIKit非常方便。</p>
+
+<h2><strong><span style="color: #339966;">安装</span></strong></h2>
+
+<p>可以通过Cocoapods安装FlatUIKit，简单的在Profile文件中添加：pod &#8216;FlatUIKit&#8217;就可以。</p>
+
+<p>关于Cocoapods的使用可以参考本文最后参考部分相关内容。</p>
+
+<p>如果你没有使用CocoaPods，也可以简单的将<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/Grouper/FlatUIKit/archive/master.zip" target="_blank"><span style="color: #339966; text-decoration: underline;">代码</span></a></span></span>下载到本地，并手动添加到你的工程中。</p>
+
+<p>注意：FlatUIKit需要CoreText框架以及iOS > 5.0.</p>
+
+<h2><span style="color: #339966;">FlatUIKit中提供的组件</span></h2>
+
+<h3><span style="color: #339966;">Buttons</span></h3>
+
+<p>FUIButton是UIButton的一个子类，它向外接提供了四个属性：buttonColor, shadowColor, cornerRadius, 和 shadowHeight。</p>
+
+<p>注意：如果如果你设置了其中一个属性的值，那么其它所有的属性你都需要进行设置。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myButton.buttonColor = [UIColor turquoiseColor];
+myButton.shadowColor = [UIColor greenSeaColor];
+myButton.shadowHeight = 3.0f;
+myButton.cornerRadius = 6.0f;
+myButton.titleLabel.font = [UIFont boldFlatFontOfSize:16];
+[myButton setTitleColor:[UIColor cloudsColor] forState:UIControlStateNormal];
+[myButton setTitleColor:[UIColor cloudsColor] forState:UIControlStateHighlighted];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966.gif"><img alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966.gif" width="127" height="66" /></a></p>
+
+<h3> <strong><span style="color: #339966;">Switchs</span></strong></h3>
+
+<p>FUISwitch并不是UISwitch的一个子类（UISwitch不容易继承），而是重新实现了一个与UISwitch类似的控件，提供了UISwitch具有的所有方法。另外还提供了on/off(UILable)和其它subview的访问。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">mySwitch.onColor = [UIColor turquoiseColor];
+mySwitch.offColor = [UIColor cloudsColor];
+mySwitch.onBackgroundColor = [UIColor midnightBlueColor];
+mySwitch.offBackgroundColor = [UIColor silverColor];
+mySwitch.offLabel.font = [UIFont boldFlatFontOfSize:14];
+mySwitch.onLabel.font = [UIFont boldFlatFontOfSize:14];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-641" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966.gif" width="113" height="53" /></a></p>
+
+<h3><span style="color: #339966;">Alert Views</span></h3>
+
+<p>跟FUISwitch一样，FUIAlertView对UIAlertView进行了重写，并提供了UIAlertView具有的所有方法（包括delegate方法，在FUIAlertViewDelegate协议中），FUIAlertView的定制要比UIAlertView更加灵活。FUIAlertView中的所有UILabels, UIViews, 和 FUIButtons 都可以定制.</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">FUIAlertView *alertView = [[FUIAlertView alloc] initWithTitle:@"Hello"
+                                                      message:@"This is an alert view"
+                                                     delegate:nil cancelButtonTitle:@"Dismiss"
+                                            otherButtonTitles:@"Do Something", nil];
+alertView.titleLabel.textColor = [UIColor cloudsColor];
+alertView.titleLabel.font = [UIFont boldFlatFontOfSize:16];
+alertView.messageLabel.textColor = [UIColor cloudsColor];
+alertView.messageLabel.font = [UIFont flatFontOfSize:14];
+alertView.backgroundOverlay.backgroundColor = [[UIColor cloudsColor] colorWithAlphaComponent:0.8];
+alertView.alertContainer.backgroundColor = [UIColor midnightBlueColor];
+alertView.defaultButtonColor = [UIColor cloudsColor];
+alertView.defaultButtonShadowColor = [UIColor asbestosColor];
+alertView.defaultButtonFont = [UIFont boldFlatFontOfSize:16];
+alertView.defaultButtonTitleColor = [UIColor asbestosColor];
+[alertView show];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-642" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966.gif" width="316" height="336" /></a></p>
+
+<h3><strong><span style="color: #339966;"> Sliders/Steppers/Progress Views</span></strong></h3>
+
+<p>为了提供扁平风格的UISlider， UIProgressView 和 UIStepper，这里简单的对UISlider/ProgressView/UIStepper进行了扩展，通过适当的颜色/圆角半径就能自动配置它们的外观。在已有的工程中不需要做任何改动就能使用这些组件。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[mySlider configureFlatSliderWithTrackColor:[UIColor silverColor]
+                              progressColor:[UIColor alizarinColor]
+                                 thumbColor:[UIColor pomegranateColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-643" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966.gif" width="296" height="44" /></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[myProgressView configureFlatProgressViewWithTrackColor:[UIColor silverColor]
+                              progressColor:[UIColor alizarinColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-1.png"><img class="alignnone size-full wp-image-644" alt="QQ20130517-1" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-1.png" width="294" height="42" /></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[myStepper configureFlatStepperWithColor:[UIColor wisteriaColor]
+                        highlightedColor:[UIColor wisteriaColor]
+                           disabledColor:[UIColor amethystColor]
+                               iconColor:[UIColor cloudsColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-645" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966.gif" width="119" height="51" /></a></p>
+
+<h3><strong><span style="color: #339966;">Bar Button Items</span></strong></h3>
+
+<p>为了定制整个程序中的bar button items（包括back buttons），UIBarButtonItem+FlatUI提供了一个类方法，通过该方法可以只需要一步就能利用UIBarButton Item的外观代理（appearance proxy）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[UIBarButtonItem configureFlatButtonsWithColor:[UIColor peterRiverColor]
+                              highlightedColor:[UIColor belizeHoleColor]
+                                  cornerRadius:3];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-646" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966.gif" width="322" height="44" /></a></p>
+
+<h3><strong><span style="color: #339966;"> Navigation Bars</span></strong></h3>
+
+<p>跟上面的Bar Button Items一样，对UINavigationBar进行了扩展——利用一个颜色对其进行扁平花的配置。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.navigationController.navigationBar configureFlatNavigationBarWithColor:[UIColor midnightBlueColor]];</pre>
+
+
+<h3><strong><span style="color: #339966;">Colors</span></strong></h3>
+
+<p>为了方便，FlatUIKit包含了Flat UI颜色的定义。这里的UIColor+FlatUI对UIColor进行了扩展，可以在UIColor+FlatUI.h/m文件中看到各种Flat UI颜色的定义。使用方法非常简单：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;FlatUIKit/UIColor+FlatUI.h&gt;
+UIColor *myColor = [UIColor turquoiseColor];</pre>
+
+
+<h3><strong><span style="color: #339966;">Fonts</span></strong></h3>
+
+<p>FlatUIKit使用的是Lato字体，改字体是干净，漂亮的开放字体，更多相关Lato信息可以在<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.latofonts.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">这里</span></a></span></span>看到。改字体自动的包含在了FlatUIKit中；按照如下方式使用即可：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "UIFont+FlatUI.h"
+UIFont *myFont = [UIFont flatFontOfSize:16];</pre>
+
+
+<h2></h2>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p>CocoaPods相关：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.devtang.com/blog/2012/12/02/use-cocoapod-to-manage-ios-lib-dependency/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用CocoaPods来做iOS程序的包依赖管理</span></a> </span></span>来自唐巧的一篇精彩博文<br/>
+<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="https://github.com/CocoaPods/CocoaPods" target="_blank"><span style="text-decoration: underline; color: #339966;"> GitHub上的CocoaPods</span></a></span></span></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/Grouper/FlatUIKit" target="_blank"><span style="color: #339966; text-decoration: underline;">FlatUIKit</span></a></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/16/23/" itemprop="url">iOS设计模式(03):工厂方法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><strong><span style="color: #339966;">什么是工厂方法？</span></strong></h2>
+
+<p>GOF是这样描述工厂模式的：</p>
+
+<blockquote><p>Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses.</p></blockquote>
+
+<p>在基类中定义创建对象的一个接口，让子类决定实例化哪个类。工厂方法让一个类的实例化延迟到子类中进行。</p>
+
+<p>工厂方法要解决的问题是对象的创建时机，它提供了一种扩展的策略，很好地符合了开放封闭原则。工厂方法也叫做虚构造器（Virtual Constructor）。</p>
+
+<p>如下图所示，是工厂方法的类结构图：<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-4.png"><img class="alignnone size-full wp-image-600" alt="QQ20130516-4" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-4.png" width="829" height="300" /></a></p>
+
+<p><strong style="font-size: 1.5em;"><span style="color: #339966;">什么时候使用工厂方法？</span></strong></p>
+
+<p>当是如下情况是，可以使用工厂方法：</p>
+
+<ol>
+<li>一个类不知道它所必须创建的对象的类时</li>
+<li>一个类希望有它的子类决定所创建的对象时</li>
+</ol>
+
+
+<p>更多关于工厂方法的介绍，可以参考本文最后给出的参考内容。下面我们就来看看在iOS中工厂方法的一种实现方法。</p>
+
+<h2><strong><span style="color: #339966;">iOS中工厂方法的实现</span></strong></h2>
+
+<p>如下有一个类图，该图描述了下面即将实现的工厂方法（利用工厂方法，创建出不同的形状）。其中BVShapeFactory为工厂方法的基类，BVShape为形状的基类，BVClient通过BVShapeFactory，利用 BVShapeFactory的子类（BVCircleShapeFactory和BVSquareShapeFactory）分别创建出BVCircleShape和BVSquareShape。</p>
+
+<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/factory-method-pattern.png"><img class="alignnone size-full wp-image-599" title="点击图片查看大图" alt="factory-method-pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/factory-method-pattern.png" width="1181" height="384" /></a></h2>
+
+<p>如下图，是在Xcode中创建的相关文件</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-5.png"><img class="alignnone size-full wp-image-606" alt="QQ20130516-5" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-5.png" width="261" height="426" /></a></p>
+
+<p>具体实现步骤如下（建议下载本文最后给出的代码实例，用Xcode查阅代码）：</p>
+
+<ol>
+<li>创建一个形状基类BVShape</li>
+</ol>
+
+
+<p>该类中定义了形状的基本行为和属性，如下代码所示：</p>
+
+<p>BVShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#define BV_Exception_Format @"在%@的子类中必须override:%@方法"
+
+@interface BVShape : NSObject
+
+@property (nonatomic, weak)NSString *name;
+
+// 子类必须重写这个draw方法，否则会抛出异常错误
+-(void)draw;
+
+@end</pre>
+
+
+<p>BVShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@implementation BVShape
+
+-(id)init
+{
+   self = [super init];
+    if (self) {
+        // 做一些初始化任务
+    }
+    return self;
+}
+
+-(void)draw
+{
+    // 如果是通过BVShape的实例调用此处的draw，则绘制一个BVShape图形
+    if ([self isMemberOfClass:[BVShape class]]) {
+        NSLog(@"绘制一个BVShape图形");
+    } else {
+        // 如果是通过BVShape子类的实例调用了此处的draw，则抛出一个异常：表明子类并没有重写draw方法。
+        // 注：在OC中并没有abstract class的概念，只有protocol，如果在基类中只定义接口(没有具体方法的实现)，
+        //    则可以使用protocol，这样会更方便。 
+        [NSException raise:NSInternalInconsistencyException
+                    format:BV_Exception_Format, [NSString stringWithUTF8String:object_getClassName(self)], NSStringFromSelector(_cmd)];
+    }
+}
+
+@end</pre>
+
+
+<p>在上面的代码中定义了一个draw方法，为了让子类必须实现该方法，在BVShape中做了特殊处理，具体内容可以看上面的代码，已经有注视了。</p>
+
+<ol start="2">
+  <li>
+    子类化形状基类
+  </li>
+</ol>
+
+
+<p>首先子类化一个圆形类：BVCircleShape。</p>
+
+<p>BVCircleShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVCircleShape : BVShape
+
+@end</pre>
+
+
+<p>BVCircleShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVCircleShape.h"
+
+@implementation BVCircleShape
+
+-(void)draw
+{
+    NSLog(@"绘制一个BVCircleShape图形");
+}
+
+@end</pre>
+
+
+<p>在上面的子类中，重写了基类的draw方法。同样，我们再子类化一个正方形类，并重写draw方法，如下代码所示：</p>
+
+<p>BVSquareShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVSquareShape : BVShape
+
+@end</pre>
+
+
+<p>BVSquareShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVSquareShape.h"
+
+@implementation BVSquareShape
+
+-(void)draw
+{
+    NSLog(@"绘制一个BVSquareShape图形");
+}
+
+@end</pre>
+
+
+
+
+<ol start="3">
+  <li>
+     创建一个工厂方法的基类BVShapeFactory
+  </li>
+</ol>
+
+
+<p>BVShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVShapeFactory : NSObject
+
+-(BVShape *) factoryMethod;
+
+@end</pre>
+
+
+<p>BVShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+
+@implementation BVShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    // 在此处，子类必须重写factoryMethod方法。当然，在工厂模式中，也可以在此处返回一个默认的Product。
+    // 如果是通过BVShapeFactory子类的实例调用了此处的factoryMethod，则抛出一个异常：表明子类并没有重写factoryMethod方法。
+    [NSException raise:NSInternalInconsistencyException
+                format:BV_Exception_Format, [NSString stringWithUTF8String:object_getClassName(self)], NSStringFromSelector(_cmd)];
+
+    // 下面这个return语句只是为了消除警告，实际上永远都不会执行到这里。
+    return nil;
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，定义了一个factoryMethod，该类的子类必须实现该方法，通过实现该方法，返回一个具体的形状对象。下面来看看该类的子类化。</p>
+
+<ol start="4">
+  <li>
+    子类化工厂方法的基类
+  </li>
+</ol>
+
+
+<p>首先子类化一个圆形工厂方法BVCircleShapeFactory：</p>
+
+<p>BVCircleShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+#import "BVCircleShape.h"
+
+@interface BVCircleShapeFactory : BVShapeFactory
+
+@end</pre>
+
+
+<p>BVCircleShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVCircleShapeFactory.h"
+
+@implementation BVCircleShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    return [[BVCircleShape alloc] init];
+}
+
+@end</pre>
+
+
+<p>如上代码所示，重写了factoryMethod，返回一个BVCircleShape实例。下面来看看另外一个子类BVSquareShapeFactory：</p>
+
+<p>BVSquareShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+#import "BVSquareShape.h"
+
+@interface BVSquareShapeFactory : BVShapeFactory
+
+@end</pre>
+
+
+<p>BVSquareShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVSquareShapeFactory.h"
+
+@implementation BVSquareShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    return [[BVSquareShape alloc] init];
+}
+
+@end</pre>
+
+
+<p>该子类返回的是一个BVSquareShape实例。</p>
+
+<ol start="5">
+  <li>
+    工厂方法的使用
+  </li>
+</ol>
+
+
+<p>定义一个BVClient类，在该类中演示工厂方法的使用。代码如下：</p>
+
+<p>BVClient.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVClient.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+@interface BVClient : NSObject
+
+-(void)doSomething;
+
+@end</pre>
+
+
+<p>BVClient.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVClient.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVClient.h"
+
+#import "BVShapeFactory.h"
+#import "BVCircleShapeFactory.h"
+#import "BVSquareShapeFactory.h"
+
+#import "BVShape.h"
+#import "BVCircleShape.h"
+#import "BVSquareShape.h"
+
+@implementation BVClient
+
+-(void)doSomething
+{
+    // 工厂方法的实例化
+    BVShapeFactory *circleShapefactory = [[BVCircleShapeFactory alloc] init];
+    BVShapeFactory *squareShapefactory = [[BVSquareShapeFactory alloc] init];
+
+    // 通过工厂方法实例化对应的形状
+    BVShape *circleShape = [circleShapefactory factoryMethod];
+    BVShape *squareShape = [squareShapefactory factoryMethod];
+
+    // 调用形状的方法
+    [circleShape draw];
+    [squareShape draw];
+}
+
+@end</pre>
+
+
+<p>如上代码所示，首先实例化两个工厂方法，并通过工厂方法创建出对应的形状，最后调用形状的draw方法进行测试。会在控制台窗口输出如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-16 10:12:46.292 FactoryMethodPattern[2845:c07] 绘制一个BVCircleShape图形
+2013-05-16 10:12:46.295 FactoryMethodPattern[2845:c07] 绘制一个BVSquareShape图形</pre>
+
+
+<h2><span style="color: #339966;"><strong>代码实例</strong></span></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/FactoryMethodPattern" target="_blank"><img alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a href="https://github.com/BeyondVincent/ios_patterns/raw/master/FactoryMethodPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-03-%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<h2><span style="color: #339966;"><strong>参考</strong></span></h2>
+
+<p>在学习工厂方法时，参考了如下一些文章和视频：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://zh.wikipedia.org/wiki/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95" target="_blank"><span style="color: #339966; text-decoration: underline;">工厂方法</span></a></span></span>wiki上对工厂方法的介绍<br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/General/Conceptual/CocoaEncyclopedia/ClassFactoryMethods/ClassFactoryMethods.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Class Factory Methods</span></a> </span></span>苹果官网对类工厂方法的介绍<br/>
+<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><span style="text-decoration: underline;"><a href="http://maleevdimka.wordpress.com/2013/01/23/ios-patterns-fabric-method/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS Patterns. Factory Method</span></a></span></span></span><span style="color: #000000;">(一篇介绍工厂方法的文章，俄文，需要楼梯)</span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://my.safaribooksonline.com/book/programming/objective-c/9781430233305/chapter-4-factory-method/what_is_the_factory_method_pattern_quest" target="_blank"><span style="color: #339966; text-decoration: underline;">What Is the Factory Method Pattern?</span></a></span></span>（Pro Objective-C Design Patterns for iOS书中对工厂方法的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://terrylee.cnblogs.com/archive/2006/01/04/310716.html " target="_blank"><span style="color: #339966; text-decoration: underline;">.NET设计模式（5）：工厂方法模式（Factory Method）</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.csdn.net/cjjky/article/details/7314118" target="_blank"><span style="color: #339966; text-decoration: underline;">java实现工厂方法</span></a></span></span><br/>
+<span style="text-decoration: underline; color: #339966;"><a href="http://www.youtube.com/watch?feature=player_detailpage&v=cDF5tyiamww" target="_blank"><span style="color: #339966; text-decoration: underline;">JAVA: Factory Method Design Pattern</span></a></span><span style="color: #000000;">youtube上一个关于工厂方法的视频介绍</span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/3653929/iphone-sdk-difference-between-iskindofclass-and-ismemberofclass" target="_blank"><span style="color: #339966; text-decoration: underline;">iphone-sdk-difference-between-iskindofclass-and-ismemberofclass</span></a></span></span> iskindofclass和ismemberofclass区别</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/16/22/" itemprop="url">iOS调试 — 基本技巧</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/ios_debug.png"><img class="alignnone size-full wp-image-628" alt="ios_debug" src="http://beyondvincent.com/wp-content/uploads/2013/05/ios_debug.png" width="976" height="313" /></a></p>
+
+<p>在程序中，无论是你想弄清楚为什么数组中有3个对象而不是5个，或者为什么一个新的玩家开始之后，游戏在倒退——调试在这些处理过程中是比较重要的一部分。通过本文的学习，我们将知道在程序中，可以使用的大多数重要调试功能，并如何利用这些调试功能来帮助你以更少的时间解决bug。</p>
+
+<p>本文将介绍如下内容：</p>
+
+<ul>
+<li>使用控制台检查程序的状态</li>
+<li>进行日志记录，并熟练的驾驭NSLog</li>
+<li>利用对象的生命周期跟踪内存的使用</li>
+</ul>
+
+
+<h2><strong><span style="color: #339966;">使用控制台进行检查</span></strong></h2>
+
+<p>在进行调试程序的时候，可能Xcode底部的小黑框会是你最好的朋友。它能输出日志信息，错误信息以及其它各种有用的内容——这可以帮助你进行错误的跟踪。除了可以在看到日志的输出，我们还可以在某个断点出停留住，并检查程序中的变量信息。</p>
+
+<h3><strong><span style="color: #339966;">带条件的断点</span></strong></h3>
+
+<p>本文假设你以及知道断点是如何工作的了（即使不知道的话，也不用担心，看完本文之后，你将明白！）。</p>
+
+<p>在某个特定的时间点命中断点是非常重要的，在有些断点中，有些时候需要通过一个痛苦的循环或者递归函数才能让我们的对象等于某个确定的值。此时我们可以使用条件断点！</p>
+
+<p>条件断点是这样的一类断点：只有当满足某个确定的条件时，才会命中断点。可以想象一下：我们只希望当对象在某个确定的状态，或者循环迭代到第nth次时才命中断点。单击Xcode editor中的‘gutter’可以添加一个断点，在断点上单击右键，然后选择‘edit breakpoint’，就可以设置特定的条件了。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/conditionalBreakpoints.png"><img class="alignnone size-full wp-image-617" alt="conditionalBreakpoints" src="http://beyondvincent.com/wp-content/uploads/2013/05/conditionalBreakpoints.png" width="513" height="223" /></a></p>
+
+<p>可以提供一个条件（例如i==12），或者断点忽略次数。另外还可以添加动作，该动作可根据断点自动发生，例如一个debugger command——打印一个值。</p>
+
+<p><span style="color: #339966;"><strong>提示</strong></span>：添加/删除断点的键盘快捷键是command+\</p>
+
+<p>另外一个重要的断点技巧是添加一个异常断点(exception breakpoint)。当遇到异常时，基本99%次Xcode都会自动转到main方法中的autorelease pool中。</p>
+
+<div id="attachment_618" class="wp-caption alignnone" style="width: 682px">
+  <a href="http://beyondvincent.com/wp-content/uploads/2013/05/unhelpful_break.png"><img class="size-full wp-image-618 " alt="unhelpful_break" src="http://beyondvincent.com/wp-content/uploads/2013/05/unhelpful_break.png" width="672" height="179" /></a><p class="wp-caption-text">
+    感谢Xcode&#8230;真的太有用了！
+  </p>
+</div>
+
+
+<p>通过异常断点，可以方便的定位到引起异常发生的具体代码行。异常断点的添加方法：打开异常断点tab（command+6）。选择窗口左下角的&#8221;+&#8221;按钮，并添加一个‘exception breakpoint’，这样，当Xcode遇到异常时，将会在引起异常代码的地方发生断点停留。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/Exception-breakpoint.png"><img class="alignnone size-full wp-image-619" alt="Exception-breakpoint" src="http://beyondvincent.com/wp-content/uploads/2013/05/Exception-breakpoint.png" width="501" height="194" /></a></p>
+
+<h2><strong><span style="color: #339966;">在控制台进行手动打印</span></strong></h2>
+
+<p>一般情况下，我们在程序代码中添加断点，是为了通过Xcode提供的‘variables view’（该view在Xcode底部console旁边）来查看变量的状态 。理论上，该窗口可以显示出与当前上下文相关的所有值的状态。实际上，这有点小问题，有时候断点过了之后，该窗口并不会进行相关的更新。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/variables-view.png"><img class="alignnone size-full wp-image-620" alt="variables view" src="http://beyondvincent.com/wp-content/uploads/2013/05/variables-view.png" width="579" height="210" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>很不错的一个功能是：我们可以使用控制台的命令来检查某个特定的对象——这非常有用。在控制台输入‘<span style="color: #339966;">po</span>’就可以打印出指定对象的即时信息（处理scalar值时使用‘p’）。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/po_command.png"><img class="alignnone size-full wp-image-621" alt="po_command" src="http://beyondvincent.com/wp-content/uploads/2013/05/po_command.png" width="818" height="92" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>在查看一个已经存在的对象时，这非常有用（如果对象不存在的话会打印出nil）——确定对象的值，查看数组/字典在运行时的信息，甚至是两个对象的比较（这个命令可以打印出相关对象的内存地址，我们可以打印出两个对象的信息，然后看看它们的内存地址是否相同）。</p>
+
+<p>另外非常有用（但是被隐藏的命令）可以非常容易的对view进行检查——<span style="color: #339966;">the<em>recursiveDescription</em></span>命令——在view上调用这个命令可以打印出view的继承关系。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/recursiveDescription.png"><img class="alignnone size-full wp-image-622" alt="recursiveDescription" src="http://beyondvincent.com/wp-content/uploads/2013/05/recursiveDescription.png" width="607" height="89" /></a></p>
+
+<h2><strong><span style="color: #339966;"> 有效的进行Log</span></strong></h2>
+
+<p>&nbsp;</p>
+
+<p>有时候在进行程序调试的某个确定时间里，我们希望将消息打印到控制台，此时可以使用<span style="color: #339966;">NSLog</span>函数，通过该函数可以将任意的输出打印到控制台。在不使用断点时，这个功能非常有用。NSLog遵从的格式与<em>[NSString StringWithFormat]</em>方法遵从的格式一样。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/nslog_use.png"><img class="alignnone size-full wp-image-623" alt="nslog_use" src="http://beyondvincent.com/wp-content/uploads/2013/05/nslog_use.png" width="595" height="78" /></a></p>
+
+<p><strong>提示</strong>：这里可以看到Objective-C中关于字符串格式化的信息：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"> <a title="String Programming Guide" href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Strings/Articles/FormatStrings.html"><span style="color: #339966; text-decoration: underline;">String Programming Guide</span></a></span></span></p>
+
+<h3><strong><span style="color: #339966;">让NSLog更加智能</span></strong></h3>
+
+<p>虽然NSLog非常有用，但是在真机上，从NSLog打印出来的任何内容都会被保留，隐藏所有人都可以看到——只需要将设备连接到电脑，然后打开XCode中的organiser，并定位到console，就可以看到每条log信息。可能你会意识到，这会带来一些严重的影响！想一下，如果你将一些保密的算法逻辑，或者用户密码打印到控制台！因此，如果苹果检测到在production build中，输出许多内容到控制台时，你的应用可能会被苹果拒绝上架到商店。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/nslog_public.png"><img class="alignnone size-full wp-image-624" alt="nslog_public" src="http://beyondvincent.com/wp-content/uploads/2013/05/nslog_public.png" width="981" height="292" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>幸运的是，这里有一个最简单的办法进行log——通过一个宏，让NSLog只在debug build的时候起作用。将这个功能添加到全局都能访问得到的头文件中。这样你就可以尽情的使用log了，并且当进行production时，不会包含log相关代码。如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#ifdef DEBUG
+#define DMLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
+#else
+#define DMLog(...) do { } while (0)</pre>
+
+
+<p>现在如果使用DMLog，那么将只会在debug build期间打印出log。而production build时则不会有任何log。通过<em>__PRETTY_FUNCTION\__</em> 可以打印出打印log所在的函数。</p>
+
+<h3><strong><span style="color: #339966;">下一步</span></strong></h3>
+
+<p>虽然NSLog非常出色，但它也有一些限制：</p>
+
+<ul>
+<li>只能在本地打印</li>
+<li>不支持带级别的log（例如严重、警告等）</li>
+<li>NSLog效率低。在进行大量处理时，NSLog会严重影响程序的执行效率</li>
+</ul>
+
+
+<p>互联网上也有一些框架可以进行日志记录，通过这些框架可以避免NSLog的一些限制。下面有两个不错的：</p>
+
+<ul>
+<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://github.com/robbiehanson/CocoaLumberjack" target="_blank"><span style="color: #339966; text-decoration: underline;">Cocoa LumberJack</span></a> </span></span>– 这是针对Cocoa非常出名的一个日志框架。虽然刚开始用的时候会费劲点，但是它非常强大。</li>
+<li><span style="text-decoration: underline; color: #339966;"><a href="https://www.assembla.com/wiki/show/snlog" target="_blank"><span style="color: #339966; text-decoration: underline;">SNLog</span></a></span> – NSLog的一个替代品。</li>
+</ul>
+
+
+<h2><strong><span style="color: #339966;">跟踪对象的生命周期</span></strong></h2>
+
+<p>虽然ARC可以对内存进行有效的管理，不过在对象的生命周期内跟踪一些重要的事件仍然是重要的。毕竟ARC并不能完全消除内存泄露的可能性，或者确保访问的是一个被release掉的对象（ARC只是尽量避免这样的情况发生）。为此，我们可以使用一些方法和工具来观察并留意对象在做些什么。</p>
+
+<h3><strong><span style="color: #339966;"> Log一些重要的事件</span></strong></h3>
+
+<p>在一个Objective-C对象的生命周期中有两个重要的方法：init和dealloc。将这两个方法调用的事件log到控制台是不错的选择——你可以通过控制台观察到对象生命的开始，更重要的是，可以确保对象的释放。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (id)init
+{
+    self = [super init];
+    if (self)
+    {
+        NSLog(@"%@: %@", NSStringFromSelector(_cmd), self);
+    }
+    return self;
+}
+- (void)dealloc
+{
+    NSLog(@"%@: %@", NSStringFromSelector(_cmd), self);
+}</pre>
+
+
+<h3><strong><span style="color: #339966;">静态分析器(Analyzer) 和检查器</span></strong></h3>
+
+<p>在Xcode中有两个工具可以用来清理代码，以减少代码的错误率。静态分析器工具可以对我们的代码提出改进意见，比如检测出没有使用过的对象，没有release对象（针对Core Foundation对象，ARC仍然会有这样的问题）。通过选择Product菜单中的‘Anlayze’可以查看到相关建议。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/analyse.png"><img class="alignnone size-full wp-image-633" alt="analyse" src="http://beyondvincent.com/wp-content/uploads/2013/05/analyse.png" width="987" height="115" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>检查器是非常强大的一组工具，通过检查器不仅可以从不同的角度检查我们程序对内存的使用情况，文件系统的使用情况（增加、删除、修改等），甚至还提供了自动UI交互的方法。通过选择Product菜单中的‘Profile’可以查看到这些检查器。</p>
+
+<p>选择‘Profile’会打开一个Instrument窗口，这里可以选择一个配置模板进行运行。最常用的模板有zombies（稍后会讨论），activity monitor和leaks。在程序运行时，对内存泄露进行捕捉时，Leaks可能是最有用的一个模板。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/Screen-Shot-2012-12-09-at-1.23.38-PM.png"><img class="alignnone size-full wp-image-634" alt="Screen-Shot-2012-12-09-at-1.23.38-PM" src="http://beyondvincent.com/wp-content/uploads/2013/05/Screen-Shot-2012-12-09-at-1.23.38-PM.png" width="513" height="193" /></a></p>
+
+<p><strong style="font-size: 1.17em;"><span style="color: #339966;">Zombies是你的朋友</span></strong></p>
+
+<p>虽然在有ARC的地方很难再遇到让人难受的EXC_BAD_ACCESS错误了，但是在某些确定的情况下，该错误还是会发生的。当在处理UIPopoverController或者core foundation对象时，我们可以访问一个已经被release掉的对象。一般，当我们release内存中的一个对象时，该对象将被销毁。但是，当Zombies开启时，只是将对象标记为release，实际上该对象还停留在内存中。当我们访问一个Zombie对象时，Xcode可以告诉我们正在访问的对象是一个不应该存在的对象了。因为Xcode知道这个对象是什么，所以可以让我们知道这个对象在哪里，以及这是什么时候发生的。</p>
+
+<p>这里有两种方法可以查找出Zombies对象。使用检查器中的Zombie配置模板，或者在‘Run’ build选项中开启Zombie诊断选项。在Stop按钮的旁边，点击scheme名称，然后选择‘Edit Scheme’，点击diagnostic tab项，并勾选上‘Enable Zombie Objects’。注意，Zombie只能用在模拟器调试中，真机上不能使用。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/Enabling-Zombies.png"><img class="alignnone size-full wp-image-635" alt="Enabling-Zombies" src="http://beyondvincent.com/wp-content/uploads/2013/05/Enabling-Zombies.png" width="613" height="227" /></a></p>
+
+<h2><strong><span style="color: #339966;">结论</span></strong></h2>
+
+<p>希望上面的这些关于调试技巧能给你带来帮助。通过上面的这些技巧，可以帮助你减少修改bug的时间，从而把更多的时间用在重要的地方——构建出色的程序！</p>
+
+<p>上面列出来的不是一个完整的调试技巧。另外还有许多技术没有进行讨论，例如在真机中调试问题，远程bug报告，crash报告等。</p>
+
+<p>祝编程愉快！</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://mobile.tutsplus.com/tutorials/iphone/debugging-in-ios-essential-tips/" target="_blank"><span style="color: #339966; text-decoration: underline;">tutsplus</span></a></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-11T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 11<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/qi-ta/'>其它</a>, <a class='category' href='/blog/categories/wei-fen-lei/'>未分类</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/11/21/" itemprop="url">我的初马不是马</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/2012-11-25-%E5%8C%97%E4%BA%AC%E9%A9%AC%E6%8B%89%E6%9D%BE.png"><img class="alignnone size-full wp-image-585" alt="2012-11-25-北京马拉松" src="http://beyondvincent.com/wp-content/uploads/2013/05/2012-11-25-北京马拉松.png" width="976" height="313" /></a></p>
+
+<p>在即将到来的昆明半程马拉松之际（2013年5月25日举行），为我的初马画一个句号，交一份迟到的作业。</p>
+
+<p>2012年11月25日，完成了我人生中的第一个马拉松（北京马拉松），为了这个马拉松，我准备了好久好久，也期盼了好久好久。虽说这一次的马拉松受到一点外界因素的干扰，不过终究是在延误一个月的情况下举行了，就是天气已经转冷，对于初跑马拉松的我，是一个不小的挑战。最终用时5小时35分06秒。</p>
+
+<p>下面是我初马赛前、赛中和赛后的一些感受：</p>
+
+<p>人生就像一场马拉松，没有充分的准备，终会完败！<br/>
+人生就像一场马拉松，背负的太多，就难以完美收场！<br/>
+人生就像一场马拉松，结局不重要，重要的是过程的享受！<br/>
+人生就像一场马拉松，可以考验人挑战自我，超越极限，坚韧不拔，永不放弃的精神！</p>
+
+<p>&nbsp;</p>
+
+<p>马拉松路线地图：</p>
+
+<p>起点：天安门前长安街出发<br/>
+终点：鸟巢水立方</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/1.jpg"><img class="alignnone size-full wp-image-574" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/05/1.jpg" width="781" height="1024" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>参赛物品：号码簿、计时芯片、雨衣、T恤等。</p>
+
+<p>B1038——我的吉利数字</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/2.jpg"><img class="alignnone size-full wp-image-575" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/05/2.jpg" width="1024" height="768" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>出发前，在等待起跑，天气比较糟糕哟，其实不利于跑步的。</p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/3.jpg"><img class="alignnone size-full wp-image-576" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/05/3.jpg" width="1024" height="768" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>开跑，大家都非常期待哟，我也是哈</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/4.jpg"><img class="alignnone size-full wp-image-577" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/05/4.jpg" width="1024" height="768" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>好多人，要路过天安门，接受毛主席的检阅</p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/5.jpg"><img class="alignnone size-full wp-image-578" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/05/5.jpg" width="1024" height="768" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>大家都跑得很欢畅，就是天气是在太不给力了，空气差，还冷，不过有得跑，就不错了哟</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/6.jpg"><img class="alignnone size-full wp-image-579" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/05/6.jpg" width="1024" height="768" /></a></p>
+
+<p>时间定格的一刹那</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/7.png"><img class="alignnone size-full wp-image-580" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/05/7.png" width="1024" height="462" /></a></p>
+
+<p>拿着奖牌合影是少不了的事</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/8.jpg"><img class="alignnone size-full wp-image-581" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/05/8.jpg" width="1024" height="768" /></a></p>
+
+<p>再来一张，这火红火红的，嘎嘎</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/9.png"><img class="alignnone size-full wp-image-582" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/05/9.png" width="822" height="614" /></a></p>
+
+<p>奖牌特写</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/10.jpg"><img class="alignnone size-full wp-image-583" alt="10" src="http://beyondvincent.com/wp-content/uploads/2013/05/10.jpg" width="391" height="1024" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>获奖证书哟</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/11.png"><img class="alignnone size-full wp-image-584" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/05/11.png" width="788" height="558" /></a></p>
+
+<p>下一个参加的马拉松已经确定：昆明半程国际马拉松：2013年5月25日。</p>
+
+<p>万分期待哟哟哟</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-09T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 9<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/09/20/" itemprop="url">iOS设计模式(02):单例模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/singleton-design-pattern.png"><img class="alignnone size-full wp-image-555" alt="singleton-design-pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/singleton-design-pattern.png" width="976" height="313" /></a></h2>
+
+<h2><strong><span style="color: #339966;">什么是单例模式？</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Singleton_pattern" target="_blank"><span style="color: #339966; text-decoration: underline;">单例模式</span></a></span></strong></span>是一个类在系统中只有一个实例对象。通过全局的一个入口点对这个实例对象进行访问。在iOS开发中，单例模式是非常有用的一种设计模式。如下图，是一个单例模式的UML类图。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/singleton_uml_class_structure.jpeg"><img class="alignnone size-full wp-image-551" alt="singleton_uml_class_structure" src="http://beyondvincent.com/wp-content/uploads/2013/05/singleton_uml_class_structure.jpeg" width="600" height="219" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>iOS SDK中也有许多类使用了单例模式，例如，<span style="text-decoration: underline; color: #339966;"><strong><a href="http://developer.apple.com/library/ios/#DOCUMENTATION/UIKit/Reference/UIApplication_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">UIApplication</span></a></strong></span>：当程序启动的时候，会调用UIApplicationMain方法，在该方法中，会实例化一个UIApplication对象，之后在程序中的任意地方调用sharedApplication方法都将返回一个与当前应用程序相关的UIApplication实例（UIApplicationMain方法中创建的UIApplication单例）。</p>
+
+<h2><strong><span style="color: #339966;">什么时候使用单例模式？</span></strong></h2>
+
+<p>在程序中，单例模式经常用于只希望一个类只有一个实例，而不运行一个类还有两个以上的实例。当然，在iOS SDK中，根据特定的需求，有些类不仅提供了单例访问的接口，还为开发者提供了实例化一个新的对象接口，例如，NSFileManager可以通过defaultManager方法返回相同的一个NSFileManager对象。如果需要新的一个NSFileManager实例对象，可以通过init方法。</p>
+
+<h2><span style="color: #339966;"><strong>iOS中单例模式的实现 </strong></span></h2>
+
+<p>iOS中单例模式的实现方式一般分为两种：Non-ARC(非ARC)和ARC+GCD。</p>
+
+<ol>
+<li><h3><strong><span style="color: #339966;">Non-ARC(非ARC)</span></strong></h3></li>
+</ol>
+
+
+<p>非ARC的实现方法如下所示：</p>
+
+<p><span style="color: #339966;">BVNonARCSingleton.h</span></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVNonARCSingleton.h
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import &lt;Foundation/Foundation.h&gt;
+
+@interface BVNonARCSingleton : NSObject
+
+@property  ( nonatomic, retain) NSString  *tempProperty;
++ (BVNonARCSingleton *)sharedInstance; 
+
+@end</pre>
+
+
+<p><span style="color: #339966;">BVNonARCSingleton.m</span></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVNonARCSingleton.m
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVNonARCSingleton.h"
+
+@implementation BVNonARCSingleton
+
+static BVNonARCSingleton *sharedInstance = nil;
+
+// 获取一个sharedInstance实例，如果有必要的话，实例化一个
++ (BVNonARCSingleton *)sharedInstance {
+    if (sharedInstance == nil) {
+        sharedInstance = [[super allocWithZone:NULL] init];
+    }
+
+    return sharedInstance;
+}
+
+// 当第一次使用这个单例时，会调用这个init方法。
+- (id)init
+{
+    self = [super init];
+
+    if (self) {
+        // 通常在这里做一些相关的初始化任务
+    }
+
+    return self;
+}
+
+// 这个dealloc方法永远都不会被调用--因为在程序的生命周期内容，该单例一直都存在。（所以该方法可以不用实现）
+-(void)dealloc
+{
+    [super dealloc];
+}
+
+// 通过返回当前的sharedInstance实例，就能防止实例化一个新的对象。
++ (id)allocWithZone:(NSZone*)zone {
+    return [[self sharedInstance] retain];
+}
+
+// 同样，不希望生成单例的多个拷贝。
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+// 什么也不做——该单例并不需要一个引用计数（retain counter）
+- (id)retain {
+    return self;
+}
+
+// 替换掉引用计数——这样就永远都不会release这个单例。
+- (NSUInteger)retainCount {
+    return NSUIntegerMax;
+}
+
+// 该方法是空的——不希望用户release掉这个对象。
+- (oneway void)release {
+
+}
+
+//除了返回单例外，什么也不做。
+- (id)autorelease {
+    return self;
+}
+
+@end</pre>
+
+
+<p>实际上上面的代码苹果官网也有提供：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html#//apple_ref/doc/uid/TP40002974-CH4-SW32" target="_blank"><span style="color: #339966; text-decoration: underline;">Creating a Singleton Instance</span></a></span></span>，只不过没有给出头文件的定义。上面用非ARC实现单例的方法是线程不安全的，如果有多个线程同时调用sharedInstance方法获取一个实例，而sharedInstance方法需要花费1-2秒钟的时间，那么BVNonARCSingleton的init方法就可能会被多次调用，也就是不同线程获得的BVNonARCSingleton有可能不是同一个实例。怎么解决线程的不安全呢？答案是使用<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html" target="_blank"><span style="color: #339966; text-decoration: underline;">@synchronized</span></a></span></span>来创建互斥锁即可。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 保证在实例化的时候是线程安全的（当然，该方法不能保证该单例中所有方法的调用都是线程安全的）
+@synchronized (self)
+{
+    if(sharedInstance == nil)
+    {
+        sharedInstance = [[super allocWithZone:NULL] init];
+    }
+}</pre>
+
+
+<p>通过上面的代码就能保存线程安全。<br/>
+提醒：在iOS中，一般不建议使用非ARC来实现单例模式。更好的方法是使用ARC+GCD来实现。</p>
+
+<ol start="2">
+  <li>
+    <h3>
+      <strong><span style="color: #339966;">ARC+GCD</span></strong>
+    </h3>
+  </li>
+</ol>
+
+
+<p>通过ARC+GCD的方法来实现单例模式的非常简单的。下面先来看看具体实现：</p>
+
+<p>BVARCSingleton.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVARCSingleton.h
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import &lt;Foundation/Foundation.h&gt;
+
+@interface BVARCSingleton : NSObject
+
+@property  ( nonatomic, weak) NSString  *tempProperty;
++ (BVARCSingleton *)sharedInstance;
+
+@end</pre>
+
+
+<p>BVARCSingleton.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVARCSingleton.m
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVARCSingleton.h"
+
+@implementation BVARCSingleton
+
++ (BVARCSingleton *) sharedInstance
+{
+    static  BVARCSingleton *sharedInstance = nil ;
+    static  dispatch_once_t onceToken;  // 锁
+    dispatch_once (&amp; onceToken, ^ {     // 最多调用一次
+        sharedInstance = [[self  alloc] init];
+    });
+    return  sharedInstance;
+}
+
+// 当第一次使用这个单例时，会调用这个init方法。
+- (id)init
+{
+    self = [super init];
+
+    if (self) {
+        // 通常在这里做一些相关的初始化任务
+    }
+
+    return self;
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，调用<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD)</span></a></span></span>中的<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html#//apple_ref/c/func/dispatch_once" target="_blank"><span style="color: #339966; text-decoration: underline;">dispatch_once</span></a></span></span>方法就可以确保BVARCSingleton只被实例化一次。并且该方法是线程安全的，我们不用担心在不同的线程中，会获得不同的实例。（当然，该方法同样不能保证该单例中所有方法的调用都是线程安全的）。</p>
+
+<p>当然，在ARC中，不用GCD也是可以做到线程安全的，跟之前非ARC代码中使用@synchronized一样，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 不使用GCD，通过@synchronized
+@synchronized (self)
+{
+    if(sharedInstance == nil)
+    {
+        sharedInstance = [[self alloc] init];
+    }
+}</pre>
+
+
+<p>为了简化使用ARC+GCD来创建单例，可以定义下面这样的一个宏：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define DEFINE_SHARED_INSTANCE_USING_BLOCK(block) \
+static dispatch_once_t onceToken = 0; \
+__strong static id sharedInstance = nil; \
+dispatch_once(&amp;onceToken, ^{ \
+sharedInstance = block(); \
+}); \
+return sharedInstance; \</pre>
+
+
+<p>实例化的实现方法如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (BVARCSingleton *) sharedInstance
+{
+    DEFINE_SHARED_INSTANCE_USING_BLOCK(^{
+        return [[self alloc] init];
+    });
+}</pre>
+
+
+<h2><strong><span style="color: #339966;">单例的使用 </span></strong></h2>
+
+<p>单例的使用方法很简单，在代码中的任意位置，如下使用即可：</p>
+
+<p>在BVAppDelegate.m中添加头文件：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "BVNonARCSingleton.h"
+#import "BVARCSingleton.h"</pre>
+
+
+<p>如下使用方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [BVNonARCSingleton sharedInstance].tempProperty = @"非ARC单例的实现";
+    NSLog(@"%@", [BVNonARCSingleton sharedInstance].tempProperty);
+
+    [BVARCSingleton sharedInstance].tempProperty = @"ARC单例的实现";
+    NSLog(@"%@", [BVARCSingleton sharedInstance].tempProperty);
+
+    return YES;
+}</pre>
+
+
+<p>运行程序，会在控制台窗口输出如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-09 16:44:07.649 SingletonPattern[5159:c07] 非ARC单例的实现
+2013-05-09 16:44:33.204 SingletonPattern[5159:c07] ARC单例的实现</pre>
+
+
+<h2><strong><span style="color: #339966;">代码实例</span></strong></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/SingletonPattern" target="_blank"><img class="alignnone size-full wp-image-561" alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a style="font-size: 1.5em;" href="https://github.com/BeyondVincent/ios_patterns/raw/master/SingletonPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-02-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p>本文在写作的时候，参考了许多网上的优秀文章，包括如下：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://my.safaribooksonline.com/book/programming/objective-c/9781430233305/chapter-7-singleton/what_is_the_singleton_pattern_question#X2ludGVybmFsX0h0bWxWaWV3P3htbGlkPTk3ODE0MzAyMzMzMDUlMkZpbXBsZW1lbnRpbmdfYV9zaW5nbGV0b25faW5fb2JqZWN0aXZlJnF1ZXJ5PQ==" target="_blank"><span style="color: #339966; text-decoration: underline;">What Is the Singleton Pattern?</span></a></span></span>（Pro Objective-C Design Patterns for iOS书中对单例模式的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://maleevdimka.wordpress.com/2013/01/30/ios-patterns-singleton/" target="_blank"><span style="color: #339966; text-decoration: underline;">ios-patterns-singleton</span></a></span></span>（需翻墙，是俄文的）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.galloway.me.uk/tutorials/singleton-classes/" target="_blank"><span style="color: #339966; text-decoration: underline;">Singletons in Objective-C</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.johnwordsworth.com/2010/04/iphone-code-snippet-the-singleton-pattern/" target="_blank"><span style="color: #339966; text-decoration: underline;">Implementing a Singleton in Objective-C / iOS</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD) Reference</span></a></span></span>（dispatch_once的介绍）<br/>
+<span style="text-decoration: underline; color: #339966;"><a href="http://blog.devtang.com/blog/2012/02/22/use-gcd/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用GCD</span></a></span>（来自唐巧的一篇文章，对GCD总结不错）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Threading Programming Guide</span></a></span></span>（@synchronized关键字的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Cocoa Fundamentals Guide</span></a></span></span>（苹果官方给的一个非ARC单例实现）</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-08T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 8<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/08/19/" itemprop="url">Framed: 一个UIView的Category</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg"><img class="alignnone size-full wp-image-545" alt="UIView_Easing_Frame" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg" width="1200" height="620" /></a></p>
+
+<h1><strong><span style="color: #339966;">当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。</span></strong></h1>
+
+<p>如果要在代码中创建如下一个界面布局，你会怎么做呢？</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png"><img class="alignnone size-full wp-image-546" alt="UIViewCategory2" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png" width="744" height="396" /></a></p>
+
+<p>下面是一种方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+CGRect blueViewFrame = self.blueView.frame;
+blueViewFrame.origin.x = self.whiteView.frame.origin.x + offset;
+blueViewFrame.origin.y = self.whiteView.frame.origin.y + offset;
+self.blueView.frame = blueViewFrame;
+
+CGRect greyViewFrame = self.greyView.frame;
+greyViewFrame.origin.x = self.whiteView.frame.origin.x + self.whiteView.frame.size.width - self.greyView.frame.size.width - offset;
+greyViewFrame.origin.y = self.whiteView.frame.origin.y + self.whiteView.frame.size.height - self.greyView.frame.size.height - offset;
+self.greyView.frame = greyViewFrame;</pre>
+
+
+<p>上面的方法可以达到目的，但看起来非常的笨拙；要弄清楚如何设置frame需要一定的计算，这样的代码可读性不高。</p>
+
+<p>下面是一种非常简单的方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+self.blueView.deFrameLeft = self.whiteView.deFrameLeft + offset;
+self.blueView.deFrameTop = self.whiteView.deFrameTop + offset;
+
+self.greyView.deFrameRight = self.whiteView.deFrameRight - offset;
+self.greyView.deFrameBottom = self.whiteView.deFrameBottom - offset;</pre>
+
+
+<p>如上所示，对界面布局的设置更加方便，并且还减少了不少代码。</p>
+
+<p>上面的方法是定义了UIView的一个category，并暴露出一些设置frame的属性。这些属性对UIView的frame属性进行了简单的封装，每个属性都定义了getter和setter方法。通过这些属性，使用很少的几行代码就可以更加方便的设置UIView（以及UIView的子类）的frame。</p>
+
+<p>上面代码涉及到的category可以到这里下载：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://gist.github.com/BeyondVincent/5540827" target="_blank"><span style="color: #339966; text-decoration: underline;">UIView+DEFrameAdditions</span></a></span></span>。将两个代码文件添加到你的工程中，就可以使用啦。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/05/a-uiview-category/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>, <a class='category' href='/blog/categories/wei-fen-lei/'>未分类</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/05/18/" itemprop="url">iOS设计模式(01):观察者</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/iOS-Observer-Pattern.png"><img class="alignnone size-full wp-image-517" title="点击查看大图" alt="iOS-Observer-Pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/iOS-Observer-Pattern.png" width="976" height="313" /></a></h2>
+
+<h2><strong><span style="color: #339966;">什么是观察者模式</span></strong></h2>
+
+<p>什么是<strong>观察者模式</strong>？你曾经订阅过报纸吗？在订阅报纸的时候，你不用去任何地方，只需要将你的个人地址信息以及订阅信息告诉出版社，出版社就知道如何将相关报纸传递给你。这种模式的第二个名称叫做<strong><span style="color: #339966;">发布/订阅模式</span></strong>。</p>
+
+<p>在GoF中是这样描述观察者模式的——观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个主题对象在状态上发生变化时，会通知所有观察者对象，使它们能够自动更新自己。</p>
+
+<p><span>观察者模式的的思想非常简单，Subject（主题）允许别的对象——观察者（这些对象实现了观察者接口）对这个Subject的改变进行订阅和取消订阅。当Subject发生了变化——那么Subject会将这个变化发送给所有的观察者，观察者就能对Subject的变化做出更新。在这里，Subject是报纸的出版社，而观察者则是订阅报纸的我和你，当Subject发生变化——有新的报纸，会做出通知——将报纸发送给所有的订阅者。</span></p>
+
+<h2><strong><span style="color: #339966;">什么时候使用观察者模式？</span></strong></h2>
+
+<ol>
+<li><span style="line-height: 13px;">当你需要将改变通知所有的对象时，而你又不知道这些对象的具体类型，此时就可以使用观察者模式。</span></li>
+<li>改变发生在同一个对象中，并在别的地方需要将相关的状态进行更新。</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">iOS中观察者模式的实现方法</span></strong></h2>
+
+<p>在iOS中观察者模式的实现有三种方法：</p>
+
+<ol>
+<li><h3><span style="color: #339966;">Notification</span></h3></li>
+</ol>
+
+
+<p>Notification - NotificationCenter机制使用了操作系统的功能。通过NSNotificationCenter可以让对象之间进行进行通讯，这些对象相互间可以不认识。当你用一个并行的流来推送通知，或者刷新数据库，并希望在界面中能够看到时，这非常有用。</p>
+
+<p>NotificationCenter发布消息的方法如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSNotification  * broadcastMessage = [ NSNotification  notificationWithName: AnyNotification  object: Self ];
+NSNotificationCenter  * notificationCenter = [ NSNotificationCenter  defaultCenter];
+[NotificationCenter postNotification: broadCastMessage];</pre>
+
+
+<p>上面的代码中，创建了一个NSNotification类型的对象，并指定名称为&#8221;broadcastMessage&#8221;，然后通过notificationCenter来发布这个消息。</p>
+
+<p>要订阅感兴趣的对象中的相关事件，可以按照如下方法进行：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSNotificationCenter  * notificationCenter = [ NSNotificationCenter  defaultCenter];
+[NotificationCenter addObserver: Self  selector: @ selector (update:) name: AnyNotification  object: nil ];</pre>
+
+
+<p>如上代码所示：订阅了一个事件，并通过@selector指定了一个方法。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 收到通知中心发来的通知
+-(void)update:(NSNotification *) notification
+{
+    if ([[notification name] isEqualToString:AnyNotification])
+        NSLog (@"成功收到通知中心发来的名为%@的通知", AnyNotification);
+}</pre>
+
+
+<p>下面是运行上面代码，在控制台输出的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:43:15.570 ObserverPattern[1738:c07] 成功收到通知中心发来的名为broadcastMessage的通知</pre>
+
+
+
+
+<ol start="2">
+  <li>
+    <h3>
+      <span style="line-height: 13px; color: #339966;"> KVO</span>
+    </h3>
+  </li>
+</ol>
+
+
+<p>通过KVO，某个对象中的特定属性发生了改变，别的对象可以获得通知。苹果官方文档对KVO有了很好的解释：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueObserving/KeyValueObserving.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Key-Value Observing Programming Guide</span></a></span></span>。下面两种方法都可以改变对象中属性的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">kvoSubj.changeableProperty = @"新的一个值";
+
+[kvoSubj setValue:@"新的一个值" forKey:@"changeableProperty"];</pre>
+
+
+<p>上面这种值改变的灵活性可以让我们对键值进行观察。</p>
+
+<p>下面是新建的一个类KVOSubject，这个类中有一个属性changeableProperty：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface KVOSubject : NSObject
+
+@property (nonatomic, strong) NSString *changeableProperty;
+
+@end
+
+@implementation KVOSubject
+
+@end</pre>
+
+
+<p>接着新建了另外一个类KVOObserver，通过该类可以监听changeableProperty属性值的改变。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface KVOObserver : NSObject
+@end
+
+@implementation KVOObserver
+
+-(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    NSLog(@"KVO:值发生了改变");
+}
+
+@end</pre>
+
+
+<p>如上代码所示，KVOObserver类只有一个方法observeValueForKeyPath。当changeableProperty属性值的改变时，这个方法会被调用。下面是测试的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (IBAction)btnKVOObservationTest:(id)sender {
+    KVOSubject *kvoSubj = [[KVOSubject alloc] init];
+    KVOObserver *kvoObserver = [[KVOObserver alloc] init];
+
+    [kvoSubj addObserver:kvoObserver forKeyPath:@"changeableProperty"
+                 options:NSKeyValueObservingOptionNew context:nil];
+
+    kvoSubj.changeableProperty = @"新的一个值";
+
+    [kvoSubj setValue:@"新的一个值" forKey:@"changeableProperty"];
+
+    [kvoSubj removeObserver:kvoObserver forKeyPath:@"changeableProperty"];
+}</pre>
+
+
+<p>执行上面的代码，可以看到控制台输出如下结果：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:10:20.789 ObserverPattern[1358:c07] KVO:值发生了改变
+2013-05-05 23:10:20.790 ObserverPattern[1358:c07] KVO:值发生了改变</pre>
+
+
+
+
+<ol start="3">
+  <li>
+    <h3>
+      <span style="color: #339966;">标准方法</span>
+    </h3>
+  </li>
+</ol>
+
+
+<p>先来看看Gof中对观察者模式定义的结构图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/Observer-Structure.jpg"><img class="alignnone size-full wp-image-512" alt="Observer-Structure" src="http://beyondvincent.com/wp-content/uploads/2013/05/Observer-Structure.jpg" width="615" height="243" /></a></p>
+
+<p>标准方法的实现是这样的：Subject（主题）知道所有的观察者，但是不知道它们的类型。下面我们就从创建Subject和Observer（观察者）的协议（protocol）开始。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@protocol StandardObserver 
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *) newValue;
+@end
+
+@protocol StandardSubject 
+-(void) addObserver:(id) observer;
+-(void) removeObserver:(id) observer;
+-(void) notifyObjects;
+@end</pre>
+
+
+<p>下面，我们来创建一个Subject的implementation （实现）</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface StandardSubjectImplementation : NSObject 
+{
+    @private NSString *_valueName;
+    @private NSString *_newValue;
+}
+@property (nonatomic, strong) NSMutableSet *observerCollection;
+-(void)changeValue:(NSString *)valueName andValue:(NSString *) newValue;
+@end
+
+@implementation StandardSubjectImplementation
+
+-(NSMutableSet *) observerCollection
+{
+    if (_observerCollection == nil)
+        _observerCollection = [[NSMutableSet alloc] init];
+
+    return _observerCollection;
+}
+
+-(void) addObserver:(id)observer
+{
+    [self.observerCollection addObject:observer];
+}
+
+-(void) removeObserver:(id)observer
+{
+    [self.observerCollection removeObject:observer];
+}
+
+-(void) notifyObjects
+{
+    for (id observer in self.observerCollection) {
+        [observer valueChanged: _valueName newValue:_newValue];
+    }
+}
+
+-(void)changeValue:(NSString *)valueName andValue:(NSString *) newValue
+{
+    _newValue = newValue;
+    _valueName = valueName;
+    [self notifyObjects];
+}
+@end</pre>
+
+
+<p>接下来是Observer的implementation （实现）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface SomeSubscriber : NSObject 
+@end
+
+@implementation SomeSubscriber
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *)newValue
+{
+    NSLog(@"SomeSubscriber输出: 值 %@ 已变为 %@", valueName, newValue);
+}
+@end
+
+@interface OtherSubscriber : NSObject 
+
+@end
+
+@implementation OtherSubscriber
+
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *)newValue
+{
+    NSLog(@"OtherSubscriber输出: 值 %@ 已变为 %@", valueName, newValue);
+}
+@end</pre>
+
+
+<p>下面是演示的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">StandardSubjectImplementation * subj = [[StandardSubjectImplementation alloc] init];
+SomeSubscriber * someSubscriber = [[SomeSubscriber alloc] init];
+OtherSubscriber * otherSubscriber = [[OtherSubscriber alloc] init];
+
+[Subj addObserver: someSubscriber];
+[Subj addObserver: otherSubscriber];
+
+[subj changeValue:@"version" andValue:@"1.0.0"];</pre>
+
+
+<p>上面代码运行的log如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:19:04.662 ObserverPattern[1459:c07] OtherSubscriber输出: 值 version 已变为 1.0.0
+2013-05-05 23:19:04.664 ObserverPattern[1459:c07] SomeSubscriber输出: 值 version 已变为 1.0.0</pre>
+
+
+<h2><span style="color: #339966;"><strong>代码实例</strong></span></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/ObserverPattern" target="_blank"><img alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a href="https://github.com/BeyondVincent/ios_patterns/raw/master/ObserverPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-01-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>美文推荐：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://blog.shinetech.com/2011/06/14/delegation-notification-and-observation/" target="_blank"><span style="color: #339966; text-decoration: underline;">When to use Delegation, Notification, or Observation in iOS</span></a></span></span></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+</div>
+<nav id="pagenavi">
+    
+        <a href="/blog/page/8/" class="prev">Prev</a>
+    
+    
+        <a href="/blog/page/10/" class="next">Next</a>
+    
+    <div class="center"><a href="/blog/archives">所有文章</a></div>
+</nav></div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

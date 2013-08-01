@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-01T00:12:40+08:00</updated>
+  <updated>2013-08-01T16:03:43+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -15,12 +15,12 @@
   
   <entry>
     <title type="html"><![CDATA[你好！github页面]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github/"/>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github/"/>
     <updated>2013-07-27T14:44:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/27/hello-page-of-github</id>
+    <id>http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github</id>
     <content type="html"><![CDATA[<p><img src="/images/2013/07/octopress.jpg"></p>
 
-<h3>也欢迎大家关注我的小站！</h3>
+<h3>大家好，我是破船！欢迎大家关注我的小站！</h3>
 
 <p>我写博文经历了这些平台：
 百度空间-><a href="http://www.devdiv.com/home.php?mod=space&amp;uid=12&amp;do=blog&amp;view=me&amp;from=space"><code>devdiv</code></a>><a href="http://blog.sina.com.cn/beyondvincent"><code>新浪博客</code></a>&ndash;><a href="http://blog.csdn.net/beyondvincent"><code>CSDN</code></a>&ndash;><code>wordpress</code>&ndash;><code>octopress</code>(现在)</p>

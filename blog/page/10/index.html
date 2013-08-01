@@ -1,0 +1,1757 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="May 2nd, 2013 未分类 如何利用GCD Group批量下载文件 小引：有时候，我们在开发iOS程序时，需要批量下载一些文件（比如图片），只有当全部文件下载完毕，我们才做相应的处理（界面更新，通知用户等）——也就是说虽然有多个文件在下载，但是我们只需要收到一个全部下载完毕的通知。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/page/10/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 2<span>nd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/wei-fen-lei/'>未分类</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/02/17/" itemprop="url">如何利用GCD Group批量下载文件</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/%E6%9C%AA%E5%91%BD%E5%90%8D.png"><img class="alignnone size-full wp-image-499" alt="未命名" src="http://beyondvincent.com/wp-content/uploads/2013/05/未命名.png" width="976" height="313" /></a></p>
+
+<p>小引：有时候，我们在开发iOS程序时，需要批量下载一些文件（比如图片），只有当全部文件下载完毕，我们才做相应的处理（界面更新，通知用户等）——也就是说虽然有多个文件在下载，但是我们只需要收到一个全部下载完毕的通知。</p>
+
+<p>在网上搜索了一番，感觉使用GCD的高级功能Group，比较方便。下面写了一个小Demo，实现了多个图片文件的异步并发下载，缓存到本地，并显示到界面中。</p>
+
+<p>参考了唐巧的一篇博文：<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://blog.devtang.com/blog/2012/02/22/use-gcd/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用GCD</span></a></span></span>。</p>
+
+<p>另外感兴趣的同学可以看看下面几篇GCD相关文章，非常不错：</p>
+
+<p>raywenderlich：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/4295/multithreading-and-grand-central-dispatch-on-ios-for-beginners-tutorial" target="_blank"><span style="color: #339966; text-decoration: underline;">Multithreading and Grand Central Dispatch on iOS for Beginners Tutorial</span></a></span></span></p>
+
+<p>苹果官网：<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD) Reference</span></a></span></span><span style="color: #339966;"><span style="color: #339966;"> </span></span>和<span style="color: #339966;"> </span><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Concurrency Programming Guide</span></a></span></span></p>
+
+<p>Demo可以到Github上下载：</p>
+
+<p><span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="https://github.com/BeyondVincent/DownloadImage_GCD" target="_blank"><span style="color: #339966; text-decoration: underline;"> <a href="https://github.com/BeyondVincent/DownloadImage_GCD">https://github.com/BeyondVincent/DownloadImage_GCD</a></span></a></span></span></p>
+
+<p>下面是使用GCD Group的关键代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (IBAction)downloadAction:(UIButton *)sender
+{
+    [self resetImage];
+    self.status.text = @"正在下载";
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_t downloadImage = dispatch_group_create();
+
+    for (ImageInfo *info in self.imageList) {
+        NSString* imagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:info.imageName];
+
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        // 如果本地不存在图片，则从网络中下载
+        if (![fileManager fileExistsAtPath:imagePath]) {
+            dispatch_group_async(downloadImage, queue, ^{
+                NSLog(@"Starting image download:%@", imagePath);
+                // URL组装和编码
+                NSString *urlString = [NSString stringWithFormat:@"%@/%@", self.baseUrl, info.imageName];
+                NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                NSLog(@"image download from url:%@", urlString);
+
+                // 开始下载图片
+                NSData *responseData = [NSData dataWithContentsOfURL:url];
+                // 将图片保存到指定路径中
+                [responseData writeToFile:imagePath atomically:YES];
+                // 将下载的图片赋值给info
+                info.image = [UIImage imageWithData:responseData];
+                NSLog(@"image download finish:%@", imagePath);
+            });
+        } else { // 将本地图片加载到systemInfo.MyImage
+            info.image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imagePath]];
+        }
+    }
+    dispatch_group_notify(downloadImage, dispatch_get_main_queue(), ^{
+        // 图片加载完毕之后，显示出来
+        self.status.text = @"图片文件下载并缓存完毕";
+        [self showImage];
+    });
+}
+</pre>
+
+
+<p>上面关键的代码是dispatch_group_async（并行执行线程1）和dispatch_group_notify（全部下载完毕，由此进行回调通知）。在for语句中循环开启了6个并发任务。当6个任务完成之后，调用showImage方法，将图片显示出来。<br/>
+下面是运行效果图（第一个图为程序刚刚启动时的效果，第二个为点击开始异步下载图片按钮之后的效果）：<br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-3.png"><img class="alignnone size-full wp-image-501" alt="QQ20130502-3" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-3.png" width="618" height="448" /><br/>
+</a><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-2.png"><img alt="QQ20130502-2" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-2.png" width="621" height="427" /></a><br/>
+&nbsp;</p>
+
+<p>在写本Demo的时候，遇到了以下两个问题</p>
+
+<ol>
+<li>关于图片的加载，UIImage中的imageNamed:方法只能加载程序main bundle中的图片。要想加载Document中的图片，需要使用UIImage的imageWithData方法。更多相关资料可以阅读苹果官方介绍：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIImage_Class/Reference/Reference.html" target="_blank"><span style="color: #339966;">UIImage</span></a></span></span></li>
+<li>NSURL URLWithString:myString returns Nil。在初始化NSURL实例对象是，一直都返回Nil。后来在这里（<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5839877/nsurl-urlwithstringmystring-returns-nil" target="_blank"><span style="color: #339966;">Here</span></a></span></span>）发现原来是URL中含有特殊字符，需要进行编码处理，照着链接中的方法搞定。</li>
+</ol>
+
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-30T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 30<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/30/16/" itemprop="url">什么是Provisioning Profile(2)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/provisioning_profile.jpg"><img class="alignnone size-full wp-image-466" alt="provisioning_profile" src="http://beyondvincent.com/wp-content/uploads/2013/04/provisioning_profile.jpg" width="1200" height="620" /></a></p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/04/28/%E4%BB%80%E4%B9%88%E6%98%AFprovisioning-profile1/" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇</span></a></span></span>文章中介绍了Provisioning Profile的文件格式。本文中，我将深入到Provisioning Profile中的实际内容上。</p>
+
+<p>之前提到过Provisioning Profile实际上就是一个plist文件。下面我们从头开始看看这个plist文件中的键/值。这里有一个<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://gist.github.com/4450231" target="_blank"><span style="color: #339966; text-decoration: underline;">Provisioning Profile.plist</span></a></span></span>示例文件，在阅读下面的内容时，可以参考：</p>
+
+<ol>
+<li>在plist字典中的第一项是“AppIDName.” 这是你在 iOS Provisioning Portal中给App ID指定的名字。</li>
+<li>下一项是“ApplicationIdentifierPrefix.”  这是在创建App ID时，由provisioning protal生成的10个字符。在 iOS Provisioning Portal中称为Bundle Seed ID（App ID前缀）。</li>
+<li>下一项“CreationDate” 是一个日期时间戳，表示这个Provisioning Profile文件被创建的时间。</li>
+<li>接下来的“DeveloperCertificates”之所以很有趣是有原因的。首先，它是一个数组（array），所以这里面可以包含多个证书。不过在这里我只看到一个证书。其次，它是base64编码的开发者证书。你可以将<data>标签中的文本拷贝并粘贴到另外一个文件中(粘贴在“—–BEGIN CERTIFICATE—–”和 “—–END CERTIFICATE—–”之间)。看起来是这样的：</li>
+</ol>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">-----BEGIN CERTIFICATE-----
+MIIFnTCCBIWgAwIBAgIIDlfxd9Mb0+gwDQYJKoZIhvcNAQEFBQAwgZYxCzAJ
+BgNVBAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBs
+ZSBXb3JsZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBw
+bGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlv
+biBBdXRob3JpdHkwHhcNMTIwODAzMjEzNDQxWhcNMTMwODAzMjEzNDQxWjCB
+kDEaMBgGCgmSJomT8ixkAQEMClc1OFo3OVc4WDkxMjAwBgNVBAMMKWlQaG9u
+ZSBEZXZlbG9wZXI6IEpheSBHcmF2ZXMgKEU2TDg3NlFGTTYpMRMwEQYDVQQL
+DAo5SzlGOUxDVjc0MRwwGgYDVQQKDBNNYXNzaXZlbHkgT3ZlcnJhdGVkMQsw
+CQYDVQQGEwJVUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANdD
+4hK9TjfXqoe1p0WpxvEULd575mhDpaKkvuUPG29bFEDIQrf2h0DTIGbvu6rR
+z09+nxI0JkN56A0JO2OygfJGG5hcKm78CRtNFrDrOksOKD12PJkubnxhAi4y
+sMI9M5+WCE+zV48VwMMI7dHLG7Pg5irMaqecnqNpRCoKxMeeziki+fD3H7jU
+MiC6CA7iKCVHoDZKycF9Q3CeA5+sGWO28IqDYbOiCdeFhaiLYVVZJlmdKjqU
+gHBsQWjj/vCeyikf+Ls52pPrD9+e0VgBnzrK2RcDPdNZON9gVAp1GeNNsmte
+gmHGMlEzpLXF3/4RxOr2eLQ5iy5W/2SBUWpdSRUCAwEAAaOCAfEwggHtMB0G
+A1UdDgQWBBSQHWHglRuqJq0gR4KzILT29p9ZIDAMBgNVHRMBAf8EAjAAMB8G
+A1UdIwQYMBaAFIgnFwmpthhgi+zruvZHWcVSVKO3MIIBDwYDVR0gBIIBBjCC
+AQIwgf8GCSqGSIb3Y2QFATCB8TCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5j
+ZSBvbiB0aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFj
+Y2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJt
+cyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBh
+bmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjApBggrBgEF
+BQcCARYdaHR0cDovL3d3dy5hcHBsZS5jb20vYXBwbGVjYS8wTQYDVR0fBEYw
+RDBCoECgPoY8aHR0cDovL2RldmVsb3Blci5hcHBsZS5jb20vY2VydGlmaWNh
+dGlvbmF1dGhvcml0eS93d2RyY2EuY3JsMA4GA1UdDwEB/wQEAwIHgDAWBgNV
+HSUBAf8EDDAKBggrBgEFBQcDAzATBgoqhkiG92NkBgECAQH/BAIFADANBgkq
+hkiG9w0BAQUFAAOCAQEAApeWS6BrVv0jOFY7F0kCUR5h/RrXaMnUwjyFsF6r
+HilDf70nvgIgIohtK2Uez5lkYavyDBzQGsN6gHbGLvg+4camDfT28quRPumk
+qcIwZBCyB5A11HGlrer0Jz6iev6NAX5SSODWbAuzXJBs72EKuwF/+pGB5x1n
+2YsKuQd8nQ+vD7kIHenP4n7goY8RSv8QQ8DhIkkgXqSbnZ6Xp4DKSTWgzb0T
+a28g57YJlFjYioqkVFDi+5BANXxL0lHNeLAPXIY+TqQ/MWho/F6L2ONZyNT6
+K6cadeQuTDgimoiTIjUGnAAR33SW7rIfHJNr2tNEtKu/aerKYCfWDLHf0QK9
+1g==
+-----END CERTIFICATE-----</pre>
+
+
+<p>然后在终端程序中使用命令<strong><span style="color: #339966;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif; font-size: 13px; line-height: 19px;"> </span>openssl x509 -text -in MassivelyOverrated.pem</span></strong>，就可以看到证书的所有信息，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            0e:57:f1:77:d3:1b:d3:e8
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, O=Apple Inc., OU=Apple Worldwide Developer Relations, CN=Apple Worldwide Developer Relations Certification Authority
+        Validity
+            Not Before: Aug  3 21:34:41 2012 GMT
+            Not After : Aug  3 21:34:41 2013 GMT
+        Subject: UID=W58Z79W8X9, CN=iPhone Developer: Jay Graves (E6L876QFM6), OU=9K9F9LCV74, O=Massively Overrated, C=US
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:d7:43:e2:12:bd:4e:37:d7:aa:87:b5:a7:45:a9:
+                    c6:f1:14:2d:de:7b:e6:68:43:a5:a2:a4:be:e5:0f:
+                    1b:6f:5b:14:40:c8:42:b7:f6:87:40:d3:20:66:ef:
+                    bb:aa:d1:cf:4f:7e:9f:12:34:26:43:79:e8:0d:09:
+                    3b:63:b2:81:f2:46:1b:98:5c:2a:6e:fc:09:1b:4d:
+                    16:b0:eb:3a:4b:0e:28:3d:76:3c:99:2e:6e:7c:61:
+                    02:2e:32:b0:c2:3d:33:9f:96:08:4f:b3:57:8f:15:
+                    c0:c3:08:ed:d1:cb:1b:b3:e0:e6:2a:cc:6a:a7:9c:
+                    9e:a3:69:44:2a:0a:c4:c7:9e:ce:29:22:f9:f0:f7:
+                    1f:b8:d4:32:20:ba:08:0e:e2:28:25:47:a0:36:4a:
+                    c9:c1:7d:43:70:9e:03:9f:ac:19:63:b6:f0:8a:83:
+                    61:b3:a2:09:d7:85:85:a8:8b:61:55:59:26:59:9d:
+                    2a:3a:94:80:70:6c:41:68:e3:fe:f0:9e:ca:29:1f:
+                    f8:bb:39:da:93:eb:0f:df:9e:d1:58:01:9f:3a:ca:
+                    d9:17:03:3d:d3:59:38:df:60:54:0a:75:19:e3:4d:
+                    b2:6b:5e:82:61:c6:32:51:33:a4:b5:c5:df:fe:11:
+                    c4:ea:f6:78:b4:39:8b:2e:56:ff:64:81:51:6a:5d:
+                    49:15
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                90:1D:61:E0:95:1B:AA:26:AD:20:47:82:B3:20:B4:F6:F6:9F:59:20
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Authority Key Identifier:
+                keyid:88:27:17:09:A9:B6:18:60:8B:EC:EB:BA:F6:47:59:C5:52:54:A3:B7
+
+            X509v3 Certificate Policies:
+                Policy: 1.2.840.113635.100.5.1
+                  User Notice:
+                    Explicit Text: Reliance on this certificate by any party assumes acceptance of the then applicable standard terms and conditions of use, certificate policy and certification practice statements.
+                  CPS: http://www.apple.com/appleca/
+
+            X509v3 CRL Distribution Points:
+                URI:http://developer.apple.com/certificationauthority/wwdrca.crl
+
+            X509v3 Key Usage: critical
+                Digital Signature
+            X509v3 Extended Key Usage: critical
+                Code Signing
+            1.2.840.113635.100.6.1.2: critical
+                ..
+    Signature Algorithm: sha1WithRSAEncryption
+        02:97:96:4b:a0:6b:56:fd:23:38:56:3b:17:49:02:51:1e:61:
+        fd:1a:d7:68:c9:d4:c2:3c:85:b0:5e:ab:1e:29:43:7f:bd:27:
+        be:02:20:22:88:6d:2b:65:1e:cf:99:64:61:ab:f2:0c:1c:d0:
+        1a:c3:7a:80:76:c6:2e:f8:3e:e1:c6:a6:0d:f4:f6:f2:ab:91:
+        3e:e9:a4:a9:c2:30:64:10:b2:07:90:35:d4:71:a5:ad:ea:f4:
+        27:3e:a2:7a:fe:8d:01:7e:52:48:e0:d6:6c:0b:b3:5c:90:6c:
+        ef:61:0a:bb:01:7f:fa:91:81:e7:1d:67:d9:8b:0a:b9:07:7c:
+        9d:0f:af:0f:b9:08:1d:e9:cf:e2:7e:e0:a1:8f:11:4a:ff:10:
+        43:c0:e1:22:49:20:5e:a4:9b:9d:9e:97:a7:80:ca:49:35:a0:
+        cd:bd:13:6b:6f:20:e7:b6:09:94:58:d8:8a:8a:a4:54:50:e2:
+        fb:90:40:35:7c:4b:d2:51:cd:78:b0:0f:5c:86:3e:4e:a4:3f:
+        31:68:68:fc:5e:8b:d8:e3:59:c8:d4:fa:2b:a7:1a:75:e4:2e:
+        4c:38:22:9a:88:93:22:35:06:9c:00:11:df:74:96:ee:b2:1f:
+        1c:93:6b:da:d3:44:b4:ab:bf:69:ea:ca:60:27:d6:0c:b1:df:
+        d1:02:bd:d6
+-----BEGIN CERTIFICATE-----
+MIIFnTCCBIWgAwIBAgIIDlfxd9Mb0+gwDQYJKoZIhvcNAQEFBQAwgZYxCzAJBgNV
+BAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBsZSBXb3Js
+ZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBwbGUgV29ybGR3
+aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkw
+HhcNMTIwODAzMjEzNDQxWhcNMTMwODAzMjEzNDQxWjCBkDEaMBgGCgmSJomT8ixk
+AQEMClc1OFo3OVc4WDkxMjAwBgNVBAMMKWlQaG9uZSBEZXZlbG9wZXI6IEpheSBH
+cmF2ZXMgKEU2TDg3NlFGTTYpMRMwEQYDVQQLDAo5SzlGOUxDVjc0MRwwGgYDVQQK
+DBNNYXNzaXZlbHkgT3ZlcnJhdGVkMQswCQYDVQQGEwJVUzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBANdD4hK9TjfXqoe1p0WpxvEULd575mhDpaKkvuUP
+G29bFEDIQrf2h0DTIGbvu6rRz09+nxI0JkN56A0JO2OygfJGG5hcKm78CRtNFrDr
+OksOKD12PJkubnxhAi4ysMI9M5+WCE+zV48VwMMI7dHLG7Pg5irMaqecnqNpRCoK
+xMeeziki+fD3H7jUMiC6CA7iKCVHoDZKycF9Q3CeA5+sGWO28IqDYbOiCdeFhaiL
+YVVZJlmdKjqUgHBsQWjj/vCeyikf+Ls52pPrD9+e0VgBnzrK2RcDPdNZON9gVAp1
+GeNNsmtegmHGMlEzpLXF3/4RxOr2eLQ5iy5W/2SBUWpdSRUCAwEAAaOCAfEwggHt
+MB0GA1UdDgQWBBSQHWHglRuqJq0gR4KzILT29p9ZIDAMBgNVHRMBAf8EAjAAMB8G
+A1UdIwQYMBaAFIgnFwmpthhgi+zruvZHWcVSVKO3MIIBDwYDVR0gBIIBBjCCAQIw
+gf8GCSqGSIb3Y2QFATCB8TCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0
+aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ug
+b2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0
+aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBhbmQgY2VydGlmaWNhdGlv
+biBwcmFjdGljZSBzdGF0ZW1lbnRzLjApBggrBgEFBQcCARYdaHR0cDovL3d3dy5h
+cHBsZS5jb20vYXBwbGVjYS8wTQYDVR0fBEYwRDBCoECgPoY8aHR0cDovL2RldmVs
+b3Blci5hcHBsZS5jb20vY2VydGlmaWNhdGlvbmF1dGhvcml0eS93d2RyY2EuY3Js
+MA4GA1UdDwEB/wQEAwIHgDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAzATBgoqhkiG
+92NkBgECAQH/BAIFADANBgkqhkiG9w0BAQUFAAOCAQEAApeWS6BrVv0jOFY7F0kC
+UR5h/RrXaMnUwjyFsF6rHilDf70nvgIgIohtK2Uez5lkYavyDBzQGsN6gHbGLvg+
+4camDfT28quRPumkqcIwZBCyB5A11HGlrer0Jz6iev6NAX5SSODWbAuzXJBs72EK
+uwF/+pGB5x1n2YsKuQd8nQ+vD7kIHenP4n7goY8RSv8QQ8DhIkkgXqSbnZ6Xp4DK
+STWgzb0Ta28g57YJlFjYioqkVFDi+5BANXxL0lHNeLAPXIY+TqQ/MWho/F6L2ONZ
+yNT6K6cadeQuTDgimoiTIjUGnAAR33SW7rIfHJNr2tNEtKu/aerKYCfWDLHf0QK9
+1g==
+-----END CERTIFICATE-----</pre>
+
+
+<p>苹果和iOS使用这个证书来验证有开发者签过名的代码。</p>
+
+<ol start="5">
+  <li>
+    下一个是“Entitlements”这里面有一个字典，字典中有许多键值对，都是与iCloud、Game Center、推送通知和调试程序相关的一些内容。这里并不打算介绍这些相关的键值内容。如果你以前遇到这样的错误“The executable was signed with invalid entitlements”，可以将这个Entitlements字典拷贝并粘贴到程序的Entitlements.plist文件中，确保程序和Provisioning的entitlements都是精确匹配的。
+  </li>
+  <li>
+    “ExpirationDate”是这个Provisioning Profile文件的过期日期。
+  </li>
+  <li>
+    “Name”是在iOS Developer Portal给这个Provisioning Profile指定的名字。
+  </li>
+  <li>
+    “ProvisionedDevices”是一个数组，里面是一个设备UDID列表，这表示了利用这个Provisioning Profile签名的程序只能安装在这里列出来的UDID设备中（我是这样认为的）。一般我打开一个Provisioning Profile文件，都是看看某个设备的UDID是否已经包含在这个数组中了。
+  </li>
+  <li>
+    “TeamIdentifier”也包含一个数组，不过我只在这个数组中看到过一个值。这个值相当于一个标示符，用来唯一标识这个Provisioning Profile文件属于哪个团队。
+  </li>
+  <li>
+     “TeamName”表示这个Provisioning Profile文件属于团队的名称。有趣的是“TeamIdentifier”是数组，但是这里的 “TeamName”不是。
+  </li>
+  <li>
+     “TimeToLive”是这个Provisioning Profile文件的有效天数。苹果将这个值设置为365天。
+  </li>
+  <li>
+      “UUID”这个值可以在Xcode工程文件中找到。每更新一次Provisioning Profile文件，这个UUID都会改变。如果你曾在Xcode中选择了某个特定的 Code Signing Identity，而不是 “iPhone Developer” 或“iPhone Distribution”，这个UUID可以在Xcode project.pbxproj文件中的“PROVISIONING_PROFILE”字段进行设置。在你将Xcode中的Provison Profile文件修改为另外一个，SCM会差分出如下结果：
+  </li>
+</ol>
+
+
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">- PROVISIONING_PROFILE = "D8F8CD60-CD85-4FEA-BF87-CD5D67FDC3EA";
++ PROVISIONING_PROFILE = "9B44F36C-328F-45C0-BC62-4A272CB9DAD7";</pre>
+
+
+
+
+<ol start="13">
+  <li>
+    “Version”是这个文件数据格式的版本。苹果将其设置为1。
+  </li>
+</ol>
+
+
+<p>上面提到过，当我检查这个Provision Profile文件时，90%次都是检查 “ProvisionedDevices”数组。另外10%次是检查 “Entitlements” 和“UUID”。如果程序中使用了APNS（Apple’s Push Notification service），那么“Entitlements”这个字段将保存着apns的相关信息。这个值可以包含 “production” 或“development”的信息，也可以没有设置相关信息，不过这样的话在程序中就不能正常使用推送通知。一般在将程序提交到iTunes Connect时，我都会检查一下这个字段。</p>
+
+<p>一般在Xcode中，我都是使用“UUID”来指定一个特定的Provisioning Profile文件，这样可以不依赖于Xcode的自动选择（经常会出问题）。Jenkins利用.xcconfig文件来覆盖“UUID”，可以让自动build更加容易。相信不久，你能看到相关文章。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/04/what-is-a-provisioning-profile-part-2/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-28T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 28<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/28/15/" itemprop="url">什么是Provisioning Profile(1)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/provisioning_profile.jpg"><img class="alignnone size-full wp-image-466" alt="provisioning_profile" src="http://beyondvincent.com/wp-content/uploads/2013/04/provisioning_profile.jpg" width="1200" height="620" /></a><br/>
+当你接触iOS开发，一般都会涉及到Provisioning Profile（配置文件）。大多数时候是通过苹果的“Development Provisioning Assistant”，将配置文件安装到正确的地方，并使用Keychain Access(钥匙串访问程序)获取证书和密钥，并将其安装到钥匙串中。一段时间过后，你可能会遇到如下问题：</p>
+
+<p><em>Code Sign error(代码签名错误):</em></p>
+
+<ul>
+<li>The executable was signed with invalid entitlements.（使用了无效的证书对程序进行了签名）</li>
+<li>Valid signing identity not found.（没有找到有效的签名标示）</li>
+<li>No unexpired provisioning profiles found that contain any of the keychain’s signing certificates（在钥匙串的签名证书中，没有发现期望的配置文件）</li>
+</ul>
+
+
+<p>遇到上面的问题后，你可能通过<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://www.google.com/search?q=provisioning+profile+error" target="_blank"><span style="color: #339966; text-decoration: underline;">google</span></a></span></span>，在<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/tagged/provisioning" target="_blank"><span style="color: #339966; text-decoration: underline;">Stack Overflow</span></a></span></span>上找到一些类似的问题，并成功把问题解决掉，然后接着做别的任务。我见过解决上面问题的方法是“删除所有的配置文件，并重头开始”。一般这是可以解决问题的，不过本系列文章的目标是让你不用删除所有的配置文件从头开始，就可以解决上面的问题。</p>
+
+<p>下面我们开始吧。</p>
+
+<p>每个配置文件实际上都是一个用PKCS#7签名后的plist文件。<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/PKCS" target="_blank"><span style="color: #339966; text-decoration: underline;">PKCS</span></a></span></span>一组公钥密码学标准。<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Cryptographic_Message_Syntax" target="_blank"><span style="color: #339966; text-decoration: underline;">PKCS#7</span></a></span></span>是加密消息语法的标准。苹果使用这个标准对plist文件进行签名，通过签名，OS（操作系统）可以验证被安装的程序是来自合法的开发者（通过验证可以知道plist文件中的内容有没有被修改过）。plist文件中的最后一部分是非常重要的，稍后你将知道为什么。</p>
+
+<p>在Terminal（终端程序）中使用vi打开一个配置文件，可以看到类似如下的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">0&lt;82&gt;^^è^F      *&lt;86&gt;H&lt;86&gt;÷^M^A^G^B &lt;82&gt;^^Ù0&lt;82&gt;^^Õ^B^A^A1^K0   ^F^E+^N^C^B^Z^E^@0&lt;82&gt;^N®^F     *&lt;86&gt;H&lt;86&gt;÷^M^A^G^A &lt;82&gt;^N&lt;9f&gt;^D&lt;82&gt;^N&lt;9b&gt;&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+    &lt;plist version="1.0"&gt;
+    &lt;dict&gt;</pre>
+
+
+<p>上面这部分内容是PKCS#7签名的头部。往下看到的许多内容才是真正的签名：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;/dict&gt;
+    &lt;/plist&gt;
+     &lt;82&gt;^M²0&lt;82&gt;^Cù0&lt;82&gt;^Bá ^C^B^A^B^B^A^_0^M^F    *&lt;86&gt;H&lt;86&gt;÷^M^A^A^E^E^@0y1^K0   ^F^CU^D^F^S^BUS1^S0^Q^F^CU^D
+    ^S
+    Apple Inc.1&0$^F^CU^D^K^S^]Apple Certification Authority1-0+^F^CU^D^C^S$Apple iPhone Certification Authority0^^^W^M080521020415Z^W^M200521020415Z0Y1^K0 ^F^CU^D^F^S^BUS1^S0^Q^F^CU^D
+    ^S
+    Apple Inc.1503^F^CU^D^C^S,Apple iPhone OS Provisioning Profile Signing0&lt;82&gt;^A"0^M^F     *&lt;86&gt;H&lt;86&gt;÷^M^A^A^A^E^@^C&lt;82&gt;^A^O^@0&lt;82&gt;^A</pre>
+
+
+<p>注意观察上面内容的底部，可以看到类似这样的字符串：<strong>Apple Inc.</strong>, <strong>Apple Certification Authority </strong>和 <strong>Apple iPhone OS Provisioning Profile Signing</strong>，通过这些内容可以知道这个文件进行了数字签名。配置文件是通过iOS Provisioning Portal创建的。当你选择了App ID，以及适当数量的设备UDIDs和Entitlement之后，苹果会将所有的这些信息数字签名到配置文件（Provisioning Profile）中，这样iOS就可以验证配置文件是否真的由苹果分发。</p>
+
+<p>当这个配置文件被数字签名之后，你可能会问“我如何验证这个签名？”，在Terminal程序中，你可以使用openssl程序进行验证。Openssl不仅可以验证签名，还可以将签名信息打印出来，在Terminal程序中输入如下内容就可以进行验证：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">openssl smime -in /path/to/your.mobileprovision -inform der -verify</pre>
+
+
+<p>现在，如果你希望手动编辑一下配置文件。比如你想把苹果新设备的UDID添加到配置文件中（不通过Provisioning Portal）。编辑之后，验证会失败，并得到如下类似的信息：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">openssl smime -in Key_Grinder_Beta_Dev.mobileprovision -inform der -verify
+Error reading S/MIME message
+10163:error:0D0680A8:asn1 encoding routines:ASN1_CHECK_TLEN:wrong tag:/SourceCache/OpenSSL098/OpenSSL098-47/src/crypto/asn1/tasn_dec.c:1315:
+10163:error:0D08303A:asn1 encoding routines:ASN1_TEMPLATE_NOEXP_D2I:nested asn1 error:/SourceCache/OpenSSL098/OpenSSL098-47/src/crypto/asn1/tasn_dec.c:657:Field=signer_info, Type=PKCS7_SIGNED
+10163:error:0D08303A:asn1 encoding routines:ASN1_TEMPLATE_NOEXP_D2I:nested asn1 error:/SourceCache/OpenSSL098/OpenSSL098-47/src/crypto/asn1/tasn_dec.c:747:
+10163:error:0D08403A:asn1 encoding routines:ASN1_TEMPLATE_EX_D2I:nested asn1 error:/SourceCache/OpenSSL098/OpenSSL098-47/src/crypto/asn1/tasn_dec.c:577:Field=d.sign, Type=PKCS7</pre>
+
+
+<p>这还不是我见过最好的错误（苹果限制了每个开发者账号只能最多使用100台设备，并防止你添加更多的UDIDs）</p>
+
+<p>本文介绍了一个配置文件的基本知识。希望你能够喜欢。在<a href="http://beyondvincent.com/2013/04/30/%E4%BB%80%E4%B9%88%E6%98%AFprovisioning-profile2/" target="_blank">下一篇</a>文章中，我将深入介绍plist文件中的内容——这些信息对你的程序和Xcode意味着什么呢？</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/02/what-is-a-provisioning-profile-part-1/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-23T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 23<span>rd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/23/14/" itemprop="url">Xcode升级之后编译错误提示：PCH File Built From a Different Branch ((clang-425.0.27)) Than the Compiler ((clang-425.0.28))</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><span style="color: #339966;"><strong>Bug描述：</strong></span></h2>
+
+<p>PCH file built from a different branch ((clang-425.0.27)) than the compiler ((clang-425.0.28))。如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130423-1.png"><img class="alignnone size-full wp-image-458" alt="QQ20130423-1" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130423-1.png" width="732" height="112" /></a></p>
+
+<h2><strong><span style="color: #339966;">Bug再现步骤：</span></strong></h2>
+
+<ol>
+<li>将Xcode升级到（Version 4.6.2 (4H1003)）版本。</li>
+<li>再次编译之前的项目</li>
+<li>在错误窗口就会看到上图中的错误提示</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">Bug修复：</span></strong></h2>
+
+<p>在Xcode中选择Product > Clean：清除一下Xcode之前生成的临时数据即可。</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p itemprop="name">
+  <span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/16027725/xcode-version-4-6-2-4h1003-compiler-error" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode version 4.6.2 (4H1003) compiler error</span></a></span></span>
+</p>
+
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/#releasenotes/DeveloperTools/RN-Xcode/index.html" target="_blank" rel="nofollow"><span style="color: #339966; text-decoration: underline;">XCode 4.6.2 Release Notes</span></a></span></span></p>
+
+<p><span style="color: #999999;">Known Issues</span><section></p>
+
+<p><span style="color: #999999;"><a name="//apple_ref/doc/uid/TP40001051-SW240"></a>Building</span></p>
+*   <span style="color: #999999;">When building a product previously built with Xcode 4.6.1 or earlier, the build fails with an error similar to this one:</span></p>
+
+<pre><code>&lt;section&gt; &lt;div&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;pre class="wp-code-highlight prettyprint linenums:1"&gt;&amp;lt;span style="color: #999999;"&amp;gt;PCH file built from a different branch ((clang-425.0.27)) than the compiler ((clang-425.0.28))&amp;lt;/span&amp;gt;&lt;/pre&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;&lt;/section&gt; 
+
+&lt;span style="color: #999999;"&gt;To address this issue, choose Product &gt; Clean before building your product. 13663167&lt;/span&gt;&lt;/li&gt; &lt;/ul&gt; &lt;/section&gt; 
+&amp;nbsp;
+</code></pre>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-20T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 20<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/20/13/" itemprop="url">返璞归真，忘掉NSUserDefaults</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/back_to_basics_featured1-e1366472202828.jpg"><img class="alignnone size-full wp-image-439" alt="back_to_basics_featured1" src="http://beyondvincent.com/wp-content/uploads/2013/04/back_to_basics_featured1-e1366472202828.jpg" width="975" height="312" /></a></p>
+
+<p>在iOS程序中，有许多种方法来存储数据。</p>
+
+<p>Core Data，SQlite和UIDocuments都可以使用，但往往用NSUserDefaults来存储数据是一种非常快速和容易的方法。一般都是使用键值对来存储数据，许多开发者忘记了NSUserDefaults一些原始的使用方法，默认设置就是其中一种。</p>
+
+<p>这里我要介绍的方法是<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://developer.apple.com/library/iOS/documentation/Cocoa/Reference/Foundation/Classes/NSUserDefaults_Class/Reference/Reference.html#//apple_ref/occ/instm/NSUserDefaults/registerDefaults:" target="_blank"><span style="color: #339966; text-decoration: underline;">&ndash; (void)registerDefaults:(NSDictionary *)dictionary</span></a></span></strong></span>。这个方法跟NSUserDefaults中别的方法一样，在iOS2.0开始的时候就有了。</p>
+
+<p>如下代码我遇到过多次了：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+if ([standardDefaults stringForKey:@"favoriteColor"] == nil) {
+[standardDefaults setObject:@"Green" forKey:@"favoriteColor"];
+[standardDefaults synchronize];
+}</pre>
+
+
+<p>上面的代码首先检测一下，某个键是否已经设置值了，如果没有，就设置一个默认值。这样设置之后，在程序中，就可以使用这样 的代码来查询这个值：<strong><span style="color: #339966;"> [standardDefaults stringForKey:@&ldquo;favoriteColor&rdquo;]</span> </strong>，这样能保证获得一个有效的值。实际上，<strong><span style="color: #339966;">registerDefaults:</span></strong>正是做这样事情的。</p>
+
+<p>上面的代码完全可以用下面的代码来替换：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+[standardDefaults registerDefaults:@{@"favoriteColor": @"Green"}];
+[standardDefaults synchronize];</pre>
+
+
+<p>每次程序启动的时候调用<strong><span style="color: #339966;">registerDefaults:</span> </strong>方法都是安全的。完全可以将这个方法的调用放到applicationDidFinishLaunching:方法中. 这个方法永远都不会覆盖用户设置的值。如果之后在程序中用户设置了一个Red值：<strong><span style="color: #339966;">[standardDefaults setObject:@&ldquo;Red&rdquo; forKey:@&ldquo;favoriteColor&rdquo;];</span> </strong>下次程序启动运行registerDefaults: 时，并不会用Green覆盖Red值。</p>
+
+<p>iOS系统默认已经包含NSUserDefaults接口了。关于NSUserDefaults除了常用的键值存储，还有很多可用接口。理解NSUserDefaults提供的接口，可以写出更好的程序。强烈建议在苹果官网上阅读一下相关更多信息： <strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/iOS/#documentation/Cocoa/Reference/Foundation/Classes/NSUserDefaults_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">NSUserDefaults 文档</span></a></span></span></strong>。</p>
+
+<div>
+  <p>
+    _________________________________________
+  </p>
+  
+  <p>
+    本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/03/back-to-basics-forgotten-nsuserdefaults/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br /> 转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br /> _________________________________________
+  </p>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-19T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 19<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/19/12/" itemprop="url">iOS中的唯一标示符</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/ios_udid.png"><img class="alignnone size-full wp-image-400" alt="ios_udid" src="http://beyondvincent.com/wp-content/uploads/2013/04/ios_udid.png" width="976" height="313" /></a></p>
+
+<p><strong>在2013年3月21日苹果已经通知开发者，从2013年5月1日起，<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/news/index.php?id=3212013a" target="_blank"><span style="color: #339966; text-decoration: underline;">访问UIDIDs的程序将不再被审核通过</span></a></span></span>，替代的方案是开发者应该使用“在iOS 6中介绍的Vendor或Advertising标示符”。</strong></p>
+
+<p>苹果已经警告过我们<strong><span style="color: #339966;">uniqueIdentifier</span></strong>将不能再使用了，并且提供了另外两个可选的。但是在程序中该选择使用哪个呢？本文不会回答这个问题，具体用哪个是由你来根据程序的目的来做决定的。</p>
+
+<p>下面我将列出iOS中目前支持的，以及被废弃的唯一标示符方法，并对其做出相应的解释，希望你看了以后针对唯一标示符的使用上，能够做出正确的确定。</p>
+
+<h2><strong><span style="color: #339966;">CFUUID</span></strong></h2>
+
+<p>从iOS2.0开始，CFUUID就已经出现了。它是CoreFoundatio包的一部分，因此API属于C语言风格。<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/mac/documentation/CoreFoundation/Reference/CFUUIDRef/Reference/reference.html#//apple_ref/c/func/CFUUIDCreate"><span style="color: #339966; text-decoration: underline;">CFUUIDCreate</span></a></span></span></strong> 方法用来创建CFUUIDRef，并且可以获得一个相应的NSString，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CFUUIDRef cfuuid = CFUUIDCreate(kCFAllocatorDefault);
+NSString *cfuuidString = (NSString*)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, cfuuid));</pre>
+
+
+<p>获得的这个CFUUID值系统并没有存储。每次调用CFUUIDCreate，系统都会返回一个新的唯一标示符。如果你希望存储这个标示符，那么需要自己将其存储到NSUserDefaults, Keychain, Pasteboard或其它地方。</p>
+
+<p>示例: <strong><span style="color: #339966;">68753A44-4D6F-1226-9C60-0050E4C00067</span></strong></p>
+
+<h2><strong><span style="color: #339966;">NSUUID</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/Foundation/Reference/NSUUID_Class/Reference/Reference.html" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">NSUUID</span></strong></a></span>在iOS 6中才出现，这跟CFUUID几乎完全一样，只不过它是Objective-C接口。<a href="http://developer.apple.com/library/ios/documentation/Foundation/Reference/NSUUID_Class/Reference/Reference.html#//apple_ref/occ/clm/NSUUID/UUID">+ (id)UUID</a> 是一个类方法，调用该方法可以获得一个UUID。通过下面的代码可以获得一个UUID字符串：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString *uuid = [[NSUUID UUID] UUIDString];</pre>
+
+
+<p>跟CFUUID一样，这个值系统也不会存储，每次调用的时候都会获得一个新的唯一标示符。如果要存储的话，你需要自己存储。在我读取NSUUID时，注意到获取到的这个值跟CFUUID完全一样（不过也可能不一样）：</p>
+
+<p>示例: <span style="color: #339966;"><strong>68753A44-4D6F-1226-9C60-0050E4C00067</strong></span></p>
+
+<h2><strong><span style="color: #339966;">广告标示符（IDFA-identifierForIdentifier）</span></strong></h2>
+
+<p>这是iOS 6中另外一个新的方法，<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/documentation/AdSupport/Reference/ASIdentifierManager_Ref/ASIdentifierManager.html#//apple_ref/occ/instp/ASIdentifierManager/advertisingIdentifier"><span style="color: #339966; text-decoration: underline;">advertisingIdentifier</span></a></span></span></strong> 是新框架AdSupport.framework的一部分。ASIdentifierManager单例提供了一个方法advertisingIdentifier，通过调用该方法会返回一个上面提到的NSUUID实例。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString *adId = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];</pre>
+
+
+<p>跟CFUUID和NSUUID不一样，广告标示符是由系统存储着的。不过即使这是由系统存储的，但是有几种情况下，会重新生成广告标示符。如果用户完全重置系统（(设置程序 &ndash;> 通用 &ndash;> 还原 &ndash;> 还原位置与隐私) ，这个广告标示符会重新生成。另外如果用户明确的还原广告(设置程序-> 通用 &ndash;> 关于本机 &ndash;> 广告 &ndash;> 还原广告标示符) ，那么广告标示符也会重新生成。关于广告标示符的还原，有一点需要注意：如果程序在后台运行，此时用户“还原广告标示符”，然后再回到程序中，此时获取广告标示符并不会立即获得还原后的标示符。必须要终止程序，然后再重新启动程序，才能获得还原后的广告标示符。之所以会这样，我猜测是由于ASIdentifierManager是一个单例。</p>
+
+<p>针对广告标示符用户有一个可控的开关“限制广告跟踪”。Nick Arnott的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.doubleencore.com/2013/04/what-apples-limit-ad-tracking-feature-actually-means-to-users/" target="_blank"><span style="color: #339966; text-decoration: underline;">文章中已经指出了</span></a></span></span>。将这个开关打开，实际上什么也没有做，不过这是希望限制你访问广告标示符。这个开关是一个简单的boolean标志，当将广告标示符发到任意的服务器端时，你最好判断一下这个值，然后再做决定。</p>
+
+<p>示例: <strong><span style="color: #339966;">1E2DFA89-496A-47FD-9941-DF1FC4E6484A</span></strong></p>
+
+<h2><strong><span style="color: #339966;">Vindor标示符 (</span><span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIDevice_Class/Reference/UIDevice.html#//apple_ref/occ/instp/UIDevice/identifierForVendor"><span style="color: #339966; text-decoration: underline;">IDFV</span></a></span></span><span style="text-decoration: underline; color: #339966;"><span style="color: #339966; text-decoration: underline;">-identifierForVendor</span></span><span style="color: #339966;">)</span></strong></h2>
+
+<p>这种叫法也是在iOS 6中新增的，不过获取这个IDFV的新方法被添加在已有的UIDevice类中。跟advertisingIdentifier一样，该方法返回的是一个NSUUID对象。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];</pre>
+
+
+<p>苹果官方的文档中对identifierForVendor有如下这样的一段描述 ：</p>
+
+<p><em><span style="color: #999999;">The value of this property is the same for apps that come from the same vendor running on the same device. A different value is returned for apps on the same device that come from different vendors, and for apps on different devices regardless of vendor.</span></em></p>
+
+<p><em><span style="color: #999999;">如果满足这样的条件，那么获取到的这个属性值就不会变：相同的一个程序里面-相同的vindor-相同的设备。如果是这样的情况，那么这个值是不会相同的：相同的程序-相同的设备-不同的vindor，或者是相同的程序-不同的设备-无论是否相同的vindor。</span></em></p>
+
+<p>看完上面的内容，我有这样的一个疑问“vendor是什么”。我首先想到的是苹果开发者账号。但事实证明这是错误的。接着我想可能是有一个AppIdentifierPrefix东西，跟钥匙串访问一样，可以在多个程序间共享。同样，这个想法也是的。最后证明，vendor非常简单：一个Vendor是CFBundleIdentifier（反转DNS格式）的前两部分。例如，<strong><span style="color: #339966;">com.doubleencore.app1</span></strong> 和 <strong><span style="color: #339966;">com.doubleencore.app2</span></strong> 得到的identifierForVendor是相同的，因为它们的CFBundleIdentifier 前两部分是相同的。不过这样获得的identifierForVendor则完全不同：<span style="color: #339966;"><strong>com.massivelyoverrated</strong></span> 或 <strong><span style="color: #339966;">net.doubleencore</span></strong>。</p>
+
+<p>在这里，还需要注意的一点就是：如果用户卸载了同一个vendor对应的所有程序，然后在重新安装同一个vendor提供的程序，此时identifierForVendor会被重置。</p>
+
+<p>示例: <strong><span style="color: #339966;">599F9C00-92DC-4B5C-9464-7971F01F8370</span></strong></p>
+
+<p><strong style="font-size: 1.5em;"><span style="color: #339966;">UDID</span></strong></p>
+
+<p>在之前的版本中是可用的，但是在iOS5以及之后的版本中，以及被弃用了。虽然，这个UDID用得很广泛，但是，不得不说的是，它在慢慢的远离开发者，不能在考虑使用UDID了。至于这个标示符是转为私有方法，或者完全从以后的iOS版本中移除，还有待观察。不过，这个UDID在部署企业级签名程序时，非常方便。获取UDID的方法如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString *udid = [[UIDevice currentDevice] uniqueIdentifier];</pre>
+
+
+<p>示例: <strong><span style="color: #339966;">bb4d786633053a0b9c0da20d54ea7e38e8776da4</span></strong></p>
+
+<h2><strong><span style="color: #339966;">OpenUDID</span></strong></h2>
+
+<p>在iOS 5发布时，uniqueIdentifier被弃用了，这引起了广大开发者需要寻找一个可以替代UDID，并且不受苹果控制的方案。由此<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/ylechelle/OpenUDID" target="_blank"><span style="color: #339966; text-decoration: underline;">OpenUDID</span></a></span></span></strong>成为了当时使用最广泛的开源UDID替代方案。OpenUDID在工程中实现起来非常简单，并且还支持一系列的广告提供商。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString *openUDID = [OpenUDID value];</pre>
+
+
+<p>OpenUDID利用了一个非常巧妙的方法在不同程序间存储标示符 — 在粘贴板中用了一个特殊的名称来存储标示符。通过这种方法，别的程序（同样使用了OpenUDID）知道去什么地方获取已经生成的标示符（而不用再生成一个新的）。</p>
+
+<p>之前已经提到过，在将来，苹果将开始强制使用advertisingIdentifier 或identifierForVendor。如果这一天到来的话，即使OpenUDID看起来是非常不错的选择，但是你可能不得不过渡到苹果推出的方法。</p>
+
+<p>示例: <strong><span style="color: #339966;">0d943976b24c85900c764dd9f75ce054dc5986ff</span></strong></p>
+
+<h2><strong><span style="color: #339966;">总结</span></strong></h2>
+
+<p>希望上面的信息能够帮助你在程序使用选择正确的唯一标示符。在这里，我创建了一个<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/doubleencore/DEUID" target="_blank"><span style="color: #339966; text-decoration: underline;">小的唯一标示符测试程序</span></a></span></span>，你可以运行该程序，并查看一下显示的内容（包括上面提到的所有标示符）。另外，下面有两个表，表中描述了两个内容：在iOS中的可用性，以及什么时候可以获得重置的标示符。</p>
+
+<p><a href="http://www.doubleencore.com/wp-content/uploads/2013/04/Screen-Shot-2013-04-09-at-12.21.16-PM1.png"><img class="alignnone" alt="" src="http://www.doubleencore.com/wp-content/uploads/2013/04/Screen-Shot-2013-04-09-at-12.21.16-PM1.png" width="1035" height="616" /></a></p>
+
+<ul>
+<li>程序必须重启才能看到改变的效果。</li>
+</ul>
+
+
+<p>** 删除了所有相同vendor提供的程序，才能看到改变的值。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.doubleencore.com/2013/04/unique-identifiers/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></span></strong></span><br/>
+转载请注明出处：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></span></span></strong><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-19T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 19<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/qi-ta/'>其它</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/19/11/" itemprop="url">浅谈中国革命战争的战略问题与诺基亚和苹果的发展</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<ol>
+<li>简介</li>
+<li><em>2007</em>年前<em>(</em>诺基亚的强大<em>VS</em>苹果的弱小<em>) </em></li>
+<li><em>2007</em>年后<em>(</em>战局的转变<em>) </em></li>
+<li><p>反思</p></li>
+<li><p><strong style="font-size: 1.5em;"><span style="color: #339966;">简介</span></strong></p></li>
+</ol>
+
+
+<p>最近阅读了毛泽东在1936提出的《<span style="text-decoration: underline;"><a href="http://baike.baidu.com/view/125687.htm" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">中国革命战争的战略问题</span></strong></a></span>》（本文以 后简称“<span style="color: #339966;"><strong>战略问题</strong></span>”）。<strong><span style="color: #339966;">战略问题</span></strong>是为了总结第二次国<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-1.png"><img class="alignright size-medium wp-image-376" alt="QQ20130419-1" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-1-300x224.png" width="300" height="224" /></a>内革命战争的经验而写的。</p>
+
+<p>从文中，能够感觉到毛泽东对当时的战争形势有充分的了解，特别是敌我双方的情况，以及如何把握战局才能赢得整个战争。其中以下几点尤为突出：</p>
+
+<ul>
+<li>认识到敌强我弱。无论是在政治上还是经济上，当时的共产党无</li>
+<li>法与敌对方抗衡。敌对方在政治上和经济上获得了资本主义国家的大力支持，特别是军事力量上，特别的强大。反观共产党，在军事力量上，军工业基本为零，基本没有稳定的补给来源。</li>
+<li>知道战争的成功离不开农民。毛泽东非常清楚当时的战局情形，共产党在政治和经济上没有优势，唯有利用好农民，并在农村建立根据地，才能获得战争上的最大优势。</li>
+<li>需要持久作战，与敌长期周旋。由于敌对方势力过于强大，共产党不可能再短期内获得战争的胜利。只有长期持久作战，集中自己的优势，打击敌人的劣势。</li>
+<li>保存生命军，不断扩大增强。由于当时共产党的实力比较弱，需要保存好自己的生命军，并在与敌人长期周旋的过程中，逐渐发展壮大自身，以逐渐扭转战局的劣势，并获得最终的胜利。</li>
+</ul>
+
+
+<p>以上特点是共产党在当时战局中的自身特点，以及需要执行的一些战略。 我们反观近些年来移动互联网行业诺基亚与苹果在手机方面的发展史，无疑不是一部精彩的战争史。</p>
+
+<ol start="2">
+  <li>
+    <h2>
+      <strong><span style="color: #339966;">2007年前(诺基亚的强大VS苹果的弱小) </span></strong>
+    </h2>
+  </li>
+</ol>
+
+
+<p>在2007前，诺基亚无疑是手机行业中的大哥大。当时无论是摩托罗拉，索爱等手机厂商都无法与诺基亚抗衡，更不用提苹果了。无<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-4.png"><img class="alignright size-medium wp-image-377" alt="QQ20130419-4" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-4-300x220.png" width="300" height="220" /></a>论是功能机还是智能机，诺基亚在全球都是霸主地位。可以说，提到手机，就想到诺基亚。</p>
+
+<p>在诺基亚辉煌的时候，给手机换个壳子，或者颜色，就能带来丰厚的收入。当然，诺基亚手机的质量是无可挑剔的。但是诺基亚在取得伟大胜利的时候，并没有继续前行，开发出用户体验更好的手机，而是继续生产销售着没有任何革命性改变的产品。</p>
+
+<p>而诺基亚手机在大众面前如日冲天的时候，苹果在手机上可以说为0。但是，苹果当时的CEO乔布斯，在2007年前，已经认识到用户对智能机的强烈需求，</p>
+
+<p>并且对当下智能机的用户体验非常不满，发现智能机在未来有非常大的市场。但是，由于当时诺基亚的强大，致使苹果必须采取特殊的战略（战略稍后会有介绍），才能在智能机这块大蛋糕上获得丰厚的利润。</p>
+
+<ol start="3">
+  <li>
+    <strong style="font-size: 1.5em;"><span style="color: #339966;">2007年后(战局的转变)</span></strong>
+  </li>
+</ol>
+
+
+<p>为了能在智能机上获得丰厚的利润，早在2007年前就展开了iPhone的研发，并且在2007年1月成功发布了iPhone第一代，在手机行<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-3.png"><img class="alignright size-medium wp-image-378" alt="QQ20130419-3" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130419-3-300x266.png" width="300" height="266" /></a>业展开了真正的竞争。经过5年的发展(至今2013年)，苹果目前无疑是手机行业的老大，而诺基亚犹如5年前的苹果，已经在没落。 下面我们来看看在这五年当中，苹果是如何一步一步的将诺基亚踢下神坛，并稳居宝座。</p>
+
+<p>首先，在2007年时，苹果认识到自己的实力，无论在手机产品研发方面还是用户市场占有率上，都不足以与诺基亚抗衡。但是苹果嗅觉到了一个重要的东西：移动互联网：随着移动互联网的快速发展，当时的功能机越来越无法满足用户的需求（不仅仅是打电话和发短信了）。并且，当时的手机只注重功能，而很少从用户体验的角度来考虑。为此，用户正迫切需要具有革命性的一款或一类手机出来——姑且可以称为移动互联网手机。当时，在这方面，诺基亚是不占据优势的，或者可以说不具有苹果这样的前瞻性。苹果以此为切入点，开发并发布了iPhone手机。</p>
+
+<p>其次，苹果的成功离不开开发者。在移动互联网时代，智能手机要想获得用户的青睐，必须拥有各种各样的程序，以满足用户的多样化需求，而程序的开发不可能完全由苹果的工程师来完成，这必须借助于第三方开发者。苹果在起初就已经已经对此有预见了，那么怎样才能让开发者愿意为iPhone开发程序呢——这是一个非常关键的问题。苹果通过应用商店(AppStore)成功解决了这个难题。通过应用商店，开发者可以开发并销售自己的iPhone程序，以获得利益，这不仅可以调动开发者的积极性，同时，还可以从开发者销售的软件中获得利益分成。AppStore可以理解为苹果赖以生存的根据地。为此，苹果也打造出了一个发展良性的生态圈。</p>
+
+<p>再者，苹果依据iPhone的成功，一步一步的转变与诺基亚之间的战局。苹果为了让成功的战火延续下去，至少一直在做着下面两件事情：</p>
+
+<ul>
+<li>不断加强产品的研发能力，以提供更好的用户体验。</li>
+<li>不断扩充自己的产品库（iPhone，iPad，mini-iPad），以渗入到更深，更广的用户群（满足不同人群的不同需求）。</li>
+<li>不断与同行间竞争，无论是专利的维护，还是市场店面的扩张，苹果都一直马不停蹄。</li>
+</ul>
+
+
+<p>而在苹果快速扭转战局的5年当中，我们再来看看诺基亚的情况：</p>
+
+<p>首先，在苹果刚刚发布出iPhone时，诺基亚对这款产品不屑一提，依旧我行我素的走自己的路。从中，我们可以看出，诺基亚低估了对手的实力，同时也缺乏市场的敏锐嗅觉力（或许这与诺基亚内部的官僚主义有关）。</p>
+
+<p>其次，当苹果在市场上取得了一定成绩之后，诺基亚似乎感觉到点什么，在2008年的10月份才推出自己的首款全触屏手机（5800）。但是，这并没有抓住渐行渐远的消费者的心。诺基亚慢慢的感觉到了问题的严重性，从Symbian操作系统，到Meego操作系统的选择，再到与微软携手Windows Phone，从全球性的裁员到出卖办公大楼，这无不体现出诺基亚的没落——犹如即将沉入大海的泰坦尼克号。</p>
+
+<p>从苹果的辉煌与诺基亚的没落中，我们可以看到这犹如一场战争，只有清楚的认识自己与当下的时局，并对未来有远见，然后一步一步，稳扎稳打的，才能在战场上有获胜的把握。</p>
+
+<ol start="4">
+  <li>
+    <h2>
+      <strong><span style="color: #339966;">反思</span></strong>
+    </h2>
+  </li>
+</ol>
+
+
+<p>上面只是发表了一下我对诺基亚与苹果之间的发展的一些看法。实际上，犹如毛泽东在《战略问题》中提到的，要想在战争中取得<br/>
+胜利，需要考虑方方面面的因素（敌我情况，我方补给、阵地利弊等）。同样，在移动互联网行业，不仅有诺基亚和苹果在竞争，另外还有三星，摩托罗拉，HTC，华为，小米等手机厂商之间，都在大力的展开角逐，希望在手机行业，乃至移动互联网中分得一杯羹。最终的结果是某个手机厂商一家独大，还是三足鼎立呢？</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/mobile-fire.png"><img class="alignnone size-full wp-image-445" alt="mobile-fire" src="http://beyondvincent.com/wp-content/uploads/2013/04/mobile-fire.png" width="976" height="313" /></a></p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">破船撰于2013.04.18</span>
+</p>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-18T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 18<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/18/10/" itemprop="url">在Xcode4.6中如何将xib for iPhone的文件转换为for iPad</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><strong><span style="color: #339966;">在Xcode4.6中将xib for iPhone的文件转换为for iPad</span></strong></h2>
+
+<p>有时候你已经开发了iPhone项目，但是没有针对iPad开发，现在需要iPhone程序也能iPad上很好的运行，那么直接将之前的项目拿过来进行改造，是最好的。本文的内容对你或许有用。<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2.png"><img class="alignright size-medium wp-image-372" alt="QQ20130418-2" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2-300x162.png" width="300" height="162" /></a></p>
+
+<h2><strong><span style="color: #339966;">我的操作步骤如下：</span></strong></h2>
+
+<ol>
+<li>在Xcode中选中要转换的xib文件，然后选择File->Duplicate，复制一份xib文件。</li>
+<li>在新复制出来的这个xib文件上，右键单击->Open As->Source Code。</li>
+<li>将打开源码文件中&#8221;com.apple.InterfaceBuilder3.CocoaTouch.XIB&#8221;替换为&#8221;com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB&#8221;。</li>
+<li>将所有的&#8221;IBCocoaTouchFramework&#8221;替换为&#8221;IBIPadFramework&#8221;</li>
+<li>保存并关闭Source Code，重新将这个xib文件用IB打开（选中xib文件，右键单击->Open As->Interface Builder &#8211; iOS）</li>
+<li>选中针对这个xib文件的main viewcontroller或者UIView，然后打开attributes inspector(在xcode的右边)，在Size里面选择“iPad Full Screen”。就可以根据自己的设计来调整UI界面了。</li>
+</ol>
+
+
+<p>如果需要将iPad的xib文件转换为iPhone的，那么反过来操作3和4步骤中的内容也同样可以。</p>
+
+<p>关于xib文件的转换，如果你有任何问题或者更好的办法，请留言告诉我！:]</p>
+
+<p>本文参考了stackoverflow上面的一个QA：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5347198/xcode-4-xib-create-ipad-version" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode 4 .xib Create iPad Version</span></a></span></span></p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">破船撰写于@2013.04.18</span>
+</p>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-17T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 17<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/17/8/" itemprop="url">iOS中如何创建一个滑出式导航面板(2)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>接着上一篇<a href="http://beyondvincent.com/2013/04/16/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF1/" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(1)</span></span></a></p>
+
+<h2><strong><span style="color: #339966;">现在靠向右边</span></strong></h2>
+
+<p>在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，将下面的import语句添加到文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "RightPanelViewController.h"</pre>
+
+
+<p>然后添加下面的常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define RIGHT_PANEL_TAG 3</pre>
+
+
+<p>接着在@interface里面添加如下属性，这样就容易获取到right view和它的当前状态：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) RightPanelViewController *rightPanelViewController;
+@property (nonatomic, assign) BOOL showingRightPanel;</pre>
+
+
+<p>然后是找到<strong><span style="color: #339966;">getRightView</span></strong>方法，并移除里面已有的代码，然后添加下面的代码进去：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
+if (_rightPanelViewController == nil)
+{
+    // this is where you define the view for the right panel
+    self.rightPanelViewController = [[RightPanelViewController alloc] initWithNibName:@"RightPanelViewController" bundle:nil];
+    self.rightPanelViewController.view.tag = RIGHT_PANEL_TAG;
+    self.rightPanelViewController.delegate = _centerViewController;
+
+    [self.view addSubview:self.rightPanelViewController.view];
+
+    [self addChildViewController:self.rightPanelViewController];
+    [_rightPanelViewController didMoveToParentViewController:self];
+
+    _rightPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+}
+
+self.showingRightPanel = YES;
+
+// set up view shadows
+[self showCenterViewWithShadow:YES withOffset:2];
+
+UIView *view = self.rightPanelViewController.view;
+return view;</pre>
+
+
+<p>上面的代码是拷贝getLeftView的，只不过其中的类和属性不同而已。如果对上面的代码有任何疑问，可以回头看看之前的解释。</p>
+
+<p>跟之前的一样，在xib文件中已经连接好了相关的IBAction和IBOutlet。下面是CenterViewController.xib文件的一个截图，显示出了puppies按钮的连接关系：</p>
+
+<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png" width="700" height="626" /></a></p>
+
+<p>如上图所示，跟kitties按钮类似，puppies按钮连接到的IBOutlet是rightButton，IBAction是btnMovePanelLeft:。这个按钮控制着center panel的滑动以显示出右边的panel。</p>
+
+<p>下面我们就来让panel移动起来吧。</p>
+
+<p>打开<strong><span style="color: #339966;">CenterController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">btnMovePanelLeft:</span></strong>中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;    
+switch (button.tag) {
+    case 0: {
+        [_delegate movePanelToOriginalPosition];
+        break;
+    }
+
+    case 1: {
+        [_delegate movePanelLeft];
+        break;
+    }
+
+    default:
+        break;
+}</pre>
+
+
+<p>同样，上面的代码与btnMovePanelRight:方法的实现没有什么不同。可以看到delegate的调用方法几乎是一样的。</p>
+
+<p>因为之前已经实现了movePanelToOriginalPostion方法，所以剩下的任务只需要添加movePanelLeft 方法，并修改一下resetMainView以处理right panel即可。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;"><strong>将右边显示出来</strong></span></h2>
+
+<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">movePanelLeft:</span></strong>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getRightView];
+[self.view sendSubviewToBack:childView];
+
+[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(-self.view.frame.size.width + PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        _centerViewController.rightButton.tag = 0;
+                    }
+                }];</pre>
+
+
+<p>上面的代码与movePanelRight方法中的基本相同，这里就不再做过多的解释。</p>
+
+<p>接着找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并用下面的代码替换已有的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// remove left and right views, and reset variables, if needed
+if (_leftPanelViewController != nil)
+{
+    [self.leftPanelViewController.view removeFromSuperview];
+    self.leftPanelViewController = nil;
+
+    _centerViewController.leftButton.tag = 1;
+    self.showingLeftPanel = NO;
+}
+
+if (_rightPanelViewController != nil)
+{
+    [self.rightPanelViewController.view removeFromSuperview];
+    self.rightPanelViewController = nil;
+
+    _centerViewController.rightButton.tag = 1;
+    self.showingRightPanel = NO;
+}
+
+// remove view shadows
+[self showCenterViewWithShadow:NO withOffset:0];</pre>
+
+
+<p>上面代码中唯一修改的地方是增加了一个if语句代码块：if(_rightPanelViewController != nil)。该语句判断一下right panel view是否存在，这跟之前检查left panel view一样，并且对_rightPanelViewController做相同的处理！</p>
+
+<p>现在编译并运行程序，点击puppies按钮，将看到如下画面：</p>
+
+<p><a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
+
+<p>看起来不错吧？</p>
+
+<p>在下面一节中，将介绍如何添加手势功能。</p>
+
+<h2><strong><span style="color: #339966;">来回移动你的手指</span></strong></h2>
+
+<p>在程序中添加手势处理非常简单，不要以为太复杂，很容易就能实现的！</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png" width="480" height="177" /></a></p>
+
+<p>还是在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，找到<strong><span style="color: #339966;">setupView</span></strong>方法，并在方法的尾部添加如下一行代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[self setupGestures];</pre>
+
+
+<p>接着，需要让MainViewController遵循UIGestureRecognizerDelegate协议——将UIGestureRecognizerDelegate添加到文件顶部的@interface中，添加后的代码如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()&lt;UIGestureRecognizerDelegate, CenterViewControllerDelegate&gt;</pre>
+
+
+<p>最后，找到<span style="color: #339966;"><strong>setupGestures</strong></span>方法，并将下面的代码块添加进去：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(movePanel:)];
+[panRecognizer setMinimumNumberOfTouches:1];
+[panRecognizer setMaximumNumberOfTouches:1];
+[panRecognizer setDelegate:self];
+
+[_centerViewController.view addGestureRecognizer:panRecognizer];</pre>
+
+
+<p>上面的代码定义了一个UIPanGestureRecognizer，并将movePanel:方法赋值给它，当有检测到手势时，就会调用这个方法。（稍后需要实现movePanel:方法。）</p>
+
+<p>接着，配置一下panRecognizer：将触摸的最大数目和最小数目设置为1，另外还设置了一下delegate。最后，将刚刚创建好的panRecognizer添加到_centerViewController.view中。</p>
+
+<p><strong>注意</strong>：更多关于UIGestureRecognizer类的信息, 请参考<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/uikit/reference/UIGestureRecognizer_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果官方文档</span></a></span></span>。</p>
+
+<p>接着，再做一件事情就可以用手势进行滑动了。</p>
+
+<h2><strong><span style="color: #339966;">现在就来移动View吧</span></strong></h2>
+
+<p>当识别到手势之后会调用movePanel:方法。所以，本文最后一个任务就是来实现一下这个方法。</p>
+
+<p>movePanel:方法使用到两个属性：showPanel 和 preVelocity。在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件的@interface中添加上这两个属性：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, assign) BOOL showPanel;
+@property (nonatomic, assign) CGPoint preVelocity;</pre>
+
+
+<p>找到<em>movePanel:</em> 并将下面这段代码添加进去（很多哦！）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[[[(UITapGestureRecognizer*)sender view] layer] removeAllAnimations];
+
+CGPoint translatedPoint = [(UIPanGestureRecognizer*)sender translationInView:self.view];
+CGPoint velocity = [(UIPanGestureRecognizer*)sender velocityInView:[sender view]];
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateBegan) {
+        UIView *childView = nil;
+
+        if(velocity.x &gt; 0) {
+            if (!_showingRightPanel) {
+                childView = [self getLeftView];
+            }
+        } else {
+            if (!_showingLeftPanel) {
+                childView = [self getRightView];
+            }
+
+        }
+        // Make sure the view you&#039;re working with is front and center.
+        [self.view sendSubviewToBack:childView];
+        [[sender view] bringSubviewToFront:[(UIPanGestureRecognizer*)sender view]];
+}
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
+
+        if(velocity.x &gt; 0) {
+            // NSLog(@"gesture went right");
+        } else {
+            // NSLog(@"gesture went left");
+        }
+
+        if (!_showPanel) {
+            [self movePanelToOriginalPosition];
+        } else {
+            if (_showingLeftPanel) {
+                [self movePanelRight];
+            }  else if (_showingRightPanel) {
+                [self movePanelLeft];
+            }
+        }
+}
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateChanged) {
+        if(velocity.x &gt; 0) {
+            // NSLog(@"gesture went right");
+        } else {
+            // NSLog(@"gesture went left");
+        }
+
+        // Are you more than halfway? If so, show the panel when done dragging by setting this value to YES (1).
+        _showPanel = abs([sender view].center.x - _centerViewController.view.frame.size.width/2) &gt; _centerViewController.view.frame.size.width/2;
+
+        // Allow dragging only in x-coordinates by only updating the x-coordinate with translation position.
+        [sender view].center = CGPointMake([sender view].center.x + translatedPoint.x, [sender view].center.y);
+        [(UIPanGestureRecognizer*)sender setTranslation:CGPointMake(0,0) inView:self.view];
+
+        // If you needed to check for a change in direction, you could use this code to do so.
+        if(velocity.x*_preVelocity.x + velocity.y*_preVelocity.y &gt; 0) {
+            // NSLog(@"same direction");
+        } else {
+            // NSLog(@"opposite direction");
+        }
+
+        _preVelocity = velocity;
+}</pre>
+
+
+<p>上面代码中的注视已经有对功能做了不错的解释。下面是一些需要明白的关键信息：</p>
+
+<ul>
+<li>需要处理3个状态：UIGestureRecognizerStateBegan, UIGestureRecognizerStateEnded和 UIGestureRecognizerStateChanged。</li>
+<li>translationInView：返回某个位置在指定view的坐标系中的point，并将这个point赋值给translatedPoint变量, 该变量用来设置view的位置。</li>
+<li>velocityInView: 返回每秒钟手势的移动速率。该变量有助于确定方向的改变。</li>
+</ul>
+
+
+<p>你可以移动center，left和right view，并结合上面提到的3个状态，就可以确定手势的位置和速率/方向。</p>
+
+<p>例如，如果手势方向是向右的，那么就显示出left panel。如果方向是向左，则显示出right panel。通过查看代码和相关的注释，就可以知道每一种状态都发生了什么。</p>
+
+<p>再次编译并运行程序。现在应该可以把center panel滑动到左边或者右边了，并显示出center panel下面的panel。</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a> <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
+
+<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
+
+<p>如果你完全按照本文介绍的方法来操作，那么恭喜你，你已经成为一名滑出式导航面板忍者了！</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg" width="300" height="247" /></a></p>
+
+<p>希望本文对你有用！这里是本文涉及到的完整示例工程：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cdn5.raywenderlich.com/downloads/SlideOutNavigationFinal.zip"><span style="color: #339966; text-decoration: underline;">completed project file</span></a></span></span>。</p>
+
+<p>之前我提到过，如果你更喜欢已经定义好了的库，而不是DIY，那么请看<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a>.</span></span> 看看这里的<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/John-Lluch/SWRevealViewController#usage" target="_blank"><span style="color: #339966; text-decoration: underline;">开发者相关介绍</span></a></span></span>，很容易就能使用它了。</p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">全文完毕！ 破船翻译于2013.04.17</span>
+</p>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/16/8/" itemprop="url">iOS中如何创建一个滑出式导航面板(1)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文将介绍如何创建类似Facebook和Path iOS程序中的滑出式导航面板。</p>
+
+<div class="wp-caption alignright" style="width: 223px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png" width="213" height="320" /></a><p class="wp-caption-text">
+    向右滑动
+  </p>
+</div>
+
+
+<p>滑出式设计模式可以让开发者在程序中添加常用的导航功能，而又不会浪费屏幕上宝贵的空间。用户可以在任意时间滑出导航面板，并且还可以看到当前屏幕上显示的内容。</p>
+
+<p>现在，互联网上已经有一些库已经内置滑出式设计模式，比如John-Lluch开发的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a></span></span>。如果你在寻找更加快捷和简单的方法，那么使用SWRevealViewController库可能是一个很不错的方法。</p>
+
+<p>不过，如果你是一名DIY类型的程序员(像我)，那么你可能希望自己理解这功能是如何实现的。</p>
+
+<p>在本文中，你会看到该功能的实现并不复杂。通过少即是多的方法，并忽略掉复杂大的且不是必须的代码，就可以轻松的在程序中集成滑出式导航面板技术。</p>
+
+<p>下面，就开始学习如何做滑出式导航面板——附带手势滑出的功能！</p>
+
+<h2><strong><span style="color: #339966;">开始</span></strong></h2>
+
+<p>那么这里创建的滑出式导航面板的功能具体是什么呢？</p>
+
+<p>iOS设计师和开发者Ken Yarmosh的解释比较恰当：“滑出式导航面板拥有一个面板，这个面板从主画面的左边或者右边滑出来，然后在面板中显示一个垂直的、独立的滚动视图（Scroll view），把该视图当作程序的主导航。”</p>
+
+<p><em>注意:</em> Ken在这里的文章中详细的解释了滑出式导航面板的设计模式，并介绍了该模式带来的好处：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://kenyarmosh.com/ios-pattern-slide-out-navigation/" target="_blank"><span style="color: #339966; text-decoration: underline;">新的iOS设计模式:滑出式导航面板</span></a></span></span>。</p>
+
+<p>首先下载本文的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://cdn2.raywenderlich.com/downloads/SlideOutNavigationStarter.zip" target="_blank"><span style="color: #339966; text-decoration: underline;">启动工程</span></a></span></span>。这是一个ZIP文件，只需要将其保存到本地，并解压一下就可以得到工程。</p>
+
+<p>接着在Xcode中打开这个工程，并看看工程的组织结构：</p>
+
+<p>工程被分为3个主要的文件夹：</p>
+
+<ul>
+<li><strong><span style="color: #339966;"><em>Assets</em></span></strong>: 包含所有的图片文件和其它非代码资源（例如attribution文件）。</li>
+<li><strong><span style="color: #339966;"><em>Views</em></span></strong>: 包含本文涉及到的所有xib文件。</li>
+<li><strong><span style="color: #339966;"><em>Classes</em></span></strong>: 包含Objective-C代码文件</li>
+</ul>
+
+
+<p><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/projectLayout.png" width="262" height="737" /></p>
+
+<p>不要担心Assets中有许多文件，其实你并不需要修改这些内容，所有需要用到的资源文件都添加进来了。</p>
+
+<p>在Views文件夹中有4个主要的view controller。下面是相关简介：</p>
+
+<ul>
+<li><strong><span style="color: #339966;">MainViewController</span></strong>: 这是主要的一个画面！这个文件需要添加到你自己的工程中（需要一些小的改动）。</li>
+<li><strong><span style="color: #339966;">CenterViewController</span></strong>: 这是正中间的面板。该view controller可以替换为你自己的view controller（记住按钮的action也实现了）</li>
+<li><strong><span style="color: #339966;">LeftPanelViewController</span></strong>: 左边的面板。该view controller可以替换为你自己的view controller。</li>
+<li><strong><span style="color: #339966;">RightPanelViewController</span></strong>: 右边的面板。该view controller可以替换为你自己的view controller</li>
+</ul>
+
+
+<p>现在打开<strong><span style="color: #339966;">AppDelegate.m</span></strong>文件。虽然你不需要对这个文件做任何改变，但是你应该知道MainViewContorller是左，中和右view controller的容器。这个controller的初始化在19行代码中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.viewController = [[MainViewController alloc] initWithNibName:@"MainViewController" bundle:nil];</pre>
+
+
+<p>现在，你已经对工程的结构熟悉了， 下面我们就正在的开始啦——从正中间的面板开始。</p>
+
+<h2><span style="color: #339966;"><strong>找到中心</strong></span></h2>
+
+<p>本小节中，我将在MainViewConroller中放置一个CenterViewController，将CenterViewController当做MainViewConroller的子view controller。</p>
+
+<p><span style="color: #999999;"><strong>注意</strong>：本小节会用到iOS 5中的新增的一个概念：View Controller Containment。如果你还不熟悉这个概念，可以看看<a href="http://www.raywenderlich.com/store-beta/ios-5-and-ios-6-by-tutorials-bundle" target="_blank"><span style="text-decoration: underline; color: #999999;"><span style="color: #339966; text-decoration: underline;">iOS 5 by Tutorials</span></span></a>中的第22章“UIViewController Containment”。</span></p>
+
+<p>打开MainViewController.m文件，并将下面的import语句添加到文件的顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "CenterViewController.h"</pre>
+
+
+<p>接着，添加一个常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define CENTER_TAG 1</pre>
+
+
+<p>接着在@interface中添加下面这个属性，以方便控制center view。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) CenterViewController *centerViewController;</pre>
+
+
+<p>找到setupView并在里面添加如下代码块：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.centerViewController = [[CenterViewController alloc] initWithNibName:@"CenterViewController" bundle:nil];
+self.centerViewController.view.tag = CENTER_TAG;
+self.centerViewController.delegate = self;
+
+[self.view addSubview:self.centerViewController.view];
+[self addChildViewController:_centerViewController];
+
+[_centerViewController didMoveToParentViewController:self];</pre>
+
+
+<p>上面的代码分配了一个新的CenterViewController并将其赋值给centerViewController属性。然后将这个view controller view的tag设置为CENTER_TAG。</p>
+
+<p>接着将delegate设置为MainViewController。也就意味着你需要对MainViewController进行修改，以遵循CenterViewControllerDelegate协议——只需要将文件顶部@interface代码行替换为如下即可：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()</pre>
+
+
+<p>最后，在setupView方法的代码中，使用addSubview:方法将centerViewController的view添加到MainViewController的view中，另外还调用了addChildViewContoller:将_centerViewController添加为MainViewController的子view controller。最后调用了didMoveToParentViewController:方法。</p>
+
+<p>现在就编译并运行程序的话，可以看到类似如下的画面：</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png" width="333" height="500" /></a></p>
+
+<p>在画面顶部的按钮可以让你切换到小猫（kitties）和小狗（puppies）。有什么更好的理由需要在这里创建一个滑出式的导航面板呢？在这里要想看到不同的小动物，那就开始滑动吧。首先从左边开始！</p>
+
+<h2><span style="color: #339966;"><strong> 靠向左边</strong></span></h2>
+
+<p>现在已经添加好了center panel，不过要添加left view controller需要一些不同的操作。</p>
+
+<p>回到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，并将下面的import语句添加到文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "LeftPanelViewController.h"</pre>
+
+
+<p>然后再定义一个常量：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define LEFT_PANEL_TAG 2</pre>
+
+
+<p>接着在@interface中添加一些属性，这跟center view类似：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) LeftPanelViewController *leftPanelViewController;
+@property (nonatomic, assign) BOOL showingLeftPanel;</pre>
+
+
+<p>现在找到<strong><span style="color: #339966;">getLeftView</span></strong>方法，删除掉已有的代码并添加如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
+if (_leftPanelViewController == nil)    
+{
+    // this is where you define the view for the left panel
+    self.leftPanelViewController = [[LeftPanelViewController alloc] initWithNibName:@"LeftPanelViewController" bundle:nil];
+    self.leftPanelViewController.view.tag = LEFT_PANEL_TAG;
+    self.leftPanelViewController.delegate = _centerViewController;
+
+    [self.view addSubview:self.leftPanelViewController.view];
+
+    [self addChildViewController:_leftPanelViewController];
+    [_leftPanelViewController didMoveToParentViewController:self];
+
+    _leftPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+}
+
+self.showingLeftPanel = YES;
+
+// set up view shadows
+[self showCenterViewWithShadow:YES withOffset:-2];
+
+UIView *view = self.leftPanelViewController.view;
+return view;</pre>
+
+
+<p>上面的代码首先检查一下看看leftPanelViewController属性是否为nil，如果是nil的话，就分配并初始化一个LeftPanelViewController给leftPanelViewController属性。</p>
+
+<p>接着是赋值一个tag和delegate——用于图片的选择，以及将新创建的view添加到main view中。</p>
+
+<p>然后将showingLeftPanel属性设置为YES，并添加了一些视觉上的处理，在下一节中将介绍相关内容。</p>
+
+<p>最后将view返回给调用者。为什么要这样操作——在后面小节中你将看到为什么。</p>
+
+<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow-480x177.png" width="480" height="177" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>下面，我们来处理一下阴影。</p>
+
+<h2><strong><span style="color: #339966;">不要忘记阴影效果</span></strong></h2>
+
+<p>在上面刚刚添加的代码中，你已经看到调用了showCenterViewWithShow:withOffset:方法。该方法使用QuartzCore框架创建并添加一个阴影效果。</p>
+
+<p>为了访问该框架的提供的许多精彩功能，将下面的import语句添加到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;QuartzCore/QuartzCore.h&gt;</pre>
+
+
+<p>同样，在文件顶部定义一个常量，代表圆角。这样，如果你想要修改圆角的话，只需要在一个地方修改即可。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define CORNER_RADIUS 4</pre>
+
+
+<p>现在找到<strong><span style="color: #339966;">showCenterViewWithShadow:withOffset: </span></strong>方法，并将下面的代码块添加进去:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">if (value)
+{        
+    [_centerViewController.view.layer setCornerRadius:CORNER_RADIUS];
+    [_centerViewController.view.layer setShadowColor:[UIColor blackColor].CGColor];
+    [_centerViewController.view.layer setShadowOpacity:0.8];
+    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
+
+}
+else
+{
+    [_centerViewController.view.layer setCornerRadius:0.0f];
+    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
+}</pre>
+
+
+<p>上面的代码中，如果传递过进来的value是非零，就会给center view设置一个圆角和一个阴影。否则就将圆角设置为非圆形。</p>
+
+<p>如果现在运行程序的话，还看不到效果，因为上面的代码还没有用到。</p>
+
+<p><a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png"><img class="alignnone" alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png" width="480" height="177" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">现在回到左边</span></strong></h2>
+
+<p>现在已经获得了滑动导航面板所需的一些材料了，接着继续完成left view controller。一旦完成之后，右边如何移动你也会清楚了。</p>
+
+<p>本文中，为了将注意力几种在重要的地方，我已经把IB文件中涉及到的IBAction和IBOutlet连接好了。不过，为了实现你自己的DIY滑出式导航面板，你需要知道这些IB中的按钮是如何配置的。</p>
+
+<p>看看下面这个张关于截图<strong><span style="color: #339966;">CenterViewController.xib</span></strong>文件的截图，注意其中的连接：</p>
+
+<p><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/xcodeLeftButtonSetup-sm.png" width="700" height="626" /></p>
+
+<p>如上图中的kitties按钮，已经连接到一个名为leftButton的IBOutlet上了，并且这个按钮的Touch Up Inside事件连接到了一个名为btnMovePanelRight:的IBAction上。这个按钮控制着center panel的滑动，以显示出左边的panel。</p>
+
+<p>btnMovePanelRight:现在还是空的，下面我们就来看看如何实现：</p>
+
+<p>打开<strong><span style="color: #339966;">CenterViewController.m</span></strong>文件，并将下面的代码块添加到<strong><span style="color: #339966;">btnMovePanelRight:</span></strong>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;
+switch (button.tag) {
+    case 0: {
+        [_delegate movePanelToOriginalPosition];
+        break;
+    }
+
+    case 1: {
+        [_delegate movePanelRight];
+        break;
+    }
+
+    default:
+        break;
+}</pre>
+
+
+<p>上面的代码使用了一个switch语句，通过判断leftButton的tag属性来确定center panel是需要移动到右边，还是需要将其移动到原来的正中间位置。这里的leftButton是通过sender参数传递过来的。button的tag设置为0表示center panel已经移动到右边了，如果设置为1的话，表示center panel已经在原来的正中间位置。</p>
+
+<p>如果你看一下CenterViewController.xib文件，会看到我已经将leftButton的tag默认值设置为1。</p>
+
+<p>看到上面的代码中调用了delegate方法吗？如果你还记得的话，之前在配置CenterViewController示例时，已经将它的delegate设置为MainViewController。因此这里的调用就涉及到了MainViewController中的相关方法。</p>
+
+<p>在实现这些delegate方法之前，首先看看<strong><span style="color: #339966;">CenterViewController.h</span></strong>文件中协议CenterViewControllerDelegate的定义：</p>
+
+<p>如下图所示，协议中定义了两个optional协议方法，以及一个required协议方法，分别是：movePanelLeft, movePanelRight 和 movePanelToOriginalPosition。</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png" width="700" height="625" /></a></p>
+
+<p>因为CenterViewController的delegate是MainViewController，所以我们在MainViewController中添加这些delegate方法。</p>
+
+<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并添加如下两个常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define SLIDE_TIMING .25
+#define PANEL_WIDTH 60</pre>
+
+
+<p>接着找到<strong><span style="color: #339966;">movePanelRight</span></strong>方法，并将如下代码块添加到里面：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getLeftView];
+[self.view sendSubviewToBack:childView];
+
+[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(self.view.frame.size.width - PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        _centerViewController.leftButton.tag = 0;
+                    }
+                }];</pre>
+
+
+<p><strong>注意</strong>：这个方法是由CenterViewController中的btnMovePanelRight:调用的。更多如何实现delegate相关的信息，请参考：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果开发者文档</span></a></span></span>。</p>
+
+<p>上面的代码就是奇迹发生的地方！:]</p>
+
+<p>首先调用getLeftView方法，该方法返回一个view，然后将view推到背后，接着是进入动画处理过程：使用一个animateWithDuration:animations:completion: 块。在动画中使用到的SLIDE_TIMING和PANEL_WIDTH值可以随意调整。其中SLIDE_TIMING是控制动画的速度，而PANEL_WIDTH是控制动画过后，center view留在屏幕中的宽度。</p>
+
+<p>另外，记住海的把leftButton的tag属性设置为0。如果你还记得的话，这个tag属性用来跟踪记录center view的当前位置。</p>
+
+<p>现在编译并运行一下程序，看看效果如何。</p>
+
+<p>当程序启动后，点击kitties按钮，center panel应该会滑动到右边，并显示出left panel。此时，屏幕上显示的效果如下图所示：</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a></p>
+
+<p>注意观察center view左边缘的圆角和阴影——这两个效果是执行showCenterViewWithShadow:withOffset:（之前添加的方法）方法得到的结果。</p>
+
+<p>再点击一下kitties按钮——什么事情都没有发生。这是因为还没有实现movePanelToOriginalPosition方法。</p>
+
+<p>回到<span style="color: #339966;"><strong>MainViewController.m</strong></span>文件，并将下面的代码块添加到<span style="color: #339966;"><strong>movePanelToOriginalPosition</strong></span>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        [self resetMainView];
+                    }
+                }];</pre>
+
+
+<p>同样，在上面的代码中使用了一个animateWithDuration:animations:completion: 块来处理动画。不过这次是将center view的位置以动画的方式设置为最初的位置。</p>
+
+<p>当动画完成的时候，调用了resetMainView方法。目前该方法还没有具体的实现。在该方法中需要重置一下view，下面我们来实现一下吧！</p>
+
+<p>找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并将下面的代码添加到方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// remove left view and reset variables, if needed
+if (_leftPanelViewController != nil)
+{
+    [self.leftPanelViewController.view removeFromSuperview];
+    self.leftPanelViewController = nil;
+
+    _centerViewController.leftButton.tag = 1;
+    self.showingLeftPanel = NO;
+}
+
+// remove view shadows
+[self showCenterViewWithShadow:NO withOffset:0];</pre>
+
+
+<p>上的代码将left panel从view中移除，并将kitties按钮重置为1（表示center view目前是在最初的位置），另外还移除了center view的圆角和阴影效果。</p>
+
+<p>编译并运行程序，当点击kitties按钮后，再次点击kitties按钮，center view会回到最初的位置，如下图所示：</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png" width="333" height="500" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>下面，在右边添加相关的功能——小狗！——请阅读<span style="text-decoration: underline;"><a href="http://beyondvincent.com/2013/04/17/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF2/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(2)</span></strong></a></span></p>
+
+<h2><span style="font-size: 13px;"> </span></h2>
+
+		
+		
+	</div>
+
+</article>
+
+</div>
+<nav id="pagenavi">
+    
+        <a href="/blog/page/9/" class="prev">Prev</a>
+    
+    
+        <a href="/blog/page/11/" class="next">Next</a>
+    
+    <div class="center"><a href="/blog/archives">所有文章</a></div>
+</nav></div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

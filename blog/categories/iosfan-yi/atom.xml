@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
+  <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
+  <link href="http://BeyondVincent.github.io/"/>
+  <updated>2013-08-01T16:03:43+08:00</updated>
+  <id>http://BeyondVincent.github.io/</id>
+  <author>
+    <name><![CDATA[破船(BeyondVincent)]]></name>
+    <email><![CDATA[beyondvincent@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(2)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/17/105/"/>
+    <updated>2013-07-17T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/17/105</id>
+    <content type="html"><![CDATA[<p>本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">破船</span></strong></a></span>译自<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span></strong>介绍了OC中并发编程的相关API，本文我们接着来看看并发编程中面临的一些挑战。</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
+<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
+<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
+<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
+<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
+<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
+<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
+<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
+<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
+<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
+<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
+<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
+<strong><span style="color: #339966;"> 4、小结</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1和</span></strong><strong><span style="color: #339966;">2两部分内容请看</span></strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span>。****</h2>
+
+<h2><span style="color: #339966;"><strong>3、并发编程中面临的挑战</strong></span></h2>
+
+<p>使用并发编程会带来许多陷进。尽管开发者做得足够到位了，还是难以观察并行执行中相互作用的多任务的不同状态。问题往往发生在一些不确定性（不可预见性）的地方，在调试相关并发代码时会感觉到很无助。</p>
+
+<p>关于并发编程的不可预见性有一个非常典型的例子：在1995年，NASA(美国宇航局)发送了火星探测器，但是当探测器成功着陆的时候，任务嘎然而止，火星探测器莫名其妙的不停重启——在计算机领域内，遇到的这中现象被定为为优先级反转，也就是说低优先级的线程一直阻塞着高优先级的线程。稍后我们会看到更多相关介绍。通过该示例，可以告诉我们即使拥有丰富的资源和大量优秀工程师，但是也会遭遇使用并发编程带来的陷阱。</p>
+
+<h3><span style="color: #339966;">3.1、资源共享</span></h3>
+
+<p>并发编程中许多问题的根源就是在多线程中访问共享资源。资源可以是一个属性、一个对象，通用的内存、网络设备和文件等等。在多线程中任意共享的资源都有一个潜在的冲突，开发者必须防止相关冲突的发生。</p>
+
+<p>为了演示冲突问题，我们来看一个关于资源的简单示例：利用一个整型值作为计数器。在程序运行过程中，有两个并行线程A和B，这两个线程都尝试着同时增加计数器的值。问题来了，通过C或OC写的代码(增加计数器的值)不仅仅是一条指令，而是包括好多指令——要想增加计数器的值，需要从内存中读取出当前值，然后再增加计数器的值，最后还需要就爱那个这个增加的值写回内存中。</p>
+
+<p>我们可以试着想一下，如果两个线程同时做上面涉及到的操作，会发生什么问题。例如，线程A和B都从内存中读取出了计数器的值，假设为17，然后线程A将计数器的值加1，并将结果18写回到内存中。同时，线程B也将计数器的值加1，并将结果18写回到内存中。实际上，此时计数器的值已经被破坏掉了——因为计数器的值17被加1了两次，应该为19，但是内存中的值为18。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png"><img class="alignnone size-full wp-image-1651" alt="race-condition@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png" width="1148" height="638" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>这个问题成为资源竞争，或者叫做<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Race_conditions#Software" target="_blank"><span style="color: #339966; text-decoration: underline;">race condition</span></a></span></span></strong>，在多线程里面访问一个共享的资源，如果没有一种机制来确保线程A结束访问一个共享资源之前，线程B就开始访问该共享资源，那么资源竞争的问题总是会发生。试想一下，如果如果程序在内存中访问的资源不是一个简单的整型，而是一个复杂的数据结构，可能会发生这样的现象：当第一个线程正在读写这个数据结构时，第二个线程也来读这个数据结构，那么获取到的数据可能是新旧参半。为了防止出现这样的问题，在多线程访问共享资源时，需要一种互斥的机制。</p>
+
+<p>在实际的开发中，情况甚至要比上面介绍的复杂，因为现代CPU为了对代码运行达到最优化，对改变从内存中读写数据的顺序（乱序执行）。</p>
+
+<h3><span style="color: #339966;"> 3.2、互斥</span></h3>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Mutex" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥</span></a></span></strong></span>访问的意思就是同一时刻，只允许一个线程访问某个资源。为了保证这一点，每个希望访问共享资源的线程，首先需要获得一个共享资源的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Lock_%28computer_science%29" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥锁</span></a></span></span></strong>，一旦某个线程对资源完成了读写操作，就释放掉这个互斥锁，这样别的线程就有机会访问该共享资源了。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png"><img class="alignnone size-full wp-image-1652" alt="locking@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png" width="1248" height="766" /></a></p>
+
+<p>除了确保互斥锁的访问，还需要解决代码无序执行所带来的问题。如果不能确保CPU访问内存的顺序跟编程时的代码指令一样，那么仅仅依靠互斥锁的访问是不够的。为了解决由CPU的优化策略引起的代码无序执行，需要引入内存屏障(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Memory_barrier" target="_blank"><span style="color: #339966; text-decoration: underline;">memory barrier</span></a></span></span></strong>)。通过设置内存屏障，来确保无序执行时能够正确跨越设置的屏障。</p>
+
+<p>当然，互斥锁的实现是需要自由的竞争条件。这实际上是非常重要的一个保证，并且需要在现代CPU上使用特殊的指令。更多关于原子操作(atomic operation)，请阅读Daniel写的文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术</span></a></span></span></strong>。</p>
+
+<p>从语言层面来说，在Objective-C中将属性以atomic的形式来声明，就能支持互斥锁了。实际上，默认情况下，属性是atomic的。将一个属性声明为atomic表示每次访问该属性都会进行加锁和解锁操作。虽然最把稳的做法就是将所有的属性都声明为atomic，但是这也会付出一定的代价。</p>
+
+<p>获取资源上的锁会引发一定的性能代价。获取和释放锁需要自由的竞争条件(race-condition free)，这在多核系统中是很重要的。另外，在获取锁的时候，线程有时候需要等待——因为其它的线程已经获得了资源的锁。这种情况下，线程会进入休眠状态，当其它线程释放掉相关资源的锁时，休眠的线程会得到通知。其实所有这些相关操作都是非常昂贵且复杂的。</p>
+
+<p>这有一些不同类型的锁。当没有竞争时，有些锁是很廉价的(cheap)，但是在竞争情况下，性能就会打折扣。同等条件下，另外一些锁则比较昂贵(expensive)，但是在竞争情况下，会表现更好(锁的竞争是这样产生的：当一个或者多个线程尝试获取一个已经被别的线程获取了的锁)。</p>
+
+<p>在这里有一个东西需要进行权衡：获取和释放锁所带来的开销。开发者需要确保代码中有获取锁和释放锁的语句。同时，如果获取锁之后，要执行一大段代码，这将带来风险：其它线程可能因为资源的竞争而无法工作（需要释放掉相关的锁才行）。</p>
+
+<p>我们经常能看到并行运行的代码，但实际上由于共享资源中配置了相关的锁，所以有时候只有一个线程是出于激活状态的。要想预测一下代码在多核上的调度情况，有时候也显得很重要。我们可以使用Instrument的CPU strategy view来检查是否有效的利用了CPU的可用核数，进而得出更好的想法，以此来优化代码。</p>
+
+<h3><span style="color: #339966;"> 3.3、死锁</span></h3>
+
+<p>互斥解决了资源竞争的问题，但同时这也引入了一个新的问题：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Deadlock" target="_blank"><span style="color: #339966; text-decoration: underline;">死锁</span></a></span></span></strong>。当多个线程在相互等待着对方的结束时，就会发生死锁，这是程序可能会被卡住。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png"><img class="alignnone size-full wp-image-1653" alt="dead-lock@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png" width="906" height="717" /></a></p>
+
+<p>看看下面的代码——交换两个变量的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void swap(A, B)
+{
+    lock(lockA);
+    lock(lockB);
+    int a = A;
+    int b = B;
+    A = b;
+    B = a;
+    unlock(lockB);
+    unlock(lockA);
+}</pre>
+
+
+<p>大多数时候，这能够正常运行。但是当两个线程同时调用上面这个方法呢——使用两个相反的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">swap(X, Y); // thread 1
+swap(Y, X); // thread 2</pre>
+
+
+<p>此时程序可能会由于死锁而被终止。线程1获得了X的一个锁，线程2获得了Y的一个锁。 接着它们会同时等待另外一把锁，但是永远都不会获得。</p>
+
+<p>记住：在线程之间共享更多的资源，会使用更多的锁，同时也会增加死锁的概率。这也是为什么我们需要尽量减少线程间资源共享，并确保共享的资源尽量简单的原因之一。建议阅读以下<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发编程API</span></a></span></span></strong>中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#async" target="_blank"><span style="color: #339966; text-decoration: underline;">doing things asynchronously</span></a></span></span></strong>。</p>
+
+<p>&nbsp;</p>
+
+<h3><span style="color: #339966;">3.4、饥饿</span></h3>
+
+<p>当你认为已经足够了解并发编程面临的陷阱 时，拐角处又出现了新的问题。锁定的共享资源会引起读写问题。大多数情况下，限制资源一次只能有一个线程进行访问，这是非常浪费的，比如一个读取锁只允许读，而不对资源进行写操作，这种情况下，同时可能会有另外一个线程等着着获取一个写锁。</p>
+
+<p>为了解决这个问题，更好的方法不是简单使用读/写锁，例如给定一个<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock" target="_blank"><span style="color: #339966; text-decoration: underline;">writer preference</span></a></span></span></strong>，或者使用<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Read-copy-update" target="_blank"><span style="color: #339966; text-decoration: underline;">read-copy-update</span></a></span></span></strong>算法。Daniel在<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#multiple-readers-single-writer" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术文章</span></a></span></span></strong>中有相关介绍。</p>
+
+<h3><span style="color: #339966;"> 3.5、优先级反转</span></h3>
+
+<p>本节开头介绍了美国宇航局发射的火星探测器在火星上遇到的并发问题。现在我们就来看看为什么那个火星探测器会失败，以及为什么有时候我们的程序也会遇到相同的问题——该死的优先级反转。</p>
+
+<p>优先级反转是指程序在运行时低优先级的任务阻塞了高优先级的任务，有效的反转了任务的优先级。由于GCD提供了后台运行队列(拥有不同的优先级)，包括I/O队列，所以通过GCD我们可以很好的来了解一下优先级反转的可能性。</p>
+
+<p>高优先级和低优先级的任务之间在共享一个资源时，就可能发生优先级反转。当低优先级的任务获得了共享资源的锁时，该任务应该迅速完成，并释放掉锁，然后让高优先级的任务在没有明显的延时下继续执行。然而当低优先级阻塞着高优先级期间(低优先级获得的时间又比较少)，如果有一个中优先级的任务(该任务不需要那个共享资源)，那么可能会抢占低优先级任务，而被执行——因为此时高优先级任务是被阻塞的，所以中优先级任务是目前所有可运行任务中优先级最高的。此时，中优先级任务就会阻塞着低优先级任务，导致低优先级任务不能释放掉锁，也就会引起高优先级任务一直在等待锁的释放。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png"><img class="alignnone size-full wp-image-1654" alt="priority-inversion@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png" width="1018" height="700" /></a></p>
+
+<p>在我们的实际代码中，可能不会像火星探测器那样，遇到优先级反转时，不同的重启。</p>
+
+<p>解决这个问题的方法，通常就是不要使用不同的优先级——将高优先级的代码和低优先级的代码修改为相同的优先级。当使用GCD时，总是使用默认的优先级队列。如果使用不同的优先级，就可能会引发事故。</p>
+
+<p>虽然有些文章上说，在不同的队列中使用不同的优先级，这听起来不错，但是这回增加并发编程的复杂度和不可预见性。如果编程中，在高优先级任务中突然没有理由的卡住了，可能你会想起本文，以及称为优先级反转的问题，甚至还会想起美国宇航局的工程师也遇到这样的问题。</p>
+
+<h2><span style="color: #339966;">4、小结</span></h2>
+
+<p>希望通过本文你能够了解到并发编程带来的复杂性和相关问题。并发编程中，看起来，无论是多么简单的API，由此产生的问题会变得非常的难以观测，并且要想调试这类问题，往往都是比较困难的。</p>
+
+<p>另外，并发实际上是一个非常棒的功能——它充分利用了现代多核CPU的强大计算能力。在开发中，关键的一点就是尽量让并发模型简单，这样可以限制锁的数量。</p>
+
+<p>我们建议采纳的安全模式是这样的：从主线程中提取出使用到的数据，并利用一个操作队列在后台处理相关的数据，然后将后台处理的结果反馈到主队列中。使用这种方式，开发者不需要自己负责任何的锁，这也就减少了犯错误的概率。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-17</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(1)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/16/104/"/>
+    <updated>2013-07-16T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/16/104</id>
+    <content type="html"><![CDATA[<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p><a href="http://www.objc.io/%E7%AB%99%E7%82%B9%E4%B8%BB%E8%A6%81%E4%BB%A5%E6%9D%82%E5%BF%97%E7%9A%84%E5%BD%A2%E5%BC%8F%EF%BC%8C%E6%B7%B1%E5%85%A5%E6%8C%96%E6%8E%98%E5%9C%A8OC%E4%B8%AD%E7%9A%84%E6%9C%80%E4%BD%B3%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5%E5%92%8C%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%EF%BC%8C%E6%AF%8F%E4%B8%AA%E6%9C%88%E6%8E%A2%E8%AE%A8%E4%B8%80%E4%B8%AA%E4%B8%BB%E9%A2%98%EF%BC%8C%E6%AF%8F%E4%B8%AA%E4%B8%BB%E9%A2%98%E9%83%BD%E4%BC%9A%E6%9C%89%E5%87%A0%E7%AF%87%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%87%E7%AB%A0%E5%87%BA%E7%82%89%EF%BC%8C2013%E5%B9%B47%E6%9C%88%E4%BB%BD%E7%9A%84%E4%B8%BB%E9%A2%98%E6%98%AF%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%8A%E5%A4%A9%E6%99%9A%E4%B8%8A%E6%88%91%E5%B0%B1%E6%8C%91%E9%80%89%E5%85%B6%E4%B8%AD%E7%9A%84%E7%AC%AC2%E7%AF%87%E6%96%87%E7%AB%A0">http://www.objc.io/%E7%AB%99%E7%82%B9%E4%B8%BB%E8%A6%81%E4%BB%A5%E6%9D%82%E5%BF%97%E7%9A%84%E5%BD%A2%E5%BC%8F%EF%BC%8C%E6%B7%B1%E5%85%A5%E6%8C%96%E6%8E%98%E5%9C%A8OC%E4%B8%AD%E7%9A%84%E6%9C%80%E4%BD%B3%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5%E5%92%8C%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%EF%BC%8C%E6%AF%8F%E4%B8%AA%E6%9C%88%E6%8E%A2%E8%AE%A8%E4%B8%80%E4%B8%AA%E4%B8%BB%E9%A2%98%EF%BC%8C%E6%AF%8F%E4%B8%AA%E4%B8%BB%E9%A2%98%E9%83%BD%E4%BC%9A%E6%9C%89%E5%87%A0%E7%AF%87%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%87%E7%AB%A0%E5%87%BA%E7%82%89%EF%BC%8C2013%E5%B9%B47%E6%9C%88%E4%BB%BD%E7%9A%84%E4%B8%BB%E9%A2%98%E6%98%AF%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%8A%E5%A4%A9%E6%99%9A%E4%B8%8A%E6%88%91%E5%B0%B1%E6%8C%91%E9%80%89%E5%85%B6%E4%B8%AD%E7%9A%84%E7%AC%AC2%E7%AF%87%E6%96%87%E7%AB%A0</a>(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Concurrent Programming: APIs and Challenges</span></a></span></span></strong>)进行翻译，与大家分享一下主要内容。由于内容比较多，我将分两部分翻译(API和难点)完成，翻译中，如有错误，还请指正。</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
+<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
+<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
+<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
+<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
+<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
+<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
+<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
+<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
+<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
+<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
+<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
+<strong><span style="color: #339966;"> 4、小结</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1、介绍</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"> <a href="http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29"><span style="color: #339966; text-decoration: underline;">并发</span></a></span></strong></span>的意思就是同时运行多个任务，这些任务可以在单核CPU上以<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Preemption_%28computing%29"><span style="color: #339966; text-decoration: underline;">分时(时间共享)</span></a></span></span></strong>的形式同时运行，或者在多核CPU上以真正的并行来运行多任务。</p>
+
+<p>OS X和iOS提供了几种不同的API来支持并发编程。每种API都具有不同的功能和一些限制，一般是根据不同的任务使用不同的API。这些API在系统中处于不同的地方。并发编程对于开发者来说非常的强大，但是作为开发者需要担负很大的责任，来把任务处理好。</p>
+
+<p>实际上，并发编程是一个很有挑战的主题，它有许多错综复杂的问题和陷阱，当开发者在使用类似<strong><span style="color: #339966;">GCD</span></strong>或<strong><span style="color: #339966;">NSOperationQueue</span></strong> API时，很容易遗忘这些问题和陷阱。本文首先介绍一下OS X和iOS中不同的并发编程API，然后深入了解并发编程中开发者需要面临的一些挑战。</p>
+
+<h2><strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong></h2>
+
+<p>在移动和桌面操作系统中，苹果提供了相同的并发编程API。 本文会介绍<strong><span style="color: #339966;">pthread</span></strong>和<strong><span style="color: #339966;">NSThread</span></strong>、<strong><span style="color: #339966;">Grand Central Dispatch(GCD)</span></strong>、<strong><span style="color: #339966;">NSOperationQueue</span></strong>，以及<strong><span style="color: #339966;">NSRunLoop</span></strong>。NSRunLoop列在其中，有点奇怪，因为它并没有被用来实现真正的并发，不过NSRunLoop与并发编程有莫大的关系，值得我们去了解。</p>
+
+<p>由于高层API是基于底层API构建的，所以首先将从底层的API开始介绍，然后逐步介绍高层API，不过在具体编程中，选择API的顺序刚好相反：因为大多数情况下，选择高层的API不仅可以完成底层API能完成的任务，而且能够让并发模型变得简单。</p>
+
+<p>如果你对这里给出的建议(API的选择)上有所顾虑，那么你可以看看本文的相关内容：<strong><span style="color: #339966;">并发编程面临的挑战</span></strong>，以及Peter Steinberger写的关于<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/thread-safe-class-design.html" target="_blank"><span style="color: #339966; text-decoration: underline;">线程安全</span></a></span></span></strong>的文章。</p>
+
+<h3><strong><span style="color: #339966;">2.1、Threads</span></strong></h3>
+
+<p>线程(thread)是组成进程的子单元，操作系统的调度器可以对线程进行单独的调度。实际上，所有的并发编程API都是构建于线程之上的——包括GCD和操作队列(operation queues)。</p>
+
+<p>多线程可以在单核CPU上同时运行(可以理解为同一时间)——操作系统将时间片分配给每一个线程，这样就能够让用户感觉到有多个任务在同时进行。如果CPU是多核的，那么线程就可以真正的以并发方式被执行，所以完成某项操作，需要的总时间更少。</p>
+
+<p>开发者可以通过Instrument中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html" target="_blank"><span style="color: #339966; text-decoration: underline;">CPU strategy view</span></a></span></span></strong>来观察代码被执行时在多核CPU中的调度情况。</p>
+
+<p>需要重点关注的一件事：开发者无法控制代码在什么地方以及什么时候被调度，以及无法控制代码执行多长时间后将被暂停，以便轮到执行别的任务。线程调度是非常强大的一种技术，但是也非常复杂(稍后会看到)。</p>
+
+<p>先把线程调度的复杂情况放一边，开发者可以使用<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/POSIX_Threads" target="_blank"><span style="color: #339966; text-decoration: underline;">POSIX线程</span></a></span></span></strong>API，或者Objective-C中提供的对该API的封装——<strong><span style="color: #339966;">NSThread</span></strong>，来创建自己的线程。下面这个小示例是利用<strong><span style="color: #339966;">pthread</span></strong>来查找在一百万个数字中的最小值和最大值。其中并发执行了4个线程。从该示例复杂的代码中，可以看出为什么我们不希望直接使用pthread。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">struct threadInfo {
+    uint32_t * inputValues;
+    size_t count;
+};
+
+struct threadResult {
+    uint32_t min;
+    uint32_t max;
+};
+
+void * findMinAndMax(void *arg)
+{
+    struct threadInfo const * const info = (struct threadInfo *) arg;
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i &lt; info&gt;count; ++i) {
+        uint32_t v = info&gt;inputValues[i];
+        min = MIN(min, v);
+        max = MAX(max, v);
+    }
+    free(arg);
+    struct threadResult * const result = (struct threadResult *) malloc(sizeof(*result));
+    result&gt;min = min;
+    result&gt;max = max;
+    return result;
+}
+
+int main(int argc, const char * argv[])
+{
+    size_t const count = 1000000;
+    uint32_t inputValues[count];
+
+    // Fill input values with random numbers:
+    for (size_t i = 0; i &lt; count; ++i) {
+        inputValues[i] = arc4random();
+    }
+
+    // Spawn 4 threads to find the minimum and maximum:
+    size_t const threadCount = 4;
+    pthread_t tid[threadCount];
+    for (size_t i = 0; i &lt; threadCount; ++i) {         struct threadInfo * const info = (struct threadInfo *) malloc(sizeof(*info));         size_t offset = (count / threadCount) * i;         info&gt;inputValues = inputValues + offset;
+        info&gt;count = MIN(count - offset, count / threadCount);
+        int err = pthread_create(tid + i, NULL, &findMinAndMax, info);
+        NSCAssert(err == 0, @"pthread_create() failed: %d", err);
+    }
+    // Wait for the threads to exit:
+    struct threadResult * results[threadCount];
+    for (size_t i = 0; i &lt; threadCount; ++i) {
+        int err = pthread_join(tid[i], (void **) &(results[i]));
+        NSCAssert(err == 0, @"pthread_join() failed: %d", err);
+    }
+    // Find the min and max:
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i &lt; threadCount; ++i) {         min = MIN(min, results[i]&gt;min);
+        max = MAX(max, results[i]&gt;max);
+        free(results[i]);
+        results[i] = NULL;
+    }
+
+    NSLog(@"min = %u", min);
+    NSLog(@"max = %u", max);
+    return 0;
+}</pre>
+
+
+<p><strong><span style="color: #339966;">NSThread</span></strong>是Objective-C对<strong><span style="color: #339966;">pthread</span></strong>的一个封装。通过封装，在Cocoa环境中，可以让代码看起来更加亲切。例如，开发者可以利用NSThread的一个子类来定义一个线程，在这个子类的中封装了需要运行的代码。针对上面的那个例子，我们可以定义一个这样的NSThread子类：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface FindMinMaxThread : NSThread
+@property (nonatomic) NSUInteger min;
+@property (nonatomic) NSUInteger max;
+- (instancetype)initWithNumbers:(NSArray *)numbers;
+@end
+
+@implementation FindMinMaxThread {
+    NSArray *_numbers;
+}
+
+- (instancetype)initWithNumbers:(NSArray *)numbers 
+{
+    self = [super init];
+    if (self) {
+        _numbers = numbers;
+    }
+    return self;
+}
+
+- (void)main
+{
+    NSUInteger min;
+    NSUInteger max;
+    // process the data
+    self.min = min;
+    self.max = max;
+}
+@end</pre>
+
+
+<p>要想启动一个新的线程，需要创建一个线程对象，然后调用它的<strong><span style="color: #339966;">start</span></strong>方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSSet *threads = [NSMutableSet set];
+NSUInteger numberCount = self.numbers.count;
+NSUInteger threadCount = 4;
+for (NSUInteger i = 0; i &lt; threadCount; i++) {
+    NSUInteger offset = (count / threadCount) * i;
+    NSUInteger count = MIN(numberCount - offset, numberCount / threadCount);
+    NSRange range = NSMakeRange(offset, count);
+    NSArray *subset = [self.numbers subarrayWithRange:range];
+    FindMinMaxThread *thread = [[FindMinMaxThread alloc] initWithNumbers:subset];
+    [threads addObject:thread];
+    [thread start];
+}</pre>
+
+
+<p>现在，当4个线程结束的时候，我们检测到线程的isFinished属性。不过最好还是远离上面的代码吧——最主要的原因是，在编程中，直接使用线程（无论是pthread，还是NSThread）都是难以接受的。</p>
+
+<p>使用线程会引发的一个问题就是：在开发者自己的代码，或者系统内部的框架代码中，被激活的线程数量很有可能会成倍的增加——这对于一个大型工程来说，是很常见的。例如，在8核CPU中，你创建了8个线程，然后在这些线程中调用了框架代码，这些代码也创建了同样的线程(其实它并不知道你已经创建好线程了)，这样会很快产生成千上万个线程，最终导致你的程序被终止执行——线程实际上并不是免费的咖啡，每个线程的创建都会消耗一些内容，以及相关的内核资源。</p>
+
+<p>下面，我将介绍两个基于队列的并发编程API：GCD和operation queue。它们通过集中管理一个线程池(被没一个任务协同使用)，来解决上面遇到的问题。</p>
+
+<p><strong style="font-size: 1.17em;"><span style="color: #339966;">2.2、Grand Central Dispatch</span></strong></p>
+
+<p>为了让开发者更加容易的使用设备上的多核CPU，苹果在OS X和iOS 4中引入了Grand Central Dispatch(GCD)。在下一篇文章中会更加详细的介绍GCD：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">low-level concurrency APIs</span></a></span></span></strong>。</p>
+
+<p>通过GCD，开发者不用再直接跟线程打交道了，只需要向队列中添加block代码即可，GCD在后端管理着一个线程池。GCD不仅决定着哪个线程(block)将被执行，它还根据可用的系统资源对线程池中的线程进行管理——这样可以不通过开发者来集中管理线程，缓解大量线程的创建，做到了让开发者远离线程的管理。</p>
+
+<p>默认情况下，GCD公开有5个不同的队列：运行在主线程中的main queue，3个不同优先级的后台队列，以及一个优先级更低的后台队列(用于I/O)。另外，开发者可以创建自定义队列：串行或者并行队列。自定义队列非常强大，在自定义队列中被调度的所有block都将被放入到系统的线程池的一个全局队列中。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png"><img class="alignnone size-full wp-image-1639" alt="gcd-queues@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png" width="1256" height="726" /></a></p>
+
+<p>这里队列中，可以使用不同优先级，这听起来可能非常简单，不过，强烈建议，在大多数情况下使用默认的优先级就可以了。在队列中调度具有不同优先级的任务时，如果这些任务需要访问一些共享的资源，可能会迅速引起不可预料到的行为，这样可能会引起程序的突然停止——运行时，低优先级的任务阻塞了高优先级任务。更多相关内容，在本文的<strong><span style="color: #339966;">优先级反转</span></strong>中会有介绍。</p>
+
+<p>虽然GCD是稍微偏底层的一个API，但是使用起来非常的简单。不过这也容易使开发者忘记并发编程中的许多注意事项和陷阱。读者可以阅读本文后面的：并发编程中面临的挑战，这样可以注意到一些潜在的问题。本期的另外一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Low-level Concurrency API</span></a></span></span></strong>，给出了更加深入的解释，以及一些有价值的提示。</p>
+
+<h3><strong><span style="color: #339966;"> 2.3、Operation Queues</span></strong></h3>
+
+<p>操作队列(operation queue)是基于GCD封装的一个队列模型。GCD提供了更加底层的控制，而操作队列在GCD之上实现了一些方便的功能，这些功能对于开发者来说会更好、更安全。</p>
+
+<p>类NSOperationQueue有两个不同类型的队列：主队列和自定义队列。主队列运行在主线程之上，而自定义队列在后台执行。任何情况下，在这两种队列中运行的任务，都是由NSOperation组成。</p>
+
+<p>定义自己的操作有两种方式：重写main或者start方法，前一种方法非常简单，但是灵活性不如后一种。对于重写main方法来说，开发者不需要管理一些状态属性(例如isExecuting和isFinished)——当main返回的时候，就可以假定操作结束。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
+    - (void)main
+    {
+        // do your work here ...
+    } 
+@end</pre>
+
+
+<p>如果你希望拥有更多的控制权，以及在一个操作中可以执行异步任务，那么就重写start方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
+    - (void)start
+    {
+        self.isExecuting = YES;
+        self.isFinished = NO;
+        // start your work, which calls finished once it&#039;s done ...
+    }
+
+    - (void)finished
+    {
+        self.isExecuting = NO;
+        self.isFinished = YES;
+    }
+@end</pre>
+
+
+<p>注意：这种情况下，需要开发者手动管理操作的状态。 为了让操作队列能够捕获到操作的改变，需要将状态属性以KVO的方式实现。并确保状态改变的时候发送了KVO消息。</p>
+
+<p>为了满足操作队列提供的取消功能，还应该检查isCancelled属性，以判断是否继续运行。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)main
+{
+    while (notDone && !self.isCancelled) {
+        // do your processing
+    }
+}</pre>
+
+
+<p>当开发者定义好操作类之后，就可以很容易的将一个操作添加到队列中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+YourOperation *operation = [[YourOperation alloc] init];
+[queue  addOperation:operation];</pre>
+
+
+<p>另外，开发者也可以将block添加到队列中。这非常的方便，例如，你希望在主队列中调度一个一次性任务：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    // do something...
+}];</pre>
+
+
+<p>如果重写operation的description方法，可以很容易的标示出在某个队列中当前被调度的所有operation。</p>
+
+<p>除了提供基本的调度操作或block外，操作队列还提供了一些正确使用GCD的功能。例如，可以通过maxConcurrentOperationCount属性来控制一个队列中可以有多少个操作参与并发执行，以及将队列设置为一个串行队列。</p>
+
+<p>另外还有一个方便的功能就是根据队列中operation的优先级对其进行排序，这不同于GCD的队列优先级，它只会影响到一个队列中所有被调度的operation的执行顺序。如果你需要进一步控制operation的执行顺序(除了使用5个标准的优先级)，还可以在operation之间指定依赖，如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[intermediateOperation addDependency:operation1];
+[intermediateOperation addDependency:operation2];
+[finishedOperation addDependency:intermediateOperation];</pre>
+
+
+<p>上面的代码可以确保operation1和operation在intermediateOperation之前执行，也就是说，在finishOperation之前被执行。对于需要明确的执行顺序时，操作依赖是非常强大的一个机制。 它可以让你创建一些操作组，并确保这些操作组在所依赖的操作之前被执行，或者在并发队列中以串行的方式执行operation。</p>
+
+<p>从本质上来看，操作队列的性能比GCD要低，不过，大多数情况下，可以忽略不计，所以操作队列是并发编程的首选API。</p>
+
+<h3><strong><span style="color: #339966;"> 2.4、Run Loops</span></strong></h3>
+
+<p>实际上，Run loop并不是一项并发机制(例如GCD或操作队列)，因为它并不能并行执行任务。不过在主dispatch/operation队列中，run loop直接配合着任务的执行，它提供了让代码异步执行的一种机制。</p>
+
+<p>Run loop比起操作队列或者GCD来说，更加容易使用，因为通过run loop，开发者不必处理并发中的复杂情况，就能异步的执行任务。</p>
+
+<p>一个run loop总是绑定到某个特定的线程中。main run loop是与主线程相关的，在每一个Cocoa和CocoaTouch程序中，这个main run loop起到核心作用——它负责处理UI时间、计时器，以及其它内核相关事件。无论什么时候使用计时器、NSURLConnection或者调用performSelector:withObject:afterDelay:，run loop都将在后台发挥重要作用——异步任务的执行。</p>
+
+<p>无论什么时候，依赖于run loop使用一个方法，都需要记住一点：run loop可以运行在不同的模式中，每种模式都定义了一组事件，供run loop做出响应——这其实是非常聪明的一种做法：在main run loop中临时处理某些任务。</p>
+
+<p>在iOS中非常典型的一个示例就是滚动，在进行滚动时，run loop并不是运行在默认模式中的，因此，run loop此时并不会做出别的响应，例如，滚动之前在调度一个计时器。一旦滚动停止了，run loop会回到默认模式，并执行添加到队列中的相关事件。如果在滚动时，希望计时器能被触发，需要将其在NSRunLoopCommonModes模式下添加到run loop中。</p>
+
+<p>其实，一般情况下都没有必要去配置使用非主线的其他线程的runloop，若有繁重的工作不想卡在主线程还有很多别的方法可以使用。相关内容，Chris写了一篇文章，可以去看看：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/common-background-practices.html" target="_blank"><span style="color: #339966; text-decoration: underline;">common background practices</span></a></span></span></strong>。</p>
+
+<p>如果你真需要在别的线程中添加一个run loop，那么不要忘记在run loop中至少添加一个input source。如果run loop中没有input source，那么每次运行这个run loop，都会立即退出。</p>
+
+<p>关于并发编程中面临的挑战，会在下一篇文章中出现。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-16</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Block剧终：Objective-C中的闭包性和匿名函数]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/12/102/"/>
+    <updated>2013-07-12T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/12/102</id>
+    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg"><img class="alignnone size-full wp-image-1586" alt="blocks-1024x576" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg" width="1024" height="576" /></a></p>
+
+<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">xs-labs</span></a></span></span></strong>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>还记得昨天我给大家推荐的文章吗：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></strong></span>。今天手痒，还想继续敲几个字，索性我就把这篇文章敲出来，以此对block说声代码里见吧。</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><strong><span style="color: #339966;">1、关于</span></strong><br/>
+<strong><span style="color: #339966;">    1.1匿名函数</span></strong><br/>
+<strong><span style="color: #339966;">    1.2闭包性</span></strong></p>
+
+<p><strong><span style="color: #339966;">2、Objective-C中的实现</span></strong><br/>
+<strong><span style="color: #339966;">    2.1将block当做参数来传递</span></strong><br/>
+<strong><span style="color: #339966;">    2.2闭包性</span></strong><br/>
+<strong><span style="color: #339966;">    2.3内存管理</span></strong><br/>
+<strong><span style="color: #339966;">    2.4示例</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1、关于</span></strong></h2>
+
+<p>许多脚本语言都支持<strong><span style="color: #339966;">lambda表达式</span></strong>和<strong><span style="color: #339966;">匿名函数</span></strong>。这两个概念经常与<strong><span style="color: #339966;">闭包性</span></strong>(<strong><span style="color: #339966;">closure</span></strong>)相关。例如在JavaScript、ActionScript或PHP(5.3之后)中都有相关的概念。</p>
+
+<p>其实在Objective-C语言中也提供了这两个概念的实现：叫做<strong><span style="color: #339966;">block</span></strong>。</p>
+
+<p>自从Mac OS X 10.6之后，就可以使用block了，其实这样归功于Clang。</p>
+
+<h3><strong><span style="color: #339966;">1.1 匿名函数</span></strong></h3>
+
+<p>就如名字暗示的一样，匿名函数实际上就是一个没有名字或者标示(<strong><span style="color: #339966;">identifier</span></strong>)的函数。匿名函数只有内容(也可以叫做body)，我们可以将其存储在一个变量中，以便之后使用，或者将其当做一个参数传递给另外一个函数使用。</p>
+
+<p>在脚本语言的回调中经常使用到这个概念。</p>
+
+<p>例如，在下面的JavaScript中，有一个名为<strong><span style="color: #339966;">foo</span></strong>的标准函数，接收一个callback当做参数，在函数中，调用了这个callback：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
+{
+    callback();
+}</pre>
+
+
+<p>这里有可能是定义了另外一个标准函数， 然后将这个标准函数当做参数传递给上面的函数：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">function bar()
+{
+    alert( &#039;hello, world&#039; );
+}
+
+foo( bar );</pre>
+
+
+<p>不过这样一来，<strong><span style="color: #339966;">bar</span></strong>函数就会被声明在全局范围内，这就会带来一个风险：被另外一个相同名称的函数覆盖(<strong><span style="color: #339966;">override</span></strong>)了。</p>
+
+<p>但是别担心，JavaScript语言允许callback函数在调用的时候才进行声明：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">foo
+{
+    function()
+    {
+        alert( &#039;hello, world&#039; );
+    }
+);</pre>
+
+
+<p>在上面，可以看到这个callback实际上并没有标示(identifier)。它也不会存在于全局范围，因此也不会与别的已有函数产生冲突。</p>
+
+<p>我们也可以把callback存储到一个变量中，同样也不回存在于全局范围，不过我们可以通过这个变量对这个callback进行重复利用：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myCallback = function()
+{
+    alert( &#039;hello, world&#039; );
+};
+
+foo( myCallback );</pre>
+
+
+<h3><strong><span style="color: #339966;"> 1.2闭包性</span></strong></h3>
+
+<p>闭包性这个概念是允许一个函数访问其所声明上下文中的变量，甚至是在不同的运行上下文中。</p>
+
+<p>下面我们再来看看JavaScript的相关代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
+{
+    alert( callback() );
+}
+
+function bar()
+{
+    var str = &#039;hello, world&#039;;
+
+    foo
+    (
+        function()
+        {
+            return str;
+        }
+    );
+}
+
+bar();</pre>
+
+
+<p>上面的代码中，callback被从bar函数的运行上下文中传递给了foo函数，该callback函数返回变量str的值。</p>
+
+<p>不过在这里请注意，变量str是声明在bar函数中的，也就是说这个变量仅存于bar函数中。</p>
+
+<p>而callback是在另外一个不同的函数中被执行的(跟变量str不在一起)，我们这是可能会猜测foo函数中什么也不会显示出来。</p>
+
+<p>但是，在这里引入了闭包性这个概念。</p>
+
+<p>也就是说在不同的函数中(运行上下文中)，一个函数可以访问到变量所声明上下文中的内容。</p>
+
+<p>因此上面的代码中，callback可以访问到str变量——即使这个callback所在的foo函数不能直接访问这个str变量。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;"><strong>2、Objective-C中的实现</strong></span></h2>
+
+<p>实际上闭包性和匿名函数在Objective-C中是可以使用的，只不过Objective-C是构建于C语言之上，属于强类型编译语言，所以跟上面介绍的解释性脚本语言有许多不同之处。</p>
+
+<p>注意：block其实在纯C或C++(以及Objective-C++)中都是可用的。</p>
+
+<p>在标准C函数中，定义block(匿名函数)之前需要先声明原型。</p>
+
+<p>block的语法有一点点棘手，不过要是熟悉函数指针的话，就非常容易理解了。</p>
+
+<p>下面是block的原型：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSString * ( ^ myBlock )( int );</pre>
+
+
+<p>上面的代码是声明了一个block(^)原型，名字就叫做myBlock，携带一个int参数，返回只为NSString类型的指针。</p>
+
+<p>下面来看看block的定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( int number )
+{
+    return [ NSString stringWithFormat: @"Passed number: %i", number ];
+};</pre>
+
+
+<p>如上所示，将一个函数体赋值给了myBlock变量，其接收一个名为number的参数。该函数返回一个NSString对象。</p>
+
+<p><strong><span style="color: #ff0000;">注意：不要忘记block后面的分号。</span></strong></p>
+
+<p>在脚本语言中是可以忽略掉分号的，但是在编译性语言(如Objective-C)是必须有的。</p>
+
+<p>如果没有写这个分号，编译器会产生一个错误，当然也不会生成可执行文件。</p>
+
+<p>定义好block之后，就可以像使用标准函数一样使用它了：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myBlock(5);</pre>
+
+
+<p>下面是完整的Objective-C程序源代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
+
+int main( void )
+{
+    NSAutoreleasePool * pool;
+    NSString * ( ^ myBlock )( int );
+
+    pool    = [ [ NSAutoreleasePool alloc ] init ];
+    myBlock = ^( int number )
+    {
+        return [ NSString stringWithFormat: @"Passed number: %i", number ];
+    };
+
+    NSLog( @"%@", myBlock(5) );
+
+    [ pool release ];
+
+    return EXIT_SUCCESS;
+}</pre>
+
+
+<p>我们可以用下面的命令来编译(在Terminal中)：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">gcc -Wall -framework Cocoa -o test test.m</pre>
+
+
+<p>上面的命令会根据test.m源代码文件生成一个名为name的可执行文件。可以用下面的命令来运行这个可执行文件：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">./test</pre>
+
+
+<p>如果不把block赋值给变量的话，可以忽略掉block原型的声明，例如直接将block当做参数进行传递。如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">someFunction( ^ NSString * ( void ) { return @"hello, world" } );</pre>
+
+
+<p>注意，上面这种情况必须声明返回值的类型——这里是返回NSString对象。</p>
+
+<h3><span style="color: #339966;"><strong>2.1将block当做参数来传递</strong></span></h3>
+
+<p>之前说过了，block可以当做参数传递给某个C函数。</p>
+
+<p>如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void logBlock( NSString * ( ^ theBlock )( int ) )
+{
+    NSLog( @"Block returned: %@", theBlock() );
+}</pre>
+
+
+<p>由于Objective-C是强制类型语言，所以作为函数参数的block也必须要指定返回值的类型，以及相关参数类型(如果需要的话)。</p>
+
+<p>其实在Objective-C方法中也是一样的：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- ( void )logBlock: ( NSString * ( ^ )( int ) )theBlock;</pre>
+
+
+<h3><span style="color: #339966;"><strong>2.2闭包性</strong></span></h3>
+
+<p>之前有说过，闭包性在Objective-C中是可用的，只不过其行为跟解释性语言有所不同罢了。</p>
+
+<p>我们来看看下面的程序：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
+
+void logBlock( int ( ^ theBlock )( void ) )
+{
+    NSLog( @"Closure var X: %i", theBlock() );
+}
+
+int main( void )
+{
+    NSAutoreleasePool * pool;
+    int ( ^ myBlock )( void );
+    int x;
+
+    pool = [ [ NSAutoreleasePool alloc ] init ];
+    x    = 42;
+
+    myBlock = ^( void )
+    {
+        return x;
+    };
+
+    logBlock( myBlock );
+
+    [ pool release ];
+
+    return EXIT_SUCCESS;
+}</pre>
+
+
+<p>上面的代码在main函数中声明了一个整型，并赋值42，另外还声明了一个block，该block会将42返回。</p>
+
+<p>然后将block传递给logBlock函数，该函数会显示出返回的值42。</p>
+
+<p>即使是在函数logBlock中执行block，而block又声明在main函数中，但是block仍然可以访问到x变量，并将这个值返回。</p>
+
+<p><strong><span style="color: #ff0000;">注意：block同样可以访问全局变量，即使是static。</span></strong></p>
+
+<p>下面来看看第一点不同之处：通过block进行闭包的变量是const的。也就是说不能在block中直接修改这些变量。</p>
+
+<p>来看看当block试着增加x的值时，会发生什么：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( void )
+{
+    x++
+
+    return x;
+};</pre>
+
+
+<p>编译器会生成一个错误：大概意思是在block中x变量是只读的。</p>
+
+<p>不过也别担心，为了允许在block中修改变量，也是可以做到的：用__block关键字来声明变量即可。</p>
+
+<p>基于之前的代码，给x变量添加__block关键字，如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">__block int x;</pre>
+
+
+<h3><span style="color: #339966;"><strong>2.3内存管理</strong></span></h3>
+
+<p>从C语言的角度来看，实际上block是一个结构体，可以被拷贝和销毁的。有两个函数可以使用：Block_copy和Block_destroy()。</p>
+
+<p>而在Objective-C中，block可以接收retain、release和copie消息，这就跟普通对象一样。如果一个block需要被存储下来供以后使用，这些消息是非常重要的(例如，将block存储到一个类的实例变量中)。例如，为了避免错误的使用block，对block进行retain是非常有必要的。</p>
+
+<p><span style="color: #339966;"><strong>2.4示例</strong></span></p>
+
+<p>Block可以用在许多不同的环境中，这样可以让代码更加简单，以及减少函数声明的数量。</p>
+
+<p>下面有一个实例：</p>
+
+<p>我们将给NSArrary类添加一个static方法(类方法)，该方法通过一个callback，根据另外一个数组中的内容产生一个新的数组。</p>
+
+<p>在PHP程序员眼里，该方法就如一个array_filter()。</p>
+
+<p>首先，需要为NSArray类声明一个category。（通过category可以给已有的类添加新方法）。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface NSArray( BlockExample )
+
++ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
+
+@end</pre>
+
+
+<p>上面，声明了一个方法，该方法返回一个NSArray对象，另外接收两个参数：NSArray对象，以及一个callback (为block)。</p>
+
+<p>在callback中会判断根据传入数组参数中的每一个元素。并将返回一个boolean值，以确定当前array中的元素是否需要存储到返回的数组中。</p>
+
+<p>block只有一个参数，代表数组中的某个元素。</p>
+
+<p>我们来看看该方法的具体实现：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation NSArray( BlockExample )
+
++ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
+{
+    NSMutableArray * result;
+    id               element;
+
+    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
+
+    for( element in source ) {
+
+        if( callback( element ) == YES ) {
+
+            [ result addObject: element ];
+        }
+    }
+
+    return result;
+}
+
+@end</pre>
+
+
+<p>上面的代码中，首先是创建了一个可以动态改变尺寸的数组：NSMutableArray，然后根据source array的数目来初始化该数组。</p>
+
+<p>然后对source array中的每个元素进行迭代， 如果callback返回值为YES的话，就将该元素添加到result数组中。</p>
+
+<p>下面是使用该方法的一个完整示例：利用callback构建一个数组：该数组中只包含source array中为NSString类型的元素：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
+
+@interface NSArray( BlockExample )
+
++ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
+
+@end
+
+@implementation NSArray( BlockExample )
+
++ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
+{
+    NSMutableArray * result;
+    id               element;
+
+    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
+
+    for( element in source ) {
+
+        if( callback( element ) == YES ) {
+
+            [ result addObject: element ];
+        }
+    }
+
+    return result;
+}
+
+@end
+
+int main( void )
+{
+    NSAutoreleasePool * pool;
+    NSArray           * array1;
+    NSArray           * array2;
+
+    pool   = [ [ NSAutoreleasePool alloc ] init ];
+    array1 = [ NSArray arrayWithObjects: @"hello, world", [ NSDate date ], @"hello, universe", nil ];
+    array2 = [ NSArray
+                    arrayByFilteringArray: array1
+                    withCallback:          ^ BOOL ( id element )
+                    {
+                        return [ element isKindOfClass: [ NSString class ] ];
+                    }
+             ];
+
+    NSLog( @"%@", array2 );
+
+    [ pool release ];
+
+    return EXIT_SUCCESS;
+}</pre>
+
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-12</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[深度围观block：第三集]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/11/101/"/>
+    <updated>2013-07-11T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/11/101</id>
+    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks1.png"><img class="alignnone size-full wp-image-1580" alt="blocks1" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks1.png" width="396" height="177" /></a></p>
+
+<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.galloway.me.uk/2013/05/a-look-inside-blocks-episode-3-block-copy/" target="_blank"><span style="color: #339966; text-decoration: underline;">galloway</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>本文是深度围观block的第三篇文章，也是最后一篇。希望读者阅读了之后，对block有更加深入的理解，同时也希望之前对汇编语言恐惧或者陌生的读者转变看法，其实只要你用心去看，去学，很容易就搞懂的。</p>
+
+<p>另外由于block具有闭包性，我们也可以将其当做匿名函数，所以大家如果想要了解更多关于OC中的闭包性和匿名函数就来看看这篇文章吧：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></span></strong>。</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<ul>
+<li><strong><span style="color: #339966;">介绍</span></strong></li>
+<li><strong><span style="color: #339966;">已知内容</span></strong></li>
+<li><strong><span style="color: #339966;">Block_copy()</span></strong></li>
+<li><strong><span style="color: #339966;">Block_release()</span></strong></li>
+<li><strong><span style="color: #339966;"><strong style="color: #333333;"><span style="color: #339966;">何去何从</span></strong></span></strong></li>
+</ul>
+
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">介绍</span></strong></h2>
+
+<p>本文话费了很长时间才出炉。实际上，几个月之前就已经打好草稿了，只不过一直忙于写我的这本书:<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.effectiveobjectivec.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">Effective Objective-C 2.0</span></a></span></span></strong>，所以没有时间完成本文。</p>
+
+<p>接着之前的两篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/09/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%b8%80%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">深度围观block：第一集</span></a></span></span></strong>和<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/10/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%ba%8c%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">深度围观block：第二集</span></a></span></span></strong>，本文将更进一步了解当block被拷贝时发生了什么。可能你已经听过这样的说辞“block开始于栈”，以及“如果你希望将block保存下来，以便后续使用，那么必须对block进行拷贝”。那么，这是为什么呢？而在拷贝过程中实际又会发生什么情况？我一直在思考拷贝block时是利用了什么机制。就如之前介绍的block在进行值拷贝时发生了什么。本文我将揭晓这些疑问。</p>
+
+<h2><strong><span style="color: #339966;">已知内容</span></strong></h2>
+
+<p>通过<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/2013/07/09/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%b8%80%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第一集</span></a></strong></span></span>和<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/2013/07/10/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%ba%8c%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第二集</span></a></strong></span></span>两篇文章，我们可以知道block的内存布局如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/block_layout.png"><img class="alignnone size-full wp-image-1575" alt="block_layout" src="http://beyondvincent.com/wp-content/uploads/2013/07/block_layout.png" width="500" height="500" /></a></p>
+
+<p>在<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/07/10/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%ba%8c%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第二集</span></a></strong></span></span>中，我们也知道了当block初始化的时候，会在栈中创建像上图这样的一个结构。由于这个结构是在栈上，而在栈空间是会被重复使用的。那么如果我们想要在以后继续使用该block，就必须要对block进行拷贝操作。拷贝操作需要调用<strong><span style="color: #339966;">Block_copy()</span></strong>函数，或者可以理解为给block发送一个<strong><span style="color: #339966;">copy</span></strong>消息(因为block可以看成一个Objective-C对象)，这也会调用<strong><span style="color: #339966;">Block_copy()</span></strong>函数。</p>
+
+<p>下面我们就来看看Block_copy()函数都做了什么。</p>
+
+<h2><strong><span style="color: #339966;">Block_copy()</span></strong></h2>
+
+<p>我们首先来看看<strong><span style="color: #339966;">Block.h</span></strong>文件，在这里面可以看到如下定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define Block_copy(...) ((__typeof(__VA_ARGS__))_Block_copy((const void *)(__VA_ARGS__)))
+
+void *_Block_copy(const void *arg);</pre>
+
+
+<p>可以看出，<strong><span style="color: #339966;">Block_copy()</span></strong>实际上就是一个宏定义(<strong><span style="color: #339966;">#define</span></strong>)，该宏定义将传入的参数(<strong><span style="color: #339966;">const void *</span></strong>)做强制类型转换，然后再传给<strong><span style="color: #339966;">_Block_copy()</span></strong>。我们也可以在实现文件<strong><span style="color: #339966;">runtime.c</span></strong>中找到<strong><span style="color: #339966;">_Block_copy()</span></strong>的原型：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void *_Block_copy(const void *arg) {
+    return _Block_copy_internal(arg, WANTS_ONE);
+}</pre>
+
+
+<p>上面的方法调用了<strong><span style="color: #339966;">_Block_copy_internal()</span></strong>函数，并传入block本身(arg)以及<strong><span style="color: #339966;">WANTS_ONE</span></strong>。要弄白具体意思，需要查看_Block_copy_internal方法的实现，该方法也是在<strong><span style="color: #339966;">runtime.c</span></strong>文件中。如下代码所示(已经去除掉了一些无关的内容：主要是垃圾回收相关)：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">static void *_Block_copy_internal(const void *arg, const int flags) {
+    struct Block_layout *aBlock;
+    const bool wantsOne = (WANTS_ONE & flags) == WANTS_ONE;
+
+    // 1
+    if (!arg) return NULL;
+
+    // 2
+    aBlock = (struct Block_layout *)arg;
+
+    // 3
+    if (aBlock-&gt;flags & BLOCK_NEEDS_FREE) {
+        // latches on high
+        latching_incr_int(&aBlock-&gt;flags);
+        return aBlock;
+    }
+
+    // 4
+    else if (aBlock-&gt;flags & BLOCK_IS_GLOBAL) {
+        return aBlock;
+    }
+
+    // 5
+    struct Block_layout *result = malloc(aBlock&gt;descriptor-&gt;size);
+    if (!result) return (void *)0;
+
+    // 6
+    memmove(result, aBlock, aBlock-&gt;descriptor-&gt;size); // bitcopy first
+
+    // 7
+    result-&gt;flags &= ~(BLOCK_REFCOUNT_MASK);    // XXX not needed
+    result-&gt;flags |= BLOCK_NEEDS_FREE | 1;
+
+    // 8
+    result-&gt;isa = _NSConcreteMallocBlock;
+
+    // 9
+    if (result-&gt;flags & BLOCK_HAS_COPY_DISPOSE) {
+        (*aBlock-&gt;descriptor-&gt;copy)(result, aBlock); // do fixup
+    }
+
+    return result;
+}</pre>
+
+
+<p>下面来看看该方法都做了些什么事情：</p>
+
+<p>1、如果传入的参数是<strong><span style="color: #339966;">NULL</span></strong>则直接返回<strong><span style="color: #339966;">NULL</span></strong>。这样可以保证传入一个<strong><span style="color: #339966;">NULL</span></strong> block时函数的安全性。</p>
+
+<p>2、将参数强制转换为一个指针，该指针指向一个<strong><span style="color: #339966;">Block_layout</span></strong>结构对象。实际上在<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/2013/07/09/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%b8%80%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第一集</span></a></span></span></strong>中就介绍了Block_layout结构：这是一个内部使用的数据结构，该结构组成一个block，其中包含一个block的实现函数，以及另外几个元数据。</p>
+
+<p>3、 如果block的flags包含BLOCK_NEEDS_FREE，说明这是一个堆block(a heap block)。这种情况下，需要做的事情就是增加引用计数(reference count)，然后将同一个的block返回。</p>
+
+<p>4、如果block是一个全局block(参考<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/2013/07/09/%e6%b7%b1%e5%ba%a6%e5%9b%b4%e8%a7%82block%ef%bc%9a%e7%ac%ac%e4%b8%80%e9%9b%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第一集</span></a></strong></span></span>)，那么不用做任何事情，直接返回同一个block即可——因为全局block是一个单例(singleton)。</p>
+
+<p>5、如果到这一步了，可以肯定该block肯定被分配在栈上。这种情况，需要将block拷贝到堆上。这也是最有趣的一部分。首先是利用malloc()函数在堆上创建block对应size大小的内存空间。如果失败了，就返回<strong><span style="color: #339966;">NULL</span></strong>，否则继续往下执行。</p>
+
+<p>6、 利用<strong><span style="color: #339966;">memmove()</span></strong>函数将分配在栈中的block按位拷贝至刚刚在堆上分配的空间中。按位拷贝可以确保block中的所有元数据都能准确的进行拷贝，例如block的descriptor。</p>
+
+<p>7、接着需要更新一下block的flags。第一行代码是确保引用计数被设置为0。后面紧跟的注释表示这不是必须的——估计此时引用计数已经是0了。我猜测这行代码的作用是为了防止潜在的bug，会引起引用计数不为0的情况。第二行代码是设置<strong><span style="color: #339966;">BLOCK_NEEDS_FREE</span></strong>标志，这标示该block是一个堆block，当引用计数变为0时，需要<strong><span style="color: #339966;">free</span></strong>掉。后面紧跟的<strong><span style="color: #339966;">| 1</span></strong>是将block的引用计数设置为1。</p>
+
+<p>8、将block的<strong><span style="color: #339966;">isa</span></strong>指针设置为 <span style="color: #339966;"><strong>_NSConcreteMallocBlock</strong></span>，这就意味着该block是一个堆block。</p>
+
+<p>9、最后，如果block有一个拷贝辅助函数(a copy helper function)，那么就调用它。如果有必要的话，表一起会生成一个拷贝辅助函数。例如block需要拷贝对象的时候，拷贝辅助函数会retain住已经拷贝的对象。</p>
+
+<p>思路很清晰吧！现在你应该知道当block被拷贝时会发什么了！下面还需要了解一下当release时又回发生什么？</p>
+
+<h2><strong><span style="color: #339966;">Block_release</span></strong></h2>
+
+<p>与Block_copy对应的是Block_release()。同样，Block_release()也是一个宏定义，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define Block_release(...) _Block_release((const void *)(__VA_ARGS__))</pre>
+
+
+<p>实际上，跟<strong><span style="color: #339966;">Block_copy()</span></strong>类似，<strong><span style="color: #339966;">Block_release()</span></strong>会为我们把参数进行强制类型转换。这样开发者就不用亲自来处理转换的事情了。</p>
+
+<p>下面我们来看看<strong><span style="color: #339966;">_Block_release()</span></strong>函数(为了看起来清晰点，我对代码重排了一下，并移除了垃圾回收相关的代码)：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void _Block_release(void *arg) {
+    // 1
+    struct Block_layout *aBlock = (struct Block_layout *)arg;
+    if (!aBlock) return;
+
+    // 2
+    int32_t newCount;
+    newCount = latching_decr_int(&aBlock-&gt;flags) & BLOCK_REFCOUNT_MASK;
+
+    // 3
+    if (newCount &gt; 0) return;
+
+    // 4
+    if (aBlock-&gt;flags & BLOCK_NEEDS_FREE) {
+        if (aBlock-&gt;flags & BLOCK_HAS_COPY_DISPOSE)(*aBlock-&gt;descriptor-&gt;dispose)(aBlock);
+        _Block_deallocator(aBlock);
+    }
+
+    // 5
+    else if (aBlock-&gt;flags & BLOCK_IS_GLOBAL) {
+        ;
+    }
+
+    // 6
+    else {
+        printf("Block_release called upon a stack Block: %p, ignored\n", (void *)aBlock);
+    }
+}</pre>
+
+
+<p>来看看他们都做了些什么：</p>
+
+<p>1、 首先将参数强制转换为<strong><span style="color: #339966;">Block_layout</span></strong>结构。如果传入的是<strong><span style="color: #339966;">NULL</span></strong>，那么为了函数的安全起见，将直接返回。</p>
+
+<p>2、将block的引用计数标志位减1(还记得<strong><span style="color: #339966;">Block_copy()</span></strong>中将这个引用计数标志位设置为1吗？)。</p>
+
+<p>3、如果newCount大于0，说明还有别的对象引用了这个block，所以并不需要立即释放block，只需简单的返回即可。</p>
+
+<p>4、否则，如果flags中包含<strong><span style="color: #339966;">BLOCK_NEEDS_FREE</span></strong>，那么说明这个block是分配到堆上的，并且如果引用计数为0，那么需要释放这个block。首先是调用了block的dispose辅助函数，该函数跟copy辅助函数相反，负责做相反的操作，例如释放掉所有在block中拷贝的变量等。最后使用<strong><span style="color: #339966;">_Block_deallocator</span></strong>函数释放掉block，如果你去<strong><span style="color: #339966;">runtime.c</span></strong>文件中看看，会发现该函数的尾部是一个指向<strong><span style="color: #339966;">free</span></strong>的函数指针，也就是释放掉<strong><span style="color: #339966;">malloc</span></strong>分配的内存。</p>
+
+<p>5、如果block是全局的，那么什么事情也不用做。</p>
+
+<p>6、如果代码执行到这里了，会发生一些奇怪的事情：因为正在尝试将栈上的block释放掉，所以这行代码是为了提醒开发者的。在程序实际运行过程中，永远不会看到这里的提示。</p>
+
+<p>Coool！就是这些了，没有更多，也没有再复杂的东西了！</p>
+
+<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
+
+<p>本文也是我深度围观block的最后一篇。其中有一些内容也可也在我的这本书中找到：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.effectiveobjectivec.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">Effective Objective-C 2.0</span></a></strong></span></span>。这一系列文章介绍了如何有效的使用block，并且如果你对block感兴趣的话，这系列的内容也可以帮助你更加深入的了解block。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-11</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[深度围观block：第二集]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/10/100/"/>
+    <updated>2013-07-10T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/10/100</id>
+    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks.png"><img class="alignnone size-full wp-image-1571" alt="blocks" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks.png" width="561" height="233" /></a></p>
+
+<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.galloway.me.uk/2012/10/a-look-inside-blocks-episode-2/" target="_blank"><span style="color: #339966; text-decoration: underline;">galloway</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>今天翻译了第二篇，这个翻译是比较痛苦(其实不止这篇，所有的都是)， 不比单纯的阅读，许多地方需要查阅资料，并细心的遣词造句，还得注意词不达意的地方(例如文中的<strong><span style="color: #339966;">A block that captures scope</span></strong>我翻译为<strong><span style="color: #339966;">block的拷贝范围</span></strong>，总感觉缺了一些作者原意，功力有限啊)。所以，我劝大家要是能看原文尽量去看原文吧，我这翻译的权当参考。</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<ul>
+<li><strong><span style="color: #339966;">介绍</span></strong></li>
+<li><strong><span style="color: #339966;">block类型</span></strong></li>
+<li><strong><span style="color: #339966;">block的拷贝范围</span></strong></li>
+<li><strong><span style="color: #339966;">block拷贝对象的类型</span></strong></li>
+<li><strong><span style="color: #339966;">何去何从</span></strong></li>
+</ul>
+
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">介绍</span></strong></h2>
+
+<p>本文接着上一篇文章(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/09/%E6%B7%B1%E5%BA%A6%E5%9B%B4%E8%A7%82block%EF%BC%9A%E7%AC%AC%E4%B8%80%E9%9B%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">深度围观block：第一集</span></a></span></span></strong>)，继续从编译器的角度深度围观block。在本文中，将介绍block并不是一成不变的，以及block在栈上的构成。</p>
+
+<h2><strong><span style="color: #339966;">block类型</span></strong></h2>
+
+<p>在<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/2013/07/09/%E6%B7%B1%E5%BA%A6%E5%9B%B4%E8%A7%82block%EF%BC%9A%E7%AC%AC%E4%B8%80%E9%9B%86/" target="_blank"><span style="color: #339966; text-decoration: underline;">第一篇</span></a></span></span></strong>文章中，我们已经看到block有一个<strong><span style="color: #339966;">_NSConcreteGlobalBlock</span></strong>这样的类。由于所有变量都是已知的，所以在编译期间，block的结构(structure)和描述(descriptor)都将全部被初始化。关于block这里有几种不同的类型，每种类型都有对应的类。为了简单起见，这里只考虑其中三种：</p>
+
+<ol>
+<li><strong><span style="color: #339966;">_NSConcreteGlobalBlock</span></strong>是定义一个全局的block，在编译器就已经完成相关初始化任务。这种类型的block不会涉及到任何拷贝，例如一个空的block。</li>
+<li><strong><span style="color: #339966;">_NSConcreteStackBlock</span></strong>是一个分配在栈上的block。这里是所有最终被拷贝到堆(heap)上的block的开始。</li>
+<li><strong><span style="color: #339966;">_NSConcreteMallocBlock</span></strong>是分配到堆(heap)上的block。拷贝完一个block之后，这就会结束。当block的引用计数变为0，该block就会被释放。</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">block拷贝范围</span></strong></h2>
+
+<p>这次我们来看看另外一些代码，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;dispatch/dispatch.h&gt;
+
+typedef void(^BlockA)(void);
+void foo(int);
+
+__attribute__((noinline))
+void runBlockA(BlockA block) {
+    block();
+}
+
+void doBlockA() {
+    int a = 128;
+    BlockA block = ^{
+        foo(a);
+    };
+    runBlockA(block);
+}</pre>
+
+
+<p>为了让block拷贝一些内容，上面的代码中调用了<strong><span style="color: #339966;">foo</span></strong>函数，并给这个函数传递了一个变量。再说一下，本文涉及到的汇编代码是与armv7相关指令。下面是其中一部分汇编指令：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">.globl  _runBlockA
+    .align  2
+    .code   16                      @ @runBlockA
+    .thumb_func     _runBlockA
+_runBlockA:
+    ldr     r1, [r0, #12]
+    bx      r1</pre>
+
+
+<p>上面的汇编代码与<strong><span style="color: #339966;">runBlockA</span></strong>函数相关，这跟第一篇文章中的相同——都是调用了block中的<strong><span style="color: #339966;">invoke</span></strong>函数。接着是<strong><span style="color: #339966;">doBlockA</span></strong>汇编代码，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">.globl  _doBlockA
+    .align  2
+    .code   16                      @ @doBlockA
+    .thumb_func     _doBlockA
+_doBlockA:
+    push    {r7, lr}
+    mov     r7, sp
+    sub     sp, #24
+    movw    r2, :lower16:(L__NSConcreteStackBlock$non_lazy_ptr-(LPC1_0+4))
+    movt    r2, :upper16:(L__NSConcreteStackBlock$non_lazy_ptr-(LPC1_0+4))
+    movw    r1, :lower16:(___doBlockA_block_invoke_0-(LPC1_1+4))
+LPC1_0:
+    add     r2, pc
+    movt    r1, :upper16:(___doBlockA_block_invoke_0-(LPC1_1+4))
+    movw    r0, :lower16:(___block_descriptor_tmp-(LPC1_2+4))
+LPC1_1:
+    add     r1, pc
+    ldr     r2, [r2]
+    movt    r0, :upper16:(___block_descriptor_tmp-(LPC1_2+4))
+    str     r2, [sp]
+    mov.w   r2, #1073741824
+    str     r2, [sp, #4]
+    movs    r2, #0
+LPC1_2:
+    add     r0, pc
+    str     r2, [sp, #8]
+    str     r1, [sp, #12]
+    str     r0, [sp, #16]
+    movs    r0, #128
+    str     r0, [sp, #20]
+    mov     r0, sp
+    bl      _runBlockA
+    add     sp, #24
+    pop     {r7, pc}</pre>
+
+
+<p>看看，这跟之前的代码有所不同了。看起来这不仅仅是从一个全局的符号中加载block，而且还做了额外的一些事情。乍一看这么多代码让人有点无从下手，不过认真看，还是很容易理解的。从上面的代码可以看出，编译器已经忽略了对代码排序的优化，为了方便阅读代码，我对上面的汇编代码重新进行排序(当然，请相信我，这不会影响任何功能)。下面是我重排好的代码效果：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">_doBlockA:
+        // 1
+        push    {r7, lr}
+        mov     r7, sp
+
+        // 2
+        sub     sp, #24
+
+        // 3
+        movw    r2, :lower16:(L__NSConcreteStackBlock$non_lazy_ptr-(LPC1_0+4))
+        movt    r2, :upper16:(L__NSConcreteStackBlock$non_lazy_ptr-(LPC1_0+4))
+LPC1_0:
+        add     r2, pc
+        ldr     r2, [r2]
+        str     r2, [sp]
+
+        // 4
+        mov.w   r2, #1073741824
+        str     r2, [sp, #4]
+
+        // 5
+        movs    r2, #0
+        str     r2, [sp, #8]
+
+        // 6
+        movw    r1, :lower16:(___doBlockA_block_invoke_0-(LPC1_1+4))
+        movt    r1, :upper16:(___doBlockA_block_invoke_0-(LPC1_1+4))
+LPC1_1:
+        add     r1, pc
+        str     r1, [sp, #12]
+
+        // 7
+        movw    r0, :lower16:(___block_descriptor_tmp-(LPC1_2+4))
+        movt    r0, :upper16:(___block_descriptor_tmp-(LPC1_2+4))
+LPC1_2:
+        add     r0, pc
+        str     r0, [sp, #16]
+
+        // 8
+        movs    r0, #128
+        str     r0, [sp, #20]
+
+        // 9
+        mov     r0, sp
+        bl      _runBlockA
+
+        // 10
+        add     sp, #24
+        pop     {r7, pc}</pre>
+
+
+<p>下面我们来看看这些代码都做了什么：</p>
+
+<ol>
+<li>开场白。首先将 <strong><span style="color: #339966;">r7</span></strong> push到栈上面——因为r7会被覆盖，而r7寄存器中的内容在跨函数调用时是需要用到的。<strong><span style="color: #339966;">lr</span></strong>是链接寄存器(link register)，该寄存器中存储着当这个函数返回时需要执行下一条指令的地址。接着mov这条指令的作用是把栈指针保存到r7<strong><span style="color: #339966;">寄存器</span></strong>中。</li>
+<li>从栈指针所处位置开始减去24，也就是在栈空间上开辟24字节来存储数据。</li>
+<li>这里涉及到的代码是为了对符号<strong><span style="color: #339966;">L__NSConcreteStackBlock$non_lazy_ptr</span></strong>进行寻址，由于跟pc(program counter)相关联，所以无论代码处于二进制文件中任何位置，当最终链接时，都能对该符号做到正确的寻址。</li>
+<li>将值<strong><span style="color: #339966;">1073741824</span></strong>存储到栈指针 + 4 的位置。</li>
+<li>将值<strong><span style="color: #339966;"></span></strong>存储到栈指针 + 8 的位置。现在，将要发生什么可能已经变得逐渐清晰了——在栈上创建了一个<strong><span style="color: #339966;">Block_layout</span></strong>结构的对象！到现在为止，已经设置了该结构的3个值：<strong><span style="color: #339966;">isa</span></strong>指针，<strong><span style="color: #339966;">flags</span></strong>和<strong><span style="color: #339966;">reserved</span></strong>值。</li>
+<li>将<strong><span style="color: #339966;">___doBlockA_block_invoke_0</span></strong>存储至栈指针 + 12的位置。这是block结构中的<strong><span style="color: #339966;">invoke</span></strong>。</li>
+<li>将<strong><span style="color: #339966;">___block_descriptor_tmp</span></strong>存储至栈指针 + 16的位置。这是block结构中的<strong><span style="color: #339966;">descriptor</span></strong>。</li>
+<li>将值<strong><span style="color: #339966;">128</span></strong>存储到栈指针 + 20的位置。如果回头看看<strong><span style="color: #339966;">Block_layout</span></strong>结构，可以看到里面只应该有5个值。那么在这个block结构体后面存储的128是什么呢？——注意到这个<strong><span style="color: #339966;">128</span></strong>实际上就是在block中拷贝的变量的值。所以这肯定就是存储block使用到的值的地方——在<strong><span style="color: #339966;">Block_layout</span></strong>结构尾部。</li>
+<li>现在栈指针指向了已经完成初始化之后的block结构，在这里的汇编指令是将栈指针装载到<strong><span style="color: #339966;">r0</span></strong>中，然后调用<strong><span style="color: #339966;">runBlockA</span></strong>函数。(记住：在ARM EABI中，<strong><span style="color: #339966;">r0</span></strong>中存储的内容被当做函数的第一个参数)。</li>
+<li>最后将栈指针加上24，这样就能够把最开始减去的24(在栈上开辟的24位空间)收回来。接着将栈中的两个值pop到<strong><span style="color: #339966;">r7</span></strong>和<strong><span style="color: #339966;">pc</span></strong>寄存器中。这里pop到<strong><span style="color: #339966;">r7</span></strong>中的，跟最开始从r7中push至栈中的内容是一致的，而<strong><span style="color: #339966;">pc</span></strong>的值则是最开始push <strong><span style="color: #339966;">lr</span></strong>到栈中的值，这样当函数返回时，可以让CPU能够正确的继续执行后续指令。</li>
+</ol>
+
+
+<p>Cooool！如果你一直认真看到这里，那么相信你的收获已经非常多了！</p>
+
+<p>下面我们再看看block中的invoke函数和descriptor。希望跟第一集中的不要有太大差别。如下汇编代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">.align  2
+    .code   16                      @ @__doBlockA_block_invoke_0
+    .thumb_func     ___doBlockA_block_invoke_0
+___doBlockA_block_invoke_0:
+    ldr     r0, [r0, #20]
+    b.w     _foo
+
+    .section        __TEXT,__cstring,cstring_literals
+L_.str:                                 @ @.str
+    .asciz   "v4@?0"
+
+    .section        __TEXT,__objc_classname,cstring_literals
+L_OBJC_CLASS_NAME_:                     @ @"\01L_OBJC_CLASS_NAME_"
+    .asciz   "\001P"
+
+    .section        __DATA,__const
+    .align  2                       @ @__block_descriptor_tmp
+___block_descriptor_tmp:
+    .long   0                       @ 0x0
+    .long   24                      @ 0x18
+    .long   L_.str
+    .long   L_OBJC_CLASS_NAME_</pre>
+
+
+<p>看着没错，跟第一集中的没多大区别。唯一不同的就是block descriptor中的<strong><span style="color: #339966;">size</span></strong>——现在是<strong><span style="color: #339966;">24</span></strong>(之前是<strong><span style="color: #339966;">20</span></strong>)。这是因为block拷贝了一个整型值，所以block的结构需要24个字节，而不再是标准的20个字节了。在之前的代码中，我们已经分析了在创建block时，多出的4个字节被添加到block结构的尾部。<br/>
+在实际的block函数中，例如<strong><span style="color: #339966;">___doBlockA_block_invoke_0</span></strong>，可以看到从block结构尾部读取出相关值，如<strong><span style="color: #339966;">r0 + 20</span></strong>，就是在block中拷贝的变量。</p>
+
+<h2><strong><span style="color: #339966;">block拷贝对象的类型</span></strong></h2>
+
+<p>下面我们来看看如果block拷贝的是别的对象类型(例如 <strong><span style="color: #339966;">NSString</span></strong>)，而不是integer，会发生什么呢？如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;dispatch/dispatch.h&gt;
+
+typedef void(^BlockA)(void);
+void foo(NSString*);
+
+__attribute__((noinline))
+void runBlockA(BlockA block) {
+    block();
+}
+
+void doBlockA() {
+    NSString *a = @"A";
+    BlockA block = ^{
+        foo(a);
+    };
+    runBlockA(block);
+}</pre>
+
+
+<p>由于<strong><span style="color: #339966;">doBlockA</span></strong>变化不大，所以在此不深入介绍。这里感兴趣的是根据上面代码创建的block descriptor结构：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">.section        __DATA,__const
+    .align  4                       @ @__block_descriptor_tmp
+___block_descriptor_tmp:
+    .long   0                       @ 0x0
+    .long   24                      @ 0x18
+    .long   ___copy_helper_block_
+    .long   ___destroy_helper_block_
+    .long   L_.str1
+    .long   L_OBJC_CLASS_NAME_</pre>
+
+
+<p>注意看上面的汇编代码中有指向两个函数(<strong><span style="color: #339966;"><em>__copy_helper_block</em></span></strong>和<strong><span style="color: #339966;"><em>__destroy_helper_block</em></span></strong>)的指针。下面是这两个函数的定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">.align  2
+    .code   16                      @ @__copy_helper_block_
+    .thumb_func     ___copy_helper_block_
+___copy_helper_block_:
+    ldr     r1, [r1, #20]
+    adds    r0, #20
+    movs    r2, #3
+    b.w     __Block_object_assign
+
+    .align  2
+    .code   16                      @ @__destroy_helper_block_
+    .thumb_func     ___destroy_helper_block_
+___destroy_helper_block_:
+    ldr     r0, [r0, #20]
+    movs    r1, #3
+    b.w     __Block_object_dispose</pre>
+
+
+<p>这里我先假设当block被拷贝和销毁时，都会调用这里的函数。那么被block拷贝的对象肯定会发生reatain和release。上面的代码中，可以看出如果r0和r1包含有效数据时，拷贝函数接收两个参数(<strong><span style="color: #339966;">r0</span></strong>和<strong><span style="color: #339966;">r1</span></strong>)。而销毁函数接收一个参数。可以看出所有的拷贝和销毁任务都应该是由<strong><span style="color: #339966;">__Block_object_assign</span></strong>和<strong><span style="color: #339966;">__Block_object_dispose</span></strong>两个函数完成的。这两个函数位于block的运行时代码中(是LLVM里面<strong><span style="color: #339966;">compiler-rt</span></strong>工程的一部分)。<br/>
+如果你希望了解一下block运行时相关代码，可以来这里下载源码：<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://compiler-rt.llvm.org" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://compiler-rt.llvm.org">http://compiler-rt.llvm.org</a></span></a></span></span></strong>。特别关注一下里面的<strong><span style="color: #339966;">runtime.c</span></strong>文件。</p>
+
+<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
+
+<p>在下一集中我将调查<strong><span style="color: #339966;">Block_copy</span></strong>相关代码，并看看相关工作处理情况，以此来深度围观一下block运行时。通过下一集的学习，你也将会深入了解拷贝和销毁函数(也就是本文中我们刚刚看到的在block拷贝对象时使用的函数)。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-10</time></p>
+]]></content>
+  </entry>
+  
+</feed>
