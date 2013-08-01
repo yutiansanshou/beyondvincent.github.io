@@ -31,6 +31,7 @@ categories: github
 * 添加多说评论功能
 * 起草文章 暂不公开
 * 域名解析
+* 添加百度统计和google analytics
 
 
 
@@ -106,3 +107,6 @@ $ rake deploy
 在CNAME中添加一条记录：
 `http	beyondvincent.github.com`
 
+###添加百度统计和google analytics
+从百度统计获取脚本，然后添加到文件`source/_includes/after_footer.html`文件中
+从google analytics获取跟踪ID，然后将这个ID添加到`_config.yml`文件的`google_analytics_tracking_id`后面即可。
