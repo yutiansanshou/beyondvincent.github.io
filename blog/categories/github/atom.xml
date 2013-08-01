@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-02T01:27:43+08:00</updated>
+  <updated>2013-08-02T01:35:19+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -43,6 +43,7 @@
 <li>添加多说评论功能</li>
 <li>起草文章 暂不公开</li>
 <li>域名解析</li>
+<li>添加百度统计和google analytics</li>
 </ul>
 
 
@@ -143,6 +144,11 @@ $ rake deploy
 <code>@  204.232.175.78</code>
 在CNAME中添加一条记录：
 <code>http   beyondvincent.github.com</code></p>
+
+<h3>添加百度统计和google analytics</h3>
+
+<p>从百度统计获取脚本，然后添加到文件<code>source/_includes/after_footer.html</code>文件中
+从google analytics获取跟踪ID，然后将这个ID添加到<code>_config.yml</code>文件的<code>google_analytics_tracking_id</code>后面即可。</p>
 ]]></content>
   </entry>
   
