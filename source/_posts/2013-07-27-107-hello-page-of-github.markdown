@@ -24,16 +24,17 @@ categories: github
 这篇文章是第一篇，我用的markdown编辑器是[`Mou`](http://mouapp.com/)，感觉不错。
 
 
-下面是一些在mac机器上用octopress写博文需要用到的操作
+下面是一些在mac机器上用octopress写博文需要用到的操作(持续更新)
 ###目录
 
 * 发表并部署博文
 * 添加多说评论功能
 * 起草文章 暂不公开
+* 域名解析
 
 
 
-###1、发表并部署博文
+###发表并部署博文
 
 ```
 $ rake new_post["New Post"]
@@ -44,7 +45,7 @@ $ git push origin source
 $ rake deploy
 ```
 
-###2、添加多说评论功能
+###添加多说评论功能
 ####A 获取`short_name`
 去多说网注册账号，获取站点的short_name
 ####B 在`_config.yml`文件中添加如下内容
@@ -92,6 +93,16 @@ $ git push origin source
 $ rake deploy
 ```
 
-###1、起草文章暂不公开
+###起草文章暂不公开
 在文章头部添加`published: false`，就能起到暂时不公开文章了(即使已经部署到了github中)，要公开文章只需要将false修改`true`即可。
+
+###域名解析
+我们可以给GitHub上的page指定一个域名，具体做法如下2个步骤
+####1、给repo配置域名
+在`source`根目录下新建一个名为CNAME的文件，并把你的域名填写进去，例如`beyondvincent.com`。这样做的目的是告诉GitHub服务器开始将repo中的page(例如`beyondvincent.github.io`)指向到某个域名中。
+####2、配置DNS(我的域名是在godaddy上购买的)
+添加一条A记录：
+`@	204.232.175.78`
+在CNAME中添加一条记录：
+`http	beyondvincent.github.com`
 
