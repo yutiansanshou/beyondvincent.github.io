@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-02T00:33:49+08:00</updated>
+  <updated>2013-08-02T00:57:22+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -171,6 +171,9 @@
 <h2><strong><span style="color: #339966;">小引</span></strong></h2>
 
 <p>本文主要汇集一些苹果开发的资源，会经常更新，建议大家把这篇文章单独收藏(在浏览器中按<strong><span style="color: #339966;">command+D</span></strong>)。</p>
+
+<!--more-->
+
 
 <p>今天(2013年7月19日)收录了许多中文网站和博客。大家一定要去感受一下哦。</p>
 
@@ -465,6 +468,9 @@
 
 <p><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span></strong>介绍了OC中并发编程的相关API，本文我们接着来看看并发编程中面临的一些挑战。</p>
 
+<!--more-->
+
+
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
 <p><span style="color: #339966;"><b>1、介绍</b></span><br/>
@@ -603,7 +609,10 @@ swap(Y, X); // thread 2</pre>
 
 <h2><strong><span style="color: #339966;">小引</span></strong></h2>
 
-<p><a href="http://www.objc.io/%E7%AB%99%E7%82%B9%E4%B8%BB%E8%A6%81%E4%BB%A5%E6%9D%82%E5%BF%97%E7%9A%84%E5%BD%A2%E5%BC%8F%EF%BC%8C%E6%B7%B1%E5%85%A5%E6%8C%96%E6%8E%98%E5%9C%A8OC%E4%B8%AD%E7%9A%84%E6%9C%80%E4%BD%B3%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5%E5%92%8C%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%EF%BC%8C%E6%AF%8F%E4%B8%AA%E6%9C%88%E6%8E%A2%E8%AE%A8%E4%B8%80%E4%B8%AA%E4%B8%BB%E9%A2%98%EF%BC%8C%E6%AF%8F%E4%B8%AA%E4%B8%BB%E9%A2%98%E9%83%BD%E4%BC%9A%E6%9C%89%E5%87%A0%E7%AF%87%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%87%E7%AB%A0%E5%87%BA%E7%82%89%EF%BC%8C2013%E5%B9%B47%E6%9C%88%E4%BB%BD%E7%9A%84%E4%B8%BB%E9%A2%98%E6%98%AF%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%8A%E5%A4%A9%E6%99%9A%E4%B8%8A%E6%88%91%E5%B0%B1%E6%8C%91%E9%80%89%E5%85%B6%E4%B8%AD%E7%9A%84%E7%AC%AC2%E7%AF%87%E6%96%87%E7%AB%A0">http://www.objc.io/%E7%AB%99%E7%82%B9%E4%B8%BB%E8%A6%81%E4%BB%A5%E6%9D%82%E5%BF%97%E7%9A%84%E5%BD%A2%E5%BC%8F%EF%BC%8C%E6%B7%B1%E5%85%A5%E6%8C%96%E6%8E%98%E5%9C%A8OC%E4%B8%AD%E7%9A%84%E6%9C%80%E4%BD%B3%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5%E5%92%8C%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF%EF%BC%8C%E6%AF%8F%E4%B8%AA%E6%9C%88%E6%8E%A2%E8%AE%A8%E4%B8%80%E4%B8%AA%E4%B8%BB%E9%A2%98%EF%BC%8C%E6%AF%8F%E4%B8%AA%E4%B8%BB%E9%A2%98%E9%83%BD%E4%BC%9A%E6%9C%89%E5%87%A0%E7%AF%87%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%87%E7%AB%A0%E5%87%BA%E7%82%89%EF%BC%8C2013%E5%B9%B47%E6%9C%88%E4%BB%BD%E7%9A%84%E4%B8%BB%E9%A2%98%E6%98%AF%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%8A%E5%A4%A9%E6%99%9A%E4%B8%8A%E6%88%91%E5%B0%B1%E6%8C%91%E9%80%89%E5%85%B6%E4%B8%AD%E7%9A%84%E7%AC%AC2%E7%AF%87%E6%96%87%E7%AB%A0</a>(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Concurrent Programming: APIs and Challenges</span></a></span></span></strong>)进行翻译，与大家分享一下主要内容。由于内容比较多，我将分两部分翻译(API和难点)完成，翻译中，如有错误，还请指正。</p>
+<p><a href="http://www.objc.io/">http://www.objc.io/</a> 站点主要以杂志的形式，深入挖掘在OC中的最佳编程实践和高级技术，每个月探讨一个主题，每个主题都会有几篇相关的文章出炉，2013年7月份的主题是并发编程，今天晚上我就挑选其中的第2篇文章(<a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html"><code>Concurrent Programming: APIs and Challenges</code></a>)进行翻译，与大家分享一下主要内容。由于内容比较多，我将分两部分翻译(API和难点)完成，翻译中，如有错误，还请指正。</p>
+
+<!--more-->
+
 
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
@@ -901,6 +910,9 @@ YourOperation *operation = [[YourOperation alloc] init];
 
 <p>另：在看视频过程中，要特别感谢<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://joeyio.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">乔学士先生</span></a></span></span></strong>汇总的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://github.com/qiaoxueshi/WWDC_2013_Video_Subtitle" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC2013英文字幕</span></a></span></strong></span>。大家可以想象一下，本来英语就不好的拉，要是没有字幕，要想看懂老外讲的内容，那该痛上加痛哈。</p>
 
+<!--more-->
+
+
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
 <p><strong><span style="color: #339966;">0、介绍</span></strong><br/>
@@ -1024,6 +1036,9 @@ YourOperation *operation = [[YourOperation alloc] init];
 <h2><strong><span style="color: #339966;">小引</span></strong></h2>
 
 <p>还记得昨天我给大家推荐的文章吗：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></strong></span>。今天手痒，还想继续敲几个字，索性我就把这篇文章敲出来，以此对block说声代码里见吧。</p>
+
+<!--more-->
+
 
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
@@ -1433,6 +1448,9 @@ int main( void )
 
 <p>另外由于block具有闭包性，我们也可以将其当做匿名函数，所以大家如果想要了解更多关于OC中的闭包性和匿名函数就来看看这篇文章吧：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></span></strong>。</p>
 
+<!--more-->
+
+
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
 <ul>
@@ -1624,6 +1642,9 @@ void *_Block_copy(const void *arg);</pre>
 <h2><strong><span style="color: #339966;">小引</span></strong></h2>
 
 <p>今天翻译了第二篇，这个翻译是比较痛苦(其实不止这篇，所有的都是)， 不比单纯的阅读，许多地方需要查阅资料，并细心的遣词造句，还得注意词不达意的地方(例如文中的<strong><span style="color: #339966;">A block that captures scope</span></strong>我翻译为<strong><span style="color: #339966;">block的拷贝范围</span></strong>，总感觉缺了一些作者原意，功力有限啊)。所以，我劝大家要是能看原文尽量去看原文吧，我这翻译的权当参考。</p>
+
+<!--more-->
+
 
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
@@ -1907,6 +1928,9 @@ ___destroy_helper_block_:
 
 <p>还记得之前的两篇文章吗：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/19/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(1)</span></a></span></span></strong>和<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/20/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm2/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(2)</span></a></span></strong></span>，里面介绍了Objective-C生成的汇编代码。本文介绍的内容也跟汇编相关，只不过是与block相关，如果对汇编有不了解的，可以先去看看那两篇带有启蒙性质的文章哟。本文将从汇编的角度来介绍block相关知识。另外，如果你对block还不了解的话，建议你先去看看我的上一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/08/%e5%88%9d%e5%a7%8bblock/" target="_blank"><span style="color: #339966; text-decoration: underline;">初识block</span></a></span></span></strong>。</p>
 
+<!--more-->
+
+
 <p><strong style="font-size: 1.5em;"><span style="color: #339966;">目录：</span></strong></p>
 
 <ul>
@@ -2131,6 +2155,9 @@ void doBlockA() {
 <h2><strong><span style="color: #339966;">小引</span></strong></h2>
 
 <p>本周末微博上朋友发了一个关于block的MV，只能说老外太逗了。大家也可以去看看怎么回事：<a href="http://blog.bignerdranch.com/3001-cocoa-got-blocks/" target="_blank"> <strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">Cocoa Got Blocks</span></span></strong></a>。虽然之前也有接触过block，不过没有深入完整的学习过，借此机会来学习一下，顺便翻译几篇block相关的文章，本文是第一篇，算是block的入门。本文的最后延伸阅读给出了4篇相关文章，不出意外的话，本周大家能看到对应的中文版。</p>
+
+<!--more-->
+
 
 <h2><strong><span style="color: #339966;">目录：</span></strong></h2>
 
@@ -2613,7 +2640,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#58;&#x42;&#x65;&#121;&#x6f;&#x6e;&#x64;&#x56;&#x69;&#x6e;&#99;&#101;&#110;&#116;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#x2e;&#99;&#x6f;&#x6d;">&#x42;&#x65;&#x79;&#111;&#110;&#x64;&#x56;&#x69;&#110;&#99;&#x65;&#x6e;&#x74;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#109;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#58;&#x42;&#101;&#121;&#x6f;&#110;&#x64;&#x56;&#105;&#x6e;&#99;&#x65;&#x6e;&#x74;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#x6d;">&#66;&#x65;&#x79;&#x6f;&#x6e;&#100;&#x56;&#x69;&#x6e;&#x63;&#x65;&#x6e;&#116;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#46;&#99;&#x6f;&#109;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 

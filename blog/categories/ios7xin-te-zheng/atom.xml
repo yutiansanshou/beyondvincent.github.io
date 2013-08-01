@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS7新特征 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/ios7xin-te-zheng/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-02T00:33:49+08:00</updated>
+  <updated>2013-08-02T00:57:22+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -31,6 +31,9 @@
 <p>今晚看了一下WWDC2013的session：<strong><span style="color: #ff0000;">What’s New in Xcode 5</span></strong>。那就来说说Xcode 5里面一些值得期待的东西吧。由于Xcode中的新东西比较多，我这里挑选了6个非常好的新东西，供大家了解，如果需要了解更多内容，请移步到上面说的session中。</p>
 
 <p>另：在看视频过程中，要特别感谢<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://joeyio.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">乔学士先生</span></a></span></span></strong>汇总的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://github.com/qiaoxueshi/WWDC_2013_Video_Subtitle" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC2013英文字幕</span></a></span></strong></span>。大家可以想象一下，本来英语就不好的拉，要是没有字幕，要想看懂老外讲的内容，那该痛上加痛哈。</p>
+
+<!--more-->
+
 
 <h2><strong><span style="color: #339966;">目录</span></strong></h2>
 
