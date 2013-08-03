@@ -8,7 +8,7 @@ categories: github
 ---
 
 
-{% img /images/2013/07/octopress.jpg %}
+{% img /images/2013/07/wordpress_to_octopress.png %}
 
 ###大家好，我是破船！欢迎大家关注我的小站！
 
