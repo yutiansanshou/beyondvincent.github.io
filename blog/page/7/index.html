@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 3rd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[020]Building Windows 8 Apps With XAML and C#中文翻译全部 Metro Revealed: Building Windows 8 &hellip;">
+	<meta name="description" content="Jun 4th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[021]DatagramSocket与UDP 本文章主要内容如下 1、DatagramSocket介绍【译自DatagramSocket】 2、 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,163 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/48/" itemprop="url">Windows Store App开发[021]DatagramSocket与UDP</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文章主要内容如下</p>
+
+<p><strong>1、DatagramSocket介绍【译自<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.networking.sockets.datagramsocket.aspx">DatagramSocket</a>】</strong></p>
+
+<p><strong>2、使用DatagramSocket来发送UDP【译自<a href="http://blogs.msdn.com/b/trycatchfinally/archive/2012/09/06/welcome.aspx">UDP and Windows 8 apps</a>】</strong></p>
+
+<p><strong><font color="#666666"></font></strong></p>
+
+<p>1、DatagramSocket介绍</p>
+
+<p>&#160;&#160;&#160; 在Windows 8中，是使用DatagramSocket进行UDP数据包网络通讯的。DatagramSocket可以用于客户端程序，以及监听从服务器程序发来的UDP数据。通过DatagramSocket接收数据，程序必须将一个MessageReceived事件赋予一个event handler，然后调用BindEndpointAsync(或BindServiceNameAsync)方法，将DatagramSocket绑定到一个本地服务名称或者UDP端口上，之后在调用ConnectAsync方法。如果event handler和绑定操作在连接操作之后才处理，那么会发生错误。</p>
+
+<p>下面是接收UDP数据包的典型操作步骤：</p>
+
+<p>A、创建一个DatagramSocket</p>
+
+<p>B、使用Control属性来检索DatagramSocketControl对象，以及设置一些高级的控制。这步骤一般不需要</p>
+
+<p>C、将MessageReceived事件赋予event handler</p>
+
+<p>D、将DatagramSocket绑定到一个本地服务名或UDP端口上</p>
+
+<p>E、调用ConnectAsync方法开启远程连接操作，此方法是用于将要使用DatagramSocket的OutpuStream属性来发送数据时。如果程序想要通过DatagramSocket从远程接收数据，那么不能使用ConnectAsync方法把DataramSocket绑定到指定的远程端口，而要使用BindServiceNameAsync或BindEndpointAsync方法。</p>
+
+<p>注意：</p>
+
+<p>使用DatagramSocket类的一些需求：</p>
+
+<p>A、至少支持的客户端：Windows 8</p>
+
+<p>B、至少支持的服务端：Windows Server 2012</p>
+
+<p>C、名称空间：Windows.Networking.Sockets&#160;&#160;&#160; Windows::Networking::Sockets[C++]</p>
+
+<p>D、Metadata：&#160;&#160;&#160; Windows.winmd</p>
+
+<p>E、DLL：&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Windows.Networking.dll</p>
+
+<p>F、Capablilities： internetClient privateNetworkClientServer</p>
+
+<p>&#160;</p>
+
+<p>2、使用DatagramSocket来发送UDP</p>
+
+<p>&#160;&#160;&#160; 我现在使用的Windows 8 程序需要使用UDP通过无线网络来发送一些数据。这通常是使用名称空间System.Net.Sockets下的Socket类进行的。然而，在Windows RT中不支持这样使用，它取代了一些等价类的Socket行为。使用UDP的类是DatagramSocket。在使用DatagramSocket时，代码要相对短和简单，要正常运转的话，稍微有点复杂，因此在这篇文章中我会提供一个工作的例子，让其简单点。</p>
+
+<p>&#160;&#160;&#160; 从概念级来讲，打开UDP连接和发送数据非常简单：</p>
+
+<p>&#160;&#160; 1、创建本地socket</p>
+
+<p>&#160;&#160;&#160; 2、连接至远程主机</p>
+
+<p>&#160;&#160;&#160; 3、发送数据至远程主机</p>
+
+<p>代码本身很短，因此在这里我进行分解说明。如果你能根据IP地址和端口，猜中具体做什么工作，我奖励你积分哦。</p>
+
+<p>创建本地socket</p>
+
+<p>&#160;&#160;&#160; 第一步是使用DatagramSocket创建socket：</p>
+
+<p>DatagramSocket udpSocket = new DatagramSocket();&#160;</p>
+
+<p>DatagramSocket的一个优点是我不用指定具体使用的协议类型，因为它只发送UDP数据包。</p>
+
+<p>下面我需要将socket绑定到一个本地端口，这个端口用来指定UDP数据包源于的端口。在这里，我使用端口号为5556：</p>
+
+<p>await udpSocket.BindServiceNameAsync(“5556”);&#160;</p>
+
+<p>上面的语句是简单的传了一个包含端口号的字符串。在这里使用await关键字是因为BindServiceNameAsync()是异步方法。关于await关键和Windows RT Tasks，请在本文最后给出的相关链接中查看。</p>
+
+<p>连接至远程主机</p>
+
+<p>第二步是打开一个至远程主机的连接。在这里的示例中，我想要连接到IP地址为192.168.1.1，由于DatagramSocket.ConnectAsync()方法使用一个HostName类的实例作为参数。因此首先我需要创建一个新的HostName来代表远程主机：</p>
+
+<p>HostName remoteHost = new HostName(“192.168.1.1”);&#160;</p>
+
+<p>同样，这里传递的参数也是一个包含IP地址的字符串，当然也可以是我想要连接的某个URL。然后我就可以调用ConnectAsync方法来打开连接（传递刚刚创建的HostName和端口）：</p>
+
+<p>await udpSocket.ConnectAsync(remoteHost, “5556”);&#160;</p>
+
+<p>发送数据至远程主机</p>
+
+<p>一旦连接建立，就可以发送数据了。DatagramSocket类并不包含任意的发送数据包方法，而需要使用DataWriter类。发送数据的第一步是创建一个新的DataWriter，并将DatagramSocket（udpSocket）的属性OutputStream传递进去：</p>
+
+<p>DataWriter udpWriter = new DataWriter(udpSocket.OutputStream);&#160;</p>
+
+<p>现在，我想要发送字符串“juncti juvant”至远程主机。DataWriter实际上是没有方法来处理这个操作的；发送数据需要分为两部分处理。首先，需要将数据写入OutputStream中：</p>
+
+<p>udpWriter.WriteString(“juncti juvant”);&#160;</p>
+
+<p>查看DataWriter类的文档可以知道能写入什么类型的数据。</p>
+
+<p>数据现在还没有发送到远程主机；现在，需要使用DataWriter来发送UDP包，调用DataWriter.StoreAsync()方法：</p>
+
+<p>await udpWriter.StoreAsync();&#160;</p>
+
+<p>这样，UDP包中的“juncti juvant”就在发送至主机的路上了！</p>
+
+<p>下面是发送UDP包的汇总代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// Create a new socket and bind it to a local port  
+DatagramSocket udpSocket = new DatagramSocket();  
+await udpSocket.BindServiceNameAsync(“5556”);  
+  
+// Open a connection to a remote host  
+HostName remoteHost = new HostName(“192.168.1.1”);  
+await udpSocket.ConnectAsync(remoteHost, “5556”);  
+  
+// Send a data string to the remote host in a UDP packet  
+DataWriter udpWriter = new DataWriter(udpSocket.OutputStream);  
+udpWriter.WriteString(“juncti juvant”);  
+await udpWriter.StoreAsync();  </pre>
+
+
+<p>资源：</p>
+
+<p>DatagramSocket:<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.networking.sockets.datagramsocket.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.networking.sockets.datagramsocket.aspx</u></a></p>
+
+<p>HostName: <a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.networking.hostname.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.networking.hostname.aspx</u></a></p>
+
+<p>DataWriter: <a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.streams.datawriter.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.streams.datawriter.aspx</u></a></p>
+
+<p>await keyword and Tasks: <a href="http://msdn.microsoft.com/en-us/library/hh156528.aspx"><u>http://msdn.microsoft.com/en-us/library/hh156528.aspx</u></a></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1866,107 +2023,6 @@ stock = SuspensionManager.SessionState[&quot;lastSeenStock&quot;];
 <p>代码下载：</p>
 
 <p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/SearchContract" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-31</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/02/38/" itemprop="url">Windows Store App开发[011]浅谈Windows 8 中的合约(contracts)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在Windows 8 Metro App开发中，你很快就会使用到合约功能，合约是Windows 8中至关重要的全新概念，作为Metro开发者，有必要掌握。目前关于合约的相关资料还比较少，在这里，我主要参考了msdn提供的一些文档，写此贴的目的是希望大家对合约有一个初步的了解，同时也欢迎大家来交流。</p>
-
-<p>&#160;&#160;&#160;&#160;&#160; 在这篇文章中，我主要对合约进行一个概述。在下一篇文章中，我会通过编程的方式，向大家介绍如何使用合约。</p>
-
-<p>本文，我主要介绍如下内容：</p>
-
-<p>1、合约概述</p>
-
-<p>2、合约类型</p>
-
-<p>&#160;</p>
-
-<p><strong>1、合约概述</strong></p>
-
-<p>Metro 风格的应用程序使用合约来声明它们支持哪些与其他应用程序和 Windows 进行的交互。对于其中的一些合约，您可能早有耳闻，如“搜索”合约和“共享”合约。通过各种合约，应用程序不仅可以通过与系统协作来提高运行速度，而且在用户安装了多个实施合约的应用程序时，它们还可以彼此配合来保持良好的运行状态。</p>
-
-<p>合约：针对特定目的启动 Metro 风格的应用程序（包含上下文）</p>
-
-<p>&#160;&#160;&#160; Windows 8 合约发挥着纽带的作用，它可以将您的应用程序与其他 Metro 风格的应用程序以及系统 UI 相关联。例如，“文件打开选取器”合约允许用户将文件从一个应用程序导入到另一个。使用“搜索”合约，用户能够在系统中的任意位置搜索应用程序，并在多个应用程序之间快速传输查询。在这些案例以及许多其他合约定应用场景中，Windows 都需要具备可通过应用程序 UI 启动应用程序的功能，这样用户才能快速高效地完成特定任务。这正是我们的激活平台和 API 发挥其作用的平台。</p>
-
-<p>&#160;&#160;&#160; Windows 8已经定义了一些合约。最重要的合约有：搜索合约（search contract）、共享合约（share contract）、设置合约（settings contract）和App To App picker合约。这里也有更多的何用合约，在应用中使用这些合约时，一定要注意用户体验。</p>
-
-<p>下面我们就来分别看看Windows 8中的合约类型。</p>
-
-<p>&#160;</p>
-
-<p><strong>2、合约类型</strong></p>
-
-<p>&#160;&#160;&#160; 在介绍合约之前，先跟大家分享一个热键组合——Windows键+C键（或将鼠标移到屏幕的最右上角或右下角），就可以启动系统的Charm面板，Charm面板里面有搜索、共享、设定等相关功能，这些功能与下面介绍的合约有密切关系。</p>
-
-<p>接下来，我们对各种合约进行初步的认识：</p>
-
-<p>Search contract</p>
-
-<p>&#160;&#160;&#160; Search contract 可以用来建立针对 Metro Style Apps 中内容的搜索功能。我们可以轻松的使用Search contract ，让用户能直接通过 Windows 8 里的 Search Charm 对我们开发的 Metro Style Apps 的内容里的字符串或是文字进行查找。</p>
-
-<p>&#160;&#160;&#160; 一旦我们的 App 实现了Search contract，当使用者打开 Windows 8 的 Search Charm 时，我们的 App 就会出现在右下方的 Apps 列表，使用者就可以直接在该接口点选我们的 App 的 Icon，针对我们的 App 中的数据内容进行s搜索，如此一来，我们也不用特别去多花心思去为我们的每一个 App 设计个自的搜索接口，一切都交给 Windows 8 的 Search Charm 就行了。</p>
-
-<p>&#160;&#160; 不过，通过Search contract 并不能针对 App 中特定文件的内容进行搜索，如果要实现特定文件内容的搜索的话，就得自己在 App 中写搜索的接口和相关逻辑开启 Windows 8 内置的 Search 面版热键为 Windows键 + Q键</p>
-
-<p>Share contract <br/>
-&#160;&#160;&#160; Share contract 比较特别的地方是，它有「来源端 App」及「目标端 App」。如果我们开发的 Metro Style Apps 里会有文档可以当作数据源给其他的 Metro Style Apps 使用，那么这个 App 就会是来源端 App；相反的，如果我们的 Metro Style Apps 允许接受其他 Metro Style Apps 的数据作为数据的输入来源的话，这个 App 就是目标端 App，可以借助Share Target contract 来操作让它可以透过 Share Charm 接受其他 App 的数据源的功能。通过 Share Contract，我们就能使用 Windows 8 的 Share Charm，让用户更轻松的进行数据间的分享及传递了。 <br/>
-开启 Windows 8 内置的 Share 面版的热键为 Windows 键 + H 键。 <br/>
-Settings contract <br/>
-&#160;&#160;&#160; 通过 Settings contract功能，我们可以让用户通过 Windows 8 的 Settings Charm 来针对我们开发的 Metro Style Apps 进行设定，如此一来，我们不用费心去特别设计一个设定专用的画面，其次，整个用户体验也和操作系统本身更为贴近。 <br/>
-开启 Windows 8 内置的 Settings 面版的热键为 Windows 键 + I 键。 <br/>
-Play To contract <br/>
-&#160;&#160;&#160; 通过 Play To contract，我们可以轻松的让用户在我们开发的 Metro Style Apps 中进行播放的影片、音乐或是相片等等媒体文件，以串流的方式，通过兼容于 DLNA 的装置进行播放。若操作系统侦测到有支持相关功能的其他装置，会自动将那些装置显示在 Devices Charm 里，而我们就可以通过 Play To 功能，将媒体以串流的传输方式传送过去。 <br/>
-开启 Windows 8 内置的 Devices 面版的热键为 Windows 键 + K 键。 <br/>
-App to App Picking contract <br/>
-&#160;&#160;&#160; 我们可以通过 App to App Picking contract，让我们的 App 开启文件系统、网络上或是其它在线服务中的文件，甚至使某个 App 具备能通过其他 App 进行浏览或是开启特定类型文件的能力；除此之外，使用者在开启特定类型文件时，也可以自行决定要使用哪一个 App 来开启。 <br/>
-更多的合约类型参考下面的链接： <br/>
-<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh464906.aspx"><u>App contracts and extensions (Metro style apps)</u></a></p>
 
 <div style="text-align: left">
   <span style="color: #339966"></span>

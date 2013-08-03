@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 14th, 2013 iOS, iOS7新特征 iOS7新特征汇总[04]新特征介绍4 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[03]新特征介绍3）中，笔者介绍了在iOS7中关于程序间的音频（inter-App Audio）、点对点的连接 &hellip;">
+	<meta name="description" content="Jun 16th, 2013 iOS, iOS7新特征 iOS7新特征汇总[05]初窥UIKit动力(UIKit Dynamics) 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 此图来此WWDC视频 小引 通过之前的4篇文章，笔者把iOS7中的涉及到的一些新特征做了一个简单的介绍。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,209 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ios7xin-te-zheng/'>iOS7新特征</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/16/88/" itemprop="url">iOS7新特征汇总[05]初窥UIKit动力(UIKit Dynamics)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<div id="attachment_1359" class="wp-caption alignnone" style="width: 1141px">
+  <a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-6.png"><img class="size-full wp-image-1359" alt="QQ20130615-6" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-6.png" width="1131" height="564" /></a><p class="wp-caption-text">
+    此图来此WWDC视频
+  </p>
+</div>
+
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>通过之前的4篇文章，笔者把iOS7中的涉及到的一些新特征做了一个简单的介绍。本文将带领大家初窥新特征里面的一个topic：UIKit动力(<span style="color: #339966;">UIKit Dynamics</span>)。</p>
+
+<p><strong><span style="color: #339966;">注1</span></strong>：关于UIKit Dynamics的中文名称：我在这里叫做UIKit动力，也有人叫UIKit动力模型和UIKit动态，总感觉怪怪的——所以大家在看到的时候不要在意即可。<br/>
+<strong><span style="color: #339966;">注2</span></strong>：今天有开发者提起iOS7 beta还处于苹果的<span style="color: #339966;">NDA</span>(Non-Disclosure Agreement)状态，也就是说目前关于iOS7 beta的任何内容除了官方公开发表的信息外，作为开发者最多只能在苹果的开发者论坛上进行讨论交流，禁止在公开场合谈论关于iOS7 beta的信息。关于NDA感觉国外的意识比较好，就跟版权意识一样。由此笔者也在这里友情提醒一下：读者单纯的看本系列文章即可，在iOS7 release之前，<span style="color: #339966;">保持沉默状态</span>。<br/>
+<strong><span style="color: #339966;">注3</span></strong>：本文在写作的时候参考了如下一些内容(具体内容请登录苹果开发者网站查阅)：</p>
+
+<ol>
+<li>WWDC 2013 session 206 — Getting Started with UIKit Dynamics</li>
+<li>UIDynamicAnimator Class Reference</li>
+<li>UIDynamicAnimatorDelegate Protocol Reference</li>
+<li>UIDynamicBehavior Class Reference</li>
+<li>UIDynamicItem Protocol Reference</li>
+<li>UIDynamicItemBehavior Class Reference</li>
+<li>UIKit Dynamics Catalog(Sample Code)</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">UIKit动力简介</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-5.png"><img alt="QQ20130615-5" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-5.png" width="1101" height="338" /></a></p>
+
+<p><img class=" wp-image-1360 alignright" alt="code" src="http://beyondvincent.com/wp-content/uploads/2013/06/code.png" width="115" height="115" /></p>
+
+<p>什么是UIKit动力？—— 一句话：<span style="color: #339966;">UIKit动力提供了一个模拟真实世界中力学相关的动画和交互系统</span>。比如重力、碰撞和吸附等。UIKit动力具有可组合、可重用和声明式的特点。</p>
+
+<p>在程序中利用UIKit提供的接口来实现力学行为，可以减少80%的代码量。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;"><strong>UIKit动力架构</strong></span></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-8.png"><img class="alignnone size-full wp-image-1363" alt="QQ20130616-8" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-8.png" width="1031" height="459" /></a></p>
+
+<p>如上图所示，UIKit动力系统中，涉及到如下4个内容：<span style="color: #339966;"><br /> </span></p>
+
+<div title="Page 49">
+  <img class=" wp-image-1365 alignright" alt="QQ20130616-9" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-9.png" width="240" height="165" /><span style="color: #339966;">UIDynamicAnimator：<span style="color: #333333;">UIDynamicAnimator介于iOS图形引擎和动力项(View)之间，</span></span><span style="color: #339966;"><span style="color: #333333;">具有如下功效</span>：<br /> </span></p> <ul>
+    <li>
+      提供动力行为的上下文
+    </li>
+    <li>
+      根据ref view确定坐标系
+    </li>
+    <li>
+      控制动力引擎
+    </li>
+    <li>
+      维护着动力行为的状态
+    </li>
+  </ul>
+  
+  <p>
+    UIDynamicAnimatorDelegate是与UIDynamicAnimator相关的一个delegate。主要用于动力行为被启动或者暂定时，做出的回应。也就是说，在动力行为运行期间，有两个事件（启动和暂定）可供我们使用。
+  </p>
+</div>
+
+
+<p><span style="color: #339966;"><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-10.png"><img class=" wp-image-1372 alignright" alt="QQ20130616-10" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-10.png" width="247" height="211" /></a>UIDynamicBehavior：<span style="color: #333333;">主要用来描述动力的行为。在iOS7中，默认提供了如下动力行为：</span></span></p>
+
+<ul>
+<li>UIAttachmentBehavior</li>
+<li>UICollisionBehavior</li>
+<li>UIDynamicItemBehavior</li>
+<li>UIGravityBehavior</li>
+<li>UIPushBehavior</li>
+<li>UISnapBehavior objects</li>
+</ul>
+
+
+<p>动力行为可以在任意时间内进行添加或移除。另外动力行为可以是组合的，也可以被继承。</p>
+
+<p>注意：这些动力行为是在二维空间进行的。</p>
+
+<p><span style="color: #339966;">Reference View</span>：该用是用来初始化Animator用的，它的作用是给动力行为提供坐标系。</p>
+
+<p><span style="color: #339966;">View</span>：在UIKit动力中，又称为动力项(dynamic item)。动力项是遵循UIDynamicItem协议的任意对象（可以是SDK中默认提供的，或者开发者自定义的）。在iOS7 beta中，View已经遵循了该协议，所以一般也会将View当做动力项——动力行为实际针对的对象。</p>
+
+<h2><span style="color: #339966;"><strong>代码示例</strong></span></h2>
+
+<p>下面笔者就通过一个例子，演示如何对一个view施加重力行为(UIGravityBehavior)。</p>
+
+<p>上面介绍了一大堆，实际使用过程可能没那么复杂，不过原理才是最重要的。</p>
+
+<p>新建一个Single View Application模板工程：BVGravityBehavior，在工程中，有如下属性：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, weak) IBOutlet UIImageView *square1;
+@property (nonatomic) UIDynamicAnimator* animator;</pre>
+
+
+<p>另外还有两个方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 开始重力行为
+- (IBAction)startGravity:(id)sender
+{
+    self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+    UIGravityBehavior* gravityBeahvior = [[UIGravityBehavior alloc] initWithItems:@[self.square1]];
+    [self.animator addBehavior:gravityBeahvior];
+}</pre>
+
+
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 停止重力行为
+- (IBAction)stopGravity:(id)sender
+{
+    [self.animator removeAllBehaviors];
+}</pre>
+
+
+<p>运行程序，效果如下（如图没看到gif动画效果，点击下图，在新窗口中可以看到效果）：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/1.gif" target="_blank"><img class="alignnone size-full wp-image-1383" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1.gif" width="570" height="700" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>也可以停止当前的动力行为：在重力行为运行过程中，如果点击停止，就可以停止重力行为，view的状态为停止前的状态。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/2.gif" target="_blank"><img class="alignnone size-full wp-image-1384" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2.gif" width="572" height="706" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">代码下载</span></strong></h2>
+
+<p><a href="https://github.com/BeyondVincent/iOS7-new-feature/tree/master/code/UIDynamic/BVGravityBehavior" target="_blank"><img class="alignnone size-full wp-image-561" alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;">小结</span></h2>
+
+<p>本文对UIKit动力做了一个入门级别的介绍，并给出了一个小示例，演示了如何给view添加一个重力行为。在下一篇文章中，笔者将继续介绍UIKit动力。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
+
+<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
+
+<p>来自唐巧的一个微信公众账号：<span style="color: #339966;">iosDevTips</span>——基本每天都会有关于iOS开发的精彩内容分享。<br/>
+来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
+
+<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
+
+<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
+新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+微信公众账号：<strong>破船之家</strong><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-15</time>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1776,159 +1979,6 @@ namespace BV_Binding_Convert
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/78/" itemprop="url">Windows Store App开发[049]数据绑定(1)绑定模型</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>在Windows Store app开发中，数据绑定非常的重要，它提供了一个简单的方法，使我们的程序可以很方便的显示数据并与数据进行交互。今天我先给大家简单的介绍一下Windows Store app中的数据绑定，在后面的文章中，我会展开详细的介绍。</h3>
-
-<h3><a name="t4"></a>简介</h3>
-
-<p>数据绑定在UI控件中显示数据是非常重要的一部分内容。当任意一个UI控件使用了绑定，那么它将会显示出相应的数据。当然，很重要的一个因素就是当绑定的数据发生了改变，此时UI控件显示的内容就会自动的改变。同样，当用户在UI控件上做了改变，这些变动的数据也会被自动保存到数据对象中。</p>
-
-<p>在数据绑定中，每一个绑定都有一个Mode属性，该属性决定了数据流是如何走向的。在Windows Store Apps中，如果使用XAML和C#开发，有3中Mode可以使用：</p>
-
-<p>OneWay绑定</p>
-
-<p>TwoWay绑定</p>
-
-<p>Onetime绑定</p>
-
-<h3><a name="t5"></a>OneWay</h3>
-
-<p>这是默认的绑定模型。OneWay绑定中，数据流的走向是从绑定源流向绑定目标的，不能反过来。当绑定源的数据发生了改变，那么绑定目标会得到更新。</p>
-
-<p>示例：TextBox的Background为绑定目标，ListBox的SelectedItem.Content为绑定源</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="BurlyWood"&gt;
-
-    &lt;grid height="150" width="165"&gt;
-
-        &lt;textbox background="{Binding ElementName=listBox, Path=SelectedItem.Content, Mode=OneWay}" height="82" fontsize="30" name="textBox" margin="0,-117,-218,0" verticalalignment="Top" foreground="Red" text="OneWay绑定模式"&gt;
-
-        &lt;/textbox&gt;
-
-        &lt;listbox fontsize="30" name="listBox" margin="0,0,-218,-70"&gt;
-
-            &lt;listboxitem content="Green" /&gt;
-
-            &lt;listboxitem content="Blue" isselected="True" /&gt;
-
-            &lt;listboxitem content="Orange" /&gt;
-
-        &lt;/listbox&gt;
-
-    &lt;/grid&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/118.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb16.jpg" width="546" height="420" /></a></p>
-
-<h3>TwoWay</h3>
-
-<p>就如名字一样，TwoWay绑定模式可以在绑定源于绑定目标之间相互同步数据。也就是说，无论是绑定源还是绑定目标，谁的数据改变了，另外一方的数据也会得到更新。</p>
-
-<p>示例：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="Green"&gt;
-
-    &lt;grid height="180" width="165"&gt;
-
-        &lt;textbox height="56" fontsize="30" name="textBox" margin="0,-101,-192,0" verticalalignment="Top" text="{Binding ElementName=listBox,&#13;&#10;&#13;&#10;                    Path=SelectedItem.Content,&#13;&#10;&#13;&#10;                    Mode=TwoWay}"&gt;
-
-        &lt;/textbox&gt;
-
-        &lt;listbox fontsize="30" name="listBox" margin="0,0,-192,-62"&gt;
-
-            &lt;listboxitem content="破船" /&gt;
-
-            &lt;listboxitem content="BeyondVincent" /&gt;
-
-            &lt;listboxitem content="小破船" /&gt;
-
-            &lt;listboxitem content="小BeyondVincent" /&gt;
-
-        &lt;/listbox&gt;
-
-    &lt;/grid&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p>当选择ListBox中的数据时，TextBox中的内容也会跟着改变</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/214.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb13.jpg" width="510" height="451" /></a></p>
-
-<p>当在TextBox中修改文本内容，ListBox中对应选中项也会改变[注意，TextBox需要失去Focus，才会触发数据改变]</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/310.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb10.jpg" width="553" height="456" /></a></p>
-
-<h3>OneTime</h3>
-
-<p>OneTime绑定模式，数据流是从绑定源到绑定目标的，并且只有一次。当绑定源的数据第一次发生改变时，绑定目标会得到更新。以后绑定源再怎么改变，绑定目标都不会更新。当需要查看数据首次加载情况时，可以选择这种模式。</p>
-
-<p>示例：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="Green"&gt;
-
-    &lt;stackpanel verticalalignment="Center" orientation="Vertical"&gt;
-
-        &lt;slider background="Wheat" margin="593,0,354,0" value="50" maximum="100" minimum="1" x:name="sliderOneTimeDataSource" /&gt;
-
-        &lt;textbox height="86" text="{Binding ElementName=sliderOneTimeDataSource, Path=Value, Mode=OneTime}" margin="608,0,354,0" fontsize="50" x:name="tbOneTimeDataBound" /&gt;
-
-    &lt;/stackpanel&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p>当源数据确定后，绑定就已经完成了。所以之后Slider再怎么改变数据，都不会影响到TextBox的内容。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/410.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb10.jpg" width="531" height="273" /></a></p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/BindingMode" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
 </div>
 
 
