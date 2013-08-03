@@ -86,7 +86,7 @@ _config.yml是博客重要的一个配置文件，在_config.yml文件中有三�
 
 Github的[`Page service`](http://pages.github.com/)可以免费托管博客，并且还可以自定义域名。
 
-首先需要在GitHub上[`创建一个仓库`](https://github.com/new)，并将仓库名称按照这样的方式进行命名：`username.github.com`或`organization.github.com`。等后面配置完毕之后，我们就可以在浏览器中使用页面地址`http://username.github.com`来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到mastoer分支。
+首先需要在GitHub上[`创建一个仓库`](https://github.com/new)，并将仓库名称按照这样的方式进行命名：`username.github.com`或`organization.github.com`。等后面配置完毕之后，我们就可以在浏览器中使用页面地址`http://username.github.com`来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到master分支。
 
 创建好仓库之后，我们需要利用octopress的一个`配置rake任务`来自动配置上面创建的仓库：可以让我们方便的部署GitHub page。在终端输入如下命令：
 
