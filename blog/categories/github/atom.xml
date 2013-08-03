@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-03T16:56:01+08:00</updated>
+  <updated>2013-08-03T17:00:01+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -102,7 +102,7 @@ rake install
 
 <p>Github的<a href="http://pages.github.com/"><code>Page service</code></a>可以免费托管博客，并且还可以自定义域名。</p>
 
-<p>首先需要在GitHub上<a href="https://github.com/new"><code>创建一个仓库</code></a>，并将仓库名称按照这样的方式进行命名：<code>username.github.com</code>或<code>organization.github.com</code>。等后面配置完毕之后，我们就可以在浏览器中使用页面地址<code>http://username.github.com</code>来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到mastoer分支。</p>
+<p>首先需要在GitHub上<a href="https://github.com/new"><code>创建一个仓库</code></a>，并将仓库名称按照这样的方式进行命名：<code>username.github.com</code>或<code>organization.github.com</code>。等后面配置完毕之后，我们就可以在浏览器中使用页面地址<code>http://username.github.com</code>来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到master分支。</p>
 
 <p>创建好仓库之后，我们需要利用octopress的一个<code>配置rake任务</code>来自动配置上面创建的仓库：可以让我们方便的部署GitHub page。在终端输入如下命令：</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-03T16:56:01+08:00</updated>
+  <updated>2013-08-03T17:00:01+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -112,7 +112,7 @@
 
 <p>Github的<a href="http://pages.github.com/"><code>Page service</code></a>可以免费托管博客，并且还可以自定义域名。</p>
 
-<p>首先需要在GitHub上<a href="https://github.com/new"><code>创建一个仓库</code></a>，并将仓库名称按照这样的方式进行命名：<code>username.github.com</code>或<code>organization.github.com</code>。等后面配置完毕之后，我们就可以在浏览器中使用页面地址<code>http://username.github.com</code>来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到mastoer分支。</p>
+<p>首先需要在GitHub上<a href="https://github.com/new"><code>创建一个仓库</code></a>，并将仓库名称按照这样的方式进行命名：<code>username.github.com</code>或<code>organization.github.com</code>。等后面配置完毕之后，我们就可以在浏览器中使用页面地址<code>http://username.github.com</code>来访问我们的博客。一般来说，我们希望在将博客的源码放到source分支下，并把生成的内容提交到master分支。</p>
 
 <p>创建好仓库之后，我们需要利用octopress的一个<code>配置rake任务</code>来自动配置上面创建的仓库：可以让我们方便的部署GitHub page。在终端输入如下命令：</p>
 
@@ -2837,7 +2837,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#66;&#x65;&#x79;&#111;&#110;&#100;&#86;&#105;&#110;&#99;&#x65;&#x6e;&#x74;&#64;&#x67;&#109;&#97;&#105;&#108;&#x2e;&#x63;&#111;&#109;">&#x42;&#101;&#x79;&#111;&#x6e;&#x64;&#x56;&#105;&#x6e;&#x63;&#101;&#110;&#x74;&#64;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#99;&#x6f;&#x6d;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#x42;&#x65;&#121;&#x6f;&#x6e;&#x64;&#86;&#x69;&#x6e;&#99;&#101;&#x6e;&#116;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;">&#66;&#101;&#x79;&#x6f;&#110;&#100;&#x56;&#x69;&#110;&#99;&#x65;&#x6e;&#x74;&#64;&#x67;&#109;&#97;&#105;&#108;&#x2e;&#99;&#x6f;&#109;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
