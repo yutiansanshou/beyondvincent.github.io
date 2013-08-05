@@ -91,7 +91,16 @@ Game Kit只需要一个会话id(session identifier)，显示的名称(display na
 
 ######Bonjour
 
+Bonjour是苹果实现的零配置联网。Bonjour提供了这样一种机制：发现并连接到设备或者网络中的服务，这些过程中我们并不需要知道设备的网络地址，相反，Bonjour涉及到元祖名称，服务类型和域。Bonjour封装了底层网络接口需要的multicast DNS(mDNS)，以及基于DNS服务的发现(DNS-SD)。
+
+在Cocoa层，NSNetService API提供了相关接口用来发布和解决Bonjour服务的地址信息。我们可以使用NSNetServiceBrowser API来发现网络中可用的服务。为了通信，发布一个Bonjour服务，即使是使用Cocoa层的API，也需要明白Core Foundation中对socket的配置。在第13章"Ad-Hoc Networking with Bonjour"中，深入介绍了零配置联网(Bonjour)，并给出了一个示例介绍如何实现一个基于Bonjour的服务。
+
 ######NSStream
+
+NSStream是Cocoa层里面的API，构建于CFNetwork之上，是NSURLConnection的基础部分，并且还适用于较底层的网络任务。就像NSURLConnection，NSStream提供了一种与远程服务或者本地文件通信的机制。另外，还NSStream还可以在别的一些一些上进行通信，例如`telnet`，`SMTP`，NSURLConnection并不支持这些协议。
+
+NSStream还提供了额外的一些控制功能，不过这是要付出代价的。NSStream并没有内置支持处理HTTP/S响应状态码的处理，也不支持认证功能。它是用C缓存器进行数据的发送和接收的，这跟Objective-C还有点区别。它也不能管理多个请求，如果需要相应的功能，需要在其子类中添加功能。NSStream是异步的，它通过NSStreamDelegate进行通信。在第8章中“Low-Level Networking”，以及第13章中“Ad-Hoc Networking with Bonjour”，都不同程度的实现了NSStream。
+
 
 ######CFNetwork
 
