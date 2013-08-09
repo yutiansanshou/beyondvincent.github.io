@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jul 8th, 2013 iOS, iOS翻译 初识block 本文由破船译自rypress转载请注明出处！ 小引 本周末微博上朋友发了一个关于block的MV，只能说老外太逗了。大家也可以去看看怎么回事： Cocoa Got Blocks。虽然之前也有接触过block， &hellip;">
+	<meta name="description" content="Jul 9th, 2013 iOS, iOS翻译 深度围观block：第一集 &nbsp; 本文由破船译自galloway转载请注明出处！ 小引 还记得之前的两篇文章吗：iOS汇编教程：ARM(1)和iOS汇编教程：ARM(2)，里面介绍了Objective-C生成的汇编代码。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,50 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-09T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jul 9<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosfan-yi/'>iOS翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/07/09/99/" itemprop="url">深度围观block：第一集</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png"><img class="alignnone size-full wp-image-1563" alt="blocks_2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png" width="1140" height="420" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.galloway.me.uk/2012/10/a-look-inside-blocks-episode-1/" target="_blank"><span style="color: #339966; text-decoration: underline;">galloway</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>还记得之前的两篇文章吗：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/19/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(1)</span></a></span></span></strong>和<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/20/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm2/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(2)</span></a></span></strong></span>，里面介绍了Objective-C生成的汇编代码。本文介绍的内容也跟汇编相关，只不过是与block相关，如果对汇编有不了解的，可以先去看看那两篇带有启蒙性质的文章哟。本文将从汇编的角度来介绍block相关知识。另外，如果你对block还不了解的话，建议你先去看看我的上一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/08/%e5%88%9d%e5%a7%8bblock/" target="_blank"><span style="color: #339966; text-decoration: underline;">初识block</span></a></span></span></strong>。</p>
+
+
+		
+		<a href="/blog/2013/07/09/99/" class="more-link">继续阅读 &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -393,7 +437,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#x6f;&#58;&#x42;&#x65;&#x79;&#x6f;&#x6e;&#x64;&#86;&#x69;&#x6e;&#x63;&#101;&#x6e;&#x74;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#109;">&#66;&#x65;&#121;&#111;&#110;&#100;&#x56;&#x69;&#x6e;&#99;&#101;&#110;&#x74;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#x6f;&#109;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#111;&#x3a;&#66;&#x65;&#121;&#111;&#x6e;&#100;&#x56;&#x69;&#110;&#99;&#101;&#x6e;&#x74;&#x40;&#103;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;">&#x42;&#x65;&#121;&#x6f;&#x6e;&#100;&#x56;&#105;&#x6e;&#99;&#101;&#x6e;&#116;&#64;&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#99;&#x6f;&#x6d;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
@@ -1686,68 +1730,6 @@ Lfunc_end0:
 
 <div style="text-align: left;">
   <span style="color: #808080;">本文由<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-19</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-17T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 17<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/qi-ta/'>其它</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/17/89/" itemprop="url">父爱天天有</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>2013年6月16日是父亲节，祝愿天下的父亲们都身体都健康！</p>
-
-<p><strong><span style="color: #339966;">注1</span></strong>：首先感谢<span style="text-decoration: underline;"><a href="http://www.weibo.com/lancy1014" target="_blank"><span style="color: #339966; text-decoration: underline;">@晨钰Lancy</span></a></span>对我昨天文章<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="固定链接到 iOS7新特征汇总[05]初窥UIKit动力(UIKit Dynamics)" href="http://beyondvincent.com/2013/06/16/ios7%e6%96%b0%e7%89%b9%e5%be%81%e6%b1%87%e6%80%bb05%e5%88%9d%e7%aa%a5uikit%e5%8a%a8%e5%8a%9buikit-dynamics/" rel="bookmark"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[05]初窥UIKit动力(UIKit Dynamics)</span></a></span></span>中的一个错误进行提醒：UIKit Dynamics中UIGravityBehavior的重力单位应该是UIKit Gravity。我已经对博文和相关代码进行了修改。另外，由于笔者才学疏浅，如果大家在看我博文的时候遇到不对的地方，请狠批我，我已经做好准备迎接大家手里的板砖、鸡蛋和手机啦。</p>
-
-<p><strong><span style="color: #339966;">注2</span></strong>：最近几天连续的学习iOS7新东西（白天上班，晚上基本都是在看WWDC和iOS7相关的内容），一者会有点累，再者感觉对新知识点消化吸收效率不是太高，在写博文的时候，会容易出错，误导大家——为了身体能够健康的生产（身体是父母给的，至少要让父母少担心），文章能够准确的输出，在后面的文章中，不能确保一天出一篇，在时间和精力允许的情况下，我尽量！另外，大家也可以跟我反馈感兴趣的topic，我会优先考虑。</p>
-
-<p><strong><span style="color: #339966;">注3</span></strong>：今天不会有新的技术与大家分享！大家如果对我的博文感兴趣，可以收藏我的博客站点：<span style="text-decoration: underline;"><a href="http://BeyondVincent.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://BeyondVincent.com">http://BeyondVincent.com</a></span></a></span>。也可以关注我的微博：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">@BeyondVincent</span></a></span></span>。</p>
-
-<h2><span style="color: #339966;">今天的正文</span></h2>
-
-<p>2013年6月16日是父亲节。好久没有跟父亲联络了，还记得上一次联络是2周前父亲跟我打电话，我与父亲联络比较少，基本都是跟母亲联络。</p>
-
-<p>还记得，刚毕业那会，从云南去北方(大连)工作的时候，父亲经常跟我说有空要去大连游玩一下，结果直到离开大连的时候，也没有完成父亲的这个小心愿，后来，在北京呆了一段时间，也希望有时间带上父亲，去首都转转，结果还是没能如愿。再后来，父亲没有再提游玩的事情。现如今，我人已回云南，想想父亲辛劳了好多年，自己却很难孝敬，心里时常会感觉内疚。现在唯一能孝敬父亲，并让父亲安心的就是做到让自己身体健康。也希望，尽快完成父亲的小心愿。</p>
-
-<p>与父亲一起合影的次数并不太多，而单独与父亲合影，只有下面这张！</p>
-
-<h1><span style="color: #339966;">在这里祝愿我的父亲身体健康！</span></h1>
-
-<h1><span style="color: #339966;">也祝愿天下所有人的父亲身体健康！</span></h1>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/%E7%88%B6%E5%AD%90.jpg"><img class="alignnone size-full wp-image-1389" alt="父子" src="http://beyondvincent.com/wp-content/uploads/2013/06/父子.jpg" width="670" height="502" /></a></p>
-
-<div>
-  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-17</time>
 </div>
 
 

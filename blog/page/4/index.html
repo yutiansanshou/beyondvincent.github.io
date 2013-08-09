@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[049]数据绑定(1)绑定模型 在Windows Store app开发中，数据绑定非常的重要，它提供了一个简单的方法，使我们的程序可以很方便的显示数据并与数据进行交互。 &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[050]数据绑定(2)转换器 小引 在数据绑定中，有时候我们要显示的内容跟绑定的源有所不同：比如：考生的分数60分以下为不及格或者糟糕、60-90为及格或还行， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,185 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/79/" itemprop="url">Windows Store App开发[050]数据绑定(2)转换器</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在数据绑定中，有时候我们要显示的内容跟绑定的源有所不同：比如：考生的分数60分以下为不及格或者糟糕、60-90为及格或还行，90分以上为优秀或非常棒。那么我们就需要对绑定源的数据进行处理。这篇文章，我就来说一说绑定中的转换器——通过转换器可以达到对数据的处理，以显示想要的内容。</p>
+
+<h3><a name="t4"></a>简介</h3>
+
+<p>由于<a href="http://beyondvincent.com/2013/06/06/windows-store-app%E5%BC%80%E5%8F%91049%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A1%E7%BB%91%E5%AE%9A%E6%A8%A1%E5%9E%8B/"><u>上一篇</u></a>文章中我只是介绍了绑定模型，没有对数据绑定进行介绍，那么我们先来看看下面这个图（来自msdn），以便对数据绑定有一个了解：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/119.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb17.jpg" width="591" height="249" /></a></p>
+
+<p>上面这个图描述了数据绑定的如下内容：</p>
+
+<p>A、绑定目标——必须是依赖属性，一般来说，都是在FrameworkElement中。</p>
+
+<p>B、绑定对象——连接绑定源与绑定目标的一个对象，绑定引擎通过绑定对象，对绑定源和绑定目标进行相应的处理</p>
+
+<p>C、绑定源——也就是数据的来源，只要是CLR对象即可，不一定必须是依赖属性</p>
+
+<p>E、转换器——对绑定源与绑定目标的值进行转换的接口</p>
+
+<p>本文就是使用到上面的转换器。</p>
+
+<h3><a name="t5"></a>使用转换器的关键技术</h3>
+
+<p>A、实现IValueConverter接口</p>
+
+<p>B、创建一个转换器，告诉绑定对象使用该转换器</p>
+
+<h3><a name="t6"></a>实现步骤</h3>
+
+<p>A、新建空白工程，名称为BV_Binding_Convert</p>
+
+<p>B、在项目工程上单击右键，选择添加->选择类->输入DataConverter，然后确定</p>
+
+<p>C、在DataConverter.cs文件实现IValueConverter接口</p>
+
+<p>IValueConverter接口需要重写两个函数：</p>
+
+<p>Convert——当数据从数据源传递过来了，绑定引擎会掉用该方法，并将数据返回给绑定目标</p>
+
+<p>ConvertBack——与Convert相反：当数据从绑定目标传递过来了，绑定引擎会掉用该方法，并将数据返回给绑定源</p>
+
+<p>注意：在下面的代码中，我还利用了parameter参数，这是在绑定的时候可以指定的参数。可以在这里做一些判断。我在这里根据这个参数回返回不同的值。</p>
+
+<p>另：在代码中我使用的是默认绑定模型：单向绑定，所以不会用到ConvertBack，我也就没有做具体的实现代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.UI.Xaml.Data;
+
+namespace BV_Binding_Convert
+{
+    // Define the Convert method to change a DateTime object to // a month string.
+    public class DataConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            string type = parameter.ToString();
+
+            double count = (double)value;
+            string temp;
+            if (count &lt; 60)
+            {
+                if (type == &quot;1&quot;)
+                    temp = &quot;不及格&quot;;
+                else
+                    temp = &quot;糟糕&quot;;
+            }
+            else if (count &gt;= 60 &amp;&amp; count &lt;= 90)
+            {
+                if (type == &quot;1&quot;)
+                    temp = &quot;及格&quot;;
+                else
+                    temp = &quot;还行&quot;;
+            }
+            else
+            {
+                if (type == &quot;1&quot;)
+                    temp = &quot;优秀&quot;;
+                else
+                    temp = &quot;非常棒&quot;;
+            }
+
+            return temp;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}</pre>
+
+
+<p>D、在xaml中使用绑定</p>
+
+<p>我定义了一个Slider控件——当作绑定源</p>
+
+<p>3个TextBlock当作绑定目标：1个是没有使用转换器，另外两个使用转换器，并携带了不同的参数。</p>
+
+<p>具体代码如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" mc:ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="using:BV_Binding_Convert" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="BV_Binding_Convert.MainPage"&gt;
+
+    &lt;page.resources&gt;
+        &lt;local:dataconverter x:key="DataConverter1" /&gt;
+    &lt;/page.resources&gt;
+
+    &lt;!--LayoutRoot 是包含所有页面内容的根网格--&gt;
+    &lt;grid background="Transparent" x:name="LayoutRoot"&gt;
+
+        &lt;!--ContentPanel - 在此处放置其他内容--&gt;
+        &lt;grid background="Green"&gt;
+            &lt;slider margin="326,220,352,149" maximum="100" value="60" foreground="Red" name="slider"&gt;&lt;/slider&gt;
+            &lt;textblock margin="554,286,542,254" text="{Binding ElementName=slider, Path=Value}" fontsize="50"&gt;&lt;/textblock&gt;
+            &lt;textblock margin="554,366,542,174" text="{Binding ElementName=slider, Path=Value, Converter={StaticResource DataConverter1}, ConverterParameter=&#39;1&#39;}" fontsize="60"&gt;&lt;/textblock&gt;
+            &lt;textblock margin="554,451,614,89" text="{Binding ElementName=slider, Path=Value, Converter={StaticResource DataConverter1}, ConverterParameter=&#39;2&#39;}" fontsize="60"&gt;&lt;/textblock&gt;
+        &lt;/grid&gt;
+    &lt;/grid&gt;
+&lt;/page&gt;</pre>
+
+
+<p>E、运行效果</p>
+
+<p>用鼠标滑动Slider控件，则绑定目标会根据Slider不同的值进行改变更新。</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/215.jpg"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb14.jpg" width="682" height="329" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/BindingConvert" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1796,204 +1975,6 @@ async void OnLoaded(object sender, RoutedEventArgs arg)
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/69/" itemprop="url">Windows Store App开发[040]使用默认程序打开文件</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>小引</h3>
-
-<p>在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接，这时候我们就需要用到Windows.System.Launcher。今天我就通过代码示例，来介绍如何打开文件或者链接。</p>
-
-<p>本文参考了：</p>
-
-<p><a href="http://msdn.microsoft.com/zh-SG/library/hh779671"></a><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher"><u>http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher</u></a></p>
-
-<h3><a name="t4"></a>打开文件</h3>
-
-<h4><a name="t5"></a>通过默认程序打开文件</h4>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private async void DefaultLaunch(object sender, RoutedEventArgs e)
-{
-    // Path to the file in the app package to launch
-    string imageFile = @&quot;data\[DevDiv翻译]Metro Revealed_ Building Windows 8 apps with XAML and C#中文翻译合集_2012_09_03.pdf&quot;;
-
-    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
-
-    if (file != null)
-    {
-        // Launch the retrieved file
-        var success = await Windows.System.Launcher.LaunchFileAsync(file);
-
-        if (success)
-        {
-            // File launched
-        }
-        else
-        {
-            // File launch failed
-        }
-    }
-    else
-    {
-        // Could not find file
-    }
-}</pre>
-
-
-<p>运行效果：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.png" width="682" height="403" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.png" width="682" height="386" /></a></p>
-
-<h4>通过程序列表打开文件</h4>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private async void DisplayApplicationPicker(object sender, RoutedEventArgs e)
-{
-    // Path to the file in the app package to launch
-    string imageFile = @&quot;data\7.jpg&quot;;
-
-    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
-
-    if (file != null)
-    {
-        // Set the option to show the picker
-        var options = new Windows.System.LauncherOptions();
-        options.DisplayApplicationPicker = true;
-
-        // Launch the retrieved file
-        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
-        if (success)
-        {
-            // File launched
-        }
-        else
-        {
-            // File launch failed
-        }
-    }
-    else
-    {
-        // Could not find file
-    }
-}</pre>
-
-
-<p>运行效果</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.png" width="682" height="527" /></a></p>
-
-<h4>去商店搜索对应的程序来打开文件</h4>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private async void RecommendedApp(object sender, RoutedEventArgs e)
-{
-    // Path to the file in the app package to launch
-    string imageFile = @&quot;data\1.BeyondVincent&quot;;
-
-    // Get the image file from the package&#039;s image directory
-    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
-
-    if (file != null)
-    {
-        // Set the recommended app
-        var options = new Windows.System.LauncherOptions();
-
-        // 设置为应用商店中要推荐的应用的程序包系列名称
-        options.PreferredApplicationPackageFamilyName = &quot;BeyondVincent格式文件程序&quot;;
-
-        // 设置为该应用的名称
-        options.PreferredApplicationDisplayName = &quot;BV_Launcher&quot;;
-
-
-        // Launch the retrieved file pass in the recommended app 
-        // in case the user has no apps installed to handle the file
-        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
-        if (success)
-        {
-            // File launched
-        }
-        else
-        {
-            // File launch failed
-        }
-    }
-    else
-    {
-        // Could not find file
-    }
-}</pre>
-
-
-<p>运行效果</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.png" width="682" height="354" /></a></p>
-
-<h3>打开链接</h3>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private async void OpenDevDiv(object sender, RoutedEventArgs e)
-{
-    // The URI to launch
-    string uriToLaunch = @&quot;http://www.DevDiv.com&quot;;
-
-    // Create a Uri object from a URI string 
-    var uri = new Uri(uriToLaunch);
-
-    // Launch the URI
-    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
-
-    if (success)
-    {
-        // URI launched
-    }
-    else
-    {
-        // URI launch failed
-    }
-}</pre>
-
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Launcher" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</time></span>
 </div>
 
 

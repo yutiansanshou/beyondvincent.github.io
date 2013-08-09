@@ -4,7 +4,7 @@
   <title><![CDATA[Category: github | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/github/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-06T14:40:55+08:00</updated>
+  <updated>2013-08-09T16:56:16+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -18,7 +18,7 @@
     <link href="http://BeyondVincent.github.io/blog/2013/08/03/108-creating-a-github-blog-using-octopress/"/>
     <updated>2013-08-03T13:38:00+08:00</updated>
     <id>http://BeyondVincent.github.io/blog/2013/08/03/108-creating-a-github-blog-using-octopress</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/08/github_page_and-octopress.png"></p>
+    <content type="html"><![CDATA[<p>{% img /images/2013/08/github_page_and-octopress.png %}</p>
 
 <h2>小引</h2>
 
@@ -180,7 +180,7 @@ $ rake deploy
     <link href="http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github/"/>
     <updated>2013-07-27T14:44:00+08:00</updated>
     <id>http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/07/wordpress_to_octopress.png"></p>
+    <content type="html"><![CDATA[<p>{% img /images/2013/07/wordpress_to_octopress.png %}</p>
 
 <h3>大家好，我是破船！欢迎大家关注我的小站！</h3>
 
@@ -261,7 +261,7 @@ duoshuo_short_name: yourname
 
 
 <script type="text/javascript">
-  var duoshuoQuery = {short_name:"beyondvincent"};
+  var duoshuoQuery = {short_name:"{{ site.duoshuo_short_name }}"};
   (function() {
     var ds = document.createElement('script');
     ds.type = 'text/javascript';ds.async = true;

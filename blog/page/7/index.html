@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 4th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[021]DatagramSocket与UDP 本文章主要内容如下 1、DatagramSocket介绍【译自DatagramSocket】 2、 &hellip;">
+	<meta name="description" content="Jun 4th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[022]WinRT中文件的正确读写方法 本文章主要内容如下 1、读取Isolated Storage 2、读取工程中的文件**** 3、通过文件选取器(File &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,249 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/49/" itemprop="url">Windows Store App开发[022]WinRT中文件的正确读写方法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文章主要内容如下</p>
+
+<p><strong>1、读取Isolated Storage</strong></p>
+
+<p><strong><strong>2、</strong></strong>读取工程中的文件****</p>
+
+<p><strong>3、</strong><strong>通过文件选取器(File Picker)读取本地文件</strong></p>
+
+<p><strong><strong>4、</strong></strong>不通过<strong>文件选取器(File Picker)</strong>读取本地文件****</p>
+
+<p><strong><strong>5、示例代码下载</strong></strong></p>
+
+<p><strong><font color="#666666"></font></strong></p>
+
+<p>****</p></p>
+
+<p>在Windows 8 Metro开发中开始使用WinRT;在WinRT中有一些新的名称空间&#8212;-名称空间是在.Net Framework中使用的。可能你认为你知道，但是你可能不知道。</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/br230302(v=vs.110).aspx">MSDN</a>：在一些情况下,.Net Framework 桌面程序所使用的type,在.NET APIs(Metro style apps)中并不存在。代替的方法是,使用Windows Runtime中的type。例如，System.IO.IsolatedStorage。IsolatedStorageSettings并不包含在.NET APIs(Metro style apps)中,相反<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdatacontainer.aspx">Windows.Storage.ApplicationDataContainer</a>提供了存储程序设置的功能.常见的变化例子你可能需要看这里的内容: <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br230302(v=vs.110).aspx#convert">Converting your existing .NET Framework code</a>。</p>
+
+<p>&#160;</p>
+
+<p><strong>1、</strong><strong>读取Isolated Storage</strong></p>
+
+<p>每个Metro程序都有三个文件夹:<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.localfolder.aspx"></a><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.localfolder.aspx">Local</a>,<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.roamingfolder.aspx"> </a><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.roamingfolder.aspx">Roaming</a>,<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.temporaryfolder.aspx"></a><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.applicationdata.temporaryfolder.aspx">Temp</a>。每个文件夹的访问方法都是相同的.</p>
+
+<p>&#160;&#160;&#160; Local用于将数据存储在本地,这是程序特定的文件夹.</p>
+
+<p>&#160;&#160;&#160; Roaming存储的文件可能会用于与其他程序进行同步.</p>
+
+<p>&#160;&#160;&#160; Temp中的文件,在程序每次启动的时候都有可能被清除.</p>
+
+<p>下面的代码是如何使用它们:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public async void IsolatedStorage()
+{
+    // settings
+    var _Name = &quot;MyFileName&quot;;
+    var _Folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+    var _Option = Windows.Storage.CreationCollisionOption.ReplaceExisting;
+
+    // create file 
+    var _File = await _Folder.CreateFileAsync(_Name, _Option);
+
+    // write content
+    var _WriteThis = &quot;Hello world!&quot;;
+    await Windows.Storage.FileIO.WriteTextAsync(_File, _WriteThis);
+
+    // acquire file
+    _File = await _Folder.GetFileAsync(_Name);
+
+    // read content
+    var _ReadThis = await Windows.Storage.FileIO.ReadTextAsync(_File);
+}</pre>
+
+
+<p><strong>2、</strong><strong>读取工程中的文件</strong></p>
+
+<p>如果你想要从你的工程中读取一个资源文件,这个文件大多数情况下是示例数据或者设置等.可能会是XML文件,JSON文件,或者其它格式.能读取吗?当然可以.</p>
+
+<p>注意：工程中的文件是不能进行写操作的。要想对工程中的文件进行写操作，需要将其copy到独立存储中，或者其他地方，然后再进行写操作。</p>
+
+<p>第一步</p>
+
+<p>添加文件到工程中.注意:这是你的文件,你需要处理文件类型.如下图,我添加了一个MyFile.txt文件到MyFolder目录中.</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/14.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb4.jpg" width="284" height="193" /></a></p>
+
+<p>第二步</p>
+
+<p>修改文件的生成操作为内容.并将复制到输出目录修改为始终复制.这将确保文件在程序中.不这样做的话,读取不到文件.</p>
+
+<p>第三步</p>
+
+<p>读取文件内容,代码如下:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void ProjectFile()
+{
+    // settings
+    var _Path = @&quot;MyFolderMyFile.txt&quot;;
+    var _Folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+
+    // acquire file
+    var _File = await _Folder.GetFileAsync(_Path);
+
+    // read content
+    var _ReadThis = await Windows.Storage.FileIO.ReadTextAsync(_File);
+}</pre>
+
+
+<p><strong>3、</strong><strong>通过文件选取器(File Picker)读取本地文件</strong></p>
+
+<p>你想要从文档库中读取文件?那么就使用文件选取器来让用户选择文件.</p>
+
+<p>只需要这样做:</p>
+
+<p>为了使用文件选取器，并不需要做特殊的事情。不要对AppXManifest进行任何改变(原因:使用文件选取器是让用户做出选择,只有用户可以选择文件).因此选取器是对其自己能力的一种声明和同意.</p>
+
+<p>下面是使用的代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void LocalFileFromPicker()
+{
+    // define picker
+    var _Picker = new FileOpenPicker
+    {
+        ViewMode = PickerViewMode.List,
+        SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+    };
+    _Picker.FileTypeFilter.Add(&quot;.txt&quot;);
+
+    // let user pick file
+    var _File = await _Picker.PickSingleFileAsync();
+    if (_File == null)
+    {
+        await new Windows.UI.Popups.MessageDialog(&quot;No file&quot;).ShowAsync();
+        return;
+    }
+
+    // read properties
+    var _Message = string.Format(&quot;File date: {0}&quot;,
+        (await _File.GetBasicPropertiesAsync()).DateModified);
+    await new Windows.UI.Popups.MessageDialog(_Message).ShowAsync();
+
+    // read content
+    var _Content = await Windows.Storage.FileIO.ReadTextAsync(_File);
+    await new Windows.UI.Popups.MessageDialog(_Content).ShowAsync();
+}</pre>
+
+
+<p>在上面的代码中,首先初始化了一个FileOpenPicker.然后调用选取器的PickSingleFileAsync()方法来获取一个StorageFile。接着使用MessageDialog来显示一些详细内容。</p>
+
+<p>下面上一个效果图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/22.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb2.jpg" width="682" height="420" /></a></p>
+
+<hr />
+
+<p><strong>4、</strong><strong>不通过文件选取器(File Picker)读取本地文件</strong></p>
+
+<p>如果你不想通过文件选取器来读取文件,能做到吗?答案是yes.不过稍微有点复杂,因为需要修改程序的AppXManifest文件,来请求文档库的访问功能.</p>
+
+<p>如下图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/31.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb1.jpg" width="453" height="569" /></a></p>
+
+<p>将文档库访问勾上.这是你可能注意到了功能Tab标题有个红色的X.这表示有错误.如何修改呢.</p>
+
+<p>需要修改声明Tab里面的文件类型</p>
+
+<p>注意,文件类型的设置不能是*.*</p>
+
+<p>如下图(这里我只访问txt文件,所以只添加.txt)</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/43.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb3.jpg" width="597" height="598" /></a></p>
+
+<p>&#160;</p>
+
+<p>现在,可以读取文件内容了</p>
+
+<p>下面的代码我创建了一个HelloWorld.txt文件，并进行了读写操作.最后,我将该文件删除</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void LocalFileWithoutPicker()
+{
+    var _Name = &quot;HelloWorld.txt&quot;;
+    var _Folder = KnownFolders.DocumentsLibrary;
+    var _Option = Windows.Storage.CreationCollisionOption.ReplaceExisting;
+
+    // create file 
+    var _File = await _Folder.CreateFileAsync(_Name, _Option);
+
+    // write content
+    var _WriteThis = &quot;Hello world!&quot;;
+    await Windows.Storage.FileIO.WriteTextAsync(_File, _WriteThis);
+
+    // acquire file
+    try { _File = await _Folder.GetFileAsync(_Name); }
+    catch (FileNotFoundException) { /* TODO */ }
+
+    // read content
+    var _Content = await FileIO.ReadTextAsync(_File);
+    await new Windows.UI.Popups.MessageDialog(_Content).ShowAsync();
+
+    await _File.DeleteAsync();
+}</pre>
+
+
+<p>上面的代码可以很好的运行,那是因为我在AppXManifest文件中声明了从文档库文件夹中读取txt文件的功能.</p>
+
+<p>如果你在manifest中请求了如下功能:文档,图片,音乐,视频等,那么可以在库中枚举出这些文件.需要注意的是返回某个文件夹中的文件将根据manifest中声明的文件类型被自动过滤.</p>
+
+<p>&#160;</p>
+
+<p><strong><strong>5、示例代码下载</strong></strong></p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/FileReadWrite" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-04</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1871,172 +2114,6 @@ stock = SuspensionManager.SessionState[&quot;lastSeenStock&quot;];
 <p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/Hh465115(v=win.10).aspx"><u>How to suspend an app (Metro style apps using C#/VB/C++ and XAML)</u></a></p>
 
 <p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh465110.aspx"><u>How to resume an app (Metro style apps using C#/VB/C++ and XAML)</u></a></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/02/39/" itemprop="url">Windows Store App开发[012]Windows 8 中搜索合约的使用</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在<a href="http://beyondvincent.com/2013/06/02/windows-store-app%E5%BC%80%E5%8F%91011%E6%B5%85%E8%B0%88windows-8-%E4%B8%AD%E7%9A%84%E5%90%88%E7%BA%A6contracts/" target="_blank"><u>上一篇</u></a>文章，我给大家介绍了Windows 8中的合约，如果你还没有看的话，建议你先去阅读一下。在本篇文章中，我将利用搜索合约，来跟大家介绍合约的使用。为了演示的方便，本次示例我使用下面这篇文章中的示例进行改进。</p>
-
-<p><a href="http://beyondvincent.com/2013/06/02/windows-store-app%E5%BC%80%E5%8F%91007%E8%A7%86%E5%9B%BE%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/" target="_blank"><u>Windows Store App开发[007]视图模型与数据绑定</u></a></p>
-
-<p>本文的内容结构如下：</p>
-
-<p>1、搜索合约的声明</p>
-
-<p>2、搜索的激活</p>
-
-<p>3、提交查询的候选项</p>
-
-<p>4、运行效果和示例代码</p>
-
-<p>&#160;</p>
-
-<p><strong>1、搜索合约的声明</strong></p>
-
-<p>&#160;&#160; 我们打开上面提到的示例程序，并打开Package.appxmanifest文件，选择声明选项卡，如下图，并找到选择搜索声明，然后添加:</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/16.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb6.png" width="682" height="453" /></a></p>
-
-<p>然后我们部署应用程序到计算机上。部署完毕之后，按Windows+Q组合键，可以看到，我们的示例程序：搜索合约测试已经在搜索面板中了。如果这里不添加搜索声明的话，在搜索面板中是看不到的。如下两图所示(左图是已经添加搜索声明的，右图则是没有添加)</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/26.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb7.png" width="652" height="665" /></a></p>
-
-<p><strong>2、搜索的激活</strong> <br/>
-&#160;&#160;&#160; 打开App.xml.cs文件，在其中添加如下函数</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">protected override void OnSearchActivated(SearchActivatedEventArgs args)
-{
-    viewModel.SearchAndSelect(args.QueryText);
-}</pre>
-
-
-<p>当应用程序以显示搜索结果为目的被激活时，该方法会被调用，也就是说，从搜索面板中输入内容，然后回车可以激活该方法。</p>
-
-<p>在这里，我把viewModel的位置放到App里面了，这样方便调用。在viewModel方法中我添加了一个方法SearchAndSelect，该方法用于搜索内容。代码如下：该代码的左右就是查找出ForumItemList 中name与搜索内容符合的字段，并记录相关的index。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">public void SearchAndSelect(string searchTerm)
-{
-    int selIndex = -1;
-    for (int i = 0; i &lt; ForumItemList.Count; i++)
-    {
-        if (ForumItemList.Name.ToLower().Contains(searchTerm.ToLower()))
-        {
-            selIndex = i;
-            System.Diagnostics.Debug.WriteLine(ForumItemList.Name);
-            break;
-        }
-    }
-    SelectedItemIndex = selIndex;
-}</pre>
-
-
-<p>为了在界面上让搜索命中相选中，我还对SelectedItemIndex进行了监听，如果发生改变则界面先择也相应的进行改变，如下代码</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">viewModel.PropertyChanged += (sender, args) =&gt;
-{
-    if (args.PropertyName == &quot;SelectedItemIndex&quot;)
-    {
-        ForumList.SelectedIndex = viewModel.SelectedItemIndex;
-    }
-};</pre>
-
-
-<p>这样，当SelectedItemIndex 改变的时候，界面上的选中项也会发生改变。</p>
-
-<p><strong>3、提交查询的候选项</strong></p>
-
-<p>&#160;&#160;&#160; 为了加强用户体验，方便用户选择搜索内容，我们可以在搜索面板添加一些搜索的候选项。当用户在输入内容的时候，按照一定的规则，给用户列出适合的内容。</p>
-
-<p>&#160;&#160;&#160; 首先需要做的事情就是监听SuggestionRequested事件，当用户开始在搜索框中输入内容时，就会触发该事件。那么我们可以通过下面的代码进行注册：注意在这里需要增加using Windows.ApplicationModel.Search;否则会出现错误。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">SearchPane.GetForCurrentView().SuggestionsRequested += searchPane_SuggestionsRequested;</pre>
-
-
-<p>当SuggestionRequested事件来的时候，我们就可以发送候选项建议了。就像查询一样，候选项内容可以来自网络服务，或者自行组合，在这里为了演示目的，我从ForumItemList中获取内容，在SearchPageSuggestionsRequestedEventArgs实例中，我们可以把候选项添加到SearchSuggestionCollection中，SearchSuggestionCollection中的内容会显示在搜索面板中。因为当用户每次输入内容的时候，该方法都会被调用，因此一定要注意该函数的编写。下面是我的代码：</p>
-
-<p>&#160;&#160;&#160; 需要注意的是搜索面板只能显示最多5个候选项</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void searchPane_SuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs args)
-{
-    foreach (ForumItem forumItem in viewModel.ForumItemList)
-    {
-        string suggestion = forumItem.Name;
-
-        if (suggestion.StartsWith(args.QueryText, StringComparison.CurrentCultureIgnoreCase))
-        {
-            args.Request.SearchSuggestionCollection.AppendQuerySuggestion(suggestion);
-        }
-        if (args.Request.SearchSuggestionCollection.Size &gt;= 5)
-        {
-            break;
-        }
-    }
-}</pre>
-
-
-<p>这样我们就成功的在程序中实现了搜索合约功能。下面我们看看运行效果</p>
-
-<p><strong>4、运行效果和示例代码</strong></p>
-
-<p>实运行程序，调出搜索面板（Windows键+Q），输入W字母，看到如下效果图，在右边列出了以W开头的两个候选项</p>
-
-<p>&#160;</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/37.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb7.png" width="682" height="427" /></a></p>
-
-<p>选择第二项：Windows 8 开发论坛，此时左边的对应项会被选中，如下图所示：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/45.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb5.png" width="682" height="427" /></a></p>
-
-<p>到此，搜索合约的讲解就结束了，欢迎大家的阅读。</p>
-
-<p>代码下载：</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/SearchContract" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-31</time></span>
-</div>
-
-
-
 
 		
 		
