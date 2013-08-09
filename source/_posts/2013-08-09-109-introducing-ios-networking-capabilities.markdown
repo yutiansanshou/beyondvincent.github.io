@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "Professional iOS Network Programming翻译第一章：iOS网络功能简介"
-date: 2013-08-08 00:41
+date: 2013-08-09 16:52
 comments: true
 categories: iOS翻译
-published: false
+published: ture
 
 ---
 {% img /images/2013/07/simple_social_network.png 400 300 %}
@@ -91,26 +91,42 @@ Game Kit只需要一个会话id(session identifier)，显示的名称(display na
 
 ######Bonjour
 
-Bonjour是苹果实现的零配置联网。Bonjour提供了这样一种机制：发现并连接到设备或者网络中的服务，这些过程中我们并不需要知道设备的网络地址，相反，Bonjour涉及到元祖名称，服务类型和域。Bonjour封装了底层网络接口需要的multicast DNS(mDNS)，以及基于DNS服务的发现(DNS-SD)。
+`Bonjour`是苹果实现的零配置联网。Bonjour提供了这样一种机制：发现并连接到设备或者网络中的服务，这些过程中我们并不需要知道设备的网络地址，相反，Bonjour涉及到元祖名称，服务类型和域。Bonjour封装了底层网络接口需要的multicast DNS(mDNS)，以及基于DNS服务的发现(DNS-SD)。
 
 在Cocoa层，NSNetService API提供了相关接口用来发布和解决Bonjour服务的地址信息。我们可以使用NSNetServiceBrowser API来发现网络中可用的服务。为了通信，发布一个Bonjour服务，即使是使用Cocoa层的API，也需要明白Core Foundation中对socket的配置。在第13章"Ad-Hoc Networking with Bonjour"中，深入介绍了零配置联网(Bonjour)，并给出了一个示例介绍如何实现一个基于Bonjour的服务。
 
 ######NSStream
 
-NSStream是Cocoa层里面的API，构建于CFNetwork之上，是NSURLConnection的基础部分，并且还适用于较底层的网络任务。就像NSURLConnection，NSStream提供了一种与远程服务或者本地文件通信的机制。另外，还NSStream还可以在别的一些一些上进行通信，例如`telnet`，`SMTP`，NSURLConnection并不支持这些协议。
+`NSStream`是Cocoa层里面的API，构建于CFNetwork之上，是NSURLConnection的基础部分，并且还适用于较底层的网络任务。就像NSURLConnection，NSStream提供了一种与远程服务或者本地文件通信的机制。另外，还NSStream还可以在别的一些一些上进行通信，例如`telnet`，`SMTP`，NSURLConnection并不支持这些协议。
 
 NSStream还提供了额外的一些控制功能，不过这是要付出代价的。NSStream并没有内置支持处理HTTP/S响应状态码的处理，也不支持认证功能。它是用C缓存器进行数据的发送和接收的，这跟Objective-C还有点区别。它也不能管理多个请求，如果需要相应的功能，需要在其子类中添加功能。NSStream是异步的，它通过NSStreamDelegate进行通信。在第8章中“Low-Level Networking”，以及第13章中“Ad-Hoc Networking with Bonjour”，都不同程度的实现了NSStream。
 
 
 ######CFNetwork
 
+`CFNetwork API`构建于BSD socket之上，被用于NSStream、URL加载系统、Bonjour和Game Kit APIs的实现中。CFNetwork中默认支持一些上层协议，例如HTTP和FTP。CFNetwork和BSD socket最关键的区别就是集成了run loop。如果在程序中使用了CFNetwork，输入(input)和输出(output)事件会在线程的run loop中被调度。如果输入和输出事件发生于非主线程上，那么我们需要负责在这个线程中以适当的模式启动run loop。本章后面的“Run Loops”小节会有相关介绍。
+
+CFNetwork提供的配置选项要比URL加载系统更多，这有好的一面，也有不好的一面。当利用CFNetwork创建一个HTTP请求时，这些配置选项是可见的。在创建请求的时候必须手动添加所有的HTTP header，以及cookies，然后与请求一起提交。而使用NSURLConnection时，标准的header和cookie jar中的任意cookies都自动的添加好了。
+
+CFNetwork下面还有来自Core Foundation层中的CFSocket和CFStream APIs。CFNetwork中有一些用于特定协议的APIs，例如用于与FTP服务通讯的CFFTP，用于收发HTTP消息的CFHTTP，以及用于发布和浏览Bonjour服务的CFNetServices。第八章中将详细介绍CFNetwork，而在13章中会简要介绍一下Bonjour。
+
 ######BSD Sockets
 
-###**Run Loops**
+在网络架构中，`BSD Sockets`为网络通信提供了最基础的服务，也是最底层的一个APIs。BSD Socket是用C语言实现的，不过完全可以用在Objective-C代码中。一般不建议直接使用BSD Socket API，因为它在操作系统中没有任何hook。例如，BSD Socket既不走系统中的VPN通道，也没相关的API来自动激活已经关闭掉的Wi-Fi或蜂窝无线设备。苹果建议编程时使用CFNetwork或更高的层中的API。第8章中详细介绍了BSD Sockets以及CFNetwork，并提供了一个示例介绍了如何将它们集成到程序中。下一节将讨论run loop——从操作系统中检测网络事件，这些事件会被用于我们的程序中。
 
+
+###**Run Loops**
+Run loop对应的类是`NSRunLoop`，它其实是线程中的一个基础组件，有了run loop之后，操作系统就能够唤醒休眠中的线程，以对即将到来的事件进行管理。一个run loop是一个循环配置的用来调度任务，并在一个时钟周期内处理即将到来的事件。在iOS程序中的每个线程中最多能有一个run loop。主线程中的run loop在程序启动的时候就默认开启了，并且当程序的delegate applicationDidFinishLaunchingWithOptions:被调用之后，我们就可以对其进行访问了。
+
+在非主线程中，如果需要使用run loop，需要开发者明确的开启run loop。在非主线程中启动之前，必须添加一个输入源(input source)或者timer；否则run loop会立即退出。run loop给开发者提供了与线程交互的能力，不过并不是总是需要它的。例如有时候线程在处理大量数据时，并不不需要进行任何交互，此时就不需要启动run loop了。如果线程需要跟网络进行交互，此时就需要启动run loop。
+
+Run loop接收的事件有两种源类型：输入源`(input sources)`和`计时器(timers)`。在输入源中一般要么是基于端口的，要么就是自定义的，这些事件通过异步的方式派发到程序中。这两种类型源的最大区别就是基于端口的内核信号源是自动的，而自定义的源必须在不同线程中手动管理相关信号。在创建自定义输入源时，可以通过CFRunLoopSourceRef实现多个回调函数。
+
+计时器则是这样一种机制：基于时间进行通知应用程序在未来某个特定时间点执行某个特定的任务的。计时器事件也是通过异步的方式派发到程序中的，不过它还与特定的模式相关(下一节将介绍相关模式)。如果并不是当前监听的特定模式，这个计时器时间会被忽略，而线程也不会受到通知，直到run llop运行在相应的模式中。
 
 ####Run Loop模型
 
+这里的相关内容没有翻译。相关更多资料请看这里：[`RunLoopManagement`](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html)
 
 ###**小结**
 
