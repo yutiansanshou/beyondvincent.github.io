@@ -124,13 +124,25 @@ Run loop接收的事件有两种源类型：输入源`(input sources)`和`计时
 
 计时器则是这样一种机制：基于时间进行通知应用程序在未来某个特定时间点执行某个特定的任务的。计时器事件也是通过异步的方式派发到程序中的，不过它还与特定的模式相关(下一节将介绍相关模式)。如果并不是当前监听的特定模式，这个计时器时间会被忽略，而线程也不会受到通知，直到run llop运行在相应的模式中。
 
+翻译比较辛苦，下面给大家留点作业，让大家感受一下翻译吧。
+
+You can configure timers to fire once or repeatedly. Rescheduling is based on the scheduled fire time, not the actual fire time. If a timer fires while the run loop is executing an application handler method, it waits until the next pass through the run loop to call the timer handler, typically set via @selector(). If firing the handler is delayed to the point in which the next invocation occurs, the timer fires only one event with the delayed event being suppressed.
+Run loops can also have observers, which are not monitored and provide a way for objects to receive callbacks as certain activities in the run loop execution occur. These activities include when the run loop is entered or exited, as the run loop goes to sleep or wakes up, and before the run loop processes an input source or timer. They are documented in the CFRunLoopActivity enumeration. Observers can be configured to fire once, which removes the observer after ithas been fired, or repeatedly. To add a run loop observer, use the Core Foundation function CFRunLoopObserverRef().
+
+
 ####Run Loop模型
 
-这里的相关内容没有翻译。相关更多资料请看这里：[`RunLoopManagement`](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html)
+Each pass through the run loop is run in a specific mode specified by you. Run loop modes are a convention used by the operating system to filter the sources that are monitored and allowed to deliver events, such as calling a delegate method. Modes include the input sources and timers that should be monitored as well as any observers that should be notified of run loop events.
+There are two predefined run loop modes in iOS. NSDefaultRunLoopMode (kCFRunLoopDefaultMode in Core Foundation) is the system default and should typicallybe used when starting run loops and configuring input sources. 
+NSRunLoopCommonModes (kCFRunLoopCommonModes in Core Foundation) is a collection of modes that is configurable. Assigning NSRunLoopCommonModes to an input source by calling a method such as scheduleInRunLoop:forMode: on an input source instance associates it with all modes currently in the group.
+Although NSRunLoopCommonModes is configurable, it is a low-level process that requires calling the Core Foundation function CFRunLoopAddCommonMode(). This automatically registers input sources, timers, and observers with the new mode instead of manually adding them to each new mode. You can define custom run loop modes by specifying a custom string such as @"CustomRunLoopMode". For your custom run loop to be effective, you must add at least one input source, timer, or observer.
+Although this provides an overview of run loops, Apple provides several in-depth resources onrun loop management that you should review if you develop advanced, network-based, and multi- threaded applications. The developer documentation is available at https://developer.apple .com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/ RunLoopManagement.html. Networking techniques that benefit from run loop integration are discussed in their respective chapters such as Chapter 8, “Low-Level Networking” and Chapter 13, “Ad-Hoc Networking with Bonjour.
+
+
+相关更多资料请看这里：[`RunLoopManagement`](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html)
 
 ###**小结**
 
 对于iOS开发者来说，理解iOS网络框架中的各层，以及应用程序如何与run loop交互是非常重要的。一个优秀的网络架构层会给应用程序提供难以置信的灵活度。如果网络架构层的设计非常糟糕，那么这是很难获得成功和扩展能力的。
 
 本章预览了一下各个网络APIs，并做了一些比较。在这里只是简单的介绍了一下，在后续章节中，会深入讨论。
-
