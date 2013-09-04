@@ -23,7 +23,7 @@ published: ture
 * 小结
 
 
-上周我讲代码merge到我的working branch时，注意到以前没曾见过的提示：
+上周我将代码merge到我的working branch时，注意到以前没曾见过的提示：
 
 {% img /images/2013/09/1.png%}
 
