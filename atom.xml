@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-08-19T10:27:50+08:00</updated>
+  <updated>2013-09-04T11:40:54+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Xcode 5中的Interface Builder更有利于团队协作开发]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"/>
+    <updated>2013-09-04T11:45:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams</id>
+    <content type="html"><![CDATA[<h2><strong>小引</strong></h2>
+
+<p>在iOS开发中，开发者有各种理由选择用代码来构建界面，其中最多的理由就是Interface Builder绘制的代码不利于团队间协作(代码的可读性和合并)。虽然Interface Builder来绘制界面有诸多优势，但是由于致命的缺陷，许多开发团队不得不远离它，当然也有一些开发团队为了在协同开发时也使用IB来绘制界面，他们尽量确保同一时期只由一个人来操作某个xib文件，以此避免提交代码的时候需要合并xib文件。然而，在Xcode 5中，苹果的开发团队已经对xib文件格式做了大量的简化工作。本文就来简要的看看相关内容。</p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://nilsou.com/blog/2013/08/07/xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"><code>Xcode 5 Finally Makes Interface Builder a Viable Option for Teams</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>Xcode 4中xib文件的格式</li>
+<li>Xcode 5中xib文件的格式</li>
+<li>小结</li>
+</ul>
+
+
+<p>上周我讲代码merge到我的working branch时，注意到以前没曾见过的提示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/1.png"></p>
+
+<p>Git会自动合并<strong>xib文件</strong>！我在想，Xcode 5中肯定对xib文件的格式做了修改，所以我准备深入研究一下。</p>
+
+<p>原来由Xcode 5生成的xib文件是一种全新的格式。看起来苹果这次对xib文件格式的变更将有助于开发团队开始考虑使用IB来绘制界面。</p>
+
+<h3><strong>* Xcode 4中xib文件的格式</strong></h3>
+
+<p>为了演示xib文件格式在Xcode 4和Xcode 5中的差异，我首先在Xcode 4中创建了一个新的xib文件，并添加了一些view进去：一个UIScrollView，该scrollview中包含一些UIButton、UILable和TextView等。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/2.png"></p>
+
+<p>然后我在工程导航窗口中右键单击该文件，并选择<code>Open As &gt; Source Code</code>。下面的链接中是看到的内容：</p>
+
+<p><a href="https://gist.github.com/nilsou/6057457">Xcode 4生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
+
+<p>可以看到，这么简单的一个view居然有<code>1108行</code>代码！这太多了。</p>
+
+<p>对开发者来说它的可读性非常的糟糕。这是开发者为什么不喜欢xib文件的主要原因(由此放弃使用interface builder)。</p>
+
+<p>更糟糕的是这个xib文件的格式还具有不确定性。也就是说如果我在Interface Builder创建相同的UI界面，但是我们看到的文件内容并不是相同的。这就导致xib文件的合并非常的困难，甚至不可能进行合并。这事开发者不使用xib文件的另外一个重要原因。</p>
+
+<h3><strong>* Xcode 5中xib文件的格式</strong></h3>
+
+<p>接着，我在Xcode 5中打开同一个工程。当在Xcode 5中打开用Xcode 4创建的xib文件时，会提示将文件升级到新的格式。这里需要注意的是升级之后的文件只能在Xcode 5中打开，这种新格式的文件不能在老版本中的Xcode中打开。所以，如果是团队协作开发，那么升级的时候，需要确保所有的开发者都使用Xcode 5。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/3.png"></p>
+
+<p>我点击<code>Upgrade</code>，然后再次打开xib文件的source code，看看有什么变化。如下链接中所示：</p>
+
+<p><a href="https://gist.github.com/nilsou/6057474">Xcode 5生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
+
+<p><code>133行</code>！这与Xcode 4中创建的xib文件相差约10倍。可见苹果的开发团队已经对xib文件格式做了大量的简化。</p>
+
+<p>再看看里面的具体内容，可以看出它的可读性也加强了。xib文件中的源代码现在也能够反应出view的层次(Interface Builder左边看到的内容结构！)，等熟悉之后，开发者可以直接对这个xml代码进行编写。</p>
+
+<p>最重要的一点，可以看出Xcode 5生成的xib文件内容源码位置是确定的。这非常利于文件的合并。</p>
+
+<h3><strong>小结</strong></h3>
+
+<p>这种新的格式带来的最大好处不仅仅是增强开发者对xib文件的可读性，另外在大多数情况下，git还可以对xib文件进行自动合并，不用开发者手动进行。</p>
+
+<p>现在如果还有开发者告诉你他不想用xib文件，那么请把这篇文章发给他看看吧，我相信已经没有太多理由不使用xib文件了。</p>
+
+<p>其实在Xcode 5中不仅对Interface Builder进行了改善，还有其它一些功能也做了改进，例如自动布局约束的设置已经没有以前痛苦了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Professional iOS Network Programming翻译第一章：iOS网络功能简介]]></title>
@@ -3000,7 +3073,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#58;&#66;&#101;&#121;&#x6f;&#110;&#100;&#x56;&#x69;&#x6e;&#x63;&#x65;&#110;&#x74;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#46;&#99;&#111;&#x6d;">&#x42;&#x65;&#121;&#x6f;&#110;&#100;&#x56;&#x69;&#x6e;&#x63;&#x65;&#110;&#116;&#64;&#x67;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#66;&#x65;&#121;&#111;&#110;&#100;&#86;&#105;&#x6e;&#99;&#x65;&#x6e;&#x74;&#64;&#103;&#109;&#97;&#105;&#x6c;&#x2e;&#99;&#111;&#109;">&#x42;&#x65;&#x79;&#111;&#110;&#100;&#x56;&#105;&#110;&#x63;&#101;&#110;&#x74;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
@@ -3871,272 +3944,6 @@ LPC1_1:
 
 <div style="text-align: left;">
   <span style="color: #808080;">本文由<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-20</time></span>
-</div>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS汇编教程：ARM(1)]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/06/19/90/"/>
-    <updated>2013-06-19T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/06/19/90</id>
-    <content type="html"><![CDATA[<p>注：本文由破船译自：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.raywenderlich.com/37181/ios-assembly-tutorial" target="_blank"><span style="color: #339966; text-decoration: underline;">raywenderlich</span></a></span></strong></span><br/>
-感谢<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://blog.devtang.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">唐巧</span></a></span></strong></span>抽出时间对本文进行double-check。</p>
-
-<div id="attachment_1399" class="wp-caption alignright" style="width: 264px">
-  <a href="http://beyondvincent.com/wp-content/uploads/2013/06/SpeakAssemblySmall.png"><img class="wp-image-1399 " alt="SpeakAssemblySmall" src="http://beyondvincent.com/wp-content/uploads/2013/06/SpeakAssemblySmall.png" width="254" height="254" /></a><p class="wp-caption-text">
-    你说的是汇编吗？
-  </p>
-</div>
-
-
-<p>我们写的Objective-C代码，最终会被转换为机器代码 —— 由ARM处理器能识别的1和0组成。实际上，在机器代码之间，还有一门人类可以阅读的语言 —— 汇编语言。</p>
-
-<p>了解汇编，可以深入到你的代码里面进行调试和优化的探索，并有助于你对Objective-C运行时(runtime)的理解，同时也能满足你内心的好奇！</p>
-
-<p>在这篇iOS汇编教程中，你能学到：</p>
-
-<ul>
-<li><strong><span style="color: #339966;">什么是汇编</span></strong> —— 以及为什么需要关注它。</li>
-<li><strong><span style="color: #339966;">如何阅读汇编</span></strong> —— 特别是由Objective -C生成的汇编。</li>
-<li><strong><span style="color: #339966;">在调试的时候如何使用assembly view</span></strong> —— 遇到一个bug或者crash，看看到底是怎么回事，这非常有用。</li>
-</ul>
-
-
-<p>为了有效吸收本文内容，建议本文的读者对象为已经熟悉Objective-C编程了。当然，你也应该要知道一些简单的计算机科学相关概念，例如栈、CPU以及它们是如何运行的。如果你对CPU不太熟悉，建议在阅读本文之前，先看看这里的内容：<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.howstuffworks.com/microprocessor.htm" target="_blank"><span style="color: #339966; text-decoration: underline;">微处理器的工作原理</span></a></span></span></strong>。</p>
-
-<p>目录[分两篇文章翻译]：</p>
-
-<h2><strong><span style="color: #339966;">iOS汇编教程：ARM(1)</span></strong></h2>
-
-<ul>
-<li><strong><span style="color: #339966;">开始：什么是汇编</span></strong></li>
-<li><strong><span style="color: #339966;">函数调用约定</span></strong></li>
-<li><strong><span style="color: #339966;">创建工程</span></strong></li>
-<li><strong><span style="color: #339966;">加法(addFunction)</span></strong></li>
-</ul>
-
-
-<h2><span style="text-decoration: underline;"><a href="http://beyondvincent.com/?p=1434" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(2)</span></strong></a></span></h2>
-
-<ul>
-<li><strong><span style="color: #339966;">函数的调用</span></strong></li>
-<li><strong><span style="color: #339966;">Objective -C 汇编</span></strong></li>
-<li><strong><span style="color: #339966;">Obj-C 消息发给了谁</span></strong></li>
-<li><strong><span style="color: #339966;">你现在可以进行逆向工程了</span></strong></li>
-<li><strong><span style="color: #339966;">何去何从</span></strong></li>
-</ul>
-
-
-<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&ndash;</p>
-
-<h1><span style="color: #339966;"><strong>iOS汇编教程：ARM(1)</strong></span></h1>
-
-<h2><strong><span style="color: #339966;">开始：什么是汇编</span></strong></h2>
-
-<p>Objective-C是一门高级语言。编译器会将你的Objective-C代码编译为汇编语言代码：一门低级语言，不过还不是最低级的语言。</p>
-
-<p>这些汇编会被汇编器(assembler)组装为机器代码——CPU可以识别的0和1。好在一般开发者并没有必要考虑机器代码，不过有时候详细的了解汇编，会非常有用。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/SpeakAssembly.png"><img class="alignnone size-full wp-image-1403" alt="SpeakAssembly" src="http://beyondvincent.com/wp-content/uploads/2013/06/SpeakAssembly.png" width="651" height="241" /></a></p>
-
-<p>每一个汇编指令都会告诉CPU执行一个相关任务，例如“对两个数字执行加(add)操作”，或“从某个内存地址加载数据”。</p>
-
-<p>除了主存外 ——如 iPhone 5有1GB的主存、Mac电脑可能会有8GB —— CPU还有少许的存储部件，称之为<strong><span style="color: #339966;">寄存器</span></strong>，寄存器的访问速度非常快，一个寄存器就像一个变量一样，可以存储单个值。</p>
-
-<p>所有的iOS设备(实际上，现如今，几乎所有的移动设备)使用的CPU都是基于<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/ARM_architecture" target="_blank"><span style="color: #339966; text-decoration: underline;">ARM架构</span></a></span></strong></span>。 ARM芯片使用的指令集是<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/Reduced_instruction_set_computing" target="_blank"><span style="color: #339966; text-decoration: underline;">RISC</span></a></span></span></strong>(精简指令集)，该指令集非常的精简，并且易读（比<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/X86" target="_blank"><span style="color: #339966; text-decoration: underline;">x86</span></a></span></span></strong>的指令集精简多了）。</p>
-
-<p>一个汇编指令(或者语句)看起来如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">mov r0, #42</pre>
-
-
-<p>上面的这行汇编指令，涉及到好多命令(或操作)。mov的作用是对数据进行移动。在ARM汇编指令中，目标是第一个，所以，上面的指令是将值42移动到寄存器r0中。再来看看下面的代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">ldr   r2, [r0]
-ldr r3, [r1]
-add r4, r2, r3</pre>
-
-
-<p>上面汇编指令的作用是首先将寄存器r0和r1中的值装载到寄存器r2和r3中，然后对寄存器r2和r3中的值进行加(add)操作，加的结果存放到r4中。</p>
-
-<p>很容易看懂吧！</p>
-
-<h2><strong><span style="color: #339966;">函数调用约定</span></strong></h2>
-
-<p>要想理解汇编代码，首先重要的事情就是理解代码之间的交互——意思是一个函数调用另一个函数的方式。这包括了参数如何传递以及如何从函数返回结果——称之为调用的约定。编译器必须严格的遵守相关标准进行代码编译，这样生成的代码，才能够相互兼容。</p>
-
-<p>上面讨论过，寄存器是的存储空间非常少，并且靠近CPU——用来存储当前使用的一些值。ARM CPU有16个寄存器：r0到r15。每个寄存器为32bit。调用约定规定了这些寄存器的特定用途。如下：</p>
-
-<ul>
-<li> r0 &#8211; r3：存储传递给函数的参数值。</li>
-<li> r4 &#8211; r11：存储函数的局部变量。</li>
-<li>r12：是内部过程调用暂时寄存器（intra-procedure-call scratch register）。</li>
-<li>r13：存储栈指针(sp)。在计算机中，栈非常重要。这个寄存器保存着栈顶的指针。这里可以看到更多关于栈的信息：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/Call_stack"><span style="color: #339966; text-decoration: underline;">Wikipedia</span></a></span></strong></span>。</li>
-<li>r14：链接寄存器(link register)。存储着当被调用函数返回时，将要执行的下一条指令的地址。</li>
-<li>r15：用作程序计数器(program counter)。存储着当前执行指令的地址。每条执行被执行后，该计数器会进行自增(+1)。</li>
-</ul>
-
-
-<p>这里可以看到更多相关ARM 调用约定的内容：<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf"><span style="color: #339966; text-decoration: underline;">this document from ARM</span></a></span></span></strong>。苹果公司也给出了一份文档详细介绍了在iOS开发中的调用约定： <span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/documentation/Xcode/Conceptual/iPhoneOSABIReference/iPhoneOSABIReference.pdf"><span style="color: #339966; text-decoration: underline;">calling convention used for iOS development</span></a></span></span>。</p>
-
-<p>下面我们就从代码上开始真正的认识汇编。</p>
-
-<h2><strong><span style="color: #339966;">创建工程</span></strong></h2>
-
-<p>打开Xcode，<strong><span style="color: #339966;">File\New\New Project</span></strong>，选择<strong><span style="color: #339966;">iOS\Application\Single View Application</span></strong>，然后点击<strong><span style="color: #339966;">Next</span></strong>，工程的配置如下：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/01-Create-the-project.png"><img class="alignnone size-full wp-image-1416" alt="01-Create-the-project" src="http://beyondvincent.com/wp-content/uploads/2013/06/01-Create-the-project.png" width="1394" height="841" /></a></p>
-
-<ul>
-<li><strong><span style="color: #339966;">Product name</span></strong>: ARMAssembly</li>
-<li><strong><span style="color: #339966;">Company Identifier</span></strong>: 一般为反向的DNS标示</li>
-<li><strong><span style="color: #339966;">Class Prefix</span></strong>: 空白</li>
-<li><strong><span style="color: #339966;">Devices</span></strong>: iPhone</li>
-<li><strong><span style="color: #339966;">Use Storyboards</span></strong>: No</li>
-<li><strong><span style="color: #339966;">Use Automatic Reference Counting</span></strong>: Yes</li>
-<li><strong><span style="color: #339966;">Include Unit Tests</span></strong>: No</li>
-</ul>
-
-
-<p>点击 Next 选择工程存储的位置——完成工程的创建。</p>
-
-<h2><span style="color: #339966;">加法(addFunction)</span></h2>
-
-<p>下面我们写一个加法函数：对两个数进行相加，然后返回结果。这里我们先用C语法写，后面再介绍用OC来写（OC稍微复杂一点）。在工程的Supporting Files目录中打开<strong><span style="color: #339966;">main.m</span></strong>文件，然后将下面的函数拷贝并粘贴到文件的顶部。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">int addFunction(int a, int b) {
-    int c = a + b;
-    return c;
-}</pre>
-
-
-<p>现在将Xcode中的scheme设置为为设备构建:选中iOS Device作为scheme target(如果你将设备连接到电脑中，会现实&lt;你的设备名称>，如“Matt Galloway的iPhone 5”)——这样选择之后，生成的汇编就是针对ARM的，而不是针对x86(模拟器使用)。Xcode的选择效果如下图所示：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/02-Select-iOS-Device-scheme.png"><img class="alignnone size-full wp-image-1420" alt="02-Select-iOS-Device-scheme" src="http://beyondvincent.com/wp-content/uploads/2013/06/02-Select-iOS-Device-scheme.png" width="291" height="49" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>然后选择:<strong><span style="color: #339966;">Product\Generate Output\Assembly File</span></strong>。过一会之后，Xcode会生成一个文件，这个文件里面有很多行都有下划线__。在文件的顶部,好多行都是以<strong><span style="color: #339966;">.section</span></strong>开头。接着选中<strong><span style="color: #339966;">Show Assembly Output For</span></strong>中的<strong><span style="color: #339966;">Running</span></strong>。</p>
-
-<p><span style="color: #993300;">  注意:默认情况下,使用的是debug scheme中的设置信息,所以默认选中的就是Running。在debug模式下，编译器对代码没有做优化处理——首先观察没有进过优化处理的汇编，更利于理解代码具体都发生了什么。</span></p>
-
-<p>在生成的文件中搜索_addFunction,会看到类似如下的代码:</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">.globl    _addFunction
-    .align  2
-    .code   16                      @ @addFunction
-    .thumb_func _addFunction
-_addFunction:
-    .cfi_startproc
-Lfunc_begin0:
-    .loc    1 13 0                  @ main.m:13:0
-@ BB#0:
-    sub sp, #12
-    str r0, [sp, #8]
-    str r1, [sp, #4]
-    .loc    1 14 18 prologue_end    @ main.m:14:18
-Ltmp0:
-    ldr r0, [sp, #8]
-    ldr r1, [sp, #4]
-    add r0, r1
-    str r0, [sp]
-    .loc    1 15 5                  @ main.m:15:5
-    ldr r0, [sp]
-    add sp, #12
-    bx  lr
-Ltmp1:
-Lfunc_end0:
-    .cfi_endproc</pre>
-
-
-<p>上面的代码看起来有点凌乱,实际上也不难以读懂。我们来看看，首先，所有以&#8221;.&#8221;开头的代码行都不是汇编指令,我们可以忽略所有这些以&#8221;.&#8221;开头的代码行。</p>
-
-<p>代码中以冒号结尾的的代码行(例如<strong><span style="color: #339966;">_addFunction</span></strong>:和<strong><span style="color: #339966;">Ltim0</span></strong>: )，我们称之为标签（<strong><span style="color: #339966;">label</span></strong>）。这些标签的作用是给汇编代码片段指定相关的名字.名为<strong><span style="color: #339966;">_addFunction</span></strong>:的标签,实际上是一个函数的入口点.</p>
-
-<p>这个标签(<span style="color: #339966;"><strong>_addFunction</strong></span>: )是必须有的:别的代码调用addFunction函数时,并不需要知道该函数具体在什么地方,通过简单的一个符号或标签就可以进行调用.在最终生成程序二进制文件时,链接器会把这个标签转换到实际的地址.</p>
-
-<p>我们需要注意的时,编译器总是会在函数名前面添加一个下划线——这仅仅是一个约定。另外，其他所有的标签都是以<strong><span style="color: #339966;">L</span></strong>开头——这些通常称为局部标签(local label)，只会在函数内部使用。在上面的代码中，虽然没有实际用到局部标签，不过编译器还是为我们生成了一些——之所以会生成这些没有被使用到的局部标签，是由于代码还没有做任何的优化处理。</p>
-
-<p>注释是以<strong><span style="color: #339966;">@</span></strong>字符开头。通过上面的分析,这样一来，忽略掉注释和标签，代码看起来如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">_addFunction:
-@ 1:
-    sub sp, #12
-@ 2:
-    str r0, [sp, #8]
-    str r1, [sp, #4]
-@ 3:
-    ldr r0, [sp, #8]
-    ldr r1, [sp, #4]
-@ 4:
-    add r0, r1
-@ 5:
-    str r0, [sp]
-    ldr r0, [sp]
-@ 6:
-    add sp, #12
-@ 7:
-    bx  lr</pre>
-
-
-<p>下面我们来看看代码中每部分汇编都做了什么:</p>
-
-<p>1、首先，在栈(stack)创建临时存储所需要的空间。栈提供了许多内存供函数使用。ARM中的栈是向下延伸的,也就是说,在栈上创建一些空间,需要从栈指针开始减去(subtract)一些空间。在这里，预留了12个字节。</p>
-
-<p>2、r0和r1用来存储传递给调用函数的参数值。如果函数有4个参数，那么会把r2和r3当做第三个和第四个参数。如果函数的参数超过了4个，或者携带的参数不适合使用32位的寄存器（例如很大的数据结构），那么可以通过栈来传递这些参数。</p>
-
-<p>在这里,两个参数被保存到栈中。这是由存储寄存器(str)指令完成的。</p>
-
-<p>上面的指令可以指定一个偏移量,用来应用在某个值上面。所以[sp, #8]的意思是存储至“栈指针寄存器+8的地方”,因此,str r0, [sp, #8]的作用是：将寄存器r0中的内容存储到栈指针(加8)指向的内存地址.</p>
-
-<p>3、将刚刚保存到栈中的值读取至相同的寄存器中(r0和r1)。这里，的ldr指令与str指令刚好相反，ldr(load register)会把指定内存位置中的的内容加载到寄存器中。ldr和str的语法非常相似：ldr r0, [sp, #8]的作用是“将栈指针加8后指向的地址内容加载到r0寄存器中”。</p>
-
-<p>这里你可能会感觉到奇怪,为什么ro和r1寄存器中的值刚刚保存,马上又将其加载回来,答案是:这两行代码是冗余的,可以去掉!如果编译器做了优化处理,那么这些冗余的代码会被忽略掉.</p>
-
-<p>4、这是该函数中最终的要一个指令:执行加操作。该执行的意思是：将r0和r1中的内容进行相加，然后把结果放到r0中。</p>
-
-<p>add指令可以是两个参数,也可以是三个参数.如果指定三个参数,那么第一个参数就被当做目标寄存器,剩下的两个则为源寄存器.因此,这里的指令可以写成这样:add r0, r0, r1。</p>
-
-<p>5、同样，编译器生成了一些冗余代码：将加的结果存储到栈中，接着立即从栈中读取回来。</p>
-
-<p>6、终止函数的地方：将栈指针指向调用addFunction函数时的最初地方。addFunction开始于：sp减去12的地方：预留了12个字节。现在将12加回去即可。这里必须确保栈指针的正确操作，否则栈指针会指向错误的地方。</p>
-
-<p>最后,执行bx指令会回到调用函数的地方.这里的寄存器lr是链接寄存器(link register)，该存储器存储着将要执行的下一条指令。注意,addFunction返回之后,r0寄存器会存储着该函数相加的结果值——这也是调用约定中的一部分：函数的返回值永远都被存储在r0寄存器中。除非一个寄存器不够存储，这是可以使用r1-r3。</p>
-
-<p>上面就是所有相关addFunction的介绍,并不复杂吧?预知关于这些指令的更多内容,请看这里: <span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://infocenter.arm.com/help/topic/com.arm.doc.qrc0001l/QRC0001_UAL.pdf"><span style="color: #339966; text-decoration: underline;">ARM website</span></a></span></strong></span>.</p>
-
-<p>重申一下,上面的方法有好多冗余的地方:这是由于编译器处于debug模式,不会对代码做优化处理.如果对代码进行了优化处理,会看到生成的汇编代码非常的少。</p>
-
-<p>选中<strong><span style="color: #339966;">Show Assembly Output For</span></strong>中的<strong><span style="color: #339966;">Archiving</span></strong>。然后搜索_addFunction:，会看到如下指令（只有这些）：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">_addFunction:
-    add r0, r1
-    bx  lr</pre>
-
-
-<p>这看起来非常简洁:只需要两条指令就完成了addFunction函数的功能。当然，在实际开发中，一个函数一般都会有好多指令。</p>
-
-<p>现在,这个addFunction已经返回到调用的函数那里了.下面我们就来看看关于调用的函数的相关信息.</p>
-
-<p>下面的内容会在第二篇文章中翻译：</p>
-
-<h1><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1434" target="_blank"><span style="color: #339966; text-decoration: underline;"><strong>iOS汇编教程：ARM(2)</strong></span></a></span></span></h1>
-
-<ul>
-<li><span style="color: #339966;"><strong>函数的调用</strong></span></li>
-<li><span style="color: #339966;"><strong>Objective &#8211; C 汇编</strong></span></li>
-<li><span style="color: #339966;"><strong>Obj-C 消息发给了谁</strong></span></li>
-<li><span style="color: #339966;"><strong>你现在可以进行逆向工程了</strong></span></li>
-<li><span style="color: #339966;"><strong>何去何从</strong></span></li>
-</ul>
-
-
-<div style="text-align: left;">
-  <span style="color: #808080;">本文由<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-19</time></span>
 </div>
 
 

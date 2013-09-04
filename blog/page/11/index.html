@@ -7,9 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Apr 17th, 2013 iOS, raywenderlich翻译 iOS中如何创建一个滑出式导航面板(2) _________________ 本文由破船译自：raywenderlich
-转载请注明出处：BeyondVincent的博客
-_________________ &hellip;">
+	<meta name="description" content="Apr 18th, 2013 iOS, iOS开发记录 在Xcode4.6中如何将xib for iPhone的文件转换为for iPad 在Xcode4.6中将xib for iPhone的文件转换为for iPad 有时候你已经开发了iPhone项目，但是没有针对iPad开发， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +74,68 @@ _________________ &hellip;">
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-18T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 18<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/18/10/" itemprop="url">在Xcode4.6中如何将xib for iPhone的文件转换为for iPad</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><strong><span style="color: #339966;">在Xcode4.6中将xib for iPhone的文件转换为for iPad</span></strong></h2>
+
+<p>有时候你已经开发了iPhone项目，但是没有针对iPad开发，现在需要iPhone程序也能iPad上很好的运行，那么直接将之前的项目拿过来进行改造，是最好的。本文的内容对你或许有用。<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2.png"><img class="alignright size-medium wp-image-372" alt="QQ20130418-2" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2-300x162.png" width="300" height="162" /></a></p>
+
+<h2><strong><span style="color: #339966;">我的操作步骤如下：</span></strong></h2>
+
+<ol>
+<li>在Xcode中选中要转换的xib文件，然后选择File->Duplicate，复制一份xib文件。</li>
+<li>在新复制出来的这个xib文件上，右键单击->Open As->Source Code。</li>
+<li>将打开源码文件中&#8221;com.apple.InterfaceBuilder3.CocoaTouch.XIB&#8221;替换为&#8221;com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB&#8221;。</li>
+<li>将所有的&#8221;IBCocoaTouchFramework&#8221;替换为&#8221;IBIPadFramework&#8221;</li>
+<li>保存并关闭Source Code，重新将这个xib文件用IB打开（选中xib文件，右键单击->Open As->Interface Builder &#8211; iOS）</li>
+<li>选中针对这个xib文件的main viewcontroller或者UIView，然后打开attributes inspector(在xcode的右边)，在Size里面选择“iPad Full Screen”。就可以根据自己的设计来调整UI界面了。</li>
+</ol>
+
+
+<p>如果需要将iPad的xib文件转换为iPhone的，那么反过来操作3和4步骤中的内容也同样可以。</p>
+
+<p>关于xib文件的转换，如果你有任何问题或者更好的办法，请留言告诉我！:]</p>
+
+<p>本文参考了stackoverflow上面的一个QA：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5347198/xcode-4-xib-create-ipad-version" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode 4 .xib Create iPad Version</span></a></span></span></p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">破船撰写于@2013.04.18</span>
+</p>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">

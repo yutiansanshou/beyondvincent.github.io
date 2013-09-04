@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[032]C++/CX Part 2 of [N]: Hat(^)类型 注：本文由BeyondVincent(破船)翻译 &#160; 关于本次系列的一个介绍： &hellip;">
+	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[033].NET4.5 获取Caller Function的信息(Caller Attributes) 在调试代码时，大家都会有这样的一个问题“谁调用了我的这个函数？” &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,46 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/60/" itemprop="url">Windows Store App开发[033].NET4.5 获取Caller Function的信息(Caller Attributes)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在调试代码时，大家都会有这样的一个问题“谁调用了我的这个函数？”在很多情况下，知道了调用函数，是开始解决bug的第一步。到目前为止，主要方法是：在Visual Studio中，看看看调用栈信息，或者调试器。在.NET 4.5中，添加了一个新特性：一个函数可以知道它被谁调用了，调用函数的信息包括：函数名、文件名和调用所在的行。开发者现在可以使用这些信息来提供有用的调试信息了。这个特性所在名称空间为：System.Runtime.CompilerServices。下面是一个使用示例：【Windows 8 store apps开发中】</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public void Method([CallerMemberName] string name = &quot;&quot;, [CallerFilePath] string file = &quot;&quot;, [CallerLineNumber] int line = 0) { Debug.WriteLine(name); Debug.WriteLine(file); Debug.WriteLine(line); }</pre>
+
+
+<p>本篇文章的内容虽然少，但是小小功能，非常有用。祝你调戏代码成功！</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1233,89 +1273,6 @@ private:
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-04</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/50/" itemprop="url">Windows Store App开发[023]创建Windows Store应用程序包</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在这篇博文中我将一步一步的按照顺序来介绍如何创建一个Windows Store应用程序包.在这里建议创建一个&#8221;HelloWorld&#8221;程序,以此来创建一个应用程序包.从菜单中选择PROJECT来进行创建。如下图</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/18.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb8.png" width="510" height="203" /></a></p>
-
-<p>在PROJECT菜单中，选择<strong>Sotre->Create App Package</strong></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/27.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb8.png" width="682" height="456" /></a></p>
-
-<p>下面来到创建程序包向导。在这里，我不想上传包只Windows Store，因此选择No选项，并点击下一步</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/39.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb9.png" width="606" height="467" /></a></p>
-
-<p>在下一个画面中，你需要为包选择平台。可以选择的如下：</p>
-
-<p>1、64为平台</p>
-
-<p>2、32为平台</p>
-
-<p>3、ARM</p>
-
-<p>4、Neutral 平台</p>
-
-<p>后续的需要选择创建的包围Release模式还是Debug模式。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/46.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb6.png" width="606" height="467" /></a></p>
-
-<p>&#160;</p>
-
-<p>在点击Visual Studio底部的创建按钮后，你会收到创建成功的消息。在下面的画面中，你会看到成功的消息，并附带有刚刚创建包的路径。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/53.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb3.png" width="606" height="467" /></a></p>
-
-<p>定位到该路径，你会发现已经创建好的包</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/62.png"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb2.png" width="589" height="119" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-04</time></span>
 </div>
 
 

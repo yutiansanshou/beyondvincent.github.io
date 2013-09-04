@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[040]使用默认程序打开文件 小引 在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接， &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[041]AppBar总结 1、小引 在之前的博文中，我已经给大家简单的介绍了AppBar的使用，参考下面的两篇文章 Windows Store App开发[003] &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,273 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/70/" itemprop="url">Windows Store App开发[041]AppBar总结</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>1、小引</h3>
+
+<p>在之前的博文中，我已经给大家简单的介绍了AppBar的使用，参考下面的两篇文章</p>
+
+<h4><a href="http://beyondvincent.com/2013/05/31/windows-store-app%e5%bc%80%e5%8f%91003%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e6%a0%8fappbar%e7%9a%84%e4%bd%bf%e7%94%a8/">Windows Store App开发[003]应用程序栏(AppBar)的使用</a></h4>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91005%e5%af%bc%e8%88%aa%e6%a0%8fappbar%e7%9a%84%e4%bd%bf%e7%94%a8/">Windows Store App开发[005]导航栏(AppBar)的使用</a></h4>
+
+<p>在这篇文章中，我对AppBar使用进行一个小结，设涉及到两个方面：AppBar的基本使用和AppBar的扩展</p>
+
+<h3>2、AppBar的基本使用</h3>
+
+<p>在Windows Phone与Windows store app之间，有好多相似的内容，比如AppBar就是其一。在Windows store app中，使用并扩展了appbar，让其变得更加的灵活和可扩展性。在Windows Phone中，appbar定位在屏幕的底部，并且最多只能包含4个按钮和有限的menu item数目，而在windows 8中，有两类appbar，分别在屏幕的顶部和底部。从开发者的角度来考虑，appbar相当于屏幕的扩展，一般情况下是隐藏起来的，当用户从底部或者顶部swipe的时候，会显示出来。顶部的appbar主要用于页面的导航，而底部则是一些命令。</p>
+
+<p>Windows 8的Page公开了两个属性：TopAppBar和BottomAppBar。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.topappbar&gt;
+    &lt;appbar&gt;
+        &lt;!-- 在这里放置top appbar --&gt;
+    &lt;/appbar&gt;
+&lt;/page.topappbar&gt;
+&lt;page.bottomappbar&gt;
+    &lt;appbar&gt;
+        &lt;!-- 在这里放置 bottom appbar --&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;</pre>
+
+
+<p>AppBar的继承关系如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/114.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb12.png" width="287" height="462" /></a></p>
+
+<p>AppBar有两个重要的属性，你可以进行处理：IsOpen和IsSticky。其中IsOpen用来处理appbar的，允许以编程的方式打开或关闭appbar。而IsSticky不是很好理解，它的目的是获取或设置appbar是否完全关闭。</p>
+
+<p>在appbar里面，可以放置任何你需要的内容,并且appbar的size也没有任何限制。例如下面的例子是在appbar中放置一组button按钮，并且使用StackPanel水平放置这些button：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+        &lt;appbar background="Orange"&gt;
+            &lt;stackpanel orientation="Horizontal"&gt;
+                &lt;button skipbackappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button playappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button isenabled="False" pauseappbarbuttonstyle}?&gt;
+                &lt;/button&gt;&lt;button skipaheadappbarbuttonstyle}?&gt;
+   &lt;/button&gt;&lt;/stackpanel&gt;&lt;/appbar&gt;&lt;/page.bottomappbar&gt; </pre>
+
+
+<p>运行效果如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/211.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb12.png" width="682" height="100" /></a></p>
+
+<p>可以将button分为2组，放置在不同的地方，以表示不同的意思。如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+    &lt;appbar background="Orange" name="appBar"&gt;
+        &lt;grid&gt;
+            &lt;grid.columndefinitions&gt;
+                &lt;columndefinition width="*" /&gt;
+                &lt;columndefinition width="*" /&gt;
+            &lt;/grid.columndefinitions&gt;
+            &lt;stackpanel orientation="Horizontal" grid.column="0" horizontalalignment="Left"&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+                &lt;button isenabled="False"&gt;
+                &lt;button&gt;
+            &lt;/stackpanel&gt;
+            &lt;stackpanel orientation="Horizontal" grid.column="1" horizontalalignment="Right"&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+                &lt;button&gt;
+            &lt;/stackpanel&gt;
+        &lt;/grid&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;
+&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>效果如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/313.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb13.png" width="682" height="84" /></a></p>
+
+<h3>3、AppBar的扩展</h3>
+
+<p>有时候，为了减小appbar的size，我们可以使用Context menu与某个button相关联，来表示更多的行为。当需要使用context menu时，可以通过编码实现。有点小麻烦就是你需要知道menu所放置的位置——与相关按钮的位置。下面我们来看看如何做到：</p>
+
+<p>在xaml中如下定义appbar</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;page.bottomappbar&gt;
+    &lt;appbar background="Orange" name="appBar"&gt;
+        &lt;stackpanel orientation="Horizontal" grid.column="0" horizontalalignment="Left"&gt;
+            &lt;button click="MoreButton_Click"&gt;
+        &lt;/stackpanel&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;
+&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>实现MoreButton_Click方法</p>
+
+<p>当MoreButton_Click事件触发后，就创建一个PopupMenu并将其放在被单击的button上面</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void MoreButton_Click(object sender, RoutedEventArgs e)
+{
+    FrameworkElement element = (FrameworkElement)sender;
+
+    PopupMenu menu = new PopupMenu();
+    menu.Commands.Add(new UICommand(&quot;姓名&quot;, FilterButton_Click, &quot;name&quot;));
+    menu.Commands.Add(new UICommand(&quot;日期&quot;, FilterButton_Click, &quot;date&quot;));
+
+    var clicked = await menu.ShowForSelectionAsync(element.GetElementRect(0, -10), Placement.Above);
+}</pre>
+
+
+<p>上面的代码注意看：我使用了一个GetElementRect方法。这个方法是我对FrameworkEment进行扩展的一个方法，用来返回FrameworkEment的rect。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public static class Positioning
+{
+    public static Rect GetElementRect(this FrameworkElement element, int hOffset, int vOffset)
+    {
+        Rect rect = Positioning.GetElementRect(element);
+        rect.Y += vOffset;
+        rect.X += hOffset;
+        return rect;
+    }
+
+    public static Rect GetElementRect(this FrameworkElement element)
+    {
+        GeneralTransform buttonTransform = element.TransformToVisual(null);
+        Point point = buttonTransform.TransformPoint(new Point());
+        return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
+    }
+}</pre>
+
+
+<p>再看看FilterButton_Click的实现：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void FilterButton_Click(IUICommand command)
+{
+    appBar.IsOpen = false;
+}</pre>
+
+
+<p>代码写完，我们来看看运行效果,点击More按钮时，会弹出姓名和日期，当点击姓名时，appbar会隐藏。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/410.png"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb10.png" width="365" height="162" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/AppBar2" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1304,46 +1571,6 @@ a、Properties文件夹包含一些程序集信息和项目属性。</p>
 
 
 
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/60/" itemprop="url">Windows Store App开发[033].NET4.5 获取Caller Function的信息(Caller Attributes)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在调试代码时，大家都会有这样的一个问题“谁调用了我的这个函数？”在很多情况下，知道了调用函数，是开始解决bug的第一步。到目前为止，主要方法是：在Visual Studio中，看看看调用栈信息，或者调试器。在.NET 4.5中，添加了一个新特性：一个函数可以知道它被谁调用了，调用函数的信息包括：函数名、文件名和调用所在的行。开发者现在可以使用这些信息来提供有用的调试信息了。这个特性所在名称空间为：System.Runtime.CompilerServices。下面是一个使用示例：【Windows 8 store apps开发中】</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">public void Method([CallerMemberName] string name = &quot;&quot;, [CallerFilePath] string file = &quot;&quot;, [CallerLineNumber] int line = 0) { Debug.WriteLine(name); Debug.WriteLine(file); Debug.WriteLine(line); }</pre>
-
-
-<p>本篇文章的内容虽然少，但是小小功能，非常有用。祝你调戏代码成功！</p>
 
 		
 		
