@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[033].NET4.5 获取Caller Function的信息(Caller Attributes) 在调试代码时，大家都会有这样的一个问题“谁调用了我的这个函数？” &hellip;">
+	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[034]Part 1：使用Grid App(XAML)模板创建第一个Windows 8 App 在本系列中，你将会学习到&#8221;Grid App（XAML）&# &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,281 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/61/" itemprop="url">Windows Store App开发[034]Part 1：使用Grid App(XAML)模板创建第一个Windows 8 App</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在本系列中，你将会学习到&#8221;Grid App（XAML）&#8221;模板的详细内容，并在理解这个模的基础上创建你的Windows 8 app。</p>
+
+<h3><a name="t5"></a>&#160;&#160;&#160; 在开始之前：</h3>
+
+<ul>
+<li>你需要Windows 8 OS</li>
+<li>Microsoft Visual Studio Express 2012 for Windows 8，在这里可以下载到：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974577.aspx"><u>获取工具</u></a></li>
+<li>需要一个开发者证书，看这里：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx"><u>获取开发者证书</u></a></li>
+</ul>
+
+
+<h3><a name="t6"></a>&#160;&#160;&#160; 摘要：</h3>
+
+<p>&#160;&#160;&#160; 在这里我会使用C#和XAML创建一个简单的Windows 8 style app，在创建好解决方案之后，我会深入分析Visual Studio 2012生成的XAML和代码。我将运行app，并查看它使用的示例数据和相关绑定。在更深入的层次上，你将更好的理解app内导航是如何做的，以及绑定又怎么使用。深入的理解这个模板有助于以更好的方式设计你的程序，并且可以帮助你考虑这个模板是否适用于你的app。</p>
+
+<h3><a name="t7"></a>&#160;&#160;&#160; 下面正式开始：</h3>
+
+<ul>
+<li>&#160;&#160;&#160; 通过输入&#8221;vis&#8221;并选择</li>
+<li><p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/110.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb10.jpg" width="682" height="142" /></a></p></li>
+<li><p>这将会启动visual studio 2012</p></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb8.jpg" width="682" height="406" /></a></p>
+
+<ul>
+<li>单击文件->新建->项目</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/34.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb4.jpg" width="667" height="403" /></a></p>
+
+<ul>
+<li>你将看到新建项目对话框，选择模板->Visual C#，然后选择Windows Metro style(注：在新版本的vs中这里是Windows Store)。然后选择Grid App(XAML)模板。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/46.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb6.jpg" width="682" height="434" /></a></p>
+
+<ul>
+<li><p>输入BV_MyGridApp作为程序的名称。然后单击确定以创建项目。注意：在Windows 8中，所有的软件开发都将需要开发者证书。在启动Visual Studio之后，可能会提示你授权你的机器以进行开发。当提示出现时，单击同意。如果Visual Studio要求输入Microsoft账号，那么就输入Hotmail或者live账号，并单击确定。更多消息：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx</u></a></p></li>
+<li><p>Visual Studio为你创建的目录结构如下：</p></li>
+<li><p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/54.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb4.jpg" width="286" height="513" /></a>
+a、Properties文件夹包含一些程序集信息和项目属性。</p>
+
+<p>&#160;&#160;&#160; b、应用文件夹包含了这个项目需要引用到的其它一些程序集。</p>
+
+<p>&#160;&#160;&#160; c、Assets文件夹包含缺省的logo、SplashScreen图片，你可以在这个目录中添加自己的logo。</p>
+
+<p>&#160;&#160;&#160; d、Common文件夹包含了一些类和XAML styles，这些内容可以简化程序的开发。你可以在这个文件夹添加自己的转换类，Grid App(XAML)模板已经默认提供了两个转换类了。这里还有BindableBase.cs类，它用于所有datamodel类的基类。通过这个基类，你的数据模型类就不需要实现INotifyPropertyChanged接口了，因为BindableBase.cs已经实现了INotifyPropertyChanged接口。有关更多信息，你可以从那个目录下的ReadMe.txt文件获取。除了一般的数据和style外，这个文件夹还有个名字为“SuspensionManager.cs”的文件。SuspensionManager是一个辅助类，可以帮助我们简化app生命周期的管理。它为我们处理了许多事情。它保存和恢复app页面中Frame的导航状态。它序列化页面状态数据 并将其写入一个XML文件中，该文件存储在本地storage中。</p>
+
+<p>&#160;&#160;&#160; e、DataModel文件夹包含一个SampleDataSource.cs文件。这个文件中生成了一些示例数据。</p>
+
+<p>&#160;&#160;&#160; f、App.xaml文件包含xaml以及windows 8 style app需要的资源。App.xaml.cs文件中的App()方法它负责初始化一个Application对象。这里面的代码是首次被执行的，相当于main()或WinMain()。它同样具有这样的方法：当应用程序进入suspended阶段，以及程序被用户正常启动时调用的方法。 OnLaunched和OnSuspending方法。当程序进入suspended或者launch阶段，如果你想执行某个确定的动作，那么你可以在这两个方法中实现。</p>
+
+<p>&#160;&#160;&#160; g、GroupDetailPage.xaml显示一个集合(群组)以及在该集合中的相关项(items)。一般是这样的：用户可以在这个页面看到左边是集合的详细内容，而右边是相关的项，当选择一个项时，可以导航到选中项的全页面视图，即ItemDetailPage.xaml。</p>
+
+<p>&#160;&#160;&#160; h、GroupedItemsPages.xaml文件是当程序启动出现的第一个页面。它负责显示Group集合和对应的项。它相当于主页面。用户可以在这里查看Group集合与各个项，如果选择某项（item）择导航到项全画面视图，而选择group 标签的话择导航至group详情画面。</p>
+
+<p>&#160;&#160;&#160; i、ItemDetailPage.xaml显示单独的一项或者某项的全画面视图。</p>
+
+<p>&#160;&#160;&#160; j、Package.appxmanifest.xaml是一个特殊的文件，它描述了app如何打包、具有的功能、如何展现给用户。也使用了几个图片文件，如启动画面(初始屏幕)图片splashscreen.png,以及SmallLogo.png和Logo.png。如下图</p></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/111.png"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb.png" width="682" height="407" /></a></p>
+
+<ul>
+<li>我们来运行一下程序,看看默认情况下是什么样子的。选择生成->生成解决方案，然后按F5运行app[注意，再在这里我选择模拟器调试]。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/63.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb3.jpg" width="346" height="208" /></a></p>
+
+<p>模拟器是本地计算机中的一个终端服务会话.你可以打开任务管理器,然后选择用户tab,将看到有两个会话.如下图&#8230;&#8230;&#8230;..注意:即使你停止调试和,也不能关闭模拟器,这有利于你多次调试.当然,问题来了:如何关闭模拟器呢?在模拟器窗口上没有关闭按钮:单击最小化按钮不能推出模拟器.你可以在任务管理器中关闭它.</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/73.jpg"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb3.jpg" width="616" height="309" /></a></p>
+
+<ul>
+<li>程序运行起来，可以看到在Package.appmanifest文件中提到的&#8221;启动画面&#8221;。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/121.png"><img title="12" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="12" src="http://beyondvincent.com/wp-content/uploads/2013/06/12_thumb.png" width="682" height="377" /></a> </p> </p> </p></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>等一会，程序将被加载，主页面显示集合以及items。这里有6个集合，可以左右滚动来显示查看它们。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/83.jpg"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb3.jpg" width="682" height="420" /></a></p>
+
+<ul>
+<li>单击ItemTitle:1矩形框，你会看到Item Title：1的详细页面。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/92.jpg"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb2.jpg" width="682" height="420" /></a></p>
+
+<ul>
+<li>现在如果你想移动到item2,那么你可以在画面右边移动/徘徊鼠标，将会看到一个带右箭头的按钮。单击它，会滚动制集合中的下一个item。在左手边，可以单击左箭头按钮往回滚。同样的，如果在触屏设备上，可以水平轻拂画面,以移动到下一项。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/10.jpg"><img title="10" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="10" src="http://beyondvincent.com/wp-content/uploads/2013/06/10_thumb.jpg" width="149" height="261" /></a></p>
+
+<ul>
+<li>点击或者触摸右上角的返回按钮,将回到主画面。</li>
+<li>现在单击“Group Title：1”进入Group Title:1详情,你会看到Group的一个概要画面.</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/112.jpg"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb1.jpg" width="682" height="420" /></a>
+&#160;</p>
+
+<p>至此，你应该明白了整个工程的结构和其中不同文件的作用,并且知道如何在VS2012中启动app.下面我们开始讲解下一部分:解释这个模板中的每个文件的作用。</p>
+
+<ul>
+<li>从App.xaml开始吧:打开App.xaml文件。看看它是如何包含&#8221;Common/StandardStyles.xaml&#8221;的。这个文件包含的style可以用在整个app中.一旦将style文件添加到ResourceDictionary中,那么在当前项目中的所有文件中都可以使用它.它相当于一个全局变量.</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/122.jpg"><img title="12" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="12" src="http://beyondvincent.com/wp-content/uploads/2013/06/12_thumb1.jpg" width="638" height="442" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>打开App.xaml.cs文件，App.xaml.cs是App.xaml文件的code-behind文件，它是一个partial类.XAML和code-behind一起组成了一个完整的类。App.xaml.cs是程序的入口。它有一个构造函数，调用一个名为InitializeComponent的函数，该函数是由VS自动生成的，它的主要目的是初始化在XAML文件中声明的元素。App.xaml.cs文件同样包含2个处理激活和休眠app的方法：OnLaunched和OnSuspending。如名字所示，当程序进入启动状态时，OnLaunched方法被调用，而程序进入休眠状态时调用OnSuspending方法。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/131.jpg"><img title="13" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="13" src="http://beyondvincent.com/wp-content/uploads/2013/06/13_thumb.jpg" width="682" height="510" /></a></p>
+
+<p>据了解，SuspensionManager类有导航的功能，要使用这个类提供的导航功能，必须注册main app Frame。我们在Onlaunched方法中注册Frame</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/141.jpg"><img title="14" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="14" src="http://beyondvincent.com/wp-content/uploads/2013/06/14_thumb.jpg" width="603" height="335" /></a></p>
+
+<ul>
+<li>LayoutAwarePage文件：在平板电脑中，加速度计是一个重要的功能，可以帮助用户确定它们想要的任何方向。开发者必须在每一个页面中处理这些方向的改变，在code-behind中方向事件会被触发。然而，现在这个功能已经被放到LayoutAwarepage.cs文件中了。LayoutAwarePage类作为每一个页面的基类，它提供了dataViewModel功能。下面是其中的一些方法：</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/151.jpg"><img title="15" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="15" src="http://beyondvincent.com/wp-content/uploads/2013/06/15_thumb.jpg" width="682" height="520" /></a>
+&#160;</p>
+
+<p>在LayoutAwarePage类中，这有一个DefaultViewModel属性。这个类用于xaml控件的数据绑定。你可以去看看GroupedItemPage.xaml.cs文件。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/161.jpg"><img title="16" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="16" src="http://beyondvincent.com/wp-content/uploads/2013/06/16_thumb.jpg" width="682" height="259" /></a></p>
+
+<ul>
+<li>GroupedItemsPage.xaml.cs：打开这个页面，你会看到示例数据中的group集合被添加到DevaultViewModel属性tag中。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/171.jpg"><img title="17" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="17" src="http://beyondvincent.com/wp-content/uploads/2013/06/17_thumb.jpg" width="682" height="100" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>现在打开GroupedItemsPage.xaml文件，你可以看到在Page.Resources标签中，将“Groups”当做CollectionViewSource。这个资源的名称是groupedItemsViewSource</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/181.jpg"><img title="18" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="18" src="http://beyondvincent.com/wp-content/uploads/2013/06/18_thumb.jpg" width="682" height="177" /></a></p>
+
+<p>这个页面使用GridView来显示集合与各项。你可以在这里看到GridView的ItemsSource绑定到groupedItemsViewSource上。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/191.jpg"><img title="19" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="19" src="http://beyondvincent.com/wp-content/uploads/2013/06/19_thumb.jpg" width="573" height="363" /></a></p>
+
+<p>在GrouedItemsPage.xaml.cs文件中，当用户点击某个item时，代码使用frame的Navigate方法，导航至ItemDetailPage页面</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/20.jpg"><img title="20" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="20" src="http://beyondvincent.com/wp-content/uploads/2013/06/20_thumb.jpg" width="570" height="240" /></a></p>
+
+<p>同样在GroupedItemsPage.xaml.cs文件中，当用户点击Group标题，代码使用frame的Navigate方法，导航至GroupDetailPage页面</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/211.jpg"><img title="21" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="21" src="http://beyondvincent.com/wp-content/uploads/2013/06/21_thumb.jpg" width="625" height="248" /></a></p>
+
+<ul>
+<li>打开ItemDetailPage.xaml文件，这个页面使用FlipView控件，可以往前或者往回滚动集合中的items。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/221.jpg"><img title="22" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="22" src="http://beyondvincent.com/wp-content/uploads/2013/06/22_thumb.jpg" width="558" height="198" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>打开ItemDetailPage.xaml.cs文件；它继承自LayoutAwarePage，LayoutAwarePage实现了在页面栈中GoHome和GoBack导航的功能。在LoadState方法中，它绑定了最后一次单击的item（group和group items）。</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/231.jpg"><img title="23" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="23" src="http://beyondvincent.com/wp-content/uploads/2013/06/23_thumb.jpg" width="682" height="215" /></a></p>
+
+<ul>
+<li>打开GroupDetailPage.xaml文件，这个页面的左边显示了分类/群组的图片和文字信息，然后用GridView显示分类/群组的的items。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/241.jpg"><img title="24" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="24" src="http://beyondvincent.com/wp-content/uploads/2013/06/24_thumb.jpg" width="682" height="280" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>开发GroupDetailPage.xaml.cs文件，它同样继承自LayoutAwarePage，从父类中继承了GoHome和GoBack方法。最后，打开SampleDataSource.cs文件，移至SampleDataSource类的定义。这个类使用假数据创建了集合和items。</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/242.jpg"><img title="24" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="24" src="http://beyondvincent.com/wp-content/uploads/2013/06/24_thumb1.jpg" width="682" height="280" /></a></p>
+
+<h3>总结</h3>
+
+<p>&#160;&#160;&#160; 在本文中，介绍了GridView(XAML)模板创建工程的结构，各个文件作用，不同页面间导航，数据如何绑定至Grid控件。希望在Windows 8开发中，对你有帮助。</p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/GridApp" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1206,73 +1481,6 @@ private:
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-04</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/51/" itemprop="url">Windows Store App开发[024]择什么语言来创建Windows Store应用程序？</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/15.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb5.jpg" width="391" height="493" /></a></p>
-
-<p>当开始创建Windows Store应用程序时，首先遇到的问题是使用什么语言来创建程序。本文中，我在一些范围内进行介绍如何选择开发语言技术。一般创建一个应用程序基于你已经掌握的技术。当然，对应进行移植的程序，一般是基于原有程序的类型进行。下面我做了一个图，来介绍技术路线的选择</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/23.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb3.jpg" width="682" height="508" /></a></p>
-
-<p>下面我罗列几个点，在决定使用什么技术时，你需要注意一下：</p>
-
-<p>1、知道你现在掌握的技术，进而做决定。如果你擅长于JavaScript，并且使用过一些模式，那么建议走HTML5和JavaScript路线。如果你之前创建过Windows Phone程序或者WPF程序，那么使用C#和XAML进行开发，会更好。</p>
-
-<p>2、在决定移植程序时，你需要加深考虑。因为这种情况下，不能依赖于你所掌握的技术。主要取决于你将要移植的程序的类型是什么。例如，你要将Windows Phone程序进行移植，那么你必须选择使用C#和XAML，这样之前的代码和功能才能重用，如果你的Windows Phone程序使用了类似MVVM的设计模式，那么你可以在程序中使用View-Model View。</p>
-
-<p>3、如果你既掌握web开发，也稍微熟悉C# XAML开发，那么我建议你使用HTML5和WinJS进行程序的开发。因为WinJS提供的控件跟Metro 控件一样，你不用去额外的将WinJS控件编写为Metro控件。</p>
-
-<p>4、如果你要创建的高效的游戏程序，那么建议你考虑使用该C++和XAML。</p>
-
-<p>5、如果你是一个.NET开发者，并且你也熟练掌握HTML和JavaScript。这种情况，建议使用C#和XAML。你会发现，开发程序的过程，跟.NET开发非常相似。例如，你可以坚持使用相同的设计模式（例如MVVM等）来创建程序。</p>
-
-<p>通过上面的分析，使用什么语言技术来开发Windows Store程序，应该可以做出决定了。还等什么呢，just do it！</p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-04</time></span>
 </div>
 
 
