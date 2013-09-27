@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-09-20T23:57:34+08:00</updated>
+  <updated>2013-09-27T15:49:38+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,100 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit初级教程(1)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1/"/>
+    <updated>2013-09-26T11:45:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/09/6.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><code>Sprite Kit的优点和缺点</code></li>
+<li><code>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</code></li>
+<li><code>Hello, Sprite Kit!</code></li>
+<li>横屏显示</li>
+<li>移动怪兽</li>
+<li>发射炮弹</li>
+<li>碰撞检测: 概述</li>
+<li>碰撞检测: 实现</li>
+<li>收尾</li>
+<li>何去何从?</li>
+</ul>
+
+
+<p>在iOS 7中内置了一个新的Sprite Kit框架，该框架主要用来开发2D游戏。目前已经支持的内容包括：精灵、很酷的特效(例如视频、滤镜和遮罩)，并且还集成了物理库等许多东西。</p>
+
+<p>iOS 7中附带了一个非常棒的Sprite Kit示例工程，名字叫做Adventure。不过这个示例工程稍微有点复杂，不太适合初学者。本文的目的就是做一个关于Sprite Kit使用的初级教程。</p>
+
+<p>通过本文，你可以从头到尾的学习到如何为你的iPhone创建一个简单又有趣的2D游戏。如果你看过我们之前的教程:<a href="http://www.raywenderlich.com/25736/how-to-make-a-simple-iphone-game-with-cocos2d-2-x-tutorial">Simple Cocos2D game教程</a>，你会发现非常的相似。</p>
+
+<p>在开始之前，请确保已经安装了最新版本的Xcode(5.X)，里面支持Sprite Kit以及iOS 7。</p>
+
+<h3><strong> Sprite Kit的优点和缺点</strong></h3>
+
+<p>首先，我想指出在iOS中开发2D游戏Sprite Kit并不是唯一的选择，下面我们先来看看Sprite Kit的一些优点和缺点。</p>
+
+<p>Sprite Kit的优点：</p>
+
+<p> 1、它是内置到iOS中的，因此并不需要下载额外的库或者其它一些外部依赖。并且它是由苹果开发的，所以对于它的支持和更新我们可以放心。</p>
+
+<p> 2、它内置的工具支持纹理和粒子。</p>
+
+<p> 3、它可以让你做一些其它框架很难做到的事情，例如把视频当做精灵一样处理，或者使用很酷的图形效果和遮罩。</p>
+
+<p>Sprite Kit的缺点：</p>
+
+<p> 1、如果使用了Sprite Kit，那么你将被iOS生态圈所绑架，导致你无法很容易对你开发的游戏移植到Android上。</p>
+
+<p> 2、Sprite Kit现在还处于初始阶段，此时提供的功能还没有别的框架丰富，例如Cocos2D。最缺的东西应该是暂不支持写自定义的OpenGL代码。</p>
+
+<h3><strong> Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</strong></h3>
+
+<p>此时，你可能在想“我该选择使用哪个2D框架呢？”</p>
+
+<p>这取决于你的实际情况，下面是我的一些想法：</p>
+
+<p> 1、如果你是一个初学者，并且只关注于iOS，那么就使用内置的Sprite Kit吧，它非常容易学习，并且完全可以把工作做好。</p>
+
+<p> 2、如果需要写自己的OpenGL代码，那么还是使用Cocos2D，或者其它框架吧，目前Sprite Kit并不支持自定义OpenGL代码。</p>
+
+<p> 3、如果要进行跨平台开发，那么选择Cocos2D-X或者Unity。Cocos2D-X非常出色，可以用它来构建2D游戏。Unity则更加的灵活(例如，如果有需要的话，你可以在游戏中添加一些3D效果)。</p>
+
+<p>看到这里，如果你还想要继续了解Sprite Kit的话，请继续往下读吧。</p>
+
+<h3><strong> Hello，Sprite Kit！</strong></h3>
+
+<p>下面我们就开始利用Xcode 5内置的Sprite Kit模板来构建一个简单的Hello World工程吧。</p>
+
+<p>启动Xcode，选择<code>File\New\Project</code>，接着选中<code>iOS\Application\SpriteKit Game</code>模板，然后单击<code>Next</code>：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/7.png"></p>
+
+<p>输入Product Name为<code>SpriteKitSimpleGame</code>，Devices选择iPhone，接着单击<code>Next</code>：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/8.png"></p>
+
+<p>选择工程保存的路径，然后点击<code>Create</code>。然后点击Xcode中的播放按钮来运行工程。稍等片刻，可以看到如下运行画面：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/09/9.png"></p>
+
+<p>跟Cocos2D类似，Sprite Kit也是按照<code>场景(scenes)</code>来构建的，这相当于游戏中的&#8221;levels&#8221;和&#8221;screens&#8221;。例如，你的游戏中可能会有一个主游戏区的场景，以及一个世界地图的一个场景。</p>
+
+<p>如果你观察一下创建好的工程，会发现SpriteKit Game模板已经创建好了一个默认的场景<code>MyScene</code>。现在打开<code>MyScene.m</code>，里面已经包含了一些代码，其中将一个lable放到屏幕中，并且添加了：当tap屏幕时，会在屏幕上新增一个旋转的飞船。</p>
+
+<p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
+
+<p>……Sprite Kit初级教程(1)结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS 7中的一些小修改]]></title>
@@ -3191,7 +3285,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#109;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#66;&#x65;&#121;&#x6f;&#x6e;&#x64;&#86;&#105;&#x6e;&#x63;&#x65;&#110;&#x74;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;&#99;&#x6f;&#109;">&#x42;&#x65;&#121;&#x6f;&#110;&#x64;&#x56;&#105;&#x6e;&#x63;&#101;&#110;&#116;&#64;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;&#99;&#111;&#x6d;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#66;&#101;&#x79;&#111;&#x6e;&#x64;&#86;&#105;&#110;&#99;&#x65;&#x6e;&#x74;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x42;&#101;&#121;&#x6f;&#x6e;&#x64;&#86;&#x69;&#x6e;&#99;&#101;&#110;&#116;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
@@ -3649,78 +3743,6 @@ frame #25: 0x00002a55 Debug`start + 53
 
 <div style="text-align: left;">
   <span style="color: #808080;">本文由<strong><span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></strong>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-01</time></span>
-</div>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[记我的第二个马拉松—昆明高原国际半程马拉松]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/06/21/92/"/>
-    <updated>2013-06-21T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/06/21/92</id>
-    <content type="html"><![CDATA[<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>对于IT行业的从业人员，由于工作的性质，很多人的身体都缺乏有效的锻炼。实际上这是一个非常危险的信号，现如今，随着社会的进步，大家的生活质量也不断提高，但是人们的身体状况总是令人担忧，几乎每年都能听说在IT行业里面有关猝死的新闻！在这里，希望大家能够在工作之余，善待自己的身体——毕竟前人已经说过，身体是革命的本钱！相信现在对身体多一份投资，将来会得到更多的回报。</p>
-
-<p>关于技术的分享改日再谈，今日就来跟大家分享一下我的第二个马拉松。</p>
-
-<h2><strong><span style="color: #339966;">正文</span></strong></h2>
-
-<p>细算我跑步也有些年头了，不过要算马拉松比赛，至今才参加了2个，第一个是2012年11月25日的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://beyondvincent.com/2013/05/11/%E7%A0%B4%E8%88%B9%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8C%97%E4%BA%AC%E9%A9%AC%E6%8B%89%E6%9D%BE/" target="_blank"><span style="color: #339966; text-decoration: underline;">北京国际马拉松</span></a></span></strong></span>，现在还记得，本应该10月中旬就举办的了，但是由于要召开十八大，所以北京马拉松被迫让路，被推延到11月25日举行，在北京生活过的同学们应该清楚，这时候的天气已经冷了，这给我的初马带来了不小的挑战，结果虽然完成了比赛，但是跟预期的时间要多了1小时30分钟左右。</p>
-
-<p>今年(2013)回到了云南，从云南跑吧群里得知在5月25日将举办昆明高原国际半程马拉松，大家也没有盼来期望的全程，可能组委会考虑到近一年来马拉松赛场上出的那些事，为谨慎起见吧。虽然是半程，不过这是在高原，平均海拔在1800米，对于外省人来说估计也会有一些难度。刚好，目前全程对于我来说可以跑下来，不过身体会受伤，半程是我的最佳选择。</p>
-
-<p>为了参加昆明的这个马拉松，我前前后后约准备了半年时间，当然，由于是半程，难度不是太大，不出意外，都能够完赛，所以在备战计划中，对自己的身体要求不是太苛刻，力争达到跑完比赛之后，身体还是舒服就好。因而在平常的训练中，每周平均跑步3.5次，每次跑步的距离也是随性，可能是8km，10km，有时也会只计算时间，速度和距离没有考虑太多。毕竟跑步的最终目的是锻炼身体，让疾病晚一点光顾，参加马拉松比赛对我而言只当做锦上添花罢了，也算是给平时的跑步生活增添一点乐趣。</p>
-
-<p>2013年5约25日，我早早的就起床，赶往马拉松出发地点——昆明-呈贡新区。到达出发点时，已经有好多人了，也看到了好多张熟悉的面孔。由于排队上厕所耗费了一些时间，没能赶上云南跑吧的赛前大合影（来自跑吧风11的摄影），有点点遗憾。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb.jpeg"><img class="alignnone size-full wp-image-1476" alt="psb" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb.jpeg" width="5428" height="1469" /></a></p>
-
-<p>早上9点，马拉松准备开始，刚开始，当然也是中国式的马拉松开幕式——领导发言，10分钟后准时鸣枪起跑。大家像挣脱缰绳的野马一样，无论是男女老少，都一波流的往前冲，我在想，照着么快的速度下去，很多人会中途跑崩了的。也或许没有全程，大家顾虑也会少了许多吧。</p>
-
-<p>本次马拉松的一大特点应该就是赛道起伏坡度又大又长，这跟北京马拉松的赛道有明显的区别。这对平时不怎么跑坡的同学，也会增加一点难度。</p>
-
-<p>在跑步途中，我主要以匀速跟随跑为主，为了控制好自己的速度，时不时的会问问周围跑友目前的配速。由于本次赛道是折返跑，所以开跑后大约在8km的地方，我遇到了已经折返的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://blog.sina.com.cn/mlwdxlbk42195" target="_blank"><span style="color: #339966; text-decoration: underline;">马哥-千里马</span></a></span></strong></span>——马拉松业余爱好者中的佼佼者，也为云南跑吧的成长付出了很多。</p>
-
-<div id="attachment_1477" class="wp-caption alignnone" style="width: 272px">
-  <a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130621-1.png"><img class="size-full wp-image-1477" alt="马哥-千里马" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130621-1.png" width="262" height="316" /></a><p class="wp-caption-text">
-    马哥-千里马
-  </p>
-</div>
-
-
-<p>大约跑了50分钟的时候，我开始从折返点往回跑，一路上遇到好多熟悉的，不熟悉的人，大家相互加油，共同奔跑。</p>
-
-<div id="attachment_1478" class="wp-caption alignnone" style="width: 1610px">
-  <a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb-1.jpeg"><img class="size-full wp-image-1478" alt="psb (1)" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb-1.jpeg" width="1600" height="1060" /></a><p class="wp-caption-text">
-    破船在折返途中
-  </p>
-</div>
-
-
-<p>折返途中，也是有几个不小的坡，前几个都轻松搞定，就是最后一个坡，这个坡度虽然不大，但是太长了，在距离终点还有2km的时候，心里做了数次挣扎——跑不动就走走吧，但是又在鼓励自己，坚持住，跑过地狱就是天堂。就这样，坚持着，很快，拐过几个弯，终点处的计时牌已经映入眼帘，看看时间，能够跑进2小时。最后时刻，在观众的加油声中，肾上腺激素被激发，加快了脚下的速度，顺利冲过终点，而此时时间定格在1小时56分42秒，排名141名。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb.png"><img class="alignnone size-full wp-image-1479" alt="psb" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb.png" width="533" height="575" /></a></p>
-
-<p>冲过终点，领取纪念奖品，然后跟云南跑吧一起合影</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb1.jpeg"><img class="alignnone size-full wp-image-1480" alt="psb" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb1.jpeg" width="1114" height="539" /></a></p>
-
-<p>&nbsp;</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb-11.jpeg"><img class="alignnone size-full wp-image-1481" alt="psb (1)" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb-11.jpeg" width="665" height="492" /></a></p>
-
-<p>&nbsp;</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/psb-2.jpeg"><img class="alignnone size-full wp-image-1482" alt="psb (2)" src="http://beyondvincent.com/wp-content/uploads/2013/06/psb-2.jpeg" width="800" height="535" /></a></p>
-
-<p>下一站：云南大理马拉松</p>
-
-<div style="text-align: left;">
-  <span style="color: #808080;">本文由<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-21</time></span>
 </div>
 
 

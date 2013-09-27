@@ -1,0 +1,247 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Sprite Kit初级教程(1) - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Sprite Kit初级教程(1) 注：本文译自Sprite Kit Tutorial for Beginners 目录 Sprite Kit的优点和缺点
+Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity
+Hello, Sprite Kit! &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Sprite Kit初级教程(1)</h1>
+	<div class="entry-content" itemprop="articleBody"><p><img src="/images/2013/09/6.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><code>Sprite Kit的优点和缺点</code></li>
+<li><code>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</code></li>
+<li><code>Hello, Sprite Kit!</code></li>
+<li>横屏显示</li>
+<li>移动怪兽</li>
+<li>发射炮弹</li>
+<li>碰撞检测: 概述</li>
+<li>碰撞检测: 实现</li>
+<li>收尾</li>
+<li>何去何从?</li>
+</ul>
+
+
+<p>在iOS 7中内置了一个新的Sprite Kit框架，该框架主要用来开发2D游戏。目前已经支持的内容包括：精灵、很酷的特效(例如视频、滤镜和遮罩)，并且还集成了物理库等许多东西。</p>
+
+<p>iOS 7中附带了一个非常棒的Sprite Kit示例工程，名字叫做Adventure。不过这个示例工程稍微有点复杂，不太适合初学者。本文的目的就是做一个关于Sprite Kit使用的初级教程。</p>
+
+<p>通过本文，你可以从头到尾的学习到如何为你的iPhone创建一个简单又有趣的2D游戏。如果你看过我们之前的教程:<a href="http://www.raywenderlich.com/25736/how-to-make-a-simple-iphone-game-with-cocos2d-2-x-tutorial">Simple Cocos2D game教程</a>，你会发现非常的相似。</p>
+
+<p>在开始之前，请确保已经安装了最新版本的Xcode(5.X)，里面支持Sprite Kit以及iOS 7。</p>
+
+<h3><strong> Sprite Kit的优点和缺点</strong></h3>
+
+<p>首先，我想指出在iOS中开发2D游戏Sprite Kit并不是唯一的选择，下面我们先来看看Sprite Kit的一些优点和缺点。</p>
+
+<p>Sprite Kit的优点：</p>
+
+<p> 1、它是内置到iOS中的，因此并不需要下载额外的库或者其它一些外部依赖。并且它是由苹果开发的，所以对于它的支持和更新我们可以放心。</p>
+
+<p> 2、它内置的工具支持纹理和粒子。</p>
+
+<p> 3、它可以让你做一些其它框架很难做到的事情，例如把视频当做精灵一样处理，或者使用很酷的图形效果和遮罩。</p>
+
+<p>Sprite Kit的缺点：</p>
+
+<p> 1、如果使用了Sprite Kit，那么你将被iOS生态圈所绑架，导致你无法很容易对你开发的游戏移植到Android上。</p>
+
+<p> 2、Sprite Kit现在还处于初始阶段，此时提供的功能还没有别的框架丰富，例如Cocos2D。最缺的东西应该是暂不支持写自定义的OpenGL代码。</p>
+
+<h3><strong> Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</strong></h3>
+
+<p>此时，你可能在想“我该选择使用哪个2D框架呢？”</p>
+
+<p>这取决于你的实际情况，下面是我的一些想法：</p>
+
+<p> 1、如果你是一个初学者，并且只关注于iOS，那么就使用内置的Sprite Kit吧，它非常容易学习，并且完全可以把工作做好。</p>
+
+<p> 2、如果需要写自己的OpenGL代码，那么还是使用Cocos2D，或者其它框架吧，目前Sprite Kit并不支持自定义OpenGL代码。</p>
+
+<p> 3、如果要进行跨平台开发，那么选择Cocos2D-X或者Unity。Cocos2D-X非常出色，可以用它来构建2D游戏。Unity则更加的灵活(例如，如果有需要的话，你可以在游戏中添加一些3D效果)。</p>
+
+<p>看到这里，如果你还想要继续了解Sprite Kit的话，请继续往下读吧。</p>
+
+<h3><strong> Hello，Sprite Kit！</strong></h3>
+
+<p>下面我们就开始利用Xcode 5内置的Sprite Kit模板来构建一个简单的Hello World工程吧。</p>
+
+<p>启动Xcode，选择<code>File\New\Project</code>，接着选中<code>iOS\Application\SpriteKit Game</code>模板，然后单击<code>Next</code>：</p>
+
+<p><img src="/images/2013/09/7.png"></p>
+
+<p>输入Product Name为<code>SpriteKitSimpleGame</code>，Devices选择iPhone，接着单击<code>Next</code>：</p>
+
+<p><img src="/images/2013/09/8.png"></p>
+
+<p>选择工程保存的路径，然后点击<code>Create</code>。然后点击Xcode中的播放按钮来运行工程。稍等片刻，可以看到如下运行画面：</p>
+
+<p><img src="/images/2013/09/9.png"></p>
+
+<p>跟Cocos2D类似，Sprite Kit也是按照<code>场景(scenes)</code>来构建的，这相当于游戏中的&#8221;levels&#8221;和&#8221;screens&#8221;。例如，你的游戏中可能会有一个主游戏区的场景，以及一个世界地图的一个场景。</p>
+
+<p>如果你观察一下创建好的工程，会发现SpriteKit Game模板已经创建好了一个默认的场景<code>MyScene</code>。现在打开<code>MyScene.m</code>，里面已经包含了一些代码，其中将一个lable放到屏幕中，并且添加了：当tap屏幕时，会在屏幕上新增一个旋转的飞船。</p>
+
+<p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
+
+<p>……Sprite Kit初级教程(1)结束……</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

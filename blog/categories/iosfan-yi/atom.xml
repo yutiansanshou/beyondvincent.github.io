@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-09-20T23:57:34+08:00</updated>
+  <updated>2013-09-27T15:49:38+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,100 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit初级教程(1)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1/"/>
+    <updated>2013-09-26T11:45:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/09/6.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><code>Sprite Kit的优点和缺点</code></li>
+<li><code>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</code></li>
+<li><code>Hello, Sprite Kit!</code></li>
+<li>横屏显示</li>
+<li>移动怪兽</li>
+<li>发射炮弹</li>
+<li>碰撞检测: 概述</li>
+<li>碰撞检测: 实现</li>
+<li>收尾</li>
+<li>何去何从?</li>
+</ul>
+
+
+<p>在iOS 7中内置了一个新的Sprite Kit框架，该框架主要用来开发2D游戏。目前已经支持的内容包括：精灵、很酷的特效(例如视频、滤镜和遮罩)，并且还集成了物理库等许多东西。</p>
+
+<p>iOS 7中附带了一个非常棒的Sprite Kit示例工程，名字叫做Adventure。不过这个示例工程稍微有点复杂，不太适合初学者。本文的目的就是做一个关于Sprite Kit使用的初级教程。</p>
+
+<p>通过本文，你可以从头到尾的学习到如何为你的iPhone创建一个简单又有趣的2D游戏。如果你看过我们之前的教程:<a href="http://www.raywenderlich.com/25736/how-to-make-a-simple-iphone-game-with-cocos2d-2-x-tutorial">Simple Cocos2D game教程</a>，你会发现非常的相似。</p>
+
+<p>在开始之前，请确保已经安装了最新版本的Xcode(5.X)，里面支持Sprite Kit以及iOS 7。</p>
+
+<h3><strong> Sprite Kit的优点和缺点</strong></h3>
+
+<p>首先，我想指出在iOS中开发2D游戏Sprite Kit并不是唯一的选择，下面我们先来看看Sprite Kit的一些优点和缺点。</p>
+
+<p>Sprite Kit的优点：</p>
+
+<p> 1、它是内置到iOS中的，因此并不需要下载额外的库或者其它一些外部依赖。并且它是由苹果开发的，所以对于它的支持和更新我们可以放心。</p>
+
+<p> 2、它内置的工具支持纹理和粒子。</p>
+
+<p> 3、它可以让你做一些其它框架很难做到的事情，例如把视频当做精灵一样处理，或者使用很酷的图形效果和遮罩。</p>
+
+<p>Sprite Kit的缺点：</p>
+
+<p> 1、如果使用了Sprite Kit，那么你将被iOS生态圈所绑架，导致你无法很容易对你开发的游戏移植到Android上。</p>
+
+<p> 2、Sprite Kit现在还处于初始阶段，此时提供的功能还没有别的框架丰富，例如Cocos2D。最缺的东西应该是暂不支持写自定义的OpenGL代码。</p>
+
+<h3><strong> Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</strong></h3>
+
+<p>此时，你可能在想“我该选择使用哪个2D框架呢？”</p>
+
+<p>这取决于你的实际情况，下面是我的一些想法：</p>
+
+<p> 1、如果你是一个初学者，并且只关注于iOS，那么就使用内置的Sprite Kit吧，它非常容易学习，并且完全可以把工作做好。</p>
+
+<p> 2、如果需要写自己的OpenGL代码，那么还是使用Cocos2D，或者其它框架吧，目前Sprite Kit并不支持自定义OpenGL代码。</p>
+
+<p> 3、如果要进行跨平台开发，那么选择Cocos2D-X或者Unity。Cocos2D-X非常出色，可以用它来构建2D游戏。Unity则更加的灵活(例如，如果有需要的话，你可以在游戏中添加一些3D效果)。</p>
+
+<p>看到这里，如果你还想要继续了解Sprite Kit的话，请继续往下读吧。</p>
+
+<h3><strong> Hello，Sprite Kit！</strong></h3>
+
+<p>下面我们就开始利用Xcode 5内置的Sprite Kit模板来构建一个简单的Hello World工程吧。</p>
+
+<p>启动Xcode，选择<code>File\New\Project</code>，接着选中<code>iOS\Application\SpriteKit Game</code>模板，然后单击<code>Next</code>：</p>
+
+<p><img src="/images/2013/09/7.png"></p>
+
+<p>输入Product Name为<code>SpriteKitSimpleGame</code>，Devices选择iPhone，接着单击<code>Next</code>：</p>
+
+<p><img src="/images/2013/09/8.png"></p>
+
+<p>选择工程保存的路径，然后点击<code>Create</code>。然后点击Xcode中的播放按钮来运行工程。稍等片刻，可以看到如下运行画面：</p>
+
+<p><img src="/images/2013/09/9.png"></p>
+
+<p>跟Cocos2D类似，Sprite Kit也是按照<code>场景(scenes)</code>来构建的，这相当于游戏中的"levels"和"screens"。例如，你的游戏中可能会有一个主游戏区的场景，以及一个世界地图的一个场景。</p>
+
+<p>如果你观察一下创建好的工程，会发现SpriteKit Game模板已经创建好了一个默认的场景<code>MyScene</code>。现在打开<code>MyScene.m</code>，里面已经包含了一些代码，其中将一个lable放到屏幕中，并且添加了：当tap屏幕时，会在屏幕上新增一个旋转的飞船。</p>
+
+<p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
+
+<p>……Sprite Kit初级教程(1)结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS 7中的一些小修改]]></title>
@@ -477,297 +571,6 @@ swap(Y, X); // thread 2</pre>
 <p>我们建议采纳的安全模式是这样的：从主线程中提取出使用到的数据，并利用一个操作队列在后台处理相关的数据，然后将后台处理的结果反馈到主队列中。使用这种方式，开发者不需要自己负责任何的锁，这也就减少了犯错误的概率。</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-17</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(1)]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/16/104/"/>
-    <updated>2013-07-16T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/16/104</id>
-    <content type="html"><![CDATA[<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p><a href="http://www.objc.io/">http://www.objc.io/</a> 站点主要以杂志的形式，深入挖掘在OC中的最佳编程实践和高级技术，每个月探讨一个主题，每个主题都会有几篇相关的文章出炉，2013年7月份的主题是并发编程，今天晚上我就挑选其中的第2篇文章(<a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html"><code>Concurrent Programming: APIs and Challenges</code></a>)进行翻译，与大家分享一下主要内容。由于内容比较多，我将分两部分翻译(API和难点)完成，翻译中，如有错误，还请指正。</p>
-
-<!--more-->
-
-
-<h2><strong><span style="color: #339966;">目录</span></strong></h2>
-
-<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
-<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
-<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
-<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
-<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
-<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
-<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
-<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
-<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
-<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
-<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
-<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
-<strong><span style="color: #339966;"> 4、小结</span></strong></p>
-
-<h3><strong><span style="color: #339966;">正文</span></strong></h3>
-
-<h2><strong><span style="color: #339966;">1、介绍</span></strong></h2>
-
-<p><span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"> <a href="http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29"><span style="color: #339966; text-decoration: underline;">并发</span></a></span></strong></span>的意思就是同时运行多个任务，这些任务可以在单核CPU上以<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Preemption_%28computing%29"><span style="color: #339966; text-decoration: underline;">分时(时间共享)</span></a></span></span></strong>的形式同时运行，或者在多核CPU上以真正的并行来运行多任务。</p>
-
-<p>OS X和iOS提供了几种不同的API来支持并发编程。每种API都具有不同的功能和一些限制，一般是根据不同的任务使用不同的API。这些API在系统中处于不同的地方。并发编程对于开发者来说非常的强大，但是作为开发者需要担负很大的责任，来把任务处理好。</p>
-
-<p>实际上，并发编程是一个很有挑战的主题，它有许多错综复杂的问题和陷阱，当开发者在使用类似<strong><span style="color: #339966;">GCD</span></strong>或<strong><span style="color: #339966;">NSOperationQueue</span></strong> API时，很容易遗忘这些问题和陷阱。本文首先介绍一下OS X和iOS中不同的并发编程API，然后深入了解并发编程中开发者需要面临的一些挑战。</p>
-
-<h2><strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong></h2>
-
-<p>在移动和桌面操作系统中，苹果提供了相同的并发编程API。 本文会介绍<strong><span style="color: #339966;">pthread</span></strong>和<strong><span style="color: #339966;">NSThread</span></strong>、<strong><span style="color: #339966;">Grand Central Dispatch(GCD)</span></strong>、<strong><span style="color: #339966;">NSOperationQueue</span></strong>，以及<strong><span style="color: #339966;">NSRunLoop</span></strong>。NSRunLoop列在其中，有点奇怪，因为它并没有被用来实现真正的并发，不过NSRunLoop与并发编程有莫大的关系，值得我们去了解。</p>
-
-<p>由于高层API是基于底层API构建的，所以首先将从底层的API开始介绍，然后逐步介绍高层API，不过在具体编程中，选择API的顺序刚好相反：因为大多数情况下，选择高层的API不仅可以完成底层API能完成的任务，而且能够让并发模型变得简单。</p>
-
-<p>如果你对这里给出的建议(API的选择)上有所顾虑，那么你可以看看本文的相关内容：<strong><span style="color: #339966;">并发编程面临的挑战</span></strong>，以及Peter Steinberger写的关于<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/thread-safe-class-design.html" target="_blank"><span style="color: #339966; text-decoration: underline;">线程安全</span></a></span></span></strong>的文章。</p>
-
-<h3><strong><span style="color: #339966;">2.1、Threads</span></strong></h3>
-
-<p>线程(thread)是组成进程的子单元，操作系统的调度器可以对线程进行单独的调度。实际上，所有的并发编程API都是构建于线程之上的——包括GCD和操作队列(operation queues)。</p>
-
-<p>多线程可以在单核CPU上同时运行(可以理解为同一时间)——操作系统将时间片分配给每一个线程，这样就能够让用户感觉到有多个任务在同时进行。如果CPU是多核的，那么线程就可以真正的以并发方式被执行，所以完成某项操作，需要的总时间更少。</p>
-
-<p>开发者可以通过Instrument中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html" target="_blank"><span style="color: #339966; text-decoration: underline;">CPU strategy view</span></a></span></span></strong>来观察代码被执行时在多核CPU中的调度情况。</p>
-
-<p>需要重点关注的一件事：开发者无法控制代码在什么地方以及什么时候被调度，以及无法控制代码执行多长时间后将被暂停，以便轮到执行别的任务。线程调度是非常强大的一种技术，但是也非常复杂(稍后会看到)。</p>
-
-<p>先把线程调度的复杂情况放一边，开发者可以使用<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/POSIX_Threads" target="_blank"><span style="color: #339966; text-decoration: underline;">POSIX线程</span></a></span></span></strong>API，或者Objective-C中提供的对该API的封装——<strong><span style="color: #339966;">NSThread</span></strong>，来创建自己的线程。下面这个小示例是利用<strong><span style="color: #339966;">pthread</span></strong>来查找在一百万个数字中的最小值和最大值。其中并发执行了4个线程。从该示例复杂的代码中，可以看出为什么我们不希望直接使用pthread。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">struct threadInfo {
-    uint32_t * inputValues;
-    size_t count;
-};
-
-struct threadResult {
-    uint32_t min;
-    uint32_t max;
-};
-
-void * findMinAndMax(void *arg)
-{
-    struct threadInfo const * const info = (struct threadInfo *) arg;
-    uint32_t min = UINT32_MAX;
-    uint32_t max = 0;
-    for (size_t i = 0; i &lt; info&gt;count; ++i) {
-        uint32_t v = info&gt;inputValues[i];
-        min = MIN(min, v);
-        max = MAX(max, v);
-    }
-    free(arg);
-    struct threadResult * const result = (struct threadResult *) malloc(sizeof(*result));
-    result&gt;min = min;
-    result&gt;max = max;
-    return result;
-}
-
-int main(int argc, const char * argv[])
-{
-    size_t const count = 1000000;
-    uint32_t inputValues[count];
-
-    // Fill input values with random numbers:
-    for (size_t i = 0; i &lt; count; ++i) {
-        inputValues[i] = arc4random();
-    }
-
-    // Spawn 4 threads to find the minimum and maximum:
-    size_t const threadCount = 4;
-    pthread_t tid[threadCount];
-    for (size_t i = 0; i &lt; threadCount; ++i) {         struct threadInfo * const info = (struct threadInfo *) malloc(sizeof(*info));         size_t offset = (count / threadCount) * i;         info&gt;inputValues = inputValues + offset;
-        info&gt;count = MIN(count - offset, count / threadCount);
-        int err = pthread_create(tid + i, NULL, &findMinAndMax, info);
-        NSCAssert(err == 0, @"pthread_create() failed: %d", err);
-    }
-    // Wait for the threads to exit:
-    struct threadResult * results[threadCount];
-    for (size_t i = 0; i &lt; threadCount; ++i) {
-        int err = pthread_join(tid[i], (void **) &(results[i]));
-        NSCAssert(err == 0, @"pthread_join() failed: %d", err);
-    }
-    // Find the min and max:
-    uint32_t min = UINT32_MAX;
-    uint32_t max = 0;
-    for (size_t i = 0; i &lt; threadCount; ++i) {         min = MIN(min, results[i]&gt;min);
-        max = MAX(max, results[i]&gt;max);
-        free(results[i]);
-        results[i] = NULL;
-    }
-
-    NSLog(@"min = %u", min);
-    NSLog(@"max = %u", max);
-    return 0;
-}</pre>
-
-
-<p><strong><span style="color: #339966;">NSThread</span></strong>是Objective-C对<strong><span style="color: #339966;">pthread</span></strong>的一个封装。通过封装，在Cocoa环境中，可以让代码看起来更加亲切。例如，开发者可以利用NSThread的一个子类来定义一个线程，在这个子类的中封装了需要运行的代码。针对上面的那个例子，我们可以定义一个这样的NSThread子类：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@interface FindMinMaxThread : NSThread
-@property (nonatomic) NSUInteger min;
-@property (nonatomic) NSUInteger max;
-- (instancetype)initWithNumbers:(NSArray *)numbers;
-@end
-
-@implementation FindMinMaxThread {
-    NSArray *_numbers;
-}
-
-- (instancetype)initWithNumbers:(NSArray *)numbers 
-{
-    self = [super init];
-    if (self) {
-        _numbers = numbers;
-    }
-    return self;
-}
-
-- (void)main
-{
-    NSUInteger min;
-    NSUInteger max;
-    // process the data
-    self.min = min;
-    self.max = max;
-}
-@end</pre>
-
-
-<p>要想启动一个新的线程，需要创建一个线程对象，然后调用它的<strong><span style="color: #339966;">start</span></strong>方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSSet *threads = [NSMutableSet set];
-NSUInteger numberCount = self.numbers.count;
-NSUInteger threadCount = 4;
-for (NSUInteger i = 0; i &lt; threadCount; i++) {
-    NSUInteger offset = (count / threadCount) * i;
-    NSUInteger count = MIN(numberCount - offset, numberCount / threadCount);
-    NSRange range = NSMakeRange(offset, count);
-    NSArray *subset = [self.numbers subarrayWithRange:range];
-    FindMinMaxThread *thread = [[FindMinMaxThread alloc] initWithNumbers:subset];
-    [threads addObject:thread];
-    [thread start];
-}</pre>
-
-
-<p>现在，当4个线程结束的时候，我们检测到线程的isFinished属性。不过最好还是远离上面的代码吧——最主要的原因是，在编程中，直接使用线程（无论是pthread，还是NSThread）都是难以接受的。</p>
-
-<p>使用线程会引发的一个问题就是：在开发者自己的代码，或者系统内部的框架代码中，被激活的线程数量很有可能会成倍的增加——这对于一个大型工程来说，是很常见的。例如，在8核CPU中，你创建了8个线程，然后在这些线程中调用了框架代码，这些代码也创建了同样的线程(其实它并不知道你已经创建好线程了)，这样会很快产生成千上万个线程，最终导致你的程序被终止执行——线程实际上并不是免费的咖啡，每个线程的创建都会消耗一些内容，以及相关的内核资源。</p>
-
-<p>下面，我将介绍两个基于队列的并发编程API：GCD和operation queue。它们通过集中管理一个线程池(被没一个任务协同使用)，来解决上面遇到的问题。</p>
-
-<p><strong style="font-size: 1.17em;"><span style="color: #339966;">2.2、Grand Central Dispatch</span></strong></p>
-
-<p>为了让开发者更加容易的使用设备上的多核CPU，苹果在OS X和iOS 4中引入了Grand Central Dispatch(GCD)。在下一篇文章中会更加详细的介绍GCD：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">low-level concurrency APIs</span></a></span></span></strong>。</p>
-
-<p>通过GCD，开发者不用再直接跟线程打交道了，只需要向队列中添加block代码即可，GCD在后端管理着一个线程池。GCD不仅决定着哪个线程(block)将被执行，它还根据可用的系统资源对线程池中的线程进行管理——这样可以不通过开发者来集中管理线程，缓解大量线程的创建，做到了让开发者远离线程的管理。</p>
-
-<p>默认情况下，GCD公开有5个不同的队列：运行在主线程中的main queue，3个不同优先级的后台队列，以及一个优先级更低的后台队列(用于I/O)。另外，开发者可以创建自定义队列：串行或者并行队列。自定义队列非常强大，在自定义队列中被调度的所有block都将被放入到系统的线程池的一个全局队列中。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png"><img class="alignnone size-full wp-image-1639" alt="gcd-queues@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png" width="1256" height="726" /></a></p>
-
-<p>这里队列中，可以使用不同优先级，这听起来可能非常简单，不过，强烈建议，在大多数情况下使用默认的优先级就可以了。在队列中调度具有不同优先级的任务时，如果这些任务需要访问一些共享的资源，可能会迅速引起不可预料到的行为，这样可能会引起程序的突然停止——运行时，低优先级的任务阻塞了高优先级任务。更多相关内容，在本文的<strong><span style="color: #339966;">优先级反转</span></strong>中会有介绍。</p>
-
-<p>虽然GCD是稍微偏底层的一个API，但是使用起来非常的简单。不过这也容易使开发者忘记并发编程中的许多注意事项和陷阱。读者可以阅读本文后面的：并发编程中面临的挑战，这样可以注意到一些潜在的问题。本期的另外一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Low-level Concurrency API</span></a></span></span></strong>，给出了更加深入的解释，以及一些有价值的提示。</p>
-
-<h3><strong><span style="color: #339966;"> 2.3、Operation Queues</span></strong></h3>
-
-<p>操作队列(operation queue)是基于GCD封装的一个队列模型。GCD提供了更加底层的控制，而操作队列在GCD之上实现了一些方便的功能，这些功能对于开发者来说会更好、更安全。</p>
-
-<p>类NSOperationQueue有两个不同类型的队列：主队列和自定义队列。主队列运行在主线程之上，而自定义队列在后台执行。任何情况下，在这两种队列中运行的任务，都是由NSOperation组成。</p>
-
-<p>定义自己的操作有两种方式：重写main或者start方法，前一种方法非常简单，但是灵活性不如后一种。对于重写main方法来说，开发者不需要管理一些状态属性(例如isExecuting和isFinished)——当main返回的时候，就可以假定操作结束。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
-    - (void)main
-    {
-        // do your work here ...
-    } 
-@end</pre>
-
-
-<p>如果你希望拥有更多的控制权，以及在一个操作中可以执行异步任务，那么就重写start方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
-    - (void)start
-    {
-        self.isExecuting = YES;
-        self.isFinished = NO;
-        // start your work, which calls finished once it&#039;s done ...
-    }
-
-    - (void)finished
-    {
-        self.isExecuting = NO;
-        self.isFinished = YES;
-    }
-@end</pre>
-
-
-<p>注意：这种情况下，需要开发者手动管理操作的状态。 为了让操作队列能够捕获到操作的改变，需要将状态属性以KVO的方式实现。并确保状态改变的时候发送了KVO消息。</p>
-
-<p>为了满足操作队列提供的取消功能，还应该检查isCancelled属性，以判断是否继续运行。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- (void)main
-{
-    while (notDone && !self.isCancelled) {
-        // do your processing
-    }
-}</pre>
-
-
-<p>当开发者定义好操作类之后，就可以很容易的将一个操作添加到队列中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-YourOperation *operation = [[YourOperation alloc] init];
-[queue  addOperation:operation];</pre>
-
-
-<p>另外，开发者也可以将block添加到队列中。这非常的方便，例如，你希望在主队列中调度一个一次性任务：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">[[NSOperationQueue mainQueue] addOperationWithBlock:^{
-    // do something...
-}];</pre>
-
-
-<p>如果重写operation的description方法，可以很容易的标示出在某个队列中当前被调度的所有operation。</p>
-
-<p>除了提供基本的调度操作或block外，操作队列还提供了一些正确使用GCD的功能。例如，可以通过maxConcurrentOperationCount属性来控制一个队列中可以有多少个操作参与并发执行，以及将队列设置为一个串行队列。</p>
-
-<p>另外还有一个方便的功能就是根据队列中operation的优先级对其进行排序，这不同于GCD的队列优先级，它只会影响到一个队列中所有被调度的operation的执行顺序。如果你需要进一步控制operation的执行顺序(除了使用5个标准的优先级)，还可以在operation之间指定依赖，如下：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">[intermediateOperation addDependency:operation1];
-[intermediateOperation addDependency:operation2];
-[finishedOperation addDependency:intermediateOperation];</pre>
-
-
-<p>上面的代码可以确保operation1和operation在intermediateOperation之前执行，也就是说，在finishOperation之前被执行。对于需要明确的执行顺序时，操作依赖是非常强大的一个机制。 它可以让你创建一些操作组，并确保这些操作组在所依赖的操作之前被执行，或者在并发队列中以串行的方式执行operation。</p>
-
-<p>从本质上来看，操作队列的性能比GCD要低，不过，大多数情况下，可以忽略不计，所以操作队列是并发编程的首选API。</p>
-
-<h3><strong><span style="color: #339966;"> 2.4、Run Loops</span></strong></h3>
-
-<p>实际上，Run loop并不是一项并发机制(例如GCD或操作队列)，因为它并不能并行执行任务。不过在主dispatch/operation队列中，run loop直接配合着任务的执行，它提供了让代码异步执行的一种机制。</p>
-
-<p>Run loop比起操作队列或者GCD来说，更加容易使用，因为通过run loop，开发者不必处理并发中的复杂情况，就能异步的执行任务。</p>
-
-<p>一个run loop总是绑定到某个特定的线程中。main run loop是与主线程相关的，在每一个Cocoa和CocoaTouch程序中，这个main run loop起到核心作用——它负责处理UI时间、计时器，以及其它内核相关事件。无论什么时候使用计时器、NSURLConnection或者调用performSelector:withObject:afterDelay:，run loop都将在后台发挥重要作用——异步任务的执行。</p>
-
-<p>无论什么时候，依赖于run loop使用一个方法，都需要记住一点：run loop可以运行在不同的模式中，每种模式都定义了一组事件，供run loop做出响应——这其实是非常聪明的一种做法：在main run loop中临时处理某些任务。</p>
-
-<p>在iOS中非常典型的一个示例就是滚动，在进行滚动时，run loop并不是运行在默认模式中的，因此，run loop此时并不会做出别的响应，例如，滚动之前在调度一个计时器。一旦滚动停止了，run loop会回到默认模式，并执行添加到队列中的相关事件。如果在滚动时，希望计时器能被触发，需要将其在NSRunLoopCommonModes模式下添加到run loop中。</p>
-
-<p>其实，一般情况下都没有必要去配置使用非主线的其他线程的runloop，若有繁重的工作不想卡在主线程还有很多别的方法可以使用。相关内容，Chris写了一篇文章，可以去看看：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/common-background-practices.html" target="_blank"><span style="color: #339966; text-decoration: underline;">common background practices</span></a></span></span></strong>。</p>
-
-<p>如果你真需要在别的线程中添加一个run loop，那么不要忘记在run loop中至少添加一个input source。如果run loop中没有input source，那么每次运行这个run loop，都会立即退出。</p>
-
-<p>关于并发编程中面临的挑战，会在下一篇文章中出现。</p>
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-16</time></p>
 ]]></content>
   </entry>
   
