@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-09-27T17:50:29+08:00</updated>
+  <updated>2013-09-29T00:26:14+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -14,10 +14,404 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Sprite Kit初级教程(1)]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1/"/>
+    <title type="html"><![CDATA[Sprite Kit教程：初学者 2]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"/>
+    <updated>2013-09-29T00:06:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/09/10.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>Sprite Kit的优点和缺点</li>
+<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
+<li>Hello, Sprite Kit!</li>
+<li><a href="#hpxs">横屏显示</a></li>
+<li><a href="#ydgs">移动怪兽</a></li>
+<li><a href="#fspd">发射炮弹</a></li>
+<li>碰撞检测: 概述</li>
+<li>碰撞检测: 实现</li>
+<li>收尾</li>
+<li>何去何从?</li>
+</ul>
+
+
+<h3><a id="hpxs"></a>横屏显示</h3>
+
+<p>首先，在Project Navigator中单击SpriteKitSimpleGame工程以打开target设置，选中SpriteKitSimpleGame target。然后在<code>Deployment Info</code>中，不要勾选<code>Portrait</code>，只选中<code>Landscape</code>和<code>Landscape Right</code>，如下所示：</p>
+
+<p><img src="/images/2013/09/11.png"></p>
+
+<p>编译并运行工程，会看到如下运行画面：</p>
+
+<p><img src="/images/2013/09/12.png"></p>
+
+<p>下面我们试着添加一个忍者(ninja)。</p>
+
+<p>首先，下载此<a href="http://cdn3.raywenderlich.com/wp-content/uploads/2015/01/SpriteKitSimpleGameResources.zip">工程的资源文件</a>，并将其拖拽到Xcode工程中。确保勾选上<code>“Copy items into destination group’s folder (if needed)”</code>和<code>SpriteKitSimpleGame target</code>。</p>
+
+<p>接着，打开<code>MyScene.m</code>，并用下面的内容替换之：</p>
+
+<p>```objc</p>
+
+<h1>import &ldquo;MyScene.h&rdquo;</h1>
+
+<p>// 1
+@interface MyScene ()
+@property (nonatomic) SKSpriteNode * player;
+@end</p>
+
+<p>@implementation MyScene</p>
+
+<p>&ndash;(id)initWithSize:(CGSize)size {</p>
+
+<pre><code>if (self = [super initWithSize:size]) {
+
+    // 2
+    NSLog(@"Size: %@", NSStringFromCGSize(size));
+
+    // 3
+    self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+
+    // 4
+    self.player = [SKSpriteNode spriteNodeWithImageNamed:@"player"];
+    self.player.position = CGPointMake(100, 100);
+    [self addChild:self.player];
+
+}
+return self;
+</code></pre>
+
+<p>}</p>
+
+<p>@end
+```</p>
+
+<p>我们来看看上面的代码。</p>
+
+<ol>
+<li>为了给player(例如忍者)声明一个私有变量，在这里创建了一个私有的interface，之后可以把这个私有变量添加到场景中。</li>
+<li>在这里打印出了场景的size，至于什么原因很快你就会看到了。</li>
+<li>在Sprite Kit中设置一个场景的背景色非常简单——只需要设置<code>backgroundColor</code>属性，在这里将其设置位白色。</li>
+<li>在Sprite Kit场景中添加一个精灵同样非常简单，只需要使用<code>spriteNodeWithImageNamed</code>方法，并把一副图片的名称传递进去就可以创建一个精灵。接着设置一下精灵的位置，然后调用<code>addChild</code>方法将该精灵添加到场景中。在代码中将忍者的位置设置为<code>(100, 100)</code>，该位置是从屏幕的左下角到右上角计算的。</li>
+</ol>
+
+
+<p>编译并运行，看看效果如何…</p>
+
+<p><img src="/images/2013/09/13.png"></p>
+
+<p>呀！屏幕是白色的，并没有看到忍者。这是为什么呢？你可能在想设计之初就是这样的，实际上这里有一个问题。</p>
+
+<p>如果你观察一下控制台输出的内容，会看到如下内容</p>
+
+<p><code>objc
+SpriteKitSimpleGame[3139:907] Size: {320, 568}
+</code>
+可能你会认为场景的宽度是320，高度则是568——实际上刚好相反!</p>
+
+<p>我们来看看具体发生了什么：定位到<code>ViewController.m</code>的<code>viewDidLoad</code>方法：</p>
+
+<p>```objc
+&ndash; (void)viewDidLoad
+{</p>
+
+<pre><code>[super viewDidLoad];
+
+// Configure the view.
+SKView * skView = (SKView *)self.view;
+skView.showsFPS = YES;
+skView.showsNodeCount = YES;
+
+// Create and configure the scene.
+SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
+scene.scaleMode = SKSceneScaleModeAspectFill;
+
+// Present the scene.
+[skView presentScene:scene];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，在这之前view已经被添加到view层次结构中了，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
+
+<p><code>提醒</code>：要想了解更多相关内容，请看由Rob Mayoff带来的<a href="http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame">最佳解释</a>。</p>
+
+<p>解决方法就是将开启场景代码的过程再靠后一点。用下面的代码替换<code>viewDidLoad</code>:
+```objc
+&ndash; (void)viewWillLayoutSubviews
+{</p>
+
+<pre><code>[super viewWillLayoutSubviews];
+
+// Configure the view.
+SKView * skView = (SKView *)self.view;
+if (!skView.scene) {
+  skView.showsFPS = YES;
+  skView.showsNodeCount = YES;
+
+  // Create and configure the scene.
+  SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
+  scene.scaleMode = SKSceneScaleModeAspectFill;
+
+  // Present the scene.
+  [skView presentScene:scene];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>编译并运行程序，可以看到，忍者已经显示在屏幕中了！</p>
+
+<p><img src="/images/2013/09/14.png"></p>
+
+<p>如上图所示，可以看到坐标系已经正确了，如果想要把忍者的位置设置为其中间靠左，那么在<code>MyScene.m</code>中用下面的代码来替换设置忍者位置相关的代码：</p>
+
+<p>```objc</p>
+
+<p>self.player.position = CGPointMake(self.player.size.width/2, self.frame.size.height/2);</p>
+
+<p>```</p>
+
+<h3><a id="ydgs"></a>移动怪兽</h3>
+
+<p>接下来，我们希望在场景中添加一些怪兽，让忍者进行攻击。为了让游戏更有趣一点，希望怪兽能够移动——否则没有太大的挑战！OK，我们就在屏幕的右边，离屏的方式创建怪兽，并给怪兽设置一个动作：告诉它们往左边移动。</p>
+
+<p>将下面这个方法添加到<code>MyScene.m</code>中：</p>
+
+<p>```objc
+&ndash; (void)addMonster {</p>
+
+<pre><code>// Create sprite
+SKSpriteNode * monster = [SKSpriteNode spriteNodeWithImageNamed:@"monster"];
+
+// Determine where to spawn the monster along the Y axis
+int minY = monster.size.height / 2;
+int maxY = self.frame.size.height - monster.size.height / 2;
+int rangeY = maxY - minY;
+int actualY = (arc4random() % rangeY) + minY;
+
+// Create the monster slightly off-screen along the right edge,
+// and along a random position along the Y axis as calculated above
+monster.position = CGPointMake(self.frame.size.width + monster.size.width/2, actualY);
+[self addChild:monster];
+
+// Determine speed of the monster
+int minDuration = 2.0;
+int maxDuration = 4.0;
+int rangeDuration = maxDuration - minDuration;
+int actualDuration = (arc4random() % rangeDuration) + minDuration;
+
+// Create the actions
+SKAction * actionMove = [SKAction moveTo:CGPointMake(-monster.size.width/2, actualY) duration:actualDuration];
+SKAction * actionMoveDone = [SKAction removeFromParent];
+[monster runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>在上面，我尽量让代码看起来容易理解。首先是通过一个简单的计算，确定怪兽出现的位置，并将该位置设置给怪兽，然后将其添加到场景中。</p>
+
+<p>接着是添加动作(actions)。跟Cocos2D一样，Sprite Kit同样提供了很多方便的内置动作，例如移动动作、旋转动作、淡入淡出动作、动画动作等。在这里我们只需要在怪兽上使用3中动作即可：</p>
+
+<ul>
+<li><code>moveTo:duration:</code>使用这个动作可以把怪兽从屏幕外边移动到左边。移动过程中，我们可以指定移动持续的时间，上面的代码中，指定为2-4秒之间的一个随机数。</li>
+<li><code>removeFromParent:</code>在Sprite Kit中，可以使用该方法，方便的将某个node从parent中移除，能有效的从场景中删除某个对象。此处，将不再需要显示的怪兽从场景中移除。这个功能非常的重要，否则当有源源不断的怪兽出现在场景中时，会耗尽设备的所有资源。</li>
+<li><code>sequence:</code>sequence动作可以一次性就把一系列动作串联起来按照一定顺序执行。通过该方法我们就能让<code>moveTo:</code>方法先执行，当完成之后，在执行<code>removeFromParent:</code>动作。</li>
+</ul>
+
+
+<p>最后，我们需要做的事情就是调用上面这个方法<code>addMonster</code>，以实际的创建出怪兽！为了更加好玩，下面我们来让怪兽随着时间持续的出现在屏幕中。</p>
+
+<p>在Sprite Kit中，并不能像Cocos2D一样，可以配置每隔X秒就回调一下update方法。同样也不支持将从上次更新到目前为止的时间差传入方法中。(非常令人吃惊！)。</p>
+
+<p>不过，我们可以通过一小段代码来仿造这种行为。首先在<code>MyScene.m</code>的private interface中添加如下属性：</p>
+
+<p><code>objc
+@property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
+@property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
+</code>
+通过<code>lastSpawnTimeInterval</code>可以记录着最近出现怪兽时的时间，而<code>lastUpdateTimeInterval</code>可以记录着上次更新时的时间。</p>
+
+<p>接着，我们写一个方法，该方法在画面每一帧更新的时候都会被调用。记住，该方法不会被自动调用——需要另外写一个方法来调用它：</p>
+
+<p>```objc
+&ndash; (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {</p>
+
+<pre><code>self.lastSpawnTimeInterval += timeSinceLast;
+if (self.lastSpawnTimeInterval &gt; 1) {
+    self.lastSpawnTimeInterval = 0;
+    [self addMonster];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码中简单的将上次更新(update调用)的时间追加到<code>self.lastSpawnTimeInterval</code>中。一旦该时间大于1秒，就在场景中新增一个怪兽，并将<code>lastSpawnTimeInterval</code>重置。</p>
+
+<p>最后，添加如下方法来调用上面的方法：</p>
+
+<p>```objc
+&ndash; (void)update:(NSTimeInterval)currentTime {</p>
+
+<pre><code>// Handle time delta.
+// If we drop below 60fps, we still want everything to move the same distance.
+CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
+self.lastUpdateTimeInterval = currentTime;
+if (timeSinceLast &gt; 1) { // more than a second since last update
+    timeSinceLast = 1.0 / 60.0;
+    self.lastUpdateTimeInterval = currentTime;
+}
+
+[self updateWithTimeSinceLastUpdate:timeSinceLast];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Sprite Kit在显示每帧时都会调用上面的<code>update:</code>方法。</p>
+
+<p>上面的代码其实是来自苹果提供的Adventure示例中。该方法会传入当前的时间，在其中，会做一些计算，以确定出上一帧更新的时间。注意，在代码中做了一些合理性的检查，以避免从上一帧更新到现在已经过去了大量时间，并且将间隔重置为1/60秒，避免出现奇怪的行为。</p>
+
+<p>现在编译并运行程序，可以看到许多怪兽从左边移动到屏幕右边并消失。</p>
+
+<p><img src="/images/2013/09/15.png"></p>
+
+<h3><a id="fspd"></a>发射炮弹</h3>
+
+<p>现在我们开始给忍者添加一些动作，首先从发射炮弹开始！实际上有多种方法来实现炮弹的发射，不过，在这里要实现的方法时当用户tap屏幕时，从忍者的方位到tap的方位发射一颗炮弹。</p>
+
+<p>由于本文是针对初级开发者，所以在这里我使用<code>moveTo:</code>动作来实现，不过这需要做一点点的数学运算——因为<code>moveTo:</code>方法需要指定炮弹的目的地，但是又不能直接使用touch point(因为touch point仅仅代表需要发射的方向)。实际上我们需要让炮弹穿过touch point，直到炮弹在屏幕中消失。</p>
+
+<p>如下图，演示了上面的相关内容：</p>
+
+<p><img src="/images/2013/09/16.jpg"></p>
+
+<p>如图所示，我们可以通过origin point到touch point得到一个小的三角形。我们要做的就是根据这个小三角形的比例创建出一个大的三角形——而你知道你想要的一个端点是离开屏幕的地方。</p>
+
+<p>为了做这个计算，如果有一些基本的矢量方法可供调用(例如矢量的加减法)，那么会非常有帮助，但很不幸的时Sprite Kit并没有提供相关方法，所以，我们必须自己实现。</p>
+
+<p>不过很幸运的时这非常容易实现。将下面的方法添加到文件的顶部(implementation之前)：</p>
+
+<p>```objc
+static inline CGPoint rwAdd(CGPoint a, CGPoint b) {</p>
+
+<pre><code>return CGPointMake(a.x + b.x, a.y + b.y);
+</code></pre>
+
+<p>}</p>
+
+<p>static inline CGPoint rwSub(CGPoint a, CGPoint b) {</p>
+
+<pre><code>return CGPointMake(a.x - b.x, a.y - b.y);
+</code></pre>
+
+<p>}</p>
+
+<p>static inline CGPoint rwMult(CGPoint a, float b) {</p>
+
+<pre><code>return CGPointMake(a.x * b, a.y * b);
+</code></pre>
+
+<p>}</p>
+
+<p>static inline float rwLength(CGPoint a) {</p>
+
+<pre><code>return sqrtf(a.x * a.x + a.y * a.y);
+</code></pre>
+
+<p>}</p>
+
+<p>// Makes a vector have a length of 1
+static inline CGPoint rwNormalize(CGPoint a) {</p>
+
+<pre><code>float length = rwLength(a);
+return CGPointMake(a.x / length, a.y / length);
+</code></pre>
+
+<p>}
+```
+上面实现了一些标准的矢量函数。如果你看得不是太明白，请看这里关于<a href="http://www.mathsisfun.com/algebra/vectors.html">矢量方法的解释</a>。</p>
+
+<p>接着，在文件中添加一个新的方法：</p>
+
+<p>```objc
+&ndash;(void)touchesEnded:(NSSet <em>)touches withEvent:(UIEvent </em>)event {</p>
+
+<pre><code>// 1 - Choose one of the touches to work with
+UITouch * touch = [touches anyObject];
+CGPoint location = [touch locationInNode:self];
+
+// 2 - Set up initial location of projectile
+SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
+projectile.position = self.player.position;
+
+// 3- Determine offset of location to projectile
+CGPoint offset = rwSub(location, projectile.position);
+
+// 4 - Bail out if you are shooting down or backwards
+if (offset.x &lt;= 0) return;
+
+// 5 - OK to add now - we've double checked position
+[self addChild:projectile];
+
+// 6 - Get the direction of where to shoot
+CGPoint direction = rwNormalize(offset);
+
+// 7 - Make it shoot far enough to be guaranteed off screen
+CGPoint shootAmount = rwMult(direction, 1000);
+
+// 8 - Add the shoot amount to the current position       
+CGPoint realDest = rwAdd(shootAmount, projectile.position);
+
+// 9 - Create the actions
+float velocity = 480.0/1.0;
+float realMoveDuration = self.size.width / velocity;
+SKAction * actionMove = [SKAction moveTo:realDest duration:realMoveDuration];
+SKAction * actionMoveDone = [SKAction removeFromParent];
+[projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码中做了很多事情，我们来详细看看。</p>
+
+<ol>
+<li>SpriteKit为我们做了很棒的一件事情就是它提供了一个UITouch的category，该category中有<code>locationInNode:</code>和<code>previousLocationInNode:</code>方法。这两个方法可以帮助我们定位到在SKNode内部坐标系中touch的坐标位置。这样一来，我们就可以寻得到在场景坐标系中touch的位置。</li>
+<li>然后创建一个炮弹，并将其放置到忍者的地方，以当做其开始位置。注意，现在还没有将其添加到场景中，因为还需要先做一个合理性的检查——该游戏不允许忍者向后发射。</li>
+<li>接着利用touch位置减去炮弹的当前位置，这样就能获得一个从当前位置到touch位置的矢量。</li>
+<li>如果X值小于0，就意味着忍者将要向后发射，由于在这里的游戏中是不允许的(真实中的忍者是不回头的！)，所以就return。</li>
+<li>否则，将可以将炮弹添加到场景中。</li>
+<li>调用方法<code>rwNormalize</code>，将offset转换为一个单位矢量(长度为1)。这样做可以让在相同方向上，根据确定的长度来构建一个矢量更加容易（因为1 * length = length）。</li>
+<li>在单位矢量的方向上乘以1000。为什么是1000呢？因为着肯定足够超过屏幕边缘了 :]</li>
+<li>将上一步中计算得到的位置与炮弹的位置相加，以获得炮弹最终结束的位置。</li>
+<li>最后，参照之前构建怪物时的方法，创建<code>moveTo:</code>和<code>removeFromParent:</code>两个actions。</li>
+</ol>
+
+
+<p>编译并允许程序，现在忍者可以发射炮弹了！</p>
+
+<p><img src="/images/2013/09/17.png"></p>
+
+<p>……Sprite Kit初级教程(2)结束……</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：初学者 1 ]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"/>
     <updated>2013-09-26T11:45:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/26/113-ios-7-spritekit-tutorial-for-beginners-1</id>
+    <id>http://BeyondVincent.github.io/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1</id>
     <content type="html"><![CDATA[<p><img src="/images/2013/09/6.png"></p>
 
 <!--more-->
@@ -428,149 +822,6 @@ Although this provides an overview of run loops, Apple provides several in-depth
 <p>对于iOS开发者来说，理解iOS网络框架中的各层，以及应用程序如何与run loop交互是非常重要的。一个优秀的网络架构层会给应用程序提供难以置信的灵活度。如果网络架构层的设计非常糟糕，那么这是很难获得成功和扩展能力的。</p>
 
 <p>本章预览了一下各个网络APIs，并做了一些比较。在这里只是简单的介绍了一下，在后续章节中，会深入讨论。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(2)]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/17/105/"/>
-    <updated>2013-07-17T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/17/105</id>
-    <content type="html"><![CDATA[<p>本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">破船</span></strong></a></span>译自<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span></strong>介绍了OC中并发编程的相关API，本文我们接着来看看并发编程中面临的一些挑战。</p>
-
-<!--more-->
-
-
-<h2><strong><span style="color: #339966;">目录</span></strong></h2>
-
-<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
-<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
-<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
-<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
-<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
-<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
-<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
-<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
-<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
-<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
-<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
-<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
-<strong><span style="color: #339966;"> 4、小结</span></strong></p>
-
-<h3><strong><span style="color: #339966;">正文</span></strong></h3>
-
-<h2><strong><span style="color: #339966;">1和</span></strong><strong><span style="color: #339966;">2两部分内容请看</span></strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span>。****</h2>
-
-<h2><span style="color: #339966;"><strong>3、并发编程中面临的挑战</strong></span></h2>
-
-<p>使用并发编程会带来许多陷进。尽管开发者做得足够到位了，还是难以观察并行执行中相互作用的多任务的不同状态。问题往往发生在一些不确定性（不可预见性）的地方，在调试相关并发代码时会感觉到很无助。</p>
-
-<p>关于并发编程的不可预见性有一个非常典型的例子：在1995年，NASA(美国宇航局)发送了火星探测器，但是当探测器成功着陆的时候，任务嘎然而止，火星探测器莫名其妙的不停重启——在计算机领域内，遇到的这中现象被定为为优先级反转，也就是说低优先级的线程一直阻塞着高优先级的线程。稍后我们会看到更多相关介绍。通过该示例，可以告诉我们即使拥有丰富的资源和大量优秀工程师，但是也会遭遇使用并发编程带来的陷阱。</p>
-
-<h3><span style="color: #339966;">3.1、资源共享</span></h3>
-
-<p>并发编程中许多问题的根源就是在多线程中访问共享资源。资源可以是一个属性、一个对象，通用的内存、网络设备和文件等等。在多线程中任意共享的资源都有一个潜在的冲突，开发者必须防止相关冲突的发生。</p>
-
-<p>为了演示冲突问题，我们来看一个关于资源的简单示例：利用一个整型值作为计数器。在程序运行过程中，有两个并行线程A和B，这两个线程都尝试着同时增加计数器的值。问题来了，通过C或OC写的代码(增加计数器的值)不仅仅是一条指令，而是包括好多指令——要想增加计数器的值，需要从内存中读取出当前值，然后再增加计数器的值，最后还需要就爱那个这个增加的值写回内存中。</p>
-
-<p>我们可以试着想一下，如果两个线程同时做上面涉及到的操作，会发生什么问题。例如，线程A和B都从内存中读取出了计数器的值，假设为17，然后线程A将计数器的值加1，并将结果18写回到内存中。同时，线程B也将计数器的值加1，并将结果18写回到内存中。实际上，此时计数器的值已经被破坏掉了——因为计数器的值17被加1了两次，应该为19，但是内存中的值为18。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png"><img class="alignnone size-full wp-image-1651" alt="race-condition@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png" width="1148" height="638" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>这个问题成为资源竞争，或者叫做<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Race_conditions#Software" target="_blank"><span style="color: #339966; text-decoration: underline;">race condition</span></a></span></span></strong>，在多线程里面访问一个共享的资源，如果没有一种机制来确保线程A结束访问一个共享资源之前，线程B就开始访问该共享资源，那么资源竞争的问题总是会发生。试想一下，如果如果程序在内存中访问的资源不是一个简单的整型，而是一个复杂的数据结构，可能会发生这样的现象：当第一个线程正在读写这个数据结构时，第二个线程也来读这个数据结构，那么获取到的数据可能是新旧参半。为了防止出现这样的问题，在多线程访问共享资源时，需要一种互斥的机制。</p>
-
-<p>在实际的开发中，情况甚至要比上面介绍的复杂，因为现代CPU为了对代码运行达到最优化，对改变从内存中读写数据的顺序（乱序执行）。</p>
-
-<h3><span style="color: #339966;"> 3.2、互斥</span></h3>
-
-<p><span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Mutex" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥</span></a></span></strong></span>访问的意思就是同一时刻，只允许一个线程访问某个资源。为了保证这一点，每个希望访问共享资源的线程，首先需要获得一个共享资源的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Lock_%28computer_science%29" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥锁</span></a></span></span></strong>，一旦某个线程对资源完成了读写操作，就释放掉这个互斥锁，这样别的线程就有机会访问该共享资源了。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png"><img class="alignnone size-full wp-image-1652" alt="locking@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png" width="1248" height="766" /></a></p>
-
-<p>除了确保互斥锁的访问，还需要解决代码无序执行所带来的问题。如果不能确保CPU访问内存的顺序跟编程时的代码指令一样，那么仅仅依靠互斥锁的访问是不够的。为了解决由CPU的优化策略引起的代码无序执行，需要引入内存屏障(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Memory_barrier" target="_blank"><span style="color: #339966; text-decoration: underline;">memory barrier</span></a></span></span></strong>)。通过设置内存屏障，来确保无序执行时能够正确跨越设置的屏障。</p>
-
-<p>当然，互斥锁的实现是需要自由的竞争条件。这实际上是非常重要的一个保证，并且需要在现代CPU上使用特殊的指令。更多关于原子操作(atomic operation)，请阅读Daniel写的文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术</span></a></span></span></strong>。</p>
-
-<p>从语言层面来说，在Objective-C中将属性以atomic的形式来声明，就能支持互斥锁了。实际上，默认情况下，属性是atomic的。将一个属性声明为atomic表示每次访问该属性都会进行加锁和解锁操作。虽然最把稳的做法就是将所有的属性都声明为atomic，但是这也会付出一定的代价。</p>
-
-<p>获取资源上的锁会引发一定的性能代价。获取和释放锁需要自由的竞争条件(race-condition free)，这在多核系统中是很重要的。另外，在获取锁的时候，线程有时候需要等待——因为其它的线程已经获得了资源的锁。这种情况下，线程会进入休眠状态，当其它线程释放掉相关资源的锁时，休眠的线程会得到通知。其实所有这些相关操作都是非常昂贵且复杂的。</p>
-
-<p>这有一些不同类型的锁。当没有竞争时，有些锁是很廉价的(cheap)，但是在竞争情况下，性能就会打折扣。同等条件下，另外一些锁则比较昂贵(expensive)，但是在竞争情况下，会表现更好(锁的竞争是这样产生的：当一个或者多个线程尝试获取一个已经被别的线程获取了的锁)。</p>
-
-<p>在这里有一个东西需要进行权衡：获取和释放锁所带来的开销。开发者需要确保代码中有获取锁和释放锁的语句。同时，如果获取锁之后，要执行一大段代码，这将带来风险：其它线程可能因为资源的竞争而无法工作（需要释放掉相关的锁才行）。</p>
-
-<p>我们经常能看到并行运行的代码，但实际上由于共享资源中配置了相关的锁，所以有时候只有一个线程是出于激活状态的。要想预测一下代码在多核上的调度情况，有时候也显得很重要。我们可以使用Instrument的CPU strategy view来检查是否有效的利用了CPU的可用核数，进而得出更好的想法，以此来优化代码。</p>
-
-<h3><span style="color: #339966;"> 3.3、死锁</span></h3>
-
-<p>互斥解决了资源竞争的问题，但同时这也引入了一个新的问题：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Deadlock" target="_blank"><span style="color: #339966; text-decoration: underline;">死锁</span></a></span></span></strong>。当多个线程在相互等待着对方的结束时，就会发生死锁，这是程序可能会被卡住。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png"><img class="alignnone size-full wp-image-1653" alt="dead-lock@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png" width="906" height="717" /></a></p>
-
-<p>看看下面的代码——交换两个变量的值：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void swap(A, B)
-{
-    lock(lockA);
-    lock(lockB);
-    int a = A;
-    int b = B;
-    A = b;
-    B = a;
-    unlock(lockB);
-    unlock(lockA);
-}</pre>
-
-
-<p>大多数时候，这能够正常运行。但是当两个线程同时调用上面这个方法呢——使用两个相反的值：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">swap(X, Y); // thread 1
-swap(Y, X); // thread 2</pre>
-
-
-<p>此时程序可能会由于死锁而被终止。线程1获得了X的一个锁，线程2获得了Y的一个锁。 接着它们会同时等待另外一把锁，但是永远都不会获得。</p>
-
-<p>记住：在线程之间共享更多的资源，会使用更多的锁，同时也会增加死锁的概率。这也是为什么我们需要尽量减少线程间资源共享，并确保共享的资源尽量简单的原因之一。建议阅读以下<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发编程API</span></a></span></span></strong>中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#async" target="_blank"><span style="color: #339966; text-decoration: underline;">doing things asynchronously</span></a></span></span></strong>。</p>
-
-<p>&nbsp;</p>
-
-<h3><span style="color: #339966;">3.4、饥饿</span></h3>
-
-<p>当你认为已经足够了解并发编程面临的陷阱 时，拐角处又出现了新的问题。锁定的共享资源会引起读写问题。大多数情况下，限制资源一次只能有一个线程进行访问，这是非常浪费的，比如一个读取锁只允许读，而不对资源进行写操作，这种情况下，同时可能会有另外一个线程等着着获取一个写锁。</p>
-
-<p>为了解决这个问题，更好的方法不是简单使用读/写锁，例如给定一个<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock" target="_blank"><span style="color: #339966; text-decoration: underline;">writer preference</span></a></span></span></strong>，或者使用<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Read-copy-update" target="_blank"><span style="color: #339966; text-decoration: underline;">read-copy-update</span></a></span></span></strong>算法。Daniel在<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#multiple-readers-single-writer" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术文章</span></a></span></span></strong>中有相关介绍。</p>
-
-<h3><span style="color: #339966;"> 3.5、优先级反转</span></h3>
-
-<p>本节开头介绍了美国宇航局发射的火星探测器在火星上遇到的并发问题。现在我们就来看看为什么那个火星探测器会失败，以及为什么有时候我们的程序也会遇到相同的问题——该死的优先级反转。</p>
-
-<p>优先级反转是指程序在运行时低优先级的任务阻塞了高优先级的任务，有效的反转了任务的优先级。由于GCD提供了后台运行队列(拥有不同的优先级)，包括I/O队列，所以通过GCD我们可以很好的来了解一下优先级反转的可能性。</p>
-
-<p>高优先级和低优先级的任务之间在共享一个资源时，就可能发生优先级反转。当低优先级的任务获得了共享资源的锁时，该任务应该迅速完成，并释放掉锁，然后让高优先级的任务在没有明显的延时下继续执行。然而当低优先级阻塞着高优先级期间(低优先级获得的时间又比较少)，如果有一个中优先级的任务(该任务不需要那个共享资源)，那么可能会抢占低优先级任务，而被执行——因为此时高优先级任务是被阻塞的，所以中优先级任务是目前所有可运行任务中优先级最高的。此时，中优先级任务就会阻塞着低优先级任务，导致低优先级任务不能释放掉锁，也就会引起高优先级任务一直在等待锁的释放。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png"><img class="alignnone size-full wp-image-1654" alt="priority-inversion@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png" width="1018" height="700" /></a></p>
-
-<p>在我们的实际代码中，可能不会像火星探测器那样，遇到优先级反转时，不同的重启。</p>
-
-<p>解决这个问题的方法，通常就是不要使用不同的优先级——将高优先级的代码和低优先级的代码修改为相同的优先级。当使用GCD时，总是使用默认的优先级队列。如果使用不同的优先级，就可能会引发事故。</p>
-
-<p>虽然有些文章上说，在不同的队列中使用不同的优先级，这听起来不错，但是这回增加并发编程的复杂度和不可预见性。如果编程中，在高优先级任务中突然没有理由的卡住了，可能你会想起本文，以及称为优先级反转的问题，甚至还会想起美国宇航局的工程师也遇到这样的问题。</p>
-
-<h2><span style="color: #339966;">4、小结</span></h2>
-
-<p>希望通过本文你能够了解到并发编程带来的复杂性和相关问题。并发编程中，看起来，无论是多么简单的API，由此产生的问题会变得非常的难以观测，并且要想调试这类问题，往往都是比较困难的。</p>
-
-<p>另外，并发实际上是一个非常棒的功能——它充分利用了现代多核CPU的强大计算能力。在开发中，关键的一点就是尽量让并发模型简单，这样可以限制锁的数量。</p>
-
-<p>我们建议采纳的安全模式是这样的：从主线程中提取出使用到的数据，并利用一个操作队列在后台处理相关的数据，然后将后台处理的结果反馈到主队列中。使用这种方式，开发者不需要自己负责任何的锁，这也就减少了犯错误的概率。</p>
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-17</time></p>
 ]]></content>
   </entry>
   
