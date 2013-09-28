@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Sprite Kit初级教程(1)"
+title: "Sprite Kit教程：初学者 1 "
 date: 2013-09-26 11:45
 comments: true
 categories: iOS翻译
