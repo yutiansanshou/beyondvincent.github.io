@@ -351,8 +351,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
 8. 将上一步中计算得到的位置与炮弹的位置相加，以获得炮弹最终结束的位置。
 9. 最后，参照之前构建怪物时的方法，创建`moveTo:`和`removeFromParent:`两个actions。
 
-编译并允许程序，现在忍者可以发射炮弹了！
+编译并运行程序，现在忍者可以发射炮弹了！
 
 {% img /images/2013/09/17.png %}
 
-……Sprite Kit初级教程(2)结束……
+……Sprite Kit教程：初学者 2 结束……
