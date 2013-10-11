@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-09-29T00:26:14+08:00</updated>
+  <updated>2013-10-12T01:35:59+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,365 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：初学者 3]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"/>
+    <updated>2013-10-12T00:06:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/09/18.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>Sprite Kit的优点和缺点</li>
+<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
+<li>Hello, Sprite Kit!</li>
+<li>横屏显示</li>
+<li>移动怪兽</li>
+<li>发射炮弹</li>
+<li><a href="#pzjcgs">碰撞检测和物理特性: 概述</a></li>
+<li><a href="#pzjcsx">碰撞检测和物理特性: 实现</a></li>
+<li><a href="#sw">收尾</a></li>
+<li><a href="#hqhc">何去何从?</a></li>
+</ul>
+
+
+<h3><a id="pzjcgs"></a>碰撞检测和物理特性: 概述</h3>
+
+<p>至此我们已经可以让炮弹任意的发射了——现在我们要让忍者利用炮弹来消灭这些怪物。下面就添加一些代码来给炮弹与怪物相交做检测。</p>
+
+<p>Sprite Kit内置了一个物理引擎，这非常的棒！该物理引擎不仅可以模拟现实运动，还能进行碰撞检测。</p>
+
+<p>下面我们就在游戏中使用Sprite Kit的物理引擎来检测炮弹与怪物的碰撞。首先，我们来看看需要做些神马事情：</p>
+
+<ul>
+<li><code>物理世界的配置</code>。物理世界是一个模拟的空间，用来进行物理计算。默认情况下，在场景(scene)中已经创建好了一个，我们可以对其做一些属性配置，例如重力感应。</li>
+<li><code>为精灵(sprite)创建对应的物体(physics bodies)</code>。在Sprite Kit中，为了碰撞检测，我们可以为每个精灵创建一个相应的形状，并设置一些属性,这就称为<code>物体(physics body)</code>。注意：图文的形状不一定跟精灵的外形一模一样。一般情况，这个形状都是简单的、大概的(而不用精确到像素级别)——毕竟这已经足以够大多数游戏使用了。</li>
+<li><code>将精灵分类</code>。在物体(physics body)上可以设置的一个属性是<code>category</code>，该属性是一个位掩码(bitmask)。通过该属性可以将精灵分类。在本文的游戏中，有两个类别——一类是炮弹，另一类则是怪物。设置之后，当两种物体相互碰撞时，就可以很容易的通过类别对精灵做出相应的处理。</li>
+<li><code>设置一个contact(触点) delegate</code>。还记得上面提到的物理世界吗？我们可以在物理世界上设置一个<code>contact delegate</code>，通过该delegate，当两个物体碰撞时，可以收到通知。收到通知后，我们可以通过代码检查物体的类别，如果是怪物和炮弹，那么就做出相应的动作！</li>
+</ul>
+
+
+<p>上面大致介绍了一下游戏策略，下面就来看看如何实现！</p>
+
+<h3><a id="pzjcsx"></a>碰撞检测和物理特性: 实现</h3>
+
+<p>首先在<code>MyScene.m</code>文件顶部添加如下两个常量：</p>
+
+<p>```objc</p>
+
+<p>static const uint32_t projectileCategory     =  0x1 &lt;&lt; 0;
+static const uint32_t monsterCategory        =  0x1 &lt;&lt; 1;</p>
+
+<p>```</p>
+
+<p>上面设置了两个类别，记住需要用位(bit)的方式表达——一个用于炮弹，另一个则是怪物。</p>
+
+<p><code>注意:</code>看到上面的语法你可能感到奇怪。在Sprite Kit中category是一个32位整数，当做一个位掩码(bitmask)。这种表达方法比较奇特：在一个32位整数中的每一位表示一种类别(因此最多也就只能有32类)。在这里，第一位表示炮弹，下一位表示怪兽。</p>
+
+<p>接着，在<code>initWithSize</code>中，将下面的代码添加到位置：添加player到场景涉及代码的后面。</p>
+
+<p><code>objc
+self.physicsWorld.gravity = CGVectorMake(0,0);
+self.physicsWorld.contactDelegate = self;
+</code>
+上面的代码将物理世界的重力感应设置为0，并将场景设置位物理世界的代理（当有两个物体碰撞时，会受到通知）。</p>
+
+<p>在<code>addMonster</code>方法中，将如下代码添加创建怪兽相关代码后面：</p>
+
+<p><code>objc
+monster.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:monster.size]; // 1
+monster.physicsBody.dynamic = YES; // 2
+monster.physicsBody.categoryBitMask = monsterCategory; // 3
+monster.physicsBody.contactTestBitMask = projectileCategory; // 4
+monster.physicsBody.collisionBitMask = 0; // 5
+</code>
+来看看上面代码意思：</p>
+
+<ol>
+<li>为怪兽创建一个对应的物体。此处，物体被定义为一个与怪兽相同尺寸的矩形(这样与怪兽形状比较接近)。</li>
+<li>将怪兽设置位<code>dynamic</code>。这意味着物理引擎将不再控制这个怪兽的运动——我们自己已经写好相关运动的代码了。</li>
+<li>将categoryBitMask设置为之前定义好的<code>monsterCategory</code>。</li>
+<li><code>contactTestBitMask</code>表示与什么类型对象碰撞时，应该通知contact代理。在这里选择炮弹类型。</li>
+<li><code>collisionBitMask</code>表示物理引擎需要处理的碰撞事件。在此处我们不希望炮弹和怪物被相互弹开——所以再次将其设置为0。</li>
+</ol>
+
+
+<p>接着在<code>touchesEnded:withEvent:</code>方法中设置炮弹位置的代码后面添加如下代码。</p>
+
+<p>```objc</p>
+
+<p>projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+projectile.physicsBody.dynamic = YES;
+projectile.physicsBody.categoryBitMask = projectileCategory;
+projectile.physicsBody.contactTestBitMask = monsterCategory;
+projectile.physicsBody.collisionBitMask = 0;
+projectile.physicsBody.usesPreciseCollisionDetection = YES;</p>
+
+<p>```</p>
+
+<p>在上面的代码中跟之前的类似，只不过有些不同，我们来看看：
+1. 为了更好的效果，炮弹的形状是圆形的。
+2. <code>usesPreciseCollisionDetection</code>属性设置为YES。这对于快速移动的物体非常重要(例如炮弹)，如果不这样设置的话，有可能快速移动的两个物体会直接相互穿过去，而不会检测到碰撞的发生。</p>
+
+<p>接着，添加如下方法，当炮弹与怪物发生碰撞时，会被调用。注意这个方法是不会被自动调用，稍后会看到我们如何调用它。</p>
+
+<p>```objc
+&ndash; (void)projectile:(SKSpriteNode <em>)projectile didCollideWithMonster:(SKSpriteNode </em>)monster {</p>
+
+<pre><code>NSLog(@"Hit");
+[projectile removeFromParent];
+[monster removeFromParent];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>当怪物和炮弹发生碰撞，上面的代码会将他们从场景中移除。很简单吧！</p>
+
+<p>下面该实现contact delegate方法了。将如下方法添加到文件中：</p>
+
+<p>```objc
+&ndash; (void)didBeginContact:(SKPhysicsContact *)contact
+{</p>
+
+<pre><code>// 1
+SKPhysicsBody *firstBody, *secondBody;
+
+if (contact.bodyA.categoryBitMask &lt; contact.bodyB.categoryBitMask)
+{
+    firstBody = contact.bodyA;
+    secondBody = contact.bodyB;
+}
+else
+{
+    firstBody = contact.bodyB;
+    secondBody = contact.bodyA;
+}
+
+// 2
+if ((firstBody.categoryBitMask &amp; projectileCategory) != 0 &amp;&amp;
+    (secondBody.categoryBitMask &amp; monsterCategory) != 0)
+{
+    [self projectile:(SKSpriteNode *) firstBody.node didCollideWithMonster:(SKSpriteNode *) secondBody.node];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>还记得之前给物理世界设置的<code>contactDelegate</code>吗？当两个物体发生碰撞之后，就会调用上面的方法。</p>
+
+<p>在上面的方法中，可以分为两部分来理解：</p>
+
+<ol>
+<li>该方法会传递给你发生碰撞的两个物体，但是并不一定符合特定的顺序(如炮弹在前，或者炮弹在后)。所以这里的代码是通过物体的category bit mask来对其进行排序，以便后续做出正确的判断。注意，这里的代码来自苹果提供的Adventure示例。</li>
+<li>最后，检测一下这两个碰撞的物体是否就是炮弹和怪物，如果是的话就调用之前的方法。</li>
+</ol>
+
+
+<p>最后一步，为了编译器没有警告，确保private interface 中添加一下<code>SKPhysicsContactDelegate</code>：
+<code>objc
+@interface MyScene () &lt;SKPhysicsContactDelegate&gt;
+</code>
+现在编译并运行程序，可以发现，当炮弹与怪物接触时，他们就会消失！</p>
+
+<h3><a id="sw"></a>收尾</h3>
+
+<p>现在，本文的游戏快完成了。接下来我们就来为游戏添加音效和音乐，以及一些简单的游戏逻辑吧。</p>
+
+<p>苹果提供的Sprite Kit里面并没有音频引擎(Cocos2D中是有的)，不过我们可以通过action来播放音效，并且可以使用AVFoundation播放后台音乐。</p>
+
+<p>在工程中我已经准备好了一些音效和很酷的后台音乐，在本文开头已经将resources添加到工程中了，现在只需要播放它们即可！</p>
+
+<p>首先在<code>ViewController.m</code>文件顶部添加如下import：</p>
+
+<p><code>objc
+@import AVFoundation;
+</code></p>
+
+<p>上面的语法是iOS 7中新的modules功能 —— 只需要使用新的关键字@import，就可以框架的头文件和库文件添加到工程中，这功能非常方便。要了解更多相关内容，请看到<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS 7 by Tutorials</a>中的第十章内容中的：What’s New with Objective-C and Foundation。</p>
+
+<p>接着添加一个新的属性和private interface：</p>
+
+<p><code>objc
+@interface ViewController ()
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+@end
+</code>
+接着将下面的代码添加到<code>viewWillLayoutSubviews</code>方法中(在<code>[super viewWillLayoutSubviews]</code>后面)：</p>
+
+<p><code>objc
+NSError *error;
+NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"background-music-aac" withExtension:@"caf"];
+self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&amp;error];
+self.backgroundMusicPlayer.numberOfLoops = -1;
+[self.backgroundMusicPlayer prepareToPlay];
+[self.backgroundMusicPlayer play];
+</code></p>
+
+<p>上面的代码会开始无限循环的播放后台音乐。</p>
+
+<p>下面我们来看看如何处理音效。切换到<code>MyScene.m</code>文件中，并将下面这行代码添加到<code>touchesEnded:withEvent:</code>方法的顶部：</p>
+
+<p>```objc
+[self runAction:[SKAction playSoundFileNamed:@&ldquo;pew-pew-lei.caf&rdquo; waitForCompletion:NO]];</p>
+
+<p>```</p>
+
+<p>如上，一行代码就可以播放音效了，很简单吧！</p>
+
+<p>下面，我们创建一个新的创建和layer，用来显示<code>你赢了(You Win)</code>或<code>你输了(You Lose)</code>。用模板<code>iOS\Cocoa Touch\Objective-C class</code>创建一个新的文件，将其命名为<code>GameOverScene</code>，并让其继承自<code>SKScene</code>，然后点击<code>Next</code>和<code>Create</code>。</p>
+
+<p>接着用如下代码替换<code>GameOverScene.h</code>中的内容：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;SpriteKit/SpriteKit.h></h1>
+
+<p>@interface GameOverScene : SKScene</p>
+
+<p>&ndash;(id)initWithSize:(CGSize)size won:(BOOL)won;</p>
+
+<p>@end
+```</p>
+
+<p>在上面的代码中导入了Sprite Kit头文件，并声明了一个特定的初始化方法，该方法的第一个参数用来定位显示的位置，第二个参数won用来判断用户是否赢了。</p>
+
+<p>接着用下面的代码替换<code>GameOverLayer.m</code>中的内容：</p>
+
+<p>```objc</p>
+
+<h1>import &ldquo;GameOverScene.h&rdquo;</h1>
+
+<h1>import &ldquo;MyScene.h&rdquo;</h1>
+
+<p>@implementation GameOverScene</p>
+
+<p>&ndash;(id)initWithSize:(CGSize)size won:(BOOL)won {</p>
+
+<pre><code>if (self = [super initWithSize:size]) {
+
+    // 1
+    self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+
+    // 2
+    NSString * message;
+    if (won) {
+        message = @"You Won!";
+    } else {
+        message = @"You Lose :[";
+    }
+
+    // 3
+    SKLabelNode *label = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    label.text = message;
+    label.fontSize = 40;
+    label.fontColor = [SKColor blackColor];
+    label.position = CGPointMake(self.size.width/2, self.size.height/2);
+    [self addChild:label];
+
+    // 4
+    [self runAction:
+        [SKAction sequence:@[
+            [SKAction waitForDuration:3.0],
+            [SKAction runBlock:^{
+                // 5
+                SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+                SKScene * myScene = [[MyScene alloc] initWithSize:self.size];
+                [self.view presentScene:myScene transition: reveal];
+            }]
+        ]]
+    ];
+
+}
+return self;
+</code></pre>
+
+<p>}</p>
+
+<p>@end
+```</p>
+
+<p>上面的代码可以分为4部分内容，我们来分别看看：</p>
+
+<ol>
+<li>将背景色设置为白色(与主场景一样颜色)。</li>
+<li>根据<code>won</code>参数，将信息设置为"You Won"或"You Lose"。</li>
+<li>这里的代码是利用Sprite Kit将一个文本标签显示到屏幕中。如代码所示，只需要选择一个字体，并设置少量的参数即可，也非常简单。</li>
+<li>设置并运行有个有两个action的sequence。为了看起来方便，此处我将它们放到一块(而不是为每个action创建单独的一个变量)。首先是等待3秒，然后是利用<code>runBlock</code>action来运行一些代码。</li>
+<li>演示了在Sprite Kit中如何过渡到新的场景。首先可以选择任意的一种不同的动画过渡效果，用于场景的显示，在这里选择了翻转效果(持续0.5秒)。然后是创建一个想要显示的场景，接着使用self.view的方法<code>presentScene:transition:</code>来显示出场景。</li>
+</ol>
+
+
+<p>OK，万事俱备，只欠东风了！现在只需要在主场景中，适当的情况下加载game over scene就可以了。</p>
+
+<p>首先，在<code>MyScene.m</code>中导入新的场景：</p>
+
+<p>```objc</p>
+
+<h1>import &ldquo;GameOverScene.h&rdquo;</h1>
+
+<p>```</p>
+
+<p>然后，在<code>addMonster</code>中，用下面的代码替换最后一行在怪物上运行action的代码：</p>
+
+<p>```objc
+SKAction * loseAction = [SKAction runBlock:^{</p>
+
+<pre><code>SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:NO];
+[self.view presentScene:gameOverScene transition: reveal];
+</code></pre>
+
+<p>}];
+[monster runAction:[SKAction sequence:@[actionMove, loseAction, actionMoveDone]]];
+```</p>
+
+<p>上面创建了一个"lose action"，当怪物离开屏幕时，显示game over场景。</p>
+
+<p>在这里为什么<code>loseAction</code>要在<code>actionMoveDone</code>之前运行呢？
+原因在于如果将一个精灵从场景中移除了，那么它就不在处于场景的层次结构中了，也就不会有action了。所以需要过渡到lose场景之后，才能将精灵移除。不过，实际上actionMoveDone永远都不会被调用——因为此时已经过渡到新的场景中了，留在这里就是为了达到教学的目的。</p>
+
+<p>现在，需要处理一下赢了的情况。在private interface中添加一个新的属性：</p>
+
+<p><code>objc
+@property (nonatomic) int monstersDestroyed;
+</code></p>
+
+<p>然后将如下代码添加到<code>projectile:didCollideWithMonster:</code>的底部：</p>
+
+<p>```objc
+self.monstersDestroyed++;
+if (self.monstersDestroyed > 30) {</p>
+
+<pre><code>SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:YES];
+[self.view presentScene:gameOverScene transition: reveal];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>编译并运行程序，尝试一下赢了和输了会看到的画面！</p>
+
+<h3><a id="hqhc"></a>何去何从?</h3>
+
+<p>至此<code>Sprite Kit教程：初学者</code>结束！这里可以下到<a href="http://cdn2.raywenderlich.com/downloads/SpriteKitSimpleGame2.zip">完整的代码</a>。</p>
+
+<p>希望本文能帮助你学习Sprite Kit，并写出你自己的游戏！</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理，到tile map，以及特定的系统，甚至是制作自己的关卡编辑器。</p>
+
+<p>……Sprite Kit教程：初学者 3 结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：初学者 2]]></title>
@@ -399,11 +758,11 @@ SKAction * actionMoveDone = [SKAction removeFromParent];
 </ol>
 
 
-<p>编译并允许程序，现在忍者可以发射炮弹了！</p>
+<p>编译并运行程序，现在忍者可以发射炮弹了！</p>
 
 <p><img src="/images/2013/09/17.png"></p>
 
-<p>……Sprite Kit初级教程(2)结束……</p>
+<p>……Sprite Kit教程：初学者 2 结束……</p>
 ]]></content>
   </entry>
   
@@ -497,7 +856,7 @@ SKAction * actionMoveDone = [SKAction removeFromParent];
 
 <p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
 
-<p>……Sprite Kit初级教程(1)结束……</p>
+<p>……Sprite Kit教程：初学者 1 结束……</p>
 ]]></content>
   </entry>
   
@@ -662,166 +1021,6 @@ AVMetadataObjectTypeAztecCode
 <p>现在如果还有开发者告诉你他不想用xib文件，那么请把这篇文章发给他看看吧，我相信已经没有太多理由不使用xib文件了。</p>
 
 <p>其实在Xcode 5中不仅对Interface Builder进行了改善，还有其它一些功能也做了改进，例如自动布局约束的设置已经没有以前痛苦了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Professional iOS Network Programming翻译第一章：iOS网络功能简介]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/08/09/109-introducing-ios-networking-capabilities/"/>
-    <updated>2013-08-09T16:52:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/08/09/109-introducing-ios-networking-capabilities</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/07/simple_social_network.png" width="400" height="300"></p>
-
-<h2><strong>小引</strong></h2>
-
-<p>在iOS开发中，网络是非常重要的功能，针对iOS开发者来说，掌握好iOS中网络功能的开发也是必不可少的。最近在看一本书:<a href="http://www.amazon.com/Professional-iOS-Network-Programming-Connecting/dp/1118362403"><code>Professional iOS Network Programming</code></a>，网络编程方面介绍比较全面，非常适合iOS开发者去读一读，由于精力有限，我在这里可能会挑选一部分内容进行翻译，也有可能全书翻译。</p>
-
-<!--more-->
-
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Professional iOS Network Programming介绍</li>
-<li>第一章：iOS网络功能简介
-
-<ul>
-<li>了解网络框架</li>
-<li>iOS网络APIs
-
-<ul>
-<li>NSURLConnection</li>
-<li>Game Kit</li>
-<li>Bonjour</li>
-<li>NSStream</li>
-<li>CFNetwork</li>
-<li>BSD Sockets</li>
-</ul>
-</li>
-<li>Run Loops
-
-<ul>
-<li>Run Loop模型</li>
-</ul>
-</li>
-<li>小结</li>
-</ul>
-</li>
-</ul>
-
-
-<h2><strong>Professional iOS Network Programming介绍</strong></h2>
-
-<p>这本书主要介绍在iOS中的网络编程知识，主要包含如下内容：</p>
-
-<pre><code>在客户端和服务器端之间进行HTTP请求
-管理客户端和服务器端之间进行的数据负载
-处理HTTP请求中的错误
-网络通信中的安全
-加强网络通信的性能
-socket级别的通信
-推送通知的实现
-同一设备中两个程序间的通信
-不同设备中两个程序间的通信
-</code></pre>
-
-<h2>第一章：<strong>iOS网络功能简介</strong></h2>
-
-<p>本章的内容</p>
-
-<pre><code>了解iOS网络框架
-开发者可用的重要网络APIs
-在程序中有效的利用run Loop
-</code></pre>
-
-<p>优秀的iOS程序需要简单和直观的用户界面，同样，具有与web service通信功能的优秀程序需要一个良好架构的网络层。在设计应用程序架构时，必须考虑到程序的灵活性，以适应经常变化的需求，并能够正确的处理不断变化的网络条件，同时还需要保持核心设计原则：可维护性和可扩展性。</p>
-
-<p>当在设计移动应用程序的架构时，必须熟悉一些相关的核心概念，例如run loop，可用的网络APIs，以及这些APIs是如何与run loop整合起来实现一个具有响应式的网络应用程序框架。本章详细的探讨了run loop，以及如何在程序中对其有效的使用。同样，也对关键的APIs做了一个概述，并且介绍了什么时候应该使用什么APIs。</p>
-
-<h3><strong>了解网络框架</strong></h3>
-
-<p>在开发iOS应用程序(与网络交互的程序)之前，首先必须理解Objective-C中的网络层是如何组成的，如图1-1所示：</p>
-
-<p><img src="/images/2013/07/networking_layers_in_OC.jpg"></p>
-
-<p>图1-1</p>
-
-<p>如上图所示，每个iOS应用程序都都位于由四层组成的网络框架之上。最上面的是Cocoa层，该层包含了一些Objective-C写的APIs：<code>URl加载</code>，<code>Bonjour</code>和<code>Game Kit</code>。Cocoa之下是Core Foundation，该层包含了一组C语言写的APIs：<code>CFNetwork</code>，该层中的代码是大量应用层中网络代码的基础。CFNetwork在<code>CFStream</code>和<code>CFSocket</code>之上，提供了一个简单的网络接口。CFStream和CFSocket对BSD socket做了轻量级的封装，BSD是基于硬件上面的一层，它于无线通信相关硬件设备最接近。BSD socket是严格使用C实现的，通过BSD，开发者对网络中的任意通信(远程设备或者服务)拥有绝对控制权。</p>
-
-<p>在上图中，越往下层走，会获得更高的控制权，但是相对于上一层来说易用性更差。苹果建议使用CFNetwork层以及之上的。在BSD层中的raw socket不能访问系统的VPN，也不能激活Wi-Fi或蜂窝无线模块，这些功能是由CFNetwork处理的。</p>
-
-<p>在设计应用程序的网络层之前，开发者必须理解各种可用的APIs。下一节中会介绍iOS中关键的网络框架，并简短的解释一下如何使用它们。在本书后面的章节中，会详细介绍每个APi。</p>
-
-<h3><strong>iOS网络APIs</strong></h3>
-
-<p>在框架中的每层里面，都有一套关键的APIs提供给开发者相关的功能以及控制权。在图1-1中每层相对于下一层，会有更多的封装。不过封装之后，会失去一些控制权。本节就来大概的预览一下iOS中网络层关键的APIs，并探讨一下什么时候使用它们。</p>
-
-<h5>NSURLConnection</h5>
-
-<p>NSURLConnection是Cocoa中的一个API，它提供了一个简单的方法来请求URL，可以与web service进行交互，以获取一个图片或者视频，或者简单的获取一个HTML文档。NSURLConnection构建于NSStream之上，它支持4种通用的URI schemes：file，HTTP，HTTPS和FTP。虽然NSURLConnection限制了可以使用的协议，但是它封装了大量底层API必须要做的任务：对缓冲区进行读写，另外还内置支持认证(authentication)，并提供了一个健壮的缓存引擎。</p>
-
-<p>实际上NSURLConnection本身提供的接口比较少，主要依赖于<code>NSURLConnectionDelegate</code>协议，通过该协议，应用程序可以与网络连接生命周期中的多个点进行交互。NSURLConnection的请求默认是异步的；不过也提供了一个同步请求方法。由于同步请求会阻塞当前调用的线程，所以必须根据具体情况来设计应用程序。在第三章(发起请求)中会详细介绍NSURLConnection，并提供了一些示例。</p>
-
-<h6>Game Kit</h6>
-
-<p>在iOS程序中，Game Kit提供了另外一种点对点(peer-to-peer)网络通讯的方法。在传统的网络配置中，Game Kit是构建于Bonjour之上的；不过Game Kit并不需要网络基础设施提供的功能。它可以创建ad-hoc Bluetooth Personal Area Networks(PAN)，通过该PAN可以让设备在邻近范围内或网络条件不允许的情况下，进行通讯，</p>
-
-<p>Game Kit只需要一个会话id(session identifier)，显示的名称(display name)，以及配置网络时的连接模式。不需要配置socket，或其它任意底层网络通讯的连接。Game Kit使用GKSessionDelegate协议进行通讯。在第12章(利用Game Kit进行设备间的通讯)中介绍了将Game Kit集成到我们的程序中。</p>
-
-<h6>Bonjour</h6>
-
-<p><code>Bonjour</code>是苹果实现的零配置联网。Bonjour提供了这样一种机制：发现并连接到设备或者网络中的服务，这些过程中我们并不需要知道设备的网络地址，相反，Bonjour涉及到元祖名称，服务类型和域。Bonjour封装了底层网络接口需要的multicast DNS(mDNS)，以及基于DNS服务的发现(DNS-SD)。</p>
-
-<p>在Cocoa层，NSNetService API提供了相关接口用来发布和解决Bonjour服务的地址信息。我们可以使用NSNetServiceBrowser API来发现网络中可用的服务。为了通信，发布一个Bonjour服务，即使是使用Cocoa层的API，也需要明白Core Foundation中对socket的配置。在第13章"Ad-Hoc Networking with Bonjour"中，深入介绍了零配置联网(Bonjour)，并给出了一个示例介绍如何实现一个基于Bonjour的服务。</p>
-
-<h6>NSStream</h6>
-
-<p><code>NSStream</code>是Cocoa层里面的API，构建于CFNetwork之上，是NSURLConnection的基础部分，并且还适用于较底层的网络任务。就像NSURLConnection，NSStream提供了一种与远程服务或者本地文件通信的机制。另外，还NSStream还可以在别的一些一些上进行通信，例如<code>telnet</code>，<code>SMTP</code>，NSURLConnection并不支持这些协议。</p>
-
-<p>NSStream还提供了额外的一些控制功能，不过这是要付出代价的。NSStream并没有内置支持处理HTTP/S响应状态码的处理，也不支持认证功能。它是用C缓存器进行数据的发送和接收的，这跟Objective-C还有点区别。它也不能管理多个请求，如果需要相应的功能，需要在其子类中添加功能。NSStream是异步的，它通过NSStreamDelegate进行通信。在第8章中“Low-Level Networking”，以及第13章中“Ad-Hoc Networking with Bonjour”，都不同程度的实现了NSStream。</p>
-
-<h6>CFNetwork</h6>
-
-<p><code>CFNetwork API</code>构建于BSD socket之上，被用于NSStream、URL加载系统、Bonjour和Game Kit APIs的实现中。CFNetwork中默认支持一些上层协议，例如HTTP和FTP。CFNetwork和BSD socket最关键的区别就是集成了run loop。如果在程序中使用了CFNetwork，输入(input)和输出(output)事件会在线程的run loop中被调度。如果输入和输出事件发生于非主线程上，那么我们需要负责在这个线程中以适当的模式启动run loop。本章后面的“Run Loops”小节会有相关介绍。</p>
-
-<p>CFNetwork提供的配置选项要比URL加载系统更多，这有好的一面，也有不好的一面。当利用CFNetwork创建一个HTTP请求时，这些配置选项是可见的。在创建请求的时候必须手动添加所有的HTTP header，以及cookies，然后与请求一起提交。而使用NSURLConnection时，标准的header和cookie jar中的任意cookies都自动的添加好了。</p>
-
-<p>CFNetwork下面还有来自Core Foundation层中的CFSocket和CFStream APIs。CFNetwork中有一些用于特定协议的APIs，例如用于与FTP服务通讯的CFFTP，用于收发HTTP消息的CFHTTP，以及用于发布和浏览Bonjour服务的CFNetServices。第八章中将详细介绍CFNetwork，而在13章中会简要介绍一下Bonjour。</p>
-
-<h6>BSD Sockets</h6>
-
-<p>在网络架构中，<code>BSD Sockets</code>为网络通信提供了最基础的服务，也是最底层的一个APIs。BSD Socket是用C语言实现的，不过完全可以用在Objective-C代码中。一般不建议直接使用BSD Socket API，因为它在操作系统中没有任何hook。例如，BSD Socket既不走系统中的VPN通道，也没相关的API来自动激活已经关闭掉的Wi-Fi或蜂窝无线设备。苹果建议编程时使用CFNetwork或更高的层中的API。第8章中详细介绍了BSD Sockets以及CFNetwork，并提供了一个示例介绍了如何将它们集成到程序中。下一节将讨论run loop——从操作系统中检测网络事件，这些事件会被用于我们的程序中。</p>
-
-<h3><strong>Run Loops</strong></h3>
-
-<p>Run loop对应的类是<code>NSRunLoop</code>，它其实是线程中的一个基础组件，有了run loop之后，操作系统就能够唤醒休眠中的线程，以对即将到来的事件进行管理。一个run loop是一个循环配置的用来调度任务，并在一个时钟周期内处理即将到来的事件。在iOS程序中的每个线程中最多能有一个run loop。主线程中的run loop在程序启动的时候就默认开启了，并且当程序的delegate applicationDidFinishLaunchingWithOptions:被调用之后，我们就可以对其进行访问了。</p>
-
-<p>在非主线程中，如果需要使用run loop，需要开发者明确的开启run loop。在非主线程中启动之前，必须添加一个输入源(input source)或者timer；否则run loop会立即退出。run loop给开发者提供了与线程交互的能力，不过并不是总是需要它的。例如有时候线程在处理大量数据时，并不不需要进行任何交互，此时就不需要启动run loop了。如果线程需要跟网络进行交互，此时就需要启动run loop。</p>
-
-<p>Run loop接收的事件有两种源类型：输入源<code>(input sources)</code>和<code>计时器(timers)</code>。在输入源中一般要么是基于端口的，要么就是自定义的，这些事件通过异步的方式派发到程序中。这两种类型源的最大区别就是基于端口的内核信号源是自动的，而自定义的源必须在不同线程中手动管理相关信号。在创建自定义输入源时，可以通过CFRunLoopSourceRef实现多个回调函数。</p>
-
-<p>计时器则是这样一种机制：基于时间进行通知应用程序在未来某个特定时间点执行某个特定的任务的。计时器事件也是通过异步的方式派发到程序中的，不过它还与特定的模式相关(下一节将介绍相关模式)。如果并不是当前监听的特定模式，这个计时器时间会被忽略，而线程也不会受到通知，直到run llop运行在相应的模式中。</p>
-
-<p>翻译比较辛苦，下面给大家留点作业，让大家感受一下翻译吧。</p>
-
-<p>You can configure timers to fire once or repeatedly. Rescheduling is based on the scheduled fire time, not the actual fire time. If a timer fires while the run loop is executing an application handler method, it waits until the next pass through the run loop to call the timer handler, typically set via @selector(). If firing the handler is delayed to the point in which the next invocation occurs, the timer fires only one event with the delayed event being suppressed.
-Run loops can also have observers, which are not monitored and provide a way for objects to receive callbacks as certain activities in the run loop execution occur. These activities include when the run loop is entered or exited, as the run loop goes to sleep or wakes up, and before the run loop processes an input source or timer. They are documented in the CFRunLoopActivity enumeration. Observers can be configured to fire once, which removes the observer after ithas been fired, or repeatedly. To add a run loop observer, use the Core Foundation function CFRunLoopObserverRef().</p>
-
-<h4>Run Loop模型</h4>
-
-<p>Each pass through the run loop is run in a specific mode specified by you. Run loop modes are a convention used by the operating system to filter the sources that are monitored and allowed to deliver events, such as calling a delegate method. Modes include the input sources and timers that should be monitored as well as any observers that should be notified of run loop events.
-There are two predefined run loop modes in iOS. NSDefaultRunLoopMode (kCFRunLoopDefaultMode in Core Foundation) is the system default and should typicallybe used when starting run loops and configuring input sources.
-NSRunLoopCommonModes (kCFRunLoopCommonModes in Core Foundation) is a collection of modes that is configurable. Assigning NSRunLoopCommonModes to an input source by calling a method such as scheduleInRunLoop:forMode: on an input source instance associates it with all modes currently in the group.
-Although NSRunLoopCommonModes is configurable, it is a low-level process that requires calling the Core Foundation function CFRunLoopAddCommonMode(). This automatically registers input sources, timers, and observers with the new mode instead of manually adding them to each new mode. You can define custom run loop modes by specifying a custom string such as @&ldquo;CustomRunLoopMode&rdquo;. For your custom run loop to be effective, you must add at least one input source, timer, or observer.
-Although this provides an overview of run loops, Apple provides several in-depth resources onrun loop management that you should review if you develop advanced, network-based, and multi- threaded applications. The developer documentation is available at <a href="https://developer.apple">https://developer.apple</a> .com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/ RunLoopManagement.html. Networking techniques that benefit from run loop integration are discussed in their respective chapters such as Chapter 8, “Low-Level Networking” and Chapter 13, “Ad-Hoc Networking with Bonjour.</p>
-
-<p>相关更多资料请看这里：<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html"><code>RunLoopManagement</code></a></p>
-
-<h3><strong>小结</strong></h3>
-
-<p>对于iOS开发者来说，理解iOS网络框架中的各层，以及应用程序如何与run loop交互是非常重要的。一个优秀的网络架构层会给应用程序提供难以置信的灵活度。如果网络架构层的设计非常糟糕，那么这是很难获得成功和扩展能力的。</p>
-
-<p>本章预览了一下各个网络APIs，并做了一些比较。在这里只是简单的介绍了一下，在后续章节中，会深入讨论。</p>
 ]]></content>
   </entry>
   

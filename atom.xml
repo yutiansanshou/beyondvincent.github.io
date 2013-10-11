@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-09-29T00:26:14+08:00</updated>
+  <updated>2013-10-12T01:35:59+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,466 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：初学者 3]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"/>
+    <updated>2013-10-12T00:06:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/09/18.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>Sprite Kit的优点和缺点</li>
+<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
+<li>Hello, Sprite Kit!</li>
+<li>横屏显示</li>
+<li>移动怪兽</li>
+<li>发射炮弹</li>
+<li><a href="#pzjcgs">碰撞检测和物理特性: 概述</a></li>
+<li><a href="#pzjcsx">碰撞检测和物理特性: 实现</a></li>
+<li><a href="#sw">收尾</a></li>
+<li><a href="#hqhc">何去何从?</a></li>
+</ul>
+
+
+<h3><a id="pzjcgs"></a>碰撞检测和物理特性: 概述</h3>
+
+<p>至此我们已经可以让炮弹任意的发射了——现在我们要让忍者利用炮弹来消灭这些怪物。下面就添加一些代码来给炮弹与怪物相交做检测。</p>
+
+<p>Sprite Kit内置了一个物理引擎，这非常的棒！该物理引擎不仅可以模拟现实运动，还能进行碰撞检测。</p>
+
+<p>下面我们就在游戏中使用Sprite Kit的物理引擎来检测炮弹与怪物的碰撞。首先，我们来看看需要做些神马事情：</p>
+
+<ul>
+<li><code>物理世界的配置</code>。物理世界是一个模拟的空间，用来进行物理计算。默认情况下，在场景(scene)中已经创建好了一个，我们可以对其做一些属性配置，例如重力感应。</li>
+<li><code>为精灵(sprite)创建对应的物体(physics bodies)</code>。在Sprite Kit中，为了碰撞检测，我们可以为每个精灵创建一个相应的形状，并设置一些属性,这就称为<code>物体(physics body)</code>。注意：图文的形状不一定跟精灵的外形一模一样。一般情况，这个形状都是简单的、大概的(而不用精确到像素级别)——毕竟这已经足以够大多数游戏使用了。</li>
+<li><code>将精灵分类</code>。在物体(physics body)上可以设置的一个属性是<code>category</code>，该属性是一个位掩码(bitmask)。通过该属性可以将精灵分类。在本文的游戏中，有两个类别——一类是炮弹，另一类则是怪物。设置之后，当两种物体相互碰撞时，就可以很容易的通过类别对精灵做出相应的处理。</li>
+<li><code>设置一个contact(触点) delegate</code>。还记得上面提到的物理世界吗？我们可以在物理世界上设置一个<code>contact delegate</code>，通过该delegate，当两个物体碰撞时，可以收到通知。收到通知后，我们可以通过代码检查物体的类别，如果是怪物和炮弹，那么就做出相应的动作！</li>
+</ul>
+
+
+<p>上面大致介绍了一下游戏策略，下面就来看看如何实现！</p>
+
+<h3><a id="pzjcsx"></a>碰撞检测和物理特性: 实现</h3>
+
+<p>首先在<code>MyScene.m</code>文件顶部添加如下两个常量：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="n">uint32_t</span> <span class="n">projectileCategory</span>     <span class="o">=</span>  <span class="mh">0x1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="n">uint32_t</span> <span class="n">monsterCategory</span>        <span class="o">=</span>  <span class="mh">0x1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面设置了两个类别，记住需要用位(bit)的方式表达——一个用于炮弹，另一个则是怪物。</p>
+
+<p><code>注意:</code>看到上面的语法你可能感到奇怪。在Sprite Kit中category是一个32位整数，当做一个位掩码(bitmask)。这种表达方法比较奇特：在一个32位整数中的每一位表示一种类别(因此最多也就只能有32类)。在这里，第一位表示炮弹，下一位表示怪兽。</p>
+
+<p>接着，在<code>initWithSize</code>中，将下面的代码添加到位置：添加player到场景涉及代码的后面。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">physicsWorld</span><span class="p">.</span><span class="n">gravity</span> <span class="o">=</span> <span class="n">CGVectorMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">physicsWorld</span><span class="p">.</span><span class="n">contactDelegate</span> <span class="o">=</span> <span class="n">self</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码将物理世界的重力感应设置为0，并将场景设置位物理世界的代理（当有两个物体碰撞时，会受到通知）。</p>
+
+<p>在<code>addMonster</code>方法中，将如下代码添加创建怪兽相关代码后面：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">monster</span><span class="p">.</span><span class="n">physicsBody</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKPhysicsBody</span> <span class="nl">bodyWithRectangleOfSize:</span><span class="n">monster</span><span class="p">.</span><span class="n">size</span><span class="p">];</span> <span class="c1">// 1</span>
+</span><span class='line'><span class="n">monster</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">dynamic</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span> <span class="c1">// 2</span>
+</span><span class='line'><span class="n">monster</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">categoryBitMask</span> <span class="o">=</span> <span class="n">monsterCategory</span><span class="p">;</span> <span class="c1">// 3</span>
+</span><span class='line'><span class="n">monster</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">contactTestBitMask</span> <span class="o">=</span> <span class="n">projectileCategory</span><span class="p">;</span> <span class="c1">// 4</span>
+</span><span class='line'><span class="n">monster</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">collisionBitMask</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来看看上面代码意思：</p>
+
+<ol>
+<li>为怪兽创建一个对应的物体。此处，物体被定义为一个与怪兽相同尺寸的矩形(这样与怪兽形状比较接近)。</li>
+<li>将怪兽设置位<code>dynamic</code>。这意味着物理引擎将不再控制这个怪兽的运动——我们自己已经写好相关运动的代码了。</li>
+<li>将categoryBitMask设置为之前定义好的<code>monsterCategory</code>。</li>
+<li><code>contactTestBitMask</code>表示与什么类型对象碰撞时，应该通知contact代理。在这里选择炮弹类型。</li>
+<li><code>collisionBitMask</code>表示物理引擎需要处理的碰撞事件。在此处我们不希望炮弹和怪物被相互弹开——所以再次将其设置为0。</li>
+</ol>
+
+
+<p>接着在<code>touchesEnded:withEvent:</code>方法中设置炮弹位置的代码后面添加如下代码。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKPhysicsBody</span> <span class="nl">bodyWithCircleOfRadius:</span><span class="n">projectile</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">];</span>
+</span><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">dynamic</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">categoryBitMask</span> <span class="o">=</span> <span class="n">projectileCategory</span><span class="p">;</span>
+</span><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">contactTestBitMask</span> <span class="o">=</span> <span class="n">monsterCategory</span><span class="p">;</span>
+</span><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">collisionBitMask</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="n">projectile</span><span class="p">.</span><span class="n">physicsBody</span><span class="p">.</span><span class="n">usesPreciseCollisionDetection</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中跟之前的类似，只不过有些不同，我们来看看：
+1. 为了更好的效果，炮弹的形状是圆形的。
+2. <code>usesPreciseCollisionDetection</code>属性设置为YES。这对于快速移动的物体非常重要(例如炮弹)，如果不这样设置的话，有可能快速移动的两个物体会直接相互穿过去，而不会检测到碰撞的发生。</p>
+
+<p>接着，添加如下方法，当炮弹与怪物发生碰撞时，会被调用。注意这个方法是不会被自动调用，稍后会看到我们如何调用它。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">projectile:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="nv">projectile</span> <span class="nf">didCollideWithMonster:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="nv">monster</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Hit&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">projectile</span> <span class="n">removeFromParent</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">monster</span> <span class="n">removeFromParent</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当怪物和炮弹发生碰撞，上面的代码会将他们从场景中移除。很简单吧！</p>
+
+<p>下面该实现contact delegate方法了。将如下方法添加到文件中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">didBeginContact:</span><span class="p">(</span><span class="n">SKPhysicsContact</span> <span class="o">*</span><span class="p">)</span><span class="nv">contact</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1</span>
+</span><span class='line'>    <span class="n">SKPhysicsBody</span> <span class="o">*</span><span class="n">firstBody</span><span class="p">,</span> <span class="o">*</span><span class="n">secondBody</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">contact</span><span class="p">.</span><span class="n">bodyA</span><span class="p">.</span><span class="n">categoryBitMask</span> <span class="o">&lt;</span> <span class="n">contact</span><span class="p">.</span><span class="n">bodyB</span><span class="p">.</span><span class="n">categoryBitMask</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">firstBody</span> <span class="o">=</span> <span class="n">contact</span><span class="p">.</span><span class="n">bodyA</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">secondBody</span> <span class="o">=</span> <span class="n">contact</span><span class="p">.</span><span class="n">bodyB</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">firstBody</span> <span class="o">=</span> <span class="n">contact</span><span class="p">.</span><span class="n">bodyB</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">secondBody</span> <span class="o">=</span> <span class="n">contact</span><span class="p">.</span><span class="n">bodyA</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">firstBody</span><span class="p">.</span><span class="n">categoryBitMask</span> <span class="o">&amp;</span> <span class="n">projectileCategory</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+</span><span class='line'>        <span class="p">(</span><span class="n">secondBody</span><span class="p">.</span><span class="n">categoryBitMask</span> <span class="o">&amp;</span> <span class="n">monsterCategory</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">projectile:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span> <span class="n">firstBody</span><span class="p">.</span><span class="n">node</span> <span class="nl">didCollideWithMonster:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span> <span class="n">secondBody</span><span class="p">.</span><span class="n">node</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还记得之前给物理世界设置的<code>contactDelegate</code>吗？当两个物体发生碰撞之后，就会调用上面的方法。</p>
+
+<p>在上面的方法中，可以分为两部分来理解：</p>
+
+<ol>
+<li>该方法会传递给你发生碰撞的两个物体，但是并不一定符合特定的顺序(如炮弹在前，或者炮弹在后)。所以这里的代码是通过物体的category bit mask来对其进行排序，以便后续做出正确的判断。注意，这里的代码来自苹果提供的Adventure示例。</li>
+<li>最后，检测一下这两个碰撞的物体是否就是炮弹和怪物，如果是的话就调用之前的方法。</li>
+</ol>
+
+
+<p>最后一步，为了编译器没有警告，确保private interface 中添加一下<code>SKPhysicsContactDelegate</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">MyScene</span> <span class="p">()</span> <span class="o">&lt;</span><span class="n">SKPhysicsContactDelegate</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在编译并运行程序，可以发现，当炮弹与怪物接触时，他们就会消失！</p>
+
+<h3><a id="sw"></a>收尾</h3>
+
+<p>现在，本文的游戏快完成了。接下来我们就来为游戏添加音效和音乐，以及一些简单的游戏逻辑吧。</p>
+
+<p>苹果提供的Sprite Kit里面并没有音频引擎(Cocos2D中是有的)，不过我们可以通过action来播放音效，并且可以使用AVFoundation播放后台音乐。</p>
+
+<p>在工程中我已经准备好了一些音效和很酷的后台音乐，在本文开头已经将resources添加到工程中了，现在只需要播放它们即可！</p>
+
+<p>首先在<code>ViewController.m</code>文件顶部添加如下import：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="err">@</span><span class="n">import</span> <span class="n">AVFoundation</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的语法是iOS 7中新的modules功能 —— 只需要使用新的关键字@import，就可以框架的头文件和库文件添加到工程中，这功能非常方便。要了解更多相关内容，请看到<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS 7 by Tutorials</a>中的第十章内容中的：What’s New with Objective-C and Foundation。</p>
+
+<p>接着添加一个新的属性和private interface：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">ViewController</span> <span class="p">()</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">AVAudioPlayer</span> <span class="o">*</span> <span class="n">backgroundMusicPlayer</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着将下面的代码添加到<code>viewWillLayoutSubviews</code>方法中(在<code>[super viewWillLayoutSubviews]</code>后面)：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">;</span>
+</span><span class='line'><span class="n">NSURL</span> <span class="o">*</span> <span class="n">backgroundMusicURL</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">URLForResource:</span><span class="s">@&quot;background-music-aac&quot;</span> <span class="nl">withExtension:</span><span class="s">@&quot;caf&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">backgroundMusicPlayer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">AVAudioPlayer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithContentsOfURL:</span><span class="n">backgroundMusicURL</span> <span class="nl">error:</span><span class="o">&amp;</span><span class="n">error</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">backgroundMusicPlayer</span><span class="p">.</span><span class="n">numberOfLoops</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">backgroundMusicPlayer</span> <span class="n">prepareToPlay</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">backgroundMusicPlayer</span> <span class="n">play</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码会开始无限循环的播放后台音乐。</p>
+
+<p>下面我们来看看如何处理音效。切换到<code>MyScene.m</code>文件中，并将下面这行代码添加到<code>touchesEnded:withEvent:</code>方法的顶部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">playSoundFileNamed:</span><span class="s">@&quot;pew-pew-lei.caf&quot;</span> <span class="nl">waitForCompletion:</span><span class="n">NO</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上，一行代码就可以播放音效了，很简单吧！</p>
+
+<p>下面，我们创建一个新的创建和layer，用来显示<code>你赢了(You Win)</code>或<code>你输了(You Lose)</code>。用模板<code>iOS\Cocoa Touch\Objective-C class</code>创建一个新的文件，将其命名为<code>GameOverScene</code>，并让其继承自<code>SKScene</code>，然后点击<code>Next</code>和<code>Create</code>。</p>
+
+<p>接着用如下代码替换<code>GameOverScene.h</code>中的内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;SpriteKit/SpriteKit.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">GameOverScene</span> : <span class="nc">SKScene</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="nf">won:</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nv">won</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中导入了Sprite Kit头文件，并声明了一个特定的初始化方法，该方法的第一个参数用来定位显示的位置，第二个参数won用来判断用户是否赢了。</p>
+
+<p>接着用下面的代码替换<code>GameOverLayer.m</code>中的内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;GameOverScene.h&quot;</span>
+</span><span class='line'><span class="cp">#import &quot;MyScene.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">GameOverScene</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="nf">won:</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nv">won</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 1</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="nl">colorWithRed:</span><span class="mf">1.0</span> <span class="nl">green:</span><span class="mf">1.0</span> <span class="nl">blue:</span><span class="mf">1.0</span> <span class="nl">alpha:</span><span class="mf">1.0</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 2</span>
+</span><span class='line'>        <span class="n">NSString</span> <span class="o">*</span> <span class="n">message</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">won</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">message</span> <span class="o">=</span> <span class="s">@&quot;You Won!&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">message</span> <span class="o">=</span> <span class="s">@&quot;You Lose :[&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 3</span>
+</span><span class='line'>        <span class="n">SKLabelNode</span> <span class="o">*</span><span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKLabelNode</span> <span class="nl">labelNodeWithFontNamed:</span><span class="s">@&quot;Chalkduster&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">label</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">message</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">label</span><span class="p">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="mi">40</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">label</span><span class="p">.</span><span class="n">fontColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="n">blackColor</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">label</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">label</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 4</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">runAction:</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">SKAction</span> <span class="nl">waitForDuration:</span><span class="mf">3.0</span><span class="p">],</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">SKAction</span> <span class="nl">runBlock:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>                    <span class="c1">// 5</span>
+</span><span class='line'>                    <span class="n">SKTransition</span> <span class="o">*</span><span class="n">reveal</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTransition</span> <span class="nl">flipHorizontalWithDuration:</span><span class="mf">0.5</span><span class="p">];</span>
+</span><span class='line'>                    <span class="n">SKScene</span> <span class="o">*</span> <span class="n">myScene</span> <span class="o">=</span> <span class="p">[[</span><span class="n">MyScene</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithSize:</span><span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">];</span>
+</span><span class='line'>                    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">presentScene:</span><span class="n">myScene</span> <span class="nl">transition:</span> <span class="n">reveal</span><span class="p">];</span>
+</span><span class='line'>                <span class="p">}]</span>
+</span><span class='line'>            <span class="p">]]</span>
+</span><span class='line'>        <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码可以分为4部分内容，我们来分别看看：</p>
+
+<ol>
+<li>将背景色设置为白色(与主场景一样颜色)。</li>
+<li>根据<code>won</code>参数，将信息设置为&#8221;You Won&#8221;或&#8221;You Lose&#8221;。</li>
+<li>这里的代码是利用Sprite Kit将一个文本标签显示到屏幕中。如代码所示，只需要选择一个字体，并设置少量的参数即可，也非常简单。</li>
+<li>设置并运行有个有两个action的sequence。为了看起来方便，此处我将它们放到一块(而不是为每个action创建单独的一个变量)。首先是等待3秒，然后是利用<code>runBlock</code>action来运行一些代码。</li>
+<li>演示了在Sprite Kit中如何过渡到新的场景。首先可以选择任意的一种不同的动画过渡效果，用于场景的显示，在这里选择了翻转效果(持续0.5秒)。然后是创建一个想要显示的场景，接着使用self.view的方法<code>presentScene:transition:</code>来显示出场景。</li>
+</ol>
+
+
+<p>OK，万事俱备，只欠东风了！现在只需要在主场景中，适当的情况下加载game over scene就可以了。</p>
+
+<p>首先，在<code>MyScene.m</code>中导入新的场景：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;GameOverScene.h&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，在<code>addMonster</code>中，用下面的代码替换最后一行在怪物上运行action的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">SKAction</span> <span class="o">*</span> <span class="n">loseAction</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">runBlock:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">SKTransition</span> <span class="o">*</span><span class="n">reveal</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTransition</span> <span class="nl">flipHorizontalWithDuration:</span><span class="mf">0.5</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">SKScene</span> <span class="o">*</span> <span class="n">gameOverScene</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GameOverScene</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithSize:</span><span class="n">self</span><span class="p">.</span><span class="n">size</span> <span class="nl">won:</span><span class="n">NO</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">presentScene:</span><span class="n">gameOverScene</span> <span class="nl">transition:</span> <span class="n">reveal</span><span class="p">];</span>
+</span><span class='line'><span class="p">}];</span>
+</span><span class='line'><span class="p">[</span><span class="n">monster</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">actionMove</span><span class="p">,</span> <span class="n">loseAction</span><span class="p">,</span> <span class="n">actionMoveDone</span><span class="p">]]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面创建了一个&#8221;lose action&#8221;，当怪物离开屏幕时，显示game over场景。</p>
+
+<p>在这里为什么<code>loseAction</code>要在<code>actionMoveDone</code>之前运行呢？
+原因在于如果将一个精灵从场景中移除了，那么它就不在处于场景的层次结构中了，也就不会有action了。所以需要过渡到lose场景之后，才能将精灵移除。不过，实际上actionMoveDone永远都不会被调用——因为此时已经过渡到新的场景中了，留在这里就是为了达到教学的目的。</p>
+
+<p>现在，需要处理一下赢了的情况。在private interface中添加一个新的属性：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="kt">int</span> <span class="n">monstersDestroyed</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后将如下代码添加到<code>projectile:didCollideWithMonster:</code>的底部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">monstersDestroyed</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">monstersDestroyed</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">SKTransition</span> <span class="o">*</span><span class="n">reveal</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTransition</span> <span class="nl">flipHorizontalWithDuration:</span><span class="mf">0.5</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">SKScene</span> <span class="o">*</span> <span class="n">gameOverScene</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GameOverScene</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithSize:</span><span class="n">self</span><span class="p">.</span><span class="n">size</span> <span class="nl">won:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">presentScene:</span><span class="n">gameOverScene</span> <span class="nl">transition:</span> <span class="n">reveal</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译并运行程序，尝试一下赢了和输了会看到的画面！</p>
+
+<h3><a id="hqhc"></a>何去何从?</h3>
+
+<p>至此<code>Sprite Kit教程：初学者</code>结束！这里可以下到<a href="http://cdn2.raywenderlich.com/downloads/SpriteKitSimpleGame2.zip">完整的代码</a>。</p>
+
+<p>希望本文能帮助你学习Sprite Kit，并写出你自己的游戏！</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理，到tile map，以及特定的系统，甚至是制作自己的关卡编辑器。</p>
+
+<p>……Sprite Kit教程：初学者 3 结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：初学者 2]]></title>
@@ -542,11 +1002,11 @@
 </ol>
 
 
-<p>编译并允许程序，现在忍者可以发射炮弹了！</p>
+<p>编译并运行程序，现在忍者可以发射炮弹了！</p>
 
 <p><img src="http://BeyondVincent.github.io/images/2013/09/17.png"></p>
 
-<p>……Sprite Kit初级教程(2)结束……</p>
+<p>……Sprite Kit教程：初学者 2 结束……</p>
 ]]></content>
   </entry>
   
@@ -640,7 +1100,7 @@
 
 <p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
 
-<p>……Sprite Kit初级教程(1)结束……</p>
+<p>……Sprite Kit教程：初学者 1 结束……</p>
 ]]></content>
   </entry>
   
@@ -3822,7 +4282,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#66;&#101;&#121;&#111;&#110;&#x64;&#x56;&#105;&#x6e;&#x63;&#x65;&#x6e;&#116;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#x2e;&#99;&#x6f;&#x6d;">&#66;&#x65;&#x79;&#x6f;&#x6e;&#100;&#x56;&#x69;&#110;&#x63;&#101;&#110;&#x74;&#x40;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#66;&#101;&#x79;&#111;&#110;&#x64;&#86;&#x69;&#x6e;&#99;&#101;&#110;&#116;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;">&#x42;&#x65;&#121;&#111;&#110;&#100;&#x56;&#x69;&#x6e;&#99;&#x65;&#x6e;&#116;&#64;&#x67;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
@@ -4020,39 +4480,6 @@ leader board improvements<br/>
 system integrity features</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-03</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[让UIViewController中的viewDidLoad和viewWillAppear各司其责]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/02/94/"/>
-    <updated>2013-07-02T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/02/94</id>
-    <content type="html"><![CDATA[<p>注：本文由破船译自：<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://thejoeconwayblog.wordpress.com/2013/06/25/uiviewcontroller-viewdidload-vs-viewwillappear/" target="_blank"><span style="color: #339966; text-decoration: underline;">thejoeconwayblog</span></a></span></strong></span></p>
-
-<p>你是否有过这样的感觉：有时某些代码是放到<strong><span style="color: #339966;">viewDidLoad</span></strong>还是<span style="color: #339966;"><strong>viewWillAppear</strong></span>:中，这很容易让人混淆。在Stack Overflow上经常会遇到这样的问题：<strong><span style="color: #339966;">viewDidLoad和viewWillAppear到底哪个方法先被调用？</span></strong>实际上，理解这些方法的去向，以及为什么会这样并不重要，重要的是需要知道这些方法的作用，以及它们是如何与程序协调分工的。</p>
-
-<p>我们知道，一般iOS应用程序都是由多个view controller构成的，每个view controller代表一个屏幕的信息。而当程序与用户交互时，根据程序中不同的状态，显示不同的view controller。例如，如果用户需要注册一个账号时，屏幕上应该显示出允许用户输入个人信息的界面，当用户完成注册之后，应该能够看到相应的主页面。</p>
-
-<p><strong><span style="color: #339966;">viewWillAppear:方法的作用是与屏幕中改变的内容进行交互。</span></strong>告诉view controller将对应的界面内容显示到屏幕最前端：确保view controller中所有的文本控件显示出最新的信息、必要的数据是可访问的、并对适当的通知(notification)进行观察等。当viewWillAppear:被触发时，说明对应的view controller变为&#8221;active&#8221;状态。</p>
-
-<p><strong><span style="color: #339966;">那么viewDidLoad方法存在的理由又是什么呢？</span></strong>唯一的原因——有时无法或者不能有效的在XIB文件中对用户界面进行100%的配置。例如，有时希望给view设置一个特殊的属性(该属性在XIB中不可用)、有时在给一个button设置背景图片之前，希望能先对该图片进行修改、再比如，在使用auto layout时，有时你可能会意识到在XIB中进行相关操作还不如用代码来写auto layout相关的代码。</p>
-
-<p>我们不能根据viewDidLoad方法的调用情况，来推断出应用程序的状态相关信息。viewDidLoad方法实际上就是简单的一个文件加载后处理机制。换句话说，作为开发者，应该<span style="color: #339966;"><strong>把viewDidLoad方法当做XIB文件的一个有效扩展</strong></span>，而不要理解为应用程序运转流程中的一部分。</p>
-
-<p>这到底是什么意思呢？——我们应该在viewWillAppear:方法中对view中显示的内容进行变更，而不是在viewDidLoad中。view中的内容是程序实际运行时由controller传递给view来显示的数据(模型对象)。</p>
-
-<p>下面我们来看一个示例：一个银行应用程序，可以显示用户当前的余额。当用户点击一个按钮时，可以在一个modal view controller中显示一个列表：该列表列出了用户附近的ATM机。在此，为了获得附近的ATM机列表信息，程序必须使用core location已经web service请求。在上面这种情况下，如果程序员把从服务器请求用户附近ATM列表的操作放到viewDidLoad中。此时，由于view controller只显示一次(viewDidLoad和viewWillAppear都只会被调用一次)，所以，从服务器请求用户附近ATM列表的操作，放到viewDidLoad与viewWillAppear中，对程序的效果都是一样的。</p>
-
-<p>但是这样做法是不好的。想一下，如果把这个ATM view controller移到tab bar controller中，会是什么情况。现在，ATM view controller——在viewDidLoad中获取ATM信息的代码只会获取一次。所以，如果你周二在亚特兰大打开该程序查找ATM，然后查询一下余额。接着周三你去了纽约，再次打开该程序时，只能看到亚特兰大的ATM信息——view已经加载过了，所以不会再调用viewDidLoad方法。<br/>
-<strong><span style="color: #ff0000;">注意：在这里应该有这样的前提条件：程序没有退出。</span></strong></p>
-
-<p>实际上，在这种情况下，写代码时犯下了一个最大的错误：<strong><span style="color: #339966;">the easiest way is the easiest way</span></strong>。应用程序是会发生变化的，而用户界面也会发生改变。刚开始使用简单的方法，可能会在以后引发各种问题。</p>
-
-<div style="text-align: left;">
-  <span style="color: #808080;">本文由<strong><span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></strong>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-02</time></span>
-</div>
-
 ]]></content>
   </entry>
   
