@@ -15,7 +15,7 @@ published: ture
 
 注：本文译自[`Sprite Kit Tutorial for Beginners`](http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners)
 
-感谢[answer哥](http://answerhuang.duapp.com/)对本文翻译问题的提出。
+感谢[answer哥](http://answerhuang.duapp.com/)对本文翻译问题的提出。(2013-10-14)
 
 ###**目录**
 * Sprite Kit的优点和缺点
