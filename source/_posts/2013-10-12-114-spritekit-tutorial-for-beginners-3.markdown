@@ -327,6 +327,6 @@ if (self.monstersDestroyed > 30) {
 
 希望本文能帮助你学习Sprite Kit，并写出你自己的游戏！
 
-如果你希望学习更多相关Sprite Kit内容，可以看看这本书：[iOS Games by Tutorials](http://www.raywenderlich.com/store/ios-7-by-tutorials)。本书会告诉你需要知道的内容——从物理，到tile map，以及特定的系统，甚至是制作自己的关卡编辑器。
+如果你希望学习更多相关Sprite Kit内容，可以看看这本书：[iOS Games by Tutorials](http://www.raywenderlich.com/store/ios-7-by-tutorials)。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。
 
 ……Sprite Kit教程：初学者 3 结束……

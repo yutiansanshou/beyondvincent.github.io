@@ -15,7 +15,7 @@ published: ture
 
 注：本文译自[`Sprite Kit Tutorial for Beginners`](http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners)
 
-
+感谢[answer哥](http://answerhuang.duapp.com/)对本文翻译问题的提出。
 
 ###**目录**
 * Sprite Kit的优点和缺点
@@ -97,7 +97,7 @@ published: ture
 ```objc
 SpriteKitSimpleGame[3139:907] Size: {320, 568}
 ```
-可能你会认为场景的宽度是320，高度则是568——实际上刚好相反!
+scene认为自己的宽度是320，高度则是568——实际上刚好相反!
 
 我们来看看具体发生了什么：定位到`ViewController.m`的`viewDidLoad`方法：
 
@@ -120,7 +120,7 @@ SpriteKitSimpleGame[3139:907] Size: {320, 568}
 }
 ```
 
-上面的代码中利用view的边界size创建了场景。不过请注意，当`viewDidLoad`被调用的时候，在这之前view已经被添加到view层次结构中了，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。
+上面的代码中利用view的边界size创建了场景。不过请注意，当`viewDidLoad`被调用的时候，view还没被添加到view层级结构中，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。
 
 `提醒`：要想了解更多相关内容，请看由Rob Mayoff带来的[最佳解释](http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame)。
 
