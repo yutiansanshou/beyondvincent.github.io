@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-12T01:35:59+08:00</updated>
+  <updated>2013-10-14T21:29:10+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -467,7 +467,7 @@
 
 <p>希望本文能帮助你学习Sprite Kit，并写出你自己的游戏！</p>
 
-<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理，到tile map，以及特定的系统，甚至是制作自己的关卡编辑器。</p>
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
 
 <p>……Sprite Kit教程：初学者 3 结束……</p>
 ]]></content>
@@ -484,6 +484,8 @@
 
 
 <p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。</p>
 
 <h3><strong>目录</strong></h3>
 
@@ -599,7 +601,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>可能你会认为场景的宽度是320，高度则是568——实际上刚好相反!</p>
+<p>scene认为自己的宽度是320，高度则是568——实际上刚好相反!</p>
 
 <p>我们来看看具体发生了什么：定位到<code>ViewController.m</code>的<code>viewDidLoad</code>方法：</p>
 
@@ -638,7 +640,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，在这之前view已经被添加到view层次结构中了，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
+<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，view还没被添加到view层级结构中，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
 
 <p><code>提醒</code>：要想了解更多相关内容，请看由Rob Mayoff带来的<a href="http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame">最佳解释</a>。</p>
 
@@ -4282,7 +4284,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#66;&#101;&#x79;&#111;&#110;&#x64;&#86;&#x69;&#x6e;&#99;&#101;&#110;&#116;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;">&#x42;&#x65;&#121;&#111;&#110;&#100;&#x56;&#x69;&#x6e;&#99;&#x65;&#x6e;&#116;&#64;&#x67;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x42;&#x65;&#x79;&#x6f;&#x6e;&#100;&#86;&#x69;&#x6e;&#x63;&#x65;&#110;&#x74;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#66;&#101;&#121;&#111;&#x6e;&#100;&#x56;&#105;&#110;&#99;&#101;&#x6e;&#x74;&#64;&#x67;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 

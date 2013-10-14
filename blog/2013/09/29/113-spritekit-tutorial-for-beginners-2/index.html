@@ -7,9 +7,8 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Sprite Kit教程：初学者 2 注：本文译自Sprite Kit Tutorial for Beginners 目录 Sprite Kit的优点和缺点
-Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity
-Hello, Sprite Kit &hellip;">
+	<meta name="description" content="Sprite Kit教程：初学者 2 注：本文译自Sprite Kit Tutorial for Beginners 感谢answer哥对本文翻译问题的提出。 目录 Sprite Kit的优点和缺点
+Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +81,8 @@ Hello, Sprite Kit &hellip;">
 
 
 <p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。</p>
 
 <h3><strong>目录</strong></h3>
 
@@ -197,7 +198,7 @@ Hello, Sprite Kit &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>可能你会认为场景的宽度是320，高度则是568——实际上刚好相反!</p>
+<p>scene认为自己的宽度是320，高度则是568——实际上刚好相反!</p>
 
 <p>我们来看看具体发生了什么：定位到<code>ViewController.m</code>的<code>viewDidLoad</code>方法：</p>
 
@@ -236,7 +237,7 @@ Hello, Sprite Kit &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，在这之前view已经被添加到view层次结构中了，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
+<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，view还没被添加到view层级结构中，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
 
 <p><code>提醒</code>：要想了解更多相关内容，请看由Rob Mayoff带来的<a href="http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame">最佳解释</a>。</p>
 
