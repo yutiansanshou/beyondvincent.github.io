@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-14T21:29:10+08:00</updated>
+  <updated>2013-10-14T21:54:43+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -384,7 +384,7 @@ SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:YES]
 
 <p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
 
-<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。</p>
+<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。(2013-10-14)</p>
 
 <h3><strong>目录</strong></h3>
 
