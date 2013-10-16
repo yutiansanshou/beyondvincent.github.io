@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[046]调用自己的异步函数 注1：本文译自Programming Windows, 6th Edition Charpter 7 Calling Your Own &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[047]自定义Popup 小引 在上一篇文章中，我利用Popup和UserControl自定义了MessageDialog。那么这篇文章我接着自定义Popup。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,230 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/76/" itemprop="url">Windows Store App开发[047]自定义Popup</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在<a href="http://beyondvincent.com/2013/06/06/windows-store-app%e5%bc%80%e5%8f%91044%e8%87%aa%e5%ae%9a%e4%b9%89messagedialog/"><u>上一篇</u></a>文章中，我利用Popup和UserControl自定义了MessageDialog。那么这篇文章我接着自定义Popup。这次的效果是在画面内弹出一个对话框，对话框会以不同的方式弹出。当点击对话框以外的位置时，对话框会自动消失。</p>
+
+<h3><a name="t4"></a><a name="t4"></a><a name="t4"></a>自定义Popup的关键技术点</h3>
+
+<p>利用UserControl控件，在里面添加Popup，然后对外界暴露一个是否显示对话框的接口。</p>
+
+<p>准备好Popup是用到的图片资源，如下两个图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/116.jpg"><img title="1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb14.jpg" width="204" height="201" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/213.png"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb14.png" width="244" height="164" /></a></p>
+
+<p>&#160;</p>
+
+<h3>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_CustomPopup</p>
+
+<p>2、在项目工程上单击右键，选择添加->新建项->选择用户控件->输入名称BV_CustomPopup.xaml，然后确定</p>
+
+<p>3、在BV_CustomPopup.xaml中输入如下内容：</p>
+
+<p>&lt;UserControl</p>
+
+<p>&#160;&#160;&#160; x:Class=&ldquo;BV_WindowsRuntimeComponent.UI.BV_CustomPopup&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml/presentation">http://schemas.microsoft.com/winfx/2006/xaml/presentation</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:x=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml">http://schemas.microsoft.com/winfx/2006/xaml</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:local=&ldquo;using:BV_WindowsRuntimeComponent.UI&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:d=&ldquo;<a href="http://schemas.microsoft.com/expression/blend/2008">http://schemas.microsoft.com/expression/blend/2008</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; xmlns:mc=&ldquo;<a href="http://schemas.openxmlformats.org/markup-compatibility/2006">http://schemas.openxmlformats.org/markup-compatibility/2006</a>&rdquo;</p>
+
+<p>&#160;&#160;&#160; mc:Ignorable=&ldquo;d&rdquo; Height=&ldquo;200&rdquo; Width=&ldquo;300&rdquo;></p>
+
+<p>&#160;&#160;&#160; <Popup x:Name="popup" IsLightDismissEnabled="True" ></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Popup.ChildTransitions></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TransitionCollection></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<PaneThemeTransition Edge="Bottom" />&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<AddDeleteThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ContentThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EntranceThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EdgeUIThemeTransition Edge="Bottom"/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ReorderThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<RepositionThemeTransition/>&#8211;></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </TransitionCollection></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Popup.ChildTransitions></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Grid Width="300" Height="200" ></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Grid.Background></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ImageBrush ImageSource="../picture/PopupBackground.png"></ImageBrush></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Grid.Background></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Image HorizontalAlignment="Left" Height="57" Margin="220,116,0,0" VerticalAlignment="Top" Width="59" Source="ms-appx:///BV_WindowsRuntimeComponent/picture/1.jpg"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TextBlock FontSize="30"&#160; HorizontalAlignment="Center" Height="47" Margin="38,64,0,0" TextWrapping="Wrap" Text="世界破船最大" VerticalAlignment="Top" Width="180"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; </Grid></p>
+
+<p>&#160;&#160;&#160; </Popup></p>
+
+<p></UserControl></p>
+
+<p>大家注意，上面代码中，我们可以给Popup添加如下一些动画效果：</p>
+
+<p><PaneThemeTransition Edge="Bottom" /></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <AddDeleteThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ContentThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EntranceThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EdgeUIThemeTransition Edge="Bottom"/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ReorderThemeTransition/></p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <RepositionThemeTransition/></p>
+
+<p>4、在BV_CustomPopup.xaml.cs文件中，添加如下代码：</p>
+
+<p>using System;</p>
+
+<p>using System.Collections.Generic;</p>
+
+<p>using System.IO;</p>
+
+<p>using System.Linq;</p>
+
+<p>using Windows.Foundation;</p>
+
+<p>using Windows.Foundation.Collections;</p>
+
+<p>using Windows.UI.Xaml;</p>
+
+<p>using Windows.UI.Xaml.Controls;</p>
+
+<p>using Windows.UI.Xaml.Controls.Primitives;</p>
+
+<p>using Windows.UI.Xaml.Data;</p>
+
+<p>using Windows.UI.Xaml.Input;</p>
+
+<p>using Windows.UI.Xaml.Media;</p>
+
+<p>using Windows.UI.Xaml.Navigation;</p>
+
+<p>// The User Control item template is documented at <a href="http://go.microsoft.com/fwlink/?LinkId=234236">http://go.microsoft.com/fwlink/?LinkId=234236</a></p>
+
+<p>namespace BV_WindowsRuntimeComponent.UI</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; public sealed partial class BV_CustomPopup : UserControl</p>
+
+<p>&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public BV_CustomPopup()</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; this.InitializeComponent();</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public bool IsOpen</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; get { return popup.IsOpen; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; set { popup.IsOpen = value; }</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
+
+<p>&#160;&#160;&#160; }</p>
+
+<p>}</p>
+
+<p>5、在MainPage.xaml.cs文件中，添加如下代码：</p>
+
+<p>private void btn1_Copy2_Click(object sender, RoutedEventArgs e)</p>
+
+<p>{</p>
+
+<p>&#160;&#160;&#160; BV_WindowsRuntimeComponent.UI.BV_CustomPopup popup = new BV_WindowsRuntimeComponent.UI.BV_CustomPopup();</p>
+
+<p>&#160;&#160;&#160; grid.Children.Add(popup);</p>
+
+<p>&#160;&#160;&#160; popup.IsOpen = true;</p>
+
+<p>}</p>
+
+<p>6、运行效果如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/38.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb8.jpg" width="534" height="414" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/CustomPopup" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1558,43 +1782,6 @@ async void OnLoaded(object sender, RoutedEventArgs arg)
 
 
 
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/66/" itemprop="url">Windows Store App开发[54]Step by Step 第二季</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>小引：本人2012年曾在DevDiv社区陆陆续续写了一些关于Windows Store App开发的文章（<a href="http://www.devdiv.com/Windows_Metro-windows_metro_app_step_by_step_-thread-130633-1-1.html" target="_blank">&#160;<span style="text-decoration: underline"><span style="color: #339966; text-decoration: underline">Windows 8 Metro App开发Step by Step</span></span></a>）。由于时间和工作关系，很长时间没有更新了。近期很多读者反映希望继续更新。在这里感谢大家的支持，从今天起，我将继续更新Windows Store apps开发Step by Step系列文章，并且在我的博客<span style="text-decoration: underline"><span style="color: #339966"><a href="http://BeyondVincent.com" target="_blank"><span style="color: #339966; text-decoration: underline">BeyondVincent.com</span></a></span></span>上发表，本系列文章涉及到的代码会放到我的GitHub上：<span style="text-decoration: underline"><span style="color: #339966"><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep" target="_blank"><span style="color: #339966; text-decoration: underline">WindowsStoreAppStepByStep</span></a></span></span>，不再更新至DevDiv社区。 有更新我会在微博上通知大家：<span style="text-decoration: underline"><span style="color: #339966"><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline"><a href="http://www.weibo.com/beyondvincent">http://www.weibo.com/beyondvincent</a></span></a></span></span> 注意：在DevDiv更新至第53篇，所以第二季从第54篇开始。 PS：第55篇内容将介绍如何通过编程的方式设置锁屏画面。 <a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529201429.png"><img class="alignnone size-full wp-image-702" alt="QQ截图20130529201429" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529201429.png" width="1279" height="799" /></a> <div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-29</time></span>
-</div></p>
 
 		
 		

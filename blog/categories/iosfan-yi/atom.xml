@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-16T12:42:54+08:00</updated>
+  <updated>2013-10-16T23:38:55+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,243 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 2]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/"/>
+    <updated>2013-10-16T23:40:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/10/3.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>创建一个工程</li>
+<li>纹理图集和熊</li>
+<li>一个简单的动画</li>
+<li><a href="#gbfx">改变动画运动的方向</a></li>
+<li><a href="#ydx">在屏幕上让熊移动</a></li>
+<li><a href="#hqhc">何去何从?</a></li>
+</ul>
+
+
+<h3><a id="gbfx"></a>改变动画运动的方向</h3>
+
+<p>看起来不错哦！下面我们就来看看如何通过触摸屏幕上的点来控制熊的运动方向。在<code>MyScene.m</code>文件中做如下改动：</p>
+
+<p>```objc
+// Add these new methods
+&ndash;(void)touchesEnded:(NSSet <em>)touches withEvent:(UIEvent </em>)event
+{</p>
+
+<pre><code>CGPoint location = [[touches anyObject] locationInNode:self];
+CGFloat multiplierForDirection;
+
+if (location.x &lt;= CGRectGetMidX(self.frame)) {
+    //walk left
+    multiplierForDirection = 1;
+} else {
+    //walk right
+    multiplierForDirection = -1;
+}
+
+_bear.xScale = fabs(_bear.xScale) * multiplierForDirection;
+[self walkingBear];
+</code></pre>
+
+<p>}</p>
+
+<p>&ndash;(void)touchesBegan:(NSSet <em>)touches withEvent:(UIEvent </em>)event
+{  <br/>
+}
+```</p>
+
+<p>上面的代码会根据tap的位置，让<code>touchesEnded</code>方法判断tap处于屏幕正中间的左边还是右边。通过该方法，决定熊的朝向。熊的方向是通过Sprite Kit来改变的(通过负值乘以xScale就可以让熊朝向左边。)</p>
+
+<p>编译并运行程序，一切正常的话，当你在屏幕上点击时，会发现熊的朝向发生了改变。</p>
+
+<p><img src="/images/2013/10/12.png" alt="" /></p>
+
+<h3><a id="ydx"></a>在屏幕上让熊移动</h3>
+
+<p>下面我们让熊可以移动到屏幕的各个位置。</p>
+
+<p>在<code>MyScene.m</code>文件中做如下改动：</p>
+
+<p>```objc
+// Comment out the call to start the bear walking
+//[self walkingBear];</p>
+
+<p>&ndash;(void)touchesEnded:(NSSet <em>)touches withEvent:(UIEvent </em>)event
+{</p>
+
+<pre><code>//Stuff from below!
+</code></pre>
+
+<p>}</p>
+
+<p>&ndash;(void)touchesBegan:(NSSet <em>)touches withEvent:(UIEvent </em>)event
+{  <br/>
+}</p>
+
+<p>//add this method
+&ndash;(void)bearMoveEnded
+{</p>
+
+<pre><code>[_bear removeAllActions];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如上所示，移除了<code>touchesEnded</code>方法中的所有代码。下面我们一步一步的往里面添加代码。</p>
+
+<p>当想要停止动画的时可以调用方法<code>bearMoveEnded</code>。</p>
+
+<p>下面就从<code>touchesEnded</code>方法开始吧：</p>
+
+<p><code>1) 确定触摸的位置并定义一个变量代表熊的朝向</code></p>
+
+<p><code>objc
+CGPoint location = [[touches anyObject] locationInNode:self];
+CGFloat multiplierForDirection;
+</code></p>
+
+<p>如上代码，利用常见的一个方法将触摸的位置转换为node坐标系中的位置。</p>
+
+<p><code>2) 设置速度</code></p>
+
+<p><code>objc
+CGSize screenSize = self.frame.size;
+float bearVelocity = screenSize.width / 3.0;
+</code></p>
+
+<p>如上，定义了熊移动的速度。可知熊从移动长度为屏幕宽度这么长时，需要3秒钟。由于不同设备的屏幕宽度可能会不同，所以在这里使用了self.frame.size，所以熊的速度应该是屏幕宽度/3秒。</p>
+
+<p><code>3) 计算出熊在X和Y轴中移动的量</code></p>
+
+<p><code>objc
+ CGPoint moveDifference = CGPointMake(location.x - _bear.position.x, location.y - _bear.position.y);
+</code></p>
+
+<p>通过简单的利用触摸位置减去熊的位置，计算出熊在X和Y轴上应该移动的距离。</p>
+
+<p><code>4) 计算出实际的移动距离</code></p>
+
+<p><code>objc
+float distanceToMove = sqrtf(moveDifference.x * moveDifference.x + moveDifference.y * moveDifference.y);
+</code></p>
+
+<p>上面的代码是计算出熊实际移动的直线距离(一个直角三角形的斜边：熊当前的位置和触摸位置)。关于游戏中涉及到的数学知识可以看看这本书：<a href="http://www.raywenderlich.com/35866/trigonometry-for-game-programming-part-1">Trigonometry for Game Programming</a>。</p>
+
+<p><code>5) 计算出移动实际距离所需要花费的时间</code></p>
+
+<p><code>objc
+float moveDuration = distanceToMove / bearVelocity;
+</code></p>
+
+<p>通过移动的实际距离除以移动速度计算出需要花费的时间。</p>
+
+<p><code>6) 需要的话对动画做翻转(Flip)处理</code></p>
+
+<p>```objc
+if (moveDifference.x &lt; 0) {</p>
+
+<pre><code>multiplierForDirection = 1;
+</code></pre>
+
+<p>} else {</p>
+
+<pre><code>multiplierForDirection = -1;
+</code></pre>
+
+<p>}
+<em>bear.xScale = fabs(</em>bear.xScale) * multiplierForDirection;
+```</p>
+
+<p>上面的代码：确定熊往左还是往右移动。如果小于0，则往左移动，否则往右移动。</p>
+
+<p>在这里，你的第一直觉可能是利用图片编辑器创建并使用对应另一个方向的图片。不过，之前我们学习过了如果通过乘法来改变sprite的xScale，进而改变sprite的方向。</p>
+
+<p><code>7) 运行一些action</code></p>
+
+<p>```objc
+if ([_bear actionForKey:@&ldquo;bearMoving&rdquo;]) {</p>
+
+<pre><code>//stop just the moving to a new location, but leave the walking legs movement running
+[_bear removeActionForKey:@"bearMoving"];
+</code></pre>
+
+<p>} //1</p>
+
+<p>if (![_bear actionForKey:@&ldquo;walkingInPlaceBear&rdquo;]) {</p>
+
+<pre><code>//if legs are not moving go ahead and start them
+[self walkingBear];  //start the bear walking
+</code></pre>
+
+<p>} //2</p>
+
+<p>SKAction <em>moveAction = [SKAction moveTo:location duration:moveDuration];  //3
+SKAction </em>doneAction = [SKAction runBlock:(dispatch_block_t)^() {</p>
+
+<pre><code>    NSLog(@"Animation Completed");
+    [self bearMoveEnded];
+</code></pre>
+
+<p>}]; //4</p>
+
+<p>SKAction *moveActionWithDone = [SKAction sequence:@[moveAction,doneAction]]; //5</p>
+
+<p>[_bear runAction:moveActionWithDone withKey:@&ldquo;bearMoving&rdquo;]; //6
+```</p>
+
+<ol>
+<li>停止已有的移动action(因为要准备告诉熊移动到别的地方)。这里使用的key可以开始和停止以此命名的动画的运行。</li>
+<li>如果熊还没有准备移动腿，那么就让熊的腿开始移动，否则它该如何走到新的位置呢。这里使用了我们之前使用过的方法，这个方法可以确保不启动一个已经运行着的动画(以key命名)。</li>
+<li>创建一个移动action，并制定移动到何处，以及需要花费的时间。</li>
+<li>创建一个done action，当熊到达目的地后，该action利用一个block调用一个方法来停止动画。</li>
+<li>将上面的两个action设置为一个顺序action链，就是说让这两个action按照先后顺序运行(第一个运行完之后，再运行第二个)。</li>
+<li>让熊开始运行action，并制定一个key为："bearMoving"。记住，这里的key用来判断熊是否需要移动到新的位置。</li>
+</ol>
+
+
+<p>注意：Sprite Kit支持两种action：<code>sequential</code>和<code>grouped</code>。<code>sequential</code> action表示action按照顺序执行。如果想要action同时运行，那么就使用<code>grouped</code>。</p>
+
+<p>当然，也可以在sequential action中包含grouped action，反之亦然。更多相关内容请看<a href="https://developer.apple.com/library/prerelease/ios/documentation/GraphicsAnimation/Conceptual/SpriteKit_PG/Introduction/Introduction.html#//apple_ref/doc/uid/TP40013043">Sprite Kit Programming Guide</a>中的<code>Adding Actions to Nodes</code>章节。</p>
+
+<p>当动画执行完毕之后，<code>bearMoveEnded</code>会被调用，所有的动画都将被停止，并等待下一个移动方位。</p>
+
+<p>搞定了！</p>
+
+<p>现在编译并运行程序，一切正常的话，那么当点击屏幕时，熊会跟着移动。</p>
+
+<p><img src="/images/2013/10/13.png" alt="" /></p>
+
+<h3><a id="hqhc"></a>何去何从?</h3>
+
+<p>这里是本文涉及到的<a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/09/AnimatedBear.zip">工程示例</a>。</p>
+
+<p>下面这些想法可以让动画更加有趣：</p>
+
+<ul>
+<li>尝试在方法<code>walkingBear</code>中增加或者减慢运动的速度，看看效果</li>
+<li>试着在屏幕上同时显示多个熊。提示：创建多个sprite node，并赋予action。</li>
+</ul>
+
+
+<p>至此，你应该已经知道如何使用动画了。</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
+
+<p>……Sprite Kit教程：动画和纹理图集 2 结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 1]]></title>
@@ -1087,97 +1324,6 @@ SKAction * actionMoveDone = [SKAction removeFromParent];
 <p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
 
 <p>……Sprite Kit教程：初学者 1 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS 7中的一些小修改]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/20/112-ios-7-additions-omg-finally/"/>
-    <updated>2013-09-20T11:45:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/20/112-ios-7-additions-omg-finally</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/09/4.png"></p>
-
-<h2><strong>小引</strong></h2>
-
-<p>大家都知道iOS 7做了很大的调整，当然也有一些轻微的修改，我们来稍微看一下吧。</p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.doubleencore.com/2013/09/ios-7-additions-omg-finally/"><code>iOS 7 Additions: OMG Finally!</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Message UI Framework(在消息中添加文件)</li>
-<li>Media Player Framework(MPVolumeView &ndash; 检测airplay和当前airplay的route)</li>
-<li>AVFoundation(条码扫描)</li>
-<li>更多</li>
-</ul>
-
-
-<h3><strong> Message UI Framework(在消息中添加文件)</strong></h3>
-
-<p>在iOS 7之前我们可以使用<code>MFMessageComposeViewController</code>来撰写文本消息，但是要想添加文件是不可能做到的，不过在iOS 7中我们可以使用这个方法就能添加文件了：<code>- (BOOL)addAttachmentData:(NSData *)attachmentData typeIdentifier:(NSString *)uti filename:(NSString *)filename;</code>。如下代码示例所示：</p>
-
-<p>```
-if ([MFMessageComposeViewController canSendText] &amp;&amp; [MFMessageComposeViewController canSendAttachments] &amp;&amp; [MFMessageComposeViewController isSupportedAttachmentUTI:(NSString *)kUTTypePNG]) {</p>
-
-<pre><code>MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
-vc.messageComposeDelegate = self;
-vc.recipients = @[@"Yawkey"];
-UIImage *myImage = [UIImage imageNamed:@"Yawkey_business_dog.png"];
-BOOL attached = [vc addAttachmentData:UIImagePNGRepresentation(myImage) typeIdentifier:(NSString*)kUTTypePNG filename:@"Yawkey_business_dog.png"];
-if (attached) {
-    NSLog(@"Attached (:");
-}
-else {
-    NSLog(@"Not attached ):");
-}
-[self presentViewController:vc animated:YES completion:nil];
-</code></pre>
-
-<p>}
-```
-<img src="/images/2013/09/5.png"></p>
-
-<h3><strong> Media Player Framework(MPVolumeView &ndash; 检测airplay和当前airplay的route)</strong></h3>
-
-<p><code>MPVolumeView</code>可以帮助我们与AirPlay系统进行交互。不过，一直以来都是很难获得用户选择操作的信息。现在通过新增的两个属性和通知，我们可以更加深入的了解AirPlay系统了。
-<code>
-@property areWirelessRoutesAvailable;
-@property isWirelessRouteActive;
-</code>
-这两个属性可以告诉我们是否有可用的AirPlay，以及是否以及被选中了。下面两个是通知：
-<code>
-NSString *const MPVolumeViewWirelessRoutesAvailableDidChangeNotification;
-NSString *const MPVolumeViewWirelessRouteActiveDidChangeNotification;
-</code>
-通过这两个通知我们可以知道可用AirPlay发生了改变，以及用户修改了当前正在使用的AirPlay route。</p>
-
-<h3><strong>AVFoundation(条码扫描)</strong></h3>
-
-<p><code>AVFoundation</code>中现在已经内置支持一维和二维码的扫描。之前要想在iOS程序中读取条形码和QR码，则需要使用第三方库，例如ZXing和ZBar。在iOS 7中默认支持4中机器条码，需要做的就是将<code>AVCaptureMetadataOutput</code> hook up到<code>AVCaptureSession</code>。另外可以对<code>AVCaptureMetadataOutput</code>进行配置以检测如下这些任意机器可读的条码类型：
-<code>
-AVMetadataObjectTypeUPCECode
-AVMetadataObjectTypeCode39Code
-AVMetadataObjectTypeCode39Mod43Code
-AVMetadataObjectTypeEAN13Code
-AVMetadataObjectTypeEAN8Code
-AVMetadataObjectTypeCode93Code
-AVMetadataObjectTypeCode128Code
-AVMetadataObjectTypePDF417Code
-AVMetadataObjectTypeQRCode
-AVMetadataObjectTypeAztecCode
-</code></p>
-
-<p>当配置好<code>AVCaptureMetadataOutputObjectsDelegate</code>，就可以响应<code>- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection;</code>检测到的所有条码。</p>
-
-<h3><strong>更多</strong></h3>
-
-<p>上面只是列出了少许新内容，你可以通过苹果提供的文档<a href="https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html">What’s New in iOS</a> 查阅更多相关内容。</p>
-
-<p>注：本文是iOS 7开发者指南中的11篇中的第1篇。你可以在<a href="http://www.doubleencore.com/2013/09/essential-ios-7-developers-guide">这里</a>看到指南的全部内容。</p>
 ]]></content>
   </entry>
   

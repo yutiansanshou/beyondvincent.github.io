@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 3rd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[018]我收藏的一些文章：Windows 8 异步编程 在MSDN的Visual Studio 2012文档中，有一些关于异步编程的文章，这些文章是文档编写人推荐的， &hellip;">
+	<meta name="description" content="Jun 3rd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[019]C++/CX Part 0 of [N]: C++/CX简介 注：本文由BeyondVincent(破船)翻译 &#160; 大家好，我是James &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,94 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/03/46/" itemprop="url">Windows Store App开发[019]C++/CX Part 0 of [N]: C++/CX简介</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>注：本文由BeyondVincent(破船)翻译</p>
+
+<p>&#160;</p>
+
+<p>大家好，我是James McNellis，最近我加入了Visual C++团队，作为一个库开发人员。我第一次遇到C++/CX语言扩展是在去年年初（2011年）的时候，为Visual Studio 2012 XAML设计器实现了一些代码生成功能。刚开始我在寻找一些示例代码，当我第一次看到C++/CX时，我感到很惊讶。我最初的反应是这样的：</p>
+
+<p>“在这些C++代码中到底做了什么？”</p>
+
+<p>实际上，我非常的担心；因为我认为它是C++/CLI托管代码。本身来讲，托管代码是好的，但是作为一名C++程序员，我喜欢本地代码（native code）。</p>
+
+<p>谢天谢地，我的初步理解是不正确的：C++/CX语法上与C++/CLI非常类似，因此，在许多地方看起来非常相同，但是从语义上讲，它们是完全不同的。C++/CX代码是本地代码，不需要公共语言运行时（CLR）。</p>
+
+<p>用C++/CLI编程是很有挑战的，有一点就是需要同时巧妙的处理两个不同的对象模型：生命周期确定的C++对象模型，垃圾回收CLI对象模型。C++/CX则相对简单，因为Windows Runtime是基于COM风格的，与C++编程语言有很好的映射。</p>
+
+<p>Windows Runtime的定义相对简单，底层应用程序二进制接口（ABI）和以及组件类型的定义是使用通用的元数据（metadata）格式。在写本地的Windows Runtime组件时，并不一定要求使用C++/CX，也可以只用C++来完成Windows Runtime组件的编写，Visual C++ 2012包含一个库，即<a href="http://msdn.microsoft.com/en-us/library/hh438466.aspx">Windows Runtime C++ 模板类库（WRL）</a>，在这个类库的帮助下，组件的编写会更加的容易。许多Windows Runtime组件，例如Windows中的部分（在Windows名称空间里面），就是用WRL编写的。C++/CX没有什么神奇的：只是使用C++来写Windows Runtime组件更容易，在编写组件时，使用基于模板的解决方案，例如WRL，有助于减少代码的重复性和冗余性。</p>
+
+<p>本系列文章主要讨论Windows Runtime ABI和介绍在使用C++/CX语言构造时，底层到底发生了什么，演示使用用C++编写Windows Runtime组件时，使用和不适用C++/CX时，的对等性，以及介绍C++编译器是如何将C++/CX代码编译为汇编的。</p>
+
+<p><strong>推荐资源</strong></p>
+
+<p>关于C++/CX，已经有一些非常好的资源了，我不会在这里重复写相关的一系列文章来取代它们，因此在开始深入C++/CX之前，我在这里总结一下这些资源。</p>
+
+<p>首先，如果你对如下内容感兴趣：为什么使用C++/CX语言扩展来进行开发，以及C++/CLI语法是如何最终被选定和重用的，我建议你阅读Jim Springfield去年在博客上发表的这篇文章，<a href="http://blogs.msdn.com/b/vcblog/archive/2011/10/20/10228473.aspx">&ldquo;Inside the C++/CX Design&rdquo;.</a> 同样需要关注这篇文章 <a href="http://channel9.msdn.com/Shows/C9-GoingNative/GoingNative-3-The-CCX-Episode-with-Marian-Luparu">episode 3 of GoingNative</a>，这是Marian Luparu讨论C++/CX的。</p>
+
+<p>如果针对C++/CX你是刚刚开始（或者用于Windows Store程序和Windows Runtime组件开发），或者你正在寻找使用C++/CX编写软件的介绍，又或是你需要使用C++/CX来构建一些东西，以试图完成一项特殊的任务，我建议你从下面的资源开始学习： <br/>
+<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh699871.aspx">Visual C++ Language Reference (C++/CX):</a>语言参考包含了大量有用的信息，有C++/CX语法参考，并附带许多短小的示例演示。这里还有一个有用的演示程序：如何使用C++/CX和XAML来创建一个Windows Store程序。如果你刚刚开始，这将是一个非常好的起点。 <br/>
+<a href="http://code.msdn.microsoft.com/windowsapps/site/search?f%5B0%5D.Type=ProgrammingLanguage&amp;f%5B0%5D.Value=C%2B%2B&amp;f%5B0%5D.Text=C%2B%2B"><strong>C++ Metro 风格程序示例:</strong></a>这里的许多C++示例程序和组件使用了C++/CX，并演示了与XAML的交互。 <br/>
+<a href="http://msdn.microsoft.com/en-us/library/xey702bw(v=vs.110)"><strong>Runtime 平台的组件扩展:</strong></a>这个文档曾用于C++/CLI，但是它已经被更新了，增加了C++/CX相关文档介绍，并对比了不同语言扩展的每一个语法特征。 <br/>
+<a href="http://hilo.codeplex.com/"><strong>Hilo</strong></a>是一个示例程序，使用C++，C++/CX和XAML编写的，是学习良好代码实践的非常棒的资源——包含了modern C++和在普通C++中混合了C++/CX。 <br/>
+<a href="http://social.msdn.microsoft.com/Forums/en-US/winappswithnativecode/threads"><strong>Building Metro style apps with C++</strong></a>是MSDN论坛上非常好的一个地方，当你被问题卡住时，你可以到这里进行提问。</p>
+
+<p><strong>工具探索</strong></p>
+
+<p><strong> <br/>
+</strong></p>
+
+<p>通常，学习编译器如何处理代码的最佳方法就是查看编译器的输出内容。就C++/CX而言，这里有两个输出内容值得研究：组件的元数据（Metadata），以及将C++/CX代码转换为C++的代码。 <br/>
+<strong>（Metadata）</strong>：如上所述，Windows Runtime需要的每一个组件，都包含元数据，元数据里面是关于组件的公共类型的定义和这些类型的公有和保护成员。这些元数据存储在一个以.winmd为扩展名的Windows Metadata（WinMD）文件中。当你使用C++/CX构建一个Windows Runtime组件时，WinMD文件由C++编译器生成；当使用C++（没有C++/CX）构建一个组件时，WinMDx文件从IDL生成。WinMD文件使用的元数据格式与.NET程序集相同。 <br/>
+如果你想知道为了支持C++/CX代码，C++编译器都产生了什么些类型，或者再元数据中，C++/CX语言的构造有什么不同的地方，那么深入考察生成的WinMD文件是非常有用的。由于WinMD文件使用.NET元数据格式，那么可以通过使用.NET framework SDK中的<a href="http://msdn.microsoft.com/en-us/library/f7dy01k1.aspx">ildasm</a>工具，来查看WinMD文件中内容。</p>
+
+<p><strong>生成的代码</strong>：当编译C++/CX代码时，Visual C++编译器将C++/CX转换为与之等价的C++代码。如果你对C++/CX代码转换为什么样的代码的比较好奇，那么查看一下转型是非常有用的。</p>
+
+<p>这里有一个绝密（top-secret）的编译器选项，<strong>/d1ZWtokens</strong>，这个选项可以引起编译器将C++/CX源码生成为C++代码。(当然，这个编译器选项并不是真正的绝密： Deon Brewis在他的excellent //BUILD/ 2011 presentation提到过，<a href="http://channel9.msdn.com/Events/BUILD/BUILD2011/TOOL-690C">&ldquo;Under the covers with C++ for Metro style apps.</a>&ldquo;.请注意，这个选项是没有公开的，它的行为在任何时候都可能会改变。)</p>
+
+<p>这个编译选项（/d1ZWtokens）的输出仅仅是为了某些诊断，所以你不能将输出内容进行拷贝和粘贴，并期望它是编译为as-is的，但是对于演示编译器如何在编译期间处理C++/CX代码已经足够好了。以至于该选项非常重要.输出内容非常详细，包括任何生产的头文件，以及潜在的包含&lt;vccorlib.h>。</p>
+
+<p>这里还有另外两个非常有用的编译选项，同样在Deon的介绍中有提到，这两个选项将有助于你理解类的继承和虚函数表（vtables）是如何布局的。第一个是<strong>/d1ReportAllClassLayout</strong>,这个编译选项会使编译器打印出所有类的类和虚函数表的布局，以及转换单元的功能。另外一个选项是<strong>/d1ReportSingleClassLayoutClyde</strong>，这个会使编译器打印出任意类名包含&#8221;Clyde&#8221;(使用自己的类型名称替换Clyde)的类的类和虚函数表布局。这些选项同样是没有公开的，也不被支持，并且它们只能用于诊断。</p>
+
+<p><strong>下一步&#8230;</strong></p>
+
+<p><strong> <br/>
+</strong></p>
+
+<p>在下一篇文章中（真正的第一篇文章），我讲介绍一个简单的C++/CX类并讨论它是如何映射到Windows Runtime ABI。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2036,120 +2124,6 @@ App to App Picking contract <br/>
 <p>代码下载：</p>
 
 <p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Notifications" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-31</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/02/36/" itemprop="url">Windows Store App开发[009]通知概述(Toast,Tile和Badge)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在开始屏幕上，瓷贴是一个应用程序主要的展现。为了使开始屏幕充满活力，让用户看到的东西可以一目了然（这也是metro 风格的主要目的），你可以在瓷贴上添加通知，当然也可以单独使用它们。</p>
-
-<p>通过本次的学习，你将掌握如下内容：</p>
-
-<p>1、通知的类型</p>
-
-<p>2、通知的分发方法</p>
-
-<p>3、用例图表</p>
-
-<p>&#160;</p>
-
-<p><strong>1、通知的类型</strong></p>
-
-<p>&#160;&#160;&#160; 这里主要有三种通知类型：Toast通知、Tile通知和Badge通知。下面我们就来分别了解一下它们各自的特性。</p>
-
-<p>Toast通知</p>
-
-<p>&#160;</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/14.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb4.png" width="321" height="77" /></a></p>
-
-<p>Toast通知实际上并不是新特征了，在微软的Outlook或者一些社交类客户端应用程序中都可以看到Toast的身影。Toast通知主要用于：时间敏感的个人信息，例如朋友发来了一条消息。Toast通知暗示有一个事件或者内容需要你关注，当点击toast时会启动应用程序，并进入到与通知信息相关的画面。一定要记住：Toast通知可能会丢失或者被用户关闭，所以不能用来当做一种保证交付机制使用。Windows 8 中的Toast通知可以出现在其它程序中，开始屏幕上或者桌面（desktop）。</p>
-
-<p>&#160;</p>
-
-<p>Tile通知</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/24.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb5.png" width="210" height="102" /></a></p>
-
-<p>Tile通知显示在开始屏幕上，所以对于没有运行的程序，这类通知更加有用（当然，当程序在运行的时候，用户是不喜欢来看开始屏幕上的Tile通知）。Tile通知是Windows 8和Windows Phone特有的通知，它们看起来一目了然——用户可以快速的查看最新e-mail的主题，看到当前天气情况，检查收藏的股票信息。这一切信息的获取都不需要启动应用程序。</p>
-
-<p>&#160;</p>
-
-<p>Badge通知</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/35.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb5.png" width="104" height="108" /></a></p>
-
-<p>Badge被认为是Tile通知的特殊类型。badge通知可以显示eleven glyphs或者从1到99之间任意的一个数字，显示的位置在tile的右下角。如上图中数字badge通知在Windows Store tile中，表示有1个可以更新的程序。如果是媒体播放器，可以使用不同的字形（eleven glyphs）来表示播放器是暂停或者播放中。</p>
-
-<p>&#160;</p>
-
-<p><strong>2、通知的分发方法</strong> <br/>
-&#160;&#160;&#160; 有三种重要的分发方法：Local通知，Scheduled通知和Push通知，下面我们也来看看各自的特点 <br/>
-Local通知</p>
-
-<ul>
-<li>只有当程序运行的时候可以使用</li>
-<li>&#160;&#160;&#160;&#160; 主要用于更新tiles和badges</li>
-</ul>
-
-
-<p>&#160;&#160;&#160;&#160;&#160; Local通知是由运行的程序触发的，用于通知用户应用程序状态当前发生的变化，或者有感兴趣的新内容，这些都是有应用程序本身负责生成或者发现的。 <br/>
-Scheduled通知
-*   在某个精确的时间点使用toast通知或者tile通知</p>
-
-<p>&#160;&#160;&#160;&#160;&#160; 开发者可以让Scheduled通知使用local通知在将来某一个时刻运行。典型的例子就是一个会议的提醒，此时应用程序不需要运行起来。 <br/>
-Push通知
-*   从云端更新tiles，显示badges和toast
-*   &#160;&#160;&#160;&#160;&#160; 及时应用程序不允许，也可以进行Push通知</p>
-
-<p>&#160;&#160;&#160; Push通知是最强大和解耦的一种通知机制，但同时它的结构也非常的复杂。通过利用Windows Push Notification Service，push通知可以被分发到你的应用程序，消息的产生不是由你的应用程序决定的，而是由你自己的或者第三方的web services生成并进行内容的管理和分发。 <br/>
-<strong>3、用例图表</strong> <br/>
-&#160;&#160;&#160; 这里我做了一个用例图表，你可以看一下。需要注意的是：Badge通知类型并不能使用Scheduled分发方法。在这里我添加了一行表示那些分发方法需要应用程序是运行的（仅仅是local通知需要）。内容源这一行表示消息内容的生成地方。在local和scheduled通知中，内容的组装是有应用程序负责的，内容的源可能是应用程序自行处理或者从外部服务中轮训获取到；push通知则依赖于外部服务,使用pull和push方法,将数据提供给你的程序。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/4.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb.jpg" width="682" height="191" /></a></p>
 
 <div style="text-align: left">
   <span style="color: #339966"></span>

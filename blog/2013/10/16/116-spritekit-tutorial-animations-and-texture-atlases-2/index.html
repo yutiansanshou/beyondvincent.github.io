@@ -1,0 +1,457 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Sprite Kit教程：动画和纹理图集 2 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Sprite Kit教程：动画和纹理图集 2 注：本文译自Sprite Kit Tutorial: Animations and Texture Atlases 目录 创建一个工程
+纹理图集和熊
+一个简单的动画
+改变动画运动的方向
+在屏幕上让熊移动
+何去何从? 改变动画运动的方向 看起来不错哦！ &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav></header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Sprite Kit教程：动画和纹理图集 2</h1>
+	<div class="entry-content" itemprop="articleBody"><p><img src="/images/2013/10/3.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li>创建一个工程</li>
+<li>纹理图集和熊</li>
+<li>一个简单的动画</li>
+<li><a href="#gbfx">改变动画运动的方向</a></li>
+<li><a href="#ydx">在屏幕上让熊移动</a></li>
+<li><a href="#hqhc">何去何从?</a></li>
+</ul>
+
+
+<h3><a id="gbfx"></a>改变动画运动的方向</h3>
+
+<p>看起来不错哦！下面我们就来看看如何通过触摸屏幕上的点来控制熊的运动方向。在<code>MyScene.m</code>文件中做如下改动：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Add these new methods</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesEnded:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">location</span> <span class="o">=</span> <span class="p">[[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">]</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGFloat</span> <span class="n">multiplierForDirection</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">location</span><span class="p">.</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//walk left</span>
+</span><span class='line'>        <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//walk right</span>
+</span><span class='line'>        <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span> <span class="o">=</span> <span class="n">fabs</span><span class="p">(</span><span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplierForDirection</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="n">walkingBear</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码会根据tap的位置，让<code>touchesEnded</code>方法判断tap处于屏幕正中间的左边还是右边。通过该方法，决定熊的朝向。熊的方向是通过Sprite Kit来改变的(通过负值乘以xScale就可以让熊朝向左边。)</p>
+
+<p>编译并运行程序，一切正常的话，当你在屏幕上点击时，会发现熊的朝向发生了改变。</p>
+
+<p><img src="/images/2013/10/12.png" alt="" /></p>
+
+<h3><a id="ydx"></a>在屏幕上让熊移动</h3>
+
+<p>下面我们让熊可以移动到屏幕的各个位置。</p>
+
+<p>在<code>MyScene.m</code>文件中做如下改动：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Comment out the call to start the bear walking</span>
+</span><span class='line'><span class="c1">//[self walkingBear];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesEnded:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//Stuff from below!</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//add this method</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">bearMoveEnded</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">_bear</span> <span class="n">removeAllActions</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上所示，移除了<code>touchesEnded</code>方法中的所有代码。下面我们一步一步的往里面添加代码。</p>
+
+<p>当想要停止动画的时可以调用方法<code>bearMoveEnded</code>。</p>
+
+<p>下面就从<code>touchesEnded</code>方法开始吧：</p>
+
+<p><code>1) 确定触摸的位置并定义一个变量代表熊的朝向</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">CGPoint</span> <span class="n">location</span> <span class="o">=</span> <span class="p">[[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">]</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'><span class="n">CGFloat</span> <span class="n">multiplierForDirection</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上代码，利用常见的一个方法将触摸的位置转换为node坐标系中的位置。</p>
+
+<p><code>2) 设置速度</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">CGSize</span> <span class="n">screenSize</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'><span class="kt">float</span> <span class="n">bearVelocity</span> <span class="o">=</span> <span class="n">screenSize</span><span class="p">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上，定义了熊移动的速度。可知熊从移动长度为屏幕宽度这么长时，需要3秒钟。由于不同设备的屏幕宽度可能会不同，所以在这里使用了self.frame.size，所以熊的速度应该是屏幕宽度/3秒。</p>
+
+<p><code>3) 计算出熊在X和Y轴中移动的量</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'> <span class="n">CGPoint</span> <span class="n">moveDifference</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">location</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">_bear</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">location</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">_bear</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过简单的利用触摸位置减去熊的位置，计算出熊在X和Y轴上应该移动的距离。</p>
+
+<p><code>4) 计算出实际的移动距离</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">float</span> <span class="n">distanceToMove</span> <span class="o">=</span> <span class="n">sqrtf</span><span class="p">(</span><span class="n">moveDifference</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">moveDifference</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">moveDifference</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">moveDifference</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码是计算出熊实际移动的直线距离(一个直角三角形的斜边：熊当前的位置和触摸位置)。关于游戏中涉及到的数学知识可以看看这本书：<a href="http://www.raywenderlich.com/35866/trigonometry-for-game-programming-part-1">Trigonometry for Game Programming</a>。</p>
+
+<p><code>5) 计算出移动实际距离所需要花费的时间</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">float</span> <span class="n">moveDuration</span> <span class="o">=</span> <span class="n">distanceToMove</span> <span class="o">/</span> <span class="n">bearVelocity</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过移动的实际距离除以移动速度计算出需要花费的时间。</p>
+
+<p><code>6) 需要的话对动画做翻转(Flip)处理</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">moveDifference</span><span class="p">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span> <span class="o">=</span> <span class="n">fabs</span><span class="p">(</span><span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplierForDirection</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码：确定熊往左还是往右移动。如果小于0，则往左移动，否则往右移动。</p>
+
+<p>在这里，你的第一直觉可能是利用图片编辑器创建并使用对应另一个方向的图片。不过，之前我们学习过了如果通过乘法来改变sprite的xScale，进而改变sprite的方向。</p>
+
+<p><code>7) 运行一些action</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">if</span> <span class="p">([</span><span class="n">_bear</span> <span class="nl">actionForKey:</span><span class="s">@&quot;bearMoving&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//stop just the moving to a new location, but leave the walking legs movement running</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">_bear</span> <span class="nl">removeActionForKey:</span><span class="s">@&quot;bearMoving&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">//1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="n">_bear</span> <span class="nl">actionForKey:</span><span class="s">@&quot;walkingInPlaceBear&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//if legs are not moving go ahead and start them</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="n">walkingBear</span><span class="p">];</span>  <span class="c1">//start the bear walking</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">//2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">SKAction</span> <span class="o">*</span><span class="n">moveAction</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveTo:</span><span class="n">location</span> <span class="nl">duration:</span><span class="n">moveDuration</span><span class="p">];</span>  <span class="c1">//3</span>
+</span><span class='line'><span class="n">SKAction</span> <span class="o">*</span><span class="n">doneAction</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">runBlock:</span><span class="p">(</span><span class="n">dispatch_block_t</span><span class="p">)</span><span class="o">^</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Animation Completed&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="n">bearMoveEnded</span><span class="p">];</span>
+</span><span class='line'><span class="p">}];</span> <span class="c1">//4</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">SKAction</span> <span class="o">*</span><span class="n">moveActionWithDone</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">moveAction</span><span class="p">,</span><span class="n">doneAction</span><span class="p">]];</span> <span class="c1">//5</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">_bear</span> <span class="nl">runAction:</span><span class="n">moveActionWithDone</span> <span class="nl">withKey:</span><span class="s">@&quot;bearMoving&quot;</span><span class="p">];</span> <span class="c1">//6</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>停止已有的移动action(因为要准备告诉熊移动到别的地方)。这里使用的key可以开始和停止以此命名的动画的运行。</li>
+<li>如果熊还没有准备移动腿，那么就让熊的腿开始移动，否则它该如何走到新的位置呢。这里使用了我们之前使用过的方法，这个方法可以确保不启动一个已经运行着的动画(以key命名)。</li>
+<li>创建一个移动action，并制定移动到何处，以及需要花费的时间。</li>
+<li>创建一个done action，当熊到达目的地后，该action利用一个block调用一个方法来停止动画。</li>
+<li>将上面的两个action设置为一个顺序action链，就是说让这两个action按照先后顺序运行(第一个运行完之后，再运行第二个)。</li>
+<li>让熊开始运行action，并制定一个key为：&#8221;bearMoving&#8221;。记住，这里的key用来判断熊是否需要移动到新的位置。</li>
+</ol>
+
+
+<p>注意：Sprite Kit支持两种action：<code>sequential</code>和<code>grouped</code>。<code>sequential</code> action表示action按照顺序执行。如果想要action同时运行，那么就使用<code>grouped</code>。</p>
+
+<p>当然，也可以在sequential action中包含grouped action，反之亦然。更多相关内容请看<a href="https://developer.apple.com/library/prerelease/ios/documentation/GraphicsAnimation/Conceptual/SpriteKit_PG/Introduction/Introduction.html#//apple_ref/doc/uid/TP40013043">Sprite Kit Programming Guide</a>中的<code>Adding Actions to Nodes</code>章节。</p>
+
+<p>当动画执行完毕之后，<code>bearMoveEnded</code>会被调用，所有的动画都将被停止，并等待下一个移动方位。</p>
+
+<p>搞定了！</p>
+
+<p>现在编译并运行程序，一切正常的话，那么当点击屏幕时，熊会跟着移动。</p>
+
+<p><img src="/images/2013/10/13.png" alt="" /></p>
+
+<h3><a id="hqhc"></a>何去何从?</h3>
+
+<p>这里是本文涉及到的<a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/09/AnimatedBear.zip">工程示例</a>。</p>
+
+<p>下面这些想法可以让动画更加有趣：</p>
+
+<ul>
+<li>尝试在方法<code>walkingBear</code>中增加或者减慢运动的速度，看看效果</li>
+<li>试着在屏幕上同时显示多个熊。提示：创建多个sprite node，并赋予action。</li>
+</ul>
+
+
+<p>至此，你应该已经知道如何使用动画了。</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
+
+<p>……Sprite Kit教程：动画和纹理图集 2 结束……</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://BeyondVincent.github.io/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/';
+        var disqus_url = 'http://BeyondVincent.github.io/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

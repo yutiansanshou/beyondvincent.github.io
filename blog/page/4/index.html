@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 12th, 2013 iOS, iOS7新特征 iOS7新特征汇总[02]新特征介绍2 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[01]新特征介绍1）中，笔者介绍了在iOS7中用户界面的改变和多任务的增强。本文将继续介绍iOS7中的新特征： &hellip;">
+	<meta name="description" content="Jun 13th, 2013 iOS, iOS7新特征 iOS7新特征汇总[03]新特征介绍3 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[02]新特征介绍2）中，笔者介绍了在iOS7中关于游戏、地图和AirDrop相关内容。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,111 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 13<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ios7xin-te-zheng/'>iOS7新特征</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/13/86/" itemprop="url">iOS7新特征汇总[03]新特征介绍3</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>上一篇文章（<a href="http://beyondvincent.com/?p=1306" target="_blank"><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[02]新特征介绍2</span></span></span></strong></a>）中，笔者介绍了在iOS7中关于游戏、地图和AirDrop相关内容。本文将继续介绍iOS7中的新特征：程序间的音频（inter-App Audio）、点对点的连接、新增的Framework。</p>
+
+<h2><strong><span style="color: #339966;">程序间的音频（inter-App Audio）</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/InterAppAudio2013.png"><img class="alignnone size-full wp-image-1325" alt="InterAppAudio2013" src="http://beyondvincent.com/wp-content/uploads/2013/06/InterAppAudio2013.png" width="853" height="480" /></a></p>
+
+<p><span style="color: #339966;">Audio Unit framework (AudioUnit.framework)</span>现在支持程序间的音频了——可以在同一台设备上不同的两个程序之间发送MIDI命令和音频流。例如，通过该功能，你可以使用一个程序来录制音乐，然后将录制的音乐音乐发送到另外一个能对音乐进行处理的程序中。</p>
+
+<p>为了公开（vend）你程序中的音频数据，需要发布一个<span style="color: #339966;">AURemoteIO</span>实例来充当音频组件——对其它进程是可见的。在iOS7里面，要在另外一个程序中使用程序间的音频功能，请使用音频组件发现接口。【翻译自苹果官网中的如下内容，还不是太理解具体意思，如果大家知道的话，可以告诉我，谢谢！】</p>
+
+<blockquote><p><em>To vend your app’s audio data, publish a AURemoteIO instance as an audio component that is visible to other processes. to use audio features from another app, use the audio component discovery interface in iOS 7.</em></p></blockquote>
+
+<p>更多相关内容请看：Audio Toolbox Framework Reference</p>
+
+<h2><strong><span style="color: #339966;">点对点的连接</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/apple-wwdc-2013-3a.jpg"><img class="alignnone size-full wp-image-1326" alt="apple-wwdc-2013-3a" src="http://beyondvincent.com/wp-content/uploads/2013/06/apple-wwdc-2013-3a.jpg" width="680" height="400" /></a></p>
+
+<p>通过<span style="color: #339966;">Multipeer Connectivity framework (MultipeerConnectivity.framework)</span>可以查找附近的设备，并直接与这些设备进行通讯——不需要通过互联网。该Framework具有这样的特点：很容易的创建多点（multipeer）会话、支持稳定、可靠和实时的数据传输。可以看出，通过该Framework，你的程序可以与附近的设备进行通讯，并做到数据的无缝交换。</p>
+
+<p>该Framework提供了两种方式来查找并管理网络服务：编程方式和基于UI选项。可以使用<span style="color: #339966;">MCNearbyServiceBrowser</span>类以编程的方式查找并管理设备。另外，我们可以将<span style="color: #339966;">MCPeerPickerViewController</span>集成到程序中——用来显示用户可以选择的设备列表。</p>
+
+<p>更多相关信息，请阅读：Multipeer Connectivity Framework Reference</p>
+
+<h2><strong><span style="color: #339966;">新增的Framework</span></strong></h2>
+
+<p>在iOS7中，新增了如下一些Framework：</p>
+
+<ol>
+<li>Game Controller framework(<span style="color: #339966;">GameController.framework</span>)：提供了与游戏相关的硬件通讯接口。</li>
+<li>Sprite Kit framework(<span style="color: #339966;">SpriteKit.framework</span>)：提供了基于精灵（sprite-based）的动画和图形渲染。</li>
+<li>Multipeer Connectivity framework(<span style="color: #339966;">MultipeerConnectivity.framework</span>)：提供设备间点对点通讯的功能。</li>
+<li>JavaScript Core framework (<span style="color: #339966;">JavaScriptCore.framework</span>)：提供了用Objective-C封装的大量标准JavaScript对象。通过该framework可以对JavaScript代码进行评估（evaluate），以及解析JSON。</li>
+<li>Media Accessibility framework (<span style="color: #339966;">MediaAccessibility.framework</span>)：管理媒体文件中字幕（closed-caption）内容的显示。通过该Framework与settings的结合，可以让用户开启字幕的显示。</li>
+<li>Safari Services framework (<span style="color: #339966;">SafariServices.framework</span>)：通过该framework，可以通过编程的方式将URL添加到用户的Safari阅读列表中。</li>
+</ol>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130612-20.png"><img class="alignnone size-full wp-image-1327" alt="QQ20130612-20" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130612-20.png" width="970" height="499" /></a></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
+
+<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
+
+<p>来自唐巧的一个微信公众账号：<span style="color: #339966;">iosDevTips</span>——基本每天都会有关于iOS开发的精彩内容分享。<br/>
+来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
+
+<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
+
+<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
+新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+微信公众账号：<strong>破船之家</strong><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-13</time>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1651,230 +1756,6 @@ namespace BV_TileButton
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/76/" itemprop="url">Windows Store App开发[047]自定义Popup</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>小引</h3>
-
-<p>在<a href="http://beyondvincent.com/2013/06/06/windows-store-app%e5%bc%80%e5%8f%91044%e8%87%aa%e5%ae%9a%e4%b9%89messagedialog/"><u>上一篇</u></a>文章中，我利用Popup和UserControl自定义了MessageDialog。那么这篇文章我接着自定义Popup。这次的效果是在画面内弹出一个对话框，对话框会以不同的方式弹出。当点击对话框以外的位置时，对话框会自动消失。</p>
-
-<h3><a name="t4"></a><a name="t4"></a><a name="t4"></a>自定义Popup的关键技术点</h3>
-
-<p>利用UserControl控件，在里面添加Popup，然后对外界暴露一个是否显示对话框的接口。</p>
-
-<p>准备好Popup是用到的图片资源，如下两个图：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/116.jpg"><img title="1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb14.jpg" width="204" height="201" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/213.png"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb14.png" width="244" height="164" /></a></p>
-
-<p>&#160;</p>
-
-<h3>制作步骤</h3>
-
-<p>1、新建空白工程，名称为BV_CustomPopup</p>
-
-<p>2、在项目工程上单击右键，选择添加->新建项->选择用户控件->输入名称BV_CustomPopup.xaml，然后确定</p>
-
-<p>3、在BV_CustomPopup.xaml中输入如下内容：</p>
-
-<p>&lt;UserControl</p>
-
-<p>&#160;&#160;&#160; x:Class=&ldquo;BV_WindowsRuntimeComponent.UI.BV_CustomPopup&rdquo;</p>
-
-<p>&#160;&#160;&#160; xmlns=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml/presentation">http://schemas.microsoft.com/winfx/2006/xaml/presentation</a>&rdquo;</p>
-
-<p>&#160;&#160;&#160; xmlns:x=&ldquo;<a href="http://schemas.microsoft.com/winfx/2006/xaml">http://schemas.microsoft.com/winfx/2006/xaml</a>&rdquo;</p>
-
-<p>&#160;&#160;&#160; xmlns:local=&ldquo;using:BV_WindowsRuntimeComponent.UI&rdquo;</p>
-
-<p>&#160;&#160;&#160; xmlns:d=&ldquo;<a href="http://schemas.microsoft.com/expression/blend/2008">http://schemas.microsoft.com/expression/blend/2008</a>&rdquo;</p>
-
-<p>&#160;&#160;&#160; xmlns:mc=&ldquo;<a href="http://schemas.openxmlformats.org/markup-compatibility/2006">http://schemas.openxmlformats.org/markup-compatibility/2006</a>&rdquo;</p>
-
-<p>&#160;&#160;&#160; mc:Ignorable=&ldquo;d&rdquo; Height=&ldquo;200&rdquo; Width=&ldquo;300&rdquo;></p>
-
-<p>&#160;&#160;&#160; <Popup x:Name="popup" IsLightDismissEnabled="True" ></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Popup.ChildTransitions></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TransitionCollection></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<PaneThemeTransition Edge="Bottom" />&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<AddDeleteThemeTransition/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ContentThemeTransition/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EntranceThemeTransition/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<EdgeUIThemeTransition Edge="Bottom"/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<ReorderThemeTransition/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;!&#8211;<RepositionThemeTransition/>&#8211;></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </TransitionCollection></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Popup.ChildTransitions></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Grid Width="300" Height="200" ></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;Grid.Background></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ImageBrush ImageSource="../picture/PopupBackground.png"></ImageBrush></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/Grid.Background></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <Image HorizontalAlignment="Left" Height="57" Margin="220,116,0,0" VerticalAlignment="Top" Width="59" Source="ms-appx:///BV_WindowsRuntimeComponent/picture/1.jpg"/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <TextBlock FontSize="30"&#160; HorizontalAlignment="Center" Height="47" Margin="38,64,0,0" TextWrapping="Wrap" Text="世界破船最大" VerticalAlignment="Top" Width="180"/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; </Grid></p>
-
-<p>&#160;&#160;&#160; </Popup></p>
-
-<p></UserControl></p>
-
-<p>大家注意，上面代码中，我们可以给Popup添加如下一些动画效果：</p>
-
-<p><PaneThemeTransition Edge="Bottom" /></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <AddDeleteThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ContentThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EntranceThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <EdgeUIThemeTransition Edge="Bottom"/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <PopupThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <ReorderThemeTransition/></p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <RepositionThemeTransition/></p>
-
-<p>4、在BV_CustomPopup.xaml.cs文件中，添加如下代码：</p>
-
-<p>using System;</p>
-
-<p>using System.Collections.Generic;</p>
-
-<p>using System.IO;</p>
-
-<p>using System.Linq;</p>
-
-<p>using Windows.Foundation;</p>
-
-<p>using Windows.Foundation.Collections;</p>
-
-<p>using Windows.UI.Xaml;</p>
-
-<p>using Windows.UI.Xaml.Controls;</p>
-
-<p>using Windows.UI.Xaml.Controls.Primitives;</p>
-
-<p>using Windows.UI.Xaml.Data;</p>
-
-<p>using Windows.UI.Xaml.Input;</p>
-
-<p>using Windows.UI.Xaml.Media;</p>
-
-<p>using Windows.UI.Xaml.Navigation;</p>
-
-<p>// The User Control item template is documented at <a href="http://go.microsoft.com/fwlink/?LinkId=234236">http://go.microsoft.com/fwlink/?LinkId=234236</a></p>
-
-<p>namespace BV_WindowsRuntimeComponent.UI</p>
-
-<p>{</p>
-
-<p>&#160;&#160;&#160; public sealed partial class BV_CustomPopup : UserControl</p>
-
-<p>&#160;&#160;&#160; {</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public BV_CustomPopup()</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; this.InitializeComponent();</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; public bool IsOpen</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; {</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; get { return popup.IsOpen; }</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; set { popup.IsOpen = value; }</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; }</p>
-
-<p>&#160;&#160;&#160; }</p>
-
-<p>}</p>
-
-<p>5、在MainPage.xaml.cs文件中，添加如下代码：</p>
-
-<p>private void btn1_Copy2_Click(object sender, RoutedEventArgs e)</p>
-
-<p>{</p>
-
-<p>&#160;&#160;&#160; BV_WindowsRuntimeComponent.UI.BV_CustomPopup popup = new BV_WindowsRuntimeComponent.UI.BV_CustomPopup();</p>
-
-<p>&#160;&#160;&#160; grid.Children.Add(popup);</p>
-
-<p>&#160;&#160;&#160; popup.IsOpen = true;</p>
-
-<p>}</p>
-
-<p>6、运行效果如下：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/38.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb8.jpg" width="534" height="414" /></a></p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/CustomPopup" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
 </div>
 
 

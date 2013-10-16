@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[038]FlipView控件的介绍和使用 1、FlipView控件介绍 FliView控件用来显示集合中的items，用户可以按顺序(往前或往后)的翻转这些item。 &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[54]Step by Step 第二季 小引：本人2012年曾在DevDiv社区陆陆续续写了一些关于Windows Store App开发的文章（&#160;Windows &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,43 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/66/" itemprop="url">Windows Store App开发[54]Step by Step 第二季</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>小引：本人2012年曾在DevDiv社区陆陆续续写了一些关于Windows Store App开发的文章（<a href="http://www.devdiv.com/Windows_Metro-windows_metro_app_step_by_step_-thread-130633-1-1.html" target="_blank">&#160;<span style="text-decoration: underline"><span style="color: #339966; text-decoration: underline">Windows 8 Metro App开发Step by Step</span></span></a>）。由于时间和工作关系，很长时间没有更新了。近期很多读者反映希望继续更新。在这里感谢大家的支持，从今天起，我将继续更新Windows Store apps开发Step by Step系列文章，并且在我的博客<span style="text-decoration: underline"><span style="color: #339966"><a href="http://BeyondVincent.com" target="_blank"><span style="color: #339966; text-decoration: underline">BeyondVincent.com</span></a></span></span>上发表，本系列文章涉及到的代码会放到我的GitHub上：<span style="text-decoration: underline"><span style="color: #339966"><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep" target="_blank"><span style="color: #339966; text-decoration: underline">WindowsStoreAppStepByStep</span></a></span></span>，不再更新至DevDiv社区。 有更新我会在微博上通知大家：<span style="text-decoration: underline"><span style="color: #339966"><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline"><a href="http://www.weibo.com/beyondvincent">http://www.weibo.com/beyondvincent</a></span></a></span></span> 注意：在DevDiv更新至第53篇，所以第二季从第54篇开始。 PS：第55篇内容将介绍如何通过编程的方式设置锁屏画面。 <a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529201429.png"><img class="alignnone size-full wp-image-702" alt="QQ截图20130529201429" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529201429.png" width="1279" height="799" /></a> <div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-29</time></span>
+</div></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1266,111 +1303,6 @@ private void Image_ManipulationCompleted_1(object sender, ManipulationCompletedR
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/56/" itemprop="url">Windows Store App开发[029]使用Blend设计ButtonStyle</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>本这篇文章中，我将向大家介绍如何使用Blend for Visual Studio来设计ButtonStyle。 Blend for Visual Studio 为我们提供了一款可视化工具集，可以充分利用 Windows 8 全新而美观的界面。 Blend 在UX设计方面强大的功能，如编辑UI、动画、模板等。在实际开发中，Blend与Visual Studio搭配使用，以达到事半功倍之效果。</p>
-
-<p>&#160;&#160;&#160; 今天我介绍的内容很简单,就是如何自定义Button选中状态的背景色&#8230;.当然,利用Blend还可以实现更丰富的功能,我在这里,仅起抛砖引玉的作用.</p>
-
-<p>&#160;&#160;&#160; 最后，附上代码工程</p>
-
-<p>1、打开Blend for Visual Studio，如下图,我已经将Blend pin到了我的开始画面中.</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/18.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb8.jpg" width="682" height="428" /></a></p>
-
-<p>2、在程序启动完后，根据向导创建一个项目,如下,我创建了一个名为MyButtonStyle的项目</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/26.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb6.jpg" width="682" height="397" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/33.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb3.jpg" width="608" height="507" /></a> </p></p>
-
-<p>3、创建好后的界面</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/45.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb5.jpg" width="682" height="410" /></a></p>
-
-<p>4、在画面中，添加一个Button按钮，如下图</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/53.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb3.jpg" width="682" height="410" /></a></p>
-
-<p>5、进入模板编辑模式</p>
-
-<p>菜单中的 对象->编辑模板->编辑副本</p>
-
-<p>根据提示，输入名称，如下图</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/62.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb2.jpg" width="682" height="426" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/72.jpg"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb2.jpg" width="396" height="246" /></a></p>
-
-<p>6、如下图把,设置按钮press状态的背景色(同样方法,我也设置了normal状态的背景色)</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/81.jpg"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb1.jpg" width="682" height="406" /></a></p>
-
-<p>7、设置好之后,在下面图中看到,相关资源和button</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/8.1.jpg"><img title="8.1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="8.1" src="http://beyondvincent.com/wp-content/uploads/2013/06/8.1_thumb.jpg" width="682" height="508" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/91.jpg"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb1.jpg" width="682" height="478" /></a></p>
-
-<p>8、将创建好的资源copy至VS需要使用的xaml中</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/9.1.jpg"><img title="9.1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9.1" src="http://beyondvincent.com/wp-content/uploads/2013/06/9.1_thumb.jpg" width="682" height="418" /></a> </p> </p> </p> </p></p>
-
-<p>9、运行效果(normal和press状态两个图)</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/111.jpg"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb.jpg" width="682" height="410" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/121.jpg"><img title="12" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="12" src="http://beyondvincent.com/wp-content/uploads/2013/06/12_thumb.jpg" width="682" height="410" /></a></p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/BlendUse" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
 </div>
 
 
