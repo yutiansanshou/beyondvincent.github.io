@@ -8,7 +8,7 @@ published: ture
 
 ---
 
-{% img /images/2013/10/1.png %}
+{% img /images/2013/10/2.png %}
 
 <!--more-->
 
