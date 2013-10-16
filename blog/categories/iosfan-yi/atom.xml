@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-14T21:54:43+08:00</updated>
+  <updated>2013-10-16T12:38:42+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,234 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 1]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1/"/>
+    <updated>2013-10-16T12:40:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/10/1.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><a href="#cjgc">创建一个工程</a></li>
+<li><a href="#wltj">纹理图集和熊</a></li>
+<li><a href="#jddh">一个简单的动画</a></li>
+<li>改变动画运动的方向</li>
+<li>在屏幕上让熊移动</li>
+<li>何去何从?</li>
+</ul>
+
+
+<p>从本文，可以学习到如何使用iOS 7中的Sprite Kit框架创建一个简单的动画：在屏幕上行走的熊。</p>
+
+<p>另外还可以学习到如何使用纹理图集来制作动画效果，如何在触摸事件发生时让熊移动，以及改变熊运动的方向。</p>
+
+<p>学习本文之前，最好先看看下面的文章：
+<a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
+
+<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<p>下面我们就开始吧。</p>
+
+<h3><a id="cjgc"></a>创建一个工程</h3>
+
+<p>我们先创建好一个工程架子——选择<code>File\New Project…</code>，在<code>iOS Application</code>中选择<code>Sprite Kit Game</code>，如下图所示：</p>
+
+<p><img src="/images/2013/10/4.png"></p>
+
+<p>选择<code>Next</code>，并将工程命名为<code>AnimatedBear</code>，把Class Prefix中的内容清除掉，并将Devices选择为<code>iPad</code>，如下图所示：</p>
+
+<p><img src="/images/2013/10/5.png"></p>
+
+<p>接着选择<code>Next</code>，将工程保存到磁盘中。</p>
+
+<p>现在编译并运行程序的话，当点击屏幕时，可以看到在屏幕中有一个自动旋转的飞船。如下图所示：</p>
+
+<p><img src="/images/2013/10/6.png"></p>
+
+<p>这样工程架子就准备好了，下面我们去寻找一些熊的动画资源——从这里下载即可：<a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/08/BearImages.zip">BearImages Art</a>。如下图所示：</p>
+
+<p><img src="/images/2013/10/7.jpg" alt="熊的示例图片" /></p>
+
+<p>上面下载到的图片有所需要的最大分辨率——iPad retina显示(2X)和non-retina版本(1x)。这些文件的命名方式为bear1..n@2x~ipad和bear1..n~ipad.png。</p>
+
+<p>在这里，构建一个动画，你可以只需要将这些图片直接添加到Sprite Kit工程中即可。不过，还有另外一种更加方便的方法来构建动画——使用纹理图集。</p>
+
+<h3><a id="wltj"></a>纹理图集和熊</h3>
+
+<p>如果之前你没使用过纹理图集，那你可以把它想象为一副很大的图片，其中包括动画中需要使用到的各种图片。这个图集可以看做是一个文件，它指定了每个sprite的边界范围，当在代码中需要使用时，可以将这些sprite取出来。</p>
+
+<p>使用纹理图集是因为Sprite Kit和图形引擎会对其做相应的优化处理。<code>后面这段话暂时不知道什么意思:</code></p>
+
+<p>```</p>
+
+<pre><code>If you use sprites within a texture atlas properly, rather than making one OpenGL ES draw call per sprite it just makes one per texture atlas sheet.
+</code></pre>
+
+<p>```</p>
+
+<p>简而言之——使用纹理图集会非常的快，特别是有大量sprite的时候！</p>
+
+<p>Xcode会自动的生成这个纹理图集文件，并指定好每个sprite的边界范围，这样当在代码中需要用到某个sprite的时候，可以方便取出来。这一切都会自动处理，开发者不用亲力为之。</p>
+
+<p><code>
+注意：当纹理图集有问题时(例如错误的图片等)，那么建议clean一下工程(Product\Clean)——这样可以强制让纹理图集重新构建。
+</code></p>
+
+<p>为纹理图集创建一个文件夹，并将图片文件放置到该文件夹中，然后在文件夹名称尾部添加<code>.atlas</code>。这样Xcode就能识别出.atlas扩展名，进而自动的将图片合并为一个纹理图集。</p>
+
+<p>之前下载的图片资源中有一个名为<code>BearImages.atlas</code>的文件夹，里面包含了各种分辨率的图片(是其它两个文件夹中的图片合集)。</p>
+
+<p>将名为<code>BearImages.atlas</code>的文件夹拖拽到程序中，如下图所示：</p>
+
+<p><img src="/images/2013/10/8.png" alt="" /></p>
+
+<p>当释放鼠标时，会看到如下图片中的对话框：是关于如何添加到工程中的。确保选中这三项：<code>Copy items into destination group’s folder</code>, <code>Create groups for any added folder</code>, 和 <code>the AnimatedBear</code>，然后点击<code>Finish</code>：</p>
+
+<p><img src="/images/2013/10/9.png" alt="" /></p>
+
+<p>在Xcode中展开这个文件夹<code>BearImages.atlas</code>，会看到如下内容：</p>
+
+<p><img src="/images/2013/10/10.png" alt="" /></p>
+
+<p>下面，是时候让熊动起来了！</p>
+
+<h3><a id="jddh"></a>一个简单的动画</h3>
+
+<p>这里我们先把熊显示在屏幕中间，并开启永久循环动画。</p>
+
+<p>此处主要都是在<code>MyScene.m</code>中写代码。打开这个文件，并用下面的代码替换之：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;AVFoundation/AVFoundation.h></h1>
+
+<h1>import &ldquo;MyScene.h&rdquo;</h1>
+
+<p>@implementation MyScene
+{</p>
+
+<pre><code>SKSpriteNode *_bear;
+NSArray *_bearWalkingFrames;
+</code></pre>
+
+<p>}</p>
+
+<p>&ndash;(id)initWithSize:(CGSize)size
+{</p>
+
+<pre><code>if (self = [super initWithSize:size]) {
+    /* Setup your scene here */
+
+    self.backgroundColor = [SKColor blackColor];
+
+    // TODO...
+
+}
+return self;
+</code></pre>
+
+<p>}</p>
+
+<p>&ndash;(void)update:(CFTimeInterval)currentTime {</p>
+
+<pre><code>/* Called before each frame is rendered */
+</code></pre>
+
+<p>}</p>
+
+<p>@end
+```</p>
+
+<p>上面的代码很简单，只是定义了几个稍后会用到的变量。编译并运行一下，确保没有错误——会看到屏幕是黑色的。</p>
+
+<p>接下来要让熊动起来，有5步需要处理，我们就来看看吧。</p>
+
+<p>记得将下面的代码添加到<code>initWithSize</code>方法的<code>TODO</code>位置。</p>
+
+<p><code>1) 构建一个用于保存行走帧(walking frame)</code></p>
+
+<p><code>objc
+NSMutableArray *walkFrames = [NSMutableArray array];
+</code>
+<code>2) 加载纹理图集</code></p>
+
+<p><code>objc
+SKTextureAtlas *bearAnimatedAtlas = [SKTextureAtlas atlasNamed:@"BearImages"];
+</code>
+上面的代码会从程序bundle的数据区中创建一个图集。Sprite Kit会根据设备的寻找对应分辨率的图片文件，在iPad retina上会使用BearImages@2x~ipad.png。</p>
+
+<p><code>3) 构建帧列表</code></p>
+
+<p>```objc
+int numImages = bearAnimatedAtlas.textureNames.count;
+for (int i=1; i &lt;= numImages/2; i++) {</p>
+
+<pre><code>NSString *textureName = [NSString stringWithFormat:@"bear%d", i];
+SKTexture *temp = [bearAnimatedAtlas textureNamed:textureName];
+[walkFrames addObject:temp];
+</code></pre>
+
+<p>}
+_bearWalkingFrames = walkFrames;
+```</p>
+
+<p>上面的代码根据图片名称从图集中循环获取到一个帧列表(这些图片的命名为bear1.png->bear8.png)，注意到<code>numImages</code>这个变量了吗？它为啥要除以2呢？</p>
+
+<p>这是因为：纹理图集包含了所有分辨率的图片文件(non-retina和retina)。共有16个文件，每种分辨率有8个文件。要想加载某种分辨率的图片，就需要除以2。这样通过名称和计数器，就能获取到正确的分辨率图片。</p>
+
+<p><code>4) 创建sprite，并将其位置设置为屏幕中间，然后将其添加到场景中</code></p>
+
+<p><code>objc
+SKTexture *temp = _bearWalkingFrames[0];
+_bear = [SKSpriteNode spriteNodeWithTexture:temp];
+_bear.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+[self addChild:_bear];
+[self walkingBear];
+</code></p>
+
+<p>利用帧列表的第一帧构建一个sprite，然后将其放置到屏幕正中间。最后调用walkingBear方法，让熊开始走动。</p>
+
+<p><code>5) 在initWithSize方法后面添加一个新的方法walkingBear</code></p>
+
+<p>```objc
+&ndash;(void)walkingBear
+{</p>
+
+<pre><code>//This is our general runAction method to make our bear walk.
+[_bear runAction:[SKAction repeatActionForever:
+                  [SKAction animateWithTextures:_bearWalkingFrames
+                                   timePerFrame:0.1f
+                                         resize:NO
+                                        restore:YES]] withKey:@"walkingInPlaceBear"];
+return;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的这个action会以0.1秒的间隔开始播放各帧。如果你的代码再次调用这个方法使动画重新开始的话，<code>walkingInPlaceBear</code>这个key会强制移除动画。这对于确保动画不相互干扰非常重要。<code>withKey</code>参数还提供了一个钟方法对动画进行检查，来判断其是否通过名称运行的。</p>
+
+<p>这个action是永久重复的，内部的actionan <code>imateWithTextures</code>会按顺序动画播放帧列表中的图片。</p>
+
+<p><code>完工!</code></p>
+
+<p>现在编译并运行程序，一切正常的话，会在屏幕中看到一个会动的熊，如下图所示：</p>
+
+<p><img src="/images/2013/10/11.png" alt="" /></p>
+
+<p>……Sprite Kit教程：动画和纹理图集 1 结束……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：初学者 3]]></title>
@@ -950,79 +1178,6 @@ AVMetadataObjectTypeAztecCode
 <p>上面只是列出了少许新内容，你可以通过苹果提供的文档<a href="https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html">What’s New in iOS</a> 查阅更多相关内容。</p>
 
 <p>注：本文是iOS 7开发者指南中的11篇中的第1篇。你可以在<a href="http://www.doubleencore.com/2013/09/essential-ios-7-developers-guide">这里</a>看到指南的全部内容。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Xcode 5中的Interface Builder更有利于团队协作开发]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"/>
-    <updated>2013-09-04T11:45:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams</id>
-    <content type="html"><![CDATA[<h2><strong>小引</strong></h2>
-
-<p>在iOS开发中，开发者有各种理由选择用代码来构建界面，其中最多的理由就是Interface Builder绘制的代码不利于团队间协作(代码的可读性和合并)。虽然Interface Builder来绘制界面有诸多优势，但是由于致命的缺陷，许多开发团队不得不远离它，当然也有一些开发团队为了在协同开发时也使用IB来绘制界面，他们尽量确保同一时期只由一个人来操作某个xib文件，以此避免提交代码的时候需要合并xib文件。然而，在Xcode 5中，苹果的开发团队已经对xib文件格式做了大量的简化工作。本文就来简要的看看相关内容。</p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://nilsou.com/blog/2013/08/07/xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"><code>Xcode 5 Finally Makes Interface Builder a Viable Option for Teams</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Xcode 4中xib文件的格式</li>
-<li>Xcode 5中xib文件的格式</li>
-<li>小结</li>
-</ul>
-
-
-<p>上周我将代码merge到我的working branch时，注意到以前没曾见过的提示：</p>
-
-<p><img src="/images/2013/09/1.png"></p>
-
-<p>Git会自动合并<strong>xib文件</strong>！我在想，Xcode 5中肯定对xib文件的格式做了修改，所以我准备深入研究一下。</p>
-
-<p>原来由Xcode 5生成的xib文件是一种全新的格式。看起来苹果这次对xib文件格式的变更将有助于开发团队开始考虑使用IB来绘制界面。</p>
-
-<h3><strong>* Xcode 4中xib文件的格式</strong></h3>
-
-<p>为了演示xib文件格式在Xcode 4和Xcode 5中的差异，我首先在Xcode 4中创建了一个新的xib文件，并添加了一些view进去：一个UIScrollView，该scrollview中包含一些UIButton、UILable和TextView等。</p>
-
-<p><img src="/images/2013/09/2.png"></p>
-
-<p>然后我在工程导航窗口中右键单击该文件，并选择<code>Open As &gt; Source Code</code>。下面的链接中是看到的内容：</p>
-
-<p><a href="https://gist.github.com/nilsou/6057457">Xcode 4生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
-
-<p>可以看到，这么简单的一个view居然有<code>1108行</code>代码！这太多了。</p>
-
-<p>对开发者来说它的可读性非常的糟糕。这是开发者为什么不喜欢xib文件的主要原因(由此放弃使用interface builder)。</p>
-
-<p>更糟糕的是这个xib文件的格式还具有不确定性。也就是说如果我在Interface Builder创建相同的UI界面，但是我们看到的文件内容并不是相同的。这就导致xib文件的合并非常的困难，甚至不可能进行合并。这事开发者不使用xib文件的另外一个重要原因。</p>
-
-<h3><strong>* Xcode 5中xib文件的格式</strong></h3>
-
-<p>接着，我在Xcode 5中打开同一个工程。当在Xcode 5中打开用Xcode 4创建的xib文件时，会提示将文件升级到新的格式。这里需要注意的是升级之后的文件只能在Xcode 5中打开，这种新格式的文件不能在老版本中的Xcode中打开。所以，如果是团队协作开发，那么升级的时候，需要确保所有的开发者都使用Xcode 5。</p>
-
-<p><img src="/images/2013/09/3.png"></p>
-
-<p>我点击<code>Upgrade</code>，然后再次打开xib文件的source code，看看有什么变化。如下链接中所示：</p>
-
-<p><a href="https://gist.github.com/nilsou/6057474">Xcode 5生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
-
-<p><code>133行</code>！这与Xcode 4中创建的xib文件相差约10倍。可见苹果的开发团队已经对xib文件格式做了大量的简化。</p>
-
-<p>再看看里面的具体内容，可以看出它的可读性也加强了。xib文件中的源代码现在也能够反应出view的层次(Interface Builder左边看到的内容结构！)，等熟悉之后，开发者可以直接对这个xml代码进行编写。</p>
-
-<p>最重要的一点，可以看出Xcode 5生成的xib文件内容源码位置是确定的。这非常利于文件的合并。</p>
-
-<h3><strong>小结</strong></h3>
-
-<p>这种新的格式带来的最大好处不仅仅是增强开发者对xib文件的可读性，另外在大多数情况下，git还可以对xib文件进行自动合并，不用开发者手动进行。</p>
-
-<p>现在如果还有开发者告诉你他不想用xib文件，那么请把这篇文章发给他看看吧，我相信已经没有太多理由不使用xib文件了。</p>
-
-<p>其实在Xcode 5中不仅对Interface Builder进行了改善，还有其它一些功能也做了改进，例如自动布局约束的设置已经没有以前痛苦了。</p>
 ]]></content>
   </entry>
   
