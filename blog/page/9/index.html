@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 2nd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[009]通知概述(Toast,Tile和Badge) 在开始屏幕上，瓷贴是一个应用程序主要的展现。为了使开始屏幕充满活力，让用户看到的东西可以一目了然（这也是metro &hellip;">
+	<meta name="description" content="Jun 2nd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[010]通知使用(Toast,Tile和Badge) 在我写的上一个帖子中，我概述了Windows 8 中的通知，介绍了通知的类型（tile，toast和badges）， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,258 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 2<span>nd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/02/37/" itemprop="url">Windows Store App开发[010]通知使用(Toast,Tile和Badge)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在我写的<a href="http://beyondvincent.com/category/windows_store_app-develop/"><strong><u>上一个帖子</u></strong></a>中，我概述了Windows 8 中的通知，介绍了通知的类型（tile，toast和badges），以及通知的分发机制(local，scheduled和push)。在这一篇帖子中，我将以编程者的角度来给大家介绍我目前对通知的了解情况，希望能够起到抛砖引玉的作用，更多功能还需要等待你来实现。</p>
+
+<p>&#160;&#160;&#160; 注：1、本次主要以代码的形式来讲解通知的使用</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 2、本次讲解的通知分发方法为local[关于分发方法，请参考我的<a href="http://beyondvincent.com/category/windows_store_app-develop/"><strong><u>上一个帖子</u></strong></a></p>
+
+<p>通过本次的学习，你将初步掌握如下内容：</p>
+
+<p>1、准备工作</p>
+
+<p>2、Toast通知的使用</p>
+
+<p>3、Tile通知的使用</p>
+
+<p>4、Badge通知的使用 <br/>
+5、最后附上程序相关代码工程</p>
+
+<p>&#160;</p>
+
+<p><strong>1、准备工作</strong></p>
+
+<p>&#160;&#160;&#160; a) 首先以Blank App创建一个应用程序。然后打开Package.appxmanifest文件，按照下面图中的标准，制作了3个图片，并添加到工程中。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/15.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb5.png" width="682" height="183" /></a></p>
+
+<p>&#160;</p>
+
+<p>b) 获取 NotificationsExtensions 库</p>
+
+<p>&#160;&#160;&#160; 由于Tile、Toast和Badge使用的都是xml模版，为了简化对xml的操作，这里我们可以使用NotificationsExtensions对象库模型，它提供磁贴、锁屏提醒和 Toast 通知 XML 模板内容，而无需直接使用 XML 文档对象模型 (DOM)。 当你在 Microsoft Visual Studio 中使用此库时，你可以获得下列好处：</p>
+
+<ul>
+<li>智能感知，它将可用的通知 XML 标记和属性列为对象属性。这样，开发人员将无需参考架构文档来获取有关元素和结构的信息。</li>
+<li>工厂函数，可通过该函数来创建主干通知。然后，你可以用你的内容填充这些通知。</li>
+<li>一种在你的通知负载中同时包括方形和加宽磁贴版本（这是最佳做法！）的简化方式。</li>
+<li>一种查找和填充文本和图像属性的有用方式。可通过它们的名称来获取有关它们在模板中的预期使用、大小或位置的更多信息。</li>
+</ul>
+
+
+<p>具体的使用操作说明微软的官网上有详细内容，我就不细说了，参考下面的链接：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/hh969156.aspx"><u>使用 NotificationsExtensions 填充锁屏提醒、磁贴和 Toast 模板</u></a></p>
+
+<p>这里我就默认你已经按照上面链接给出的操作步骤，完成了对NotificationsExtensions库的引用。</p>
+
+<p>&#160;</p>
+
+<p><strong>2、Toast通知的使用</strong></p>
+
+<p>&#160;&#160;&#160; 先上相关代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void sendToast(object sender, RoutedEventArgs e)
+{
+    IToastNotificationContent toastContent = null;
+    IToastText01 templateContent = ToastContentFactory.CreateToastText01();
+    templateContent.TextBodyWrap.Text = &quot;今天去游泳！(BeyondVincent|破船|)&quot;;
+    toastContent = templateContent;
+    ToastNotification toast = toastContent.CreateNotification();
+    ToastNotificationManager.CreateToastNotifier().Show(toast);
+}</pre>
+
+
+<p>看上面的代码，通过使用NotificationsExtensions库提供的IToastNotificationContent类，我们可以方便的创建出一个ToastNotification，然后在利用ToastNotificationManager该语句ToastNotificationManager.CreateToastNotifier().Show(toast); 将Toast通知显示出来。显示效果如下图所示：</p>
+
+<p>显示在屏幕的右上角</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/25.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb6.png" width="682" height="410" /></a></p>
+
+<p>&#160;</p>
+
+<p>关于Toast通知需要注意的是：需要在Package.appxmanifest中将是否支持Toast通知设置为是，如下图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/36.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb6.png" width="654" height="676" /></a></p>
+
+<hr />
+
+<p><strong>3、Tile通知的使用</strong></p>
+
+<p>微软提供了好多Tile模版供我们使用，这里已经给出了详细的介绍，大家可以前去学习了解</p>
+
+<p><a href="http://msdn.microsoft.com/library/windows/apps/Hh761491"><u>Choosing a tile template</u></a></p>
+
+<p>在这里我用了两种方式更新Tile：纯文本（ ITileWideText03&#160; ITileWideText04）和web图片（ITileSquareImage）</p>
+
+<p>&#160;&#160;&#160; 先上纯文本代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void UpdateTileWithText()
+{
+    ITileWideText03 tileContent = TileContentFactory.CreateTileWideText03();
+    tileContent.TextHeadingWrap.Text = &quot;你有三条未读短信！&quot;;
+
+    ITileSquareText04 squareContent = TileContentFactory.CreateTileSquareText04();
+    squareContent.TextBodyWrap.Text = &quot;你有三条未读短信！&quot;;
+    tileContent.SquareContent = squareContent;
+
+    TileUpdateManager.CreateTileUpdaterForApplication().Update(tileContent.CreateNotification());
+}</pre>
+
+
+<p>看上面的代码，在这里同样使用NotificationsExtensions库提供的功能，很方便的创建出Notification，然后使用最后一行代码将其更新。</p>
+
+<p>使用web图片代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void UpdateTileWithWebImage()
+{
+    ITileWideImageAndText01 tileContent = TileContentFactory.CreateTileWideImageAndText01();
+
+    tileContent.TextCaptionWrap.Text = &quot;高清：撑杆跳伊辛巴耶娃4米70无缘奥运三连冠&quot;;
+
+    tileContent.Image.Src = &quot;http://img1.gtimg.com/4/460/46005/4600509_980x1200_292.jpg&quot;;
+    tileContent.Image.Alt = &quot;Web image&quot;;
+
+    ITileSquareImage squareContent = TileContentFactory.CreateTileSquareImage();
+
+    squareContent.Image.Src = &quot;http://img1.gtimg.com/4/460/46005/4600509_980x1200_292.jpg&quot;;
+    squareContent.Image.Alt = &quot;Web image&quot;;
+
+    tileContent.SquareContent = squareContent;
+
+    TileUpdateManager.CreateTileUpdaterForApplication().Update(tileContent.CreateNotification());
+}</pre>
+
+
+<p>如果我们要清除Tile信息，则调用下面的代码即可</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">TileUpdateManager.CreateTileUpdaterForApplication().Clear();</pre>
+
+
+<p>运行效果如下图：</p>
+
+<p>文字：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/44.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb4.png" width="682" height="410" /></a></p>
+
+<p>图片：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/52.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb2.png" width="682" height="410" /></a></p>
+
+<p>&#160;</p>
+
+<p><strong>4、Badge通知的使用 </strong></p>
+
+<p>&#160;&#160;&#160; 微软也提供了badge相关的详细介绍以及图标，建议参考下面的链接，进行了解</p>
+
+<p><a href="http://msdn.microsoft.com/library/windows/apps/Hh779719"><u>Badge overview (Metro style apps)</u></a></p>
+
+<p><a href="http://msdn.microsoft.com/library/windows/apps/Hh761458"><u>Choosing a badge image</u></a></p>
+
+<p>下面我继续上代码，这里我同样用两种方式展现badge的使用（数字和图片）</p>
+
+<p>先上数字的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void UpdateBadgeWithNumber(int number)
+{
+    BadgeNumericNotificationContent badgeContent = new BadgeNumericNotificationContent((uint)number);
+
+    BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badgeContent.CreateNotification());
+}</pre>
+
+
+<p>代码很简单，我就不表了。</p>
+
+<p>再上图片的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void UpdateBadgeWithGlyph(GlyphValue index)
+{
+    BadgeGlyphNotificationContent badgeContent = new BadgeGlyphNotificationContent(index);
+
+    BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badgeContent.CreateNotification());
+}</pre>
+
+
+<p>同样不细表，如果大家在使用过程中遇到什么问题，可以跟帖进行讨论。</p>
+
+<p>下面是清除badge通知内容的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();</pre>
+
+
+<p>很简单吧。那我就来上两个允许效果图：</p>
+
+<p>数字：</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/61.png"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb1.png" width="682" height="410" /></a></p>
+
+<p>图片：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/7.png"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb.png" width="682" height="410" /></a></p>
+
+<p>&#160;</p>
+
+<p><strong>5、最后附上程序相关代码工程</strong></p>
+
+<p>下图是程序主界面图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/8.png"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb.png" width="682" height="410" /></a> </p></p>
+
+<p>&#160;</p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Notifications" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-31</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2341,103 +2593,6 @@ namespace DevDiv_HelloWorld
 
 
 
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-31T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 31<span>st</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/05/31/27/" itemprop="url">Windows Store App开发[001]平台简介</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p align="left">
-  <span style="font-family: 微软雅黑;"><span style="font-size: medium;"> 谈到Windows 8开发，虽然开发者可以直接使用VS来编写代码，但是了解一下</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台是最好的，哪怕只做稍微了解，所谓知己知彼百战百胜嘛。</span></span>
-</p>
-
-
-
-
-<p align="left">
-  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    这里我就首先稍微与大家分享一下我所了解的</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台。</span></span>
-</p>
-
-
-
-
-<p align="left">
-  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    同时，也欢迎各位大牛来拍砖。</span></span>
-</p>
-
-
-
-
-<p align="left">
-  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">首先上一个图吧，相信看了图，你对</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8的开发会有所了解。</span></span>
-</p>
-
-
-
-
-<p align="left">
-  <a href="http://beyondvincent.com/wp-content/uploads/2013/05/111.png"><img class="alignnone size-full wp-image-685" alt="111" src="http://beyondvincent.com/wp-content/uploads/2013/05/111.png" width="614" height="441" /></a>
-</p>
-
-
-
-
-<p><p align="left">
-  <p align="left"></p>
-
-<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;如你所看到的，在Windows 8中有两种基本的方法来创建应用程序，即&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Desktop Apps&lt;/span&gt;和&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Metro style apps&lt;/span&gt;。&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    右边的桌面应用程序（Desktop Apps）与现在的情况一样，同样包含WinForms，ASP.NET，C++，WPF，Silverlight等应用程序，也就是说，除了.NET被升级到4.5了，桌面应用程序没有改变。在这里，我们的重点不是桌面应用程序。&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    上图中，左边才是最大的变化，Metro style apps本质上是一种新型的应用程序，并且它的开发方法也是新的。HTML5/JavaScript是开发Metro app的一种方法，同时，开发者同样可以结合XAML/C#(或XAML/VB，&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C-C++&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;)来进行开发。&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;   &lt;span style="color: #ff0000;"&gt; 注意：&lt;/span&gt;在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C#下面，添加了新的一层——WinRT（Windows Runtime library）。也就是说，在创建Metro app时，WinRT给开发者提供了Windows强大的功能，在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;WinRT之上，开发者可以选择C#，VB,C++或者JavaScript。&lt;/span&gt;&lt;/span&gt;
-</code></pre>
-
-<p>  </p></p>
 
 		
 		

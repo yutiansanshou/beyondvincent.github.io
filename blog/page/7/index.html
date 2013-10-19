@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[029]使用Blend设计ButtonStyle 本这篇文章中，我将向大家介绍如何使用Blend for Visual Studio来设计ButtonStyle。 &hellip;">
+	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[030]移动控件位置 本文为大家写一个小示例：如何在画面中用手势移动一个控件的位置，就不多说原理，直接上代码和效果图，其实原理也很简单哦。 这里有官方参考资料 http &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,129 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/57/" itemprop="url">Windows Store App开发[030]移动控件位置</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文为大家写一个小示例：如何在画面中用手势移动一个控件的位置，就不多说原理，直接上代码和效果图，其实原理也很简单哦。</p>
+
+<p>这里有官方参考资料</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh761498.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/hh761498.aspx</u></a></p>
+
+<p>1、新建一个Blank App</p>
+
+<p>2、在MainPage.xaml文件中添加如下代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="{StaticResource ApplicationPageBackgroundThemeBrush}"&gt;
+    &lt;img source="/Assets/1.jpg" manipulationstarted="Image_ManipulationStarted_1" manipulationdelta="Image_ManipulationDelta_1" manipulationcompleted="Image_ManipulationCompleted_1" manipulationmode="All" margin="342,34,591,337" tapped="Image_Tapped_1" /&gt;
+        &lt;image.rendertransform&gt;
+            &lt;translatetransform x:name="translateTransform" /&gt;
+        &lt;/image.rendertransform&gt;
+    &lt;/img&gt;
+
+    &lt;img height="100" source="/Assets/BeyondVincentWin8Logo.png" manipulationstarted="Image_ManipulationStarted_1" manipulationdelta="Image_ManipulationDelta_1" manipulationcompleted="Image_ManipulationCompleted_1" manipulationmode="All" margin="568,658,0,10" /&gt;
+        &lt;image.rendertransform&gt;
+            &lt;translatetransform x:name="translateTransform1" /&gt;
+        &lt;/image.rendertransform&gt;
+    &lt;/img&gt;
+&lt;/grid&gt;</pre>
+
+
+<p>代码中要注意下面三个东西是添加事件处理</p>
+
+<p>ManipulationStarted</p>
+
+<p>ManipulationDelta</p>
+
+<p>ManipulationCompleted</p>
+
+<p>记得再加上ManipulationMode=&ldquo;All&rdquo;</p>
+
+<p>3、MainPage.xaml.cs文件中，添加如下代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void Image_ManipulationStarted_1(object sender, ManipulationStartedRoutedEventArgs e)
+{
+    e.Handled = true;
+}
+
+private void Image_ManipulationDelta_1(object sender, ManipulationDeltaRoutedEventArgs e)
+{
+    Image image = sender as Image;
+                
+    if (image.RenderTransform.Equals(translateTransform))
+    {
+        this.translateTransform.X += e.Delta.Translation.X;
+        this.translateTransform.Y += e.Delta.Translation.Y;
+    }
+    else
+    {
+        this.translateTransform1.X += e.Delta.Translation.X;
+        this.translateTransform1.Y += e.Delta.Translation.Y;
+    }
+}
+
+private void Image_ManipulationCompleted_1(object sender, ManipulationCompletedRoutedEventArgs e)
+{
+    e.Handled = true;
+}</pre>
+
+
+<p>4、运行效果如下：</p>
+
+<p>用鼠标可以拖动图片</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.jpg" width="682" height="420" /></a></p>
+
+<p>&#160;</p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/MovePicture" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1247,101 +1370,6 @@ await udpWriter.StoreAsync();  </pre>
 <p>DataWriter: <a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.streams.datawriter.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage.streams.datawriter.aspx</u></a></p>
 
 <p>await keyword and Tasks: <a href="http://msdn.microsoft.com/en-us/library/hh156528.aspx"><u>http://msdn.microsoft.com/en-us/library/hh156528.aspx</u></a></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-03T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/03/47/" itemprop="url">Windows Store App开发[020]Building Windows 8 Apps With XAML and C#中文翻译全部</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/1346132074_5398.png"><img title="1346132074_5398" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1346132074_5398" src="http://beyondvincent.com/wp-content/uploads/2013/06/1346132074_5398_thumb.png" width="626" height="772" /></a></p>
-
-<p>Metro Revealed: Building Windows 8 apps with XAML and C#是一本介绍关于使用XAML和C#开发Metro App的书籍，目前只有英文版本，没有中文版本。由于关于Windows 8 Metro App 开发的中文书籍在国内还没有，为帮助广大开发者迅速熟悉Windows 8 Metro App相关开发。DevDiv特此组织并翻译了此书。</p>
-
-<p>Metro Revealed: Building Windows 8 apps with XAML and C#</p>
-
-<p>第一本Windows Metro App开发的中文书籍</p>
-
-<p>&#160;&#160;&#160; 翻译组成员具有丰富的移动开发经验和英语翻译水平。组员们利用业余时间，把本书翻译成中文，为广大移动开发者尽一点绵薄之力，希望能对读者有些许作用，在此也感谢组员们的辛勤付出。</p>
-
-<p>本书相关介绍：</p>
-
-<p>书名全称：Metro Revealed Building Windows 8 apps with XAML and C#</p>
-
-<p>作&#160;&#160;&#160; 者：Adam Freeman</p>
-
-<p>出 版 社：apress</p>
-
-<p>发布日期：2012年6月6日</p>
-
-<p>页&#160;&#160;&#160; 数：98页</p>
-
-<p>语&#160;&#160;&#160; 言：英文</p>
-
-<p>定&#160;&#160;&#160; 价：10.99$</p>
-
-<p>本书主要分为5个章节进行介绍Windows 8 Metro App开发。书中以实例讲解了Metro App开发常用控件和原理知识。如下目录：</p>
-
-<p>&#160;</p>
-
-<p>目录：</p>
-
-<p>1.Getting Started</p>
-
-<p>2.Data, Binding, and Pages</p>
-
-<p>3.AppBars, Flyouts, and Navigation</p>
-
-<p>4.Layouts and Tiles</p>
-
-<p>5.App Life Cycle and Contracts</p>
-
-<p>&#160;</p>
-
-<p>译者：</p>
-
-<p>DevDiv 翻译：Hsany330、痛饮狂歌、fengyun1989、</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; lanseshuibei BeyondVincent(破船)</p>
-
-<p>DevDiv 校对：BeyondVincent(破船)</p>
-
-<p>DevDiv 编辑：BeyondVincent(破船)</p>
-
-<p>英文电子版下载</p>
-
-<p>代码下载</p>
-
-<p>中文下载</p>
-
-<p><a href="http://www.devdiv.com/Metro_Revealed_Building_Windows_8_apps_with_XAML_and_CSharp%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91%E5%85%A8%E9%83%A8%E6%B1%87%E6%80%BB-thread-131111-1-1.html"><u>Metro Revealed Building Windows 8 apps with XAML and C#中文翻译全部汇总</u></a></p>
 
 		
 		

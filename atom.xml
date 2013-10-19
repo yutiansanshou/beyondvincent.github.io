@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-16T23:38:55+08:00</updated>
+  <updated>2013-10-19T23:50:21+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,538 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：如何拖放Sprites]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/20/117-spritekit-tutorial-how-to-drag-and-drop-sprites/"/>
+    <updated>2013-10-20T23:44:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/20/117-spritekit-tutorial-how-to-drag-and-drop-sprites</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/10/14.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/44270/sprite-kit-tutorial-how-to-drag-and-drop-sprites"><code>Sprite Kit Tutorial: How To Drag and Drop Sprites</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><a href="#ks">开始</a></li>
+<li><a href="#xzjs">用触摸的方式选中sprite</a></li>
+<li><a href="#ydjl">用触摸的方式移动sprite和layer</a></li>
+<li><a href="#sssb">在Sprite Kit中如何使用手势识别</a></li>
+<li><a href="#hqhc">何去何从</a></li>
+</ul>
+
+
+<p>本文中，你可以学到如下内容：</p>
+
+<ul>
+<li>利用触摸来拖放sprite的基本知识</li>
+<li>利用触摸滚动view</li>
+<li>How to keep coordinates straight in your head</li>
+<li>如何在Sprite Kit中使用手势识别</li>
+</ul>
+
+
+<p>为了让本文有趣一点，这里提供了一些可爱的动物图片。</p>
+
+<p>本文假设你已经了解了Sprite Kit的一些基本知识。如果还不了解的话，先看看下面的文章吧：</p>
+
+<p><a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
+
+<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<p>下面我们就开始吧。</p>
+
+<h3><a id="ks"></a>开始</h3>
+
+<p>在实现触摸处理之前，我们先来创建一个基本的Sprite Kit工程，并在scene中显示出一些sprite(动物)和背景。</p>
+
+<p>打开Xcode，选择<code>File\New Project\Application\SpriteKit Game</code>，然后单击<code>Next</code>。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/15.png" alt="" /></p>
+
+<p>将工程命名为<code>DragDrop</code>，devices选择<code>iPhone</code>，然后单击<code>Next</code>，把工程保存到磁盘中。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/16.png" alt="" /></p>
+
+<p>跟<a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>一样，我们希望这个程序只支持横屏显示(landscape)。所以在<code>Project Navigator</code>中选中<code>DragDrop</code>工程，然后选择<code>DragDrop</code> target，在弹出的画面中，只需要勾选上<code>Landscape Left</code>和<code>Landscape Right</code>。如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/17.png" alt="" /></p>
+
+<p>打开<code>ViewController.m</code>文件，并用下面的代码替换<code>viewDidLoad</code>方法(代码跟之前的一样)：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewWillLayoutSubviews</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewWillLayoutSubviews</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Configure the view.</span>
+</span><span class='line'>    <span class="n">SKView</span> <span class="o">*</span> <span class="n">skView</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skView</span><span class="p">.</span><span class="n">scene</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">skView</span><span class="p">.</span><span class="n">showsFPS</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">skView</span><span class="p">.</span><span class="n">showsNodeCount</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Create and configure the scene.</span>
+</span><span class='line'>      <span class="n">SKScene</span> <span class="o">*</span> <span class="n">scene</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyScene</span> <span class="nl">sceneWithSize:</span><span class="n">skView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">];</span>
+</span><span class='line'>      <span class="n">scene</span><span class="p">.</span><span class="n">scaleMode</span> <span class="o">=</span> <span class="n">SKSceneScaleModeAspectFill</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Present the scene.</span>
+</span><span class='line'>      <span class="p">[</span><span class="n">skView</span> <span class="nl">presentScene:</span><span class="n">scene</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着来这里下载本文需要用到的<a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/DragDropImages.zip">图片资源</a>。下载并解压之后，将所有的文件拖到工程中，其中把<code>Copy items into destination group’s folder (if needed)</code>勾选上，然后单击<code>Finish</code>。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/18.png" alt="" /></p>
+
+<p>完成上面的步骤之后，打开<code>MyScene.m</code>文件，并在<code>@implementation</code>上面添加一个class extension，并声明两个属性，如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">MyScene</span> <span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">background</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">selectedNode</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>稍后会用到上面的这两个属性来存储背景图片，已经当前选中的node/sprite。接着在@interface前面添加如下这行代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">static</span> <span class="n">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">kAnimalNodeName</span> <span class="o">=</span> <span class="s">@&quot;movable&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>稍后将会用这个字符串来标示可移动的node。接着找到<code>initWithSize:</code>方法，并用下面的代码替换里面的内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 1) Loading the background</span>
+</span><span class='line'>        <span class="n">_background</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="s">@&quot;blue-shooting-stars&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_background</span> <span class="nl">setName:</span><span class="s">@&quot;background&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_background</span> <span class="nl">setAnchorPoint:</span><span class="n">CGPointZero</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">_background</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 2) Loading the images</span>
+</span><span class='line'>        <span class="n">NSArray</span> <span class="o">*</span><span class="n">imageNames</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="s">@&quot;bird&quot;</span><span class="p">,</span> <span class="s">@&quot;cat&quot;</span><span class="p">,</span> <span class="s">@&quot;dog&quot;</span><span class="p">,</span> <span class="s">@&quot;turtle&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">[</span><span class="n">imageNames</span> <span class="n">count</span><span class="p">];</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">NSString</span> <span class="o">*</span><span class="n">imageName</span> <span class="o">=</span> <span class="p">[</span><span class="n">imageNames</span> <span class="nl">objectAtIndex:</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">sprite</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="n">imageName</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">sprite</span> <span class="nl">setName:</span><span class="n">kAnimalNodeName</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="kt">float</span> <span class="n">offsetFraction</span> <span class="o">=</span> <span class="p">((</span><span class="kt">float</span><span class="p">)(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">([</span><span class="n">imageNames</span> <span class="n">count</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">sprite</span> <span class="nl">setPosition:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">offsetFraction</span><span class="p">,</span> <span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)];</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">_background</span> <span class="nl">addChild:</span><span class="n">sprite</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们来看看上面的代码都干了什么。</p>
+
+<p>1) 加载背景图片</p>
+
+<p>上面方法中的第一部分代码是为scene加载背景图片(blue-shooting-stars.png)。并将该note的anchor设置为图片的左下角(0, 0)。</p>
+
+<p>在Sprite Kit中，设置一个node的位置时，实际上是设置它的anchor。默认情况下，node的anchor被设置为node的正中间。在此，将anchor设置为左下角。</p>
+
+<p>方法中，并没有设置背景图片的position，所以背景图的的位置默认为(0,0)。最终，图片的左下角位置是(0,0)，并向右边延伸。</p>
+
+<p>2) 加载小动物</p>
+
+<p>函数中接下来的代码是循环遍历列表中的图片，并将其加载到scene中。为了好的布局，其中各个node根据屏幕的长度来定位，另外还将这些node的名字设置为<code>kAnimalNodeName</code>。</p>
+
+<p>之后将创建好的node添加到<code>_background</code>中。</p>
+
+<p>OK！编译并运行程序，会看到屏幕中已经显示出了一些可爱的动物了。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/19.png" alt="" /></p>
+
+<h3><a id="xzjs"></a>用触摸的方式选中sprite</h3>
+
+<p>下面我们来实现一下根据用户当前触摸的位置判断出哪个sprite应该被选中。</p>
+
+<p>用下面的代码替换<code>touchesBegan:withEvent:</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">positionInScene</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">selectNodeForTouch:</span><span class="n">positionInScene</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先从touches set中获得touch。然后将touch的位置转换到一个指定node中的位置，上面的代码中使用了scene。让后将获得的方法传递给<code>selectNodeForTouch:</code>方法，该方法是一个新方法，下面我们就来看看这个方法的实现。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">selectNodeForTouch:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">touchLocation</span> <span class="p">{</span>
+</span><span class='line'>   <span class="c1">//1</span>
+</span><span class='line'>   <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">touchedNode</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)[</span><span class="n">self</span> <span class="nl">nodeAtPoint:</span><span class="n">touchLocation</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//2</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">isEqual:</span><span class="n">touchedNode</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>      <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">removeAllActions</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">rotateToAngle:</span><span class="mf">0.0f</span> <span class="nl">duration:</span><span class="mf">0.1</span><span class="p">]];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">_selectedNode</span> <span class="o">=</span> <span class="n">touchedNode</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//3</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">([[</span><span class="n">touchedNode</span> <span class="n">name</span><span class="p">]</span> <span class="nl">isEqualToString:</span><span class="n">kAnimalNodeName</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[[</span><span class="n">SKAction</span> <span class="nl">rotateByAngle:</span><span class="n">degToRad</span><span class="p">(</span><span class="o">-</span><span class="mf">4.0f</span><span class="p">)</span> <span class="nl">duration:</span><span class="mf">0.1</span><span class="p">],</span>
+</span><span class='line'>                                                    <span class="p">[</span><span class="n">SKAction</span> <span class="nl">rotateByAngle:</span><span class="mf">0.0</span> <span class="nl">duration:</span><span class="mf">0.1</span><span class="p">],</span>
+</span><span class='line'>                                                    <span class="p">[</span><span class="n">SKAction</span> <span class="nl">rotateByAngle:</span><span class="n">degToRad</span><span class="p">(</span><span class="mf">4.0f</span><span class="p">)</span> <span class="nl">duration:</span><span class="mf">0.1</span><span class="p">]]];</span>
+</span><span class='line'>          <span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">repeatActionForever:</span><span class="n">sequence</span><span class="p">]];</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是一个helper方法，它主要做三件不同的事情：</p>
+
+<ol>
+<li>通过scene(self)获得touchLocation位置对应的node。</li>
+<li>获得匹配的node之后，检查一下这个node与上一次选中的node是否相同，如果相同的话，在这里直接就返回了。如果是一个新选中的node，或者还没有选中过，这个node会有一点小小的挪动动画，以此可以看出哪个node被选中了。不过在开始动画之前，需要移除当前已经选中node上的所有running actions，并在这个node上运行一个action：<code>rotateToAngle:duration:</code>。这样可以确保只有一个node在做动画，而另外的node恢复到原样。</li>
+<li>这个if语句用来判断一下选中的node是否可以进行动画(只需要检查一下node的name就可以做出判断——还记得在<code>initWithSize:</code>方法中设置的这个属性值吗？)。如果选中的node可以做动画处理，那么就创建一个sequence action——是一个动画效果，就像在主屏幕中重排/删除程序那样的效果，然后在选中的node上运行这个sequence。为了避免动画运行完毕之后会停止，在这里运行了一个一直重复的action。</li>
+</ol>
+
+
+<p>下面将helper函数<code>degToRad</code>添加到文件的底部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">float</span> <span class="nf">degToRad</span><span class="p">(</span><span class="kt">float</span> <span class="n">degree</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">degree</span> <span class="o">/</span> <span class="mf">180.0f</span> <span class="o">*</span> <span class="n">M_PI</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于Sprite Kit是利用弧度来做旋转效果的，所以上面这个方法将角度转换为弧度。</p>
+
+<p>编译并运行程序，现在可以在屏幕上tap一个动物，当选中某个动物时，该动物会做出相应的动画效果，以表示被选中！</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/20.png" alt="" /></p>
+
+<h3><a id="ydjl"></a>用触摸的方式移动sprite和layer</h3>
+
+<p>下面来看看如何移动这些动物！基本思路是这样的：实现<code>touchesMoved:withEvent:</code>方法，计算出距离上一次触摸移动了多远，如果有动物被选中，动物将被移动相应的距离，如果没有选中动物，那么就移动整个layer，这样用户可以从左向右的滚动layer。</p>
+
+<p>在添加代码之前，我们先来探讨一下在Sprite Kit中，一个node是如何滚动的。</p>
+
+<p>看看下面的图片：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/21.png" alt="" /></p>
+
+<p>如上图所示，我们已经初始化了一个背景，所以背景的anchor点是(0, 0)，并且向右边扩展。黑色框中的区域表示当前的可视区域(window的大小)。</p>
+
+<p>如果希望将图片往右边滚动100 points，可以通过将整个node往左边移动100 points，如第二幅图看到的效果一样。</p>
+
+<p>当然，也可能希望不要移动太远。例如，不应该让layer可以往右边移动，否则会看到空白的点。</p>
+
+<p>下面来看看相应的代码！将如下方法添加到文件的底部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nf">boundLayerPos:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">newPos</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">CGSize</span> <span class="n">winSize</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">retval</span> <span class="o">=</span> <span class="n">newPos</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">retval</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">MIN</span><span class="p">(</span><span class="n">retval</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">retval</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">retval</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="p">[</span><span class="n">_background</span> <span class="n">size</span><span class="p">].</span><span class="n">width</span><span class="o">+</span> <span class="n">winSize</span><span class="p">.</span><span class="n">width</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">retval</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="n">position</span><span class="p">].</span><span class="n">y</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">panForTranslation:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">translation</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">position</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">([[</span><span class="n">_selectedNode</span> <span class="n">name</span><span class="p">]</span> <span class="nl">isEqualToString:</span><span class="n">kAnimalNodeName</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">setPosition:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">translation</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">translation</span><span class="p">.</span><span class="n">y</span><span class="p">)];</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">CGPoint</span> <span class="n">newPos</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">translation</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">translation</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_background</span> <span class="nl">setPosition:</span><span class="p">[</span><span class="n">self</span> <span class="nl">boundLayerPos:</span><span class="n">newPos</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一个方法<code>boundLayerPos:</code>是为了确保不会将layer移动到背景图片范围之外。在这里传入一个需要移动到的位置，然后该方法会对位置做适当的判断处理，以确保不会移动太远。</p>
+
+<p>接着方法<code>panForTranslation:</code>首先判断一下_selectedNode是否为动物node，如果是的话，根据传入的参数来为node设置新的位置。如果是background layer，同样也会设置一个新的位置，只不过新的位置需要调用<code>boundLayerPos:</code>方法获得。</p>
+
+<p>完成上面之后，可以实现<code>touchesMoved:withEvent:</code>方法了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesMoved:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">CGPoint</span> <span class="n">positionInScene</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">CGPoint</span> <span class="n">previousPosition</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">previousLocationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">CGPoint</span> <span class="n">translation</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">positionInScene</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">previousPosition</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">positionInScene</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">previousPosition</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">[</span><span class="n">self</span> <span class="nl">panForTranslation:</span><span class="n">translation</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>跟<code>touchesBegan:withEvent:</code>一样，先获得touch，然后将它的位置转换为scene中的相应位置。为了计算出移动的距离，需要上一次触摸的位置。</p>
+
+<p>通过当前位置减去上一次的位置就可以计算出需要移动的距离了。最后调用<code>panForTransaltion:</code>方法，并将移动距离传入即可。</p>
+
+<p>搞定！编译并运行程序，现在可以通过拖放的方式移动sprite(以及layer)了！</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/22.png" alt="" /></p>
+
+<h3><a id="sssb"></a>在Sprite Kit中如何使用手势识别</h3>
+
+<p>在Sprite Kit中还可以使用手势识别来处理触摸！</p>
+
+<p>手势识别可以识别不同的手势，如tap，double tap，swipe或pan。</p>
+
+<p>通过手势识别，我们可以不用写大量的代码来识别不同的手势（如tap，double tap，swipe或pan），只需要创建一个手势识别对象并将其添加到view中，即可进行手势识别。当有手势发生，会有一个回调。</p>
+
+<p>下面就来看看如何在Sprite Kit中使用手势识别。</p>
+
+<p>首先，注释掉触摸处理方法：<code>touchesBegan:withEvent:</code>和<code>touchesMoved:withEvent:</code>(因为要使用不同的处理方法啦)。</p>
+
+<p>然后添加如下方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">didMoveToView:</span><span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="nv">view</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="n">gestureRecognizer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIPanGestureRecognizer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">handlePanFrom:</span><span class="p">)];</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">self</span> <span class="n">view</span><span class="p">]</span> <span class="nl">addGestureRecognizer:</span><span class="n">gestureRecognizer</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当scene第一次显示出来时会调用这个方法。在上面的方法中创建了一个pan手势识别器，并用当前的scene来对其做初始化，另外还传入一个callback：<code>handlePanFrom:</code>。接着把这个手势识别器添加到scene中的view里面。</p>
+
+<p>注意：可能你会问为什么要在这里添加识别器，而不是在scene的init方法中。答案很简单：<code>SKScene</code>有一个view属性，保存着SKView——该view用来显示scene，不过只有scene显示到屏幕中时这个属性才会被初始化，所以在init方法被调用时该属性是nil的。此处的<code>didMoveToView:</code>类似于UIKit中的<code>viewDidAppear:</code>，当scene显示出来时，<code>didMoveToView:</code>会被调用。</p>
+
+<p>接着，将下面的代码添加到<code>MyScene.m</code>文件底部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">handlePanFrom:</span><span class="p">(</span><span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="p">)</span><span class="nv">recognizer</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateBegan</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">CGPoint</span> <span class="n">touchLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">locationInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">touchLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertPointFromView:</span><span class="n">touchLocation</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">selectNodeForTouch:</span><span class="n">touchLocation</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateChanged</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">CGPoint</span> <span class="n">translation</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">translationInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">translation</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">translation</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">translation</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">panForTranslation:</span><span class="n">translation</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">recognizer</span> <span class="nl">setTranslation:</span><span class="n">CGPointZero</span> <span class="nl">inView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateEnded</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="n">_selectedNode</span> <span class="n">name</span><span class="p">]</span> <span class="nl">isEqualToString:</span><span class="n">kAnimalNodeName</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kt">float</span> <span class="n">scrollDuration</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">CGPoint</span> <span class="n">velocity</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">velocityInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">CGPoint</span> <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">position</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">CGPoint</span> <span class="n">p</span> <span class="o">=</span> <span class="n">mult</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span> <span class="n">scrollDuration</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CGPoint</span> <span class="n">newPos</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">newPos</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">boundLayerPos:</span><span class="n">newPos</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">removeAllActions</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">SKAction</span> <span class="o">*</span><span class="n">moveTo</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveTo:</span><span class="n">newPos</span> <span class="nl">duration:</span><span class="n">scrollDuration</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">moveTo</span> <span class="nl">setTimingMode:</span><span class="n">SKActionTimingEaseOut</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">runAction:</span><span class="n">moveTo</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当手势开始、改变(例如用户持续drag)，以及结束时，上面这个callback函数都会被调用。该方法会进入不同的case，以处理不同的情况。</p>
+
+<p>当手势开始时，将坐标系统转换为node坐标系(注意这里没有便捷的方法，只能这样处理)。然后电泳之前写的helper方法<code>selectNodeForTouch:</code>。</p>
+
+<p>当手势发生改变时，需要计算出手势移动的量。还在手势识别器已经为我们存储了手势移动的累计量(translation)！不过考虑到效果的差异，我们需要在UIKit坐标系和Sprite Kit坐标系中对坐标进行转换。</p>
+
+<p>平移(pan)之后，需要把手势识别器上的translation设置为0，否则该值会继续被累加。</p>
+
+<p>当手势结束之后，上面的函数中有一些有趣的代码！UIPanGestureRecognizer可以为我们提供一个移动的速度。通过这个速度可以对node做一个动画——滑动一小点，这样用户可以对node做一个快速的摇动，就像table view上的那种效果一样。</p>
+
+<p>所以，在这里包含的代码用来计算基于速度移动的一个point，然后运行一个moveTo action(为了更加好看，附带<code>SKActionTimingEaseOut</code>效果)。</p>
+
+<p>接着添加如下一个方法到文件中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">CGPoint</span> <span class="nf">mult</span><span class="p">(</span><span class="k">const</span> <span class="n">CGPoint</span> <span class="n">v</span><span class="p">,</span> <span class="k">const</span> <span class="n">CGFloat</span> <span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="o">*</span><span class="n">s</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这个方法是将滚动的时间乘以速度。</p>
+
+<p>编译并运行程序，现在应该可以用手势识别器滑动和移动动物了。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/10/23.png" alt="" /></p>
+
+<h3><a id="hqhc"></a>何去何从</h3>
+
+<p>本文的代码工程在<a href="http://cdn2.raywenderlich.com/downloads/DragDropSpriteKit.zip">这里</a>。</p>
+
+<p>至此，你应该知道如何在Sprite Kit程序中使用touch来移动node，以及如何在Sprite Kit中使用手势识别器。</p>
+
+<p>现在，你也可以尝试利用别的手势识别器对上面的工程做扩展处理，例如pinch或rotate手势识别器——可以让猫长大哦！</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 2]]></title>
@@ -4605,211 +5137,6 @@ typedef double (^SpeedFunction)(double);
 <p>&nbsp;</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-08</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[打造轻量化的View Controller]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/05/97/"/>
-    <updated>2013-07-05T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/05/97</id>
-    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/JC4Yc.png"><img class="alignnone size-full wp-image-1538" alt="JC4Yc" src="http://beyondvincent.com/wp-content/uploads/2013/07/JC4Yc.png" width="800" height="322" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.objc.io/issue-1/lighter-view-controllers.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>很早以前就看到了这篇文章，该文是<strong><span style="color: #339966;">Lighter View Controllers</span></strong>中比较重要的一篇，来自<strong><span style="color: #339966;"><a href="http://www.objc.io/%EF%BC%8C">http://www.objc.io/%EF%BC%8C</a></span></strong>该站点的目标是致力于介绍Objective-C中最佳的实践技能和高级技术，以期刊的形式发表，每期一个主题，第一期就是以Lighter View Controllers为主。共有5篇文章，由于老破船精力有限，可能不会全部翻译，感兴趣的读者可以前往官方站点，进行阅读，千万别苦等破船进港时，万一等到花谢草枯了，可不好哟。</p>
-
-<p><strong><span style="color: #339966;">友情提醒</span></strong>：大家平常除了写代码，会有锻炼身体吗？明天就是周末了，记得少加班，多锻炼身体哟，这周我只打了一次篮球，运动量有点少了，计划明天早上去跑10公里。</p>
-
-<h2><span style="color: #ff0000;"><strong>本文目录如下：</strong></span></h2>
-
-<ul>
-<li><strong><span style="color: #339966;">简介</span></strong></li>
-<li><strong><span style="color: #339966;">剥离Data Source和其它Protocols</span></strong></li>
-<li><strong><span style="color: #339966;">将业务逻辑移至Model Layer</span></strong></li>
-<li><strong><span style="color: #339966;">创建Store类</span></strong></li>
-<li><strong><span style="color: #339966;">将Web Service逻辑移至Model Layer</span></strong></li>
-<li><strong><span style="color: #339966;">将View代码移至View Layer</span></strong></li>
-<li><strong><span style="color: #339966;">与别的对象进行通讯</span></strong></li>
-<li><strong><span style="color: #339966;">小结</span></strong></li>
-<li><strong><span style="color: #339966;">延伸阅读</span></strong></li>
-</ul>
-
-
-<h2><strong><span style="color: #339966;">简介</span></strong></h2>
-
-<p>在iOS工程中，view controllers经常是最大的文件，引起这样的主要原因是开发者在view controllers中编写了大量非必须代码，实际上，view controllers可以重用其中的许多代码。下面我们就来看看，有什么好的办法可以对view controllers进行瘦身，加强代码的可重用性(reusable)，并将代码放到适当的地方。<br/>
-提醒：本文涉及到的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://github.com/objcio/issue-1-lighter-view-controllers" target="_blank"><span style="color: #339966; text-decoration: underline;">示例工程</span></a></span></strong></span>已经放到GitHub上了。</p>
-
-<h2><strong><span style="color: #339966;">剥离Data Source和其它Protocols</span></strong></h2>
-
-<p>对view controllers瘦身最佳的方法之一就是将UITableViewDataSource涉及到的代码从view controllers中抽取出来，并封装到自己的一个类中。如果不止在一个view controllers中使用到UITableViewDataSource，那么会提高封装出来这个类的可重用性。<br/>
-译者注：此处有一个前提条件原作者没有说明，我们需要注意一下——这里的view controllers是使用到了UITableView。</p>
-
-<p>下面我们来看一个例子，在上面给出的示例工程中，有一个类PhotosViewController，里面原本有如下3个方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1"># pragma mark Pragma
-
-- (Photo*)photoAtIndexPath:(NSIndexPath*)indexPath {
-return photos[(NSUInteger)indexPath.row];
-}
-
-- (NSInteger)tableView:(UITableView*)tableView
-numberOfRowsInSection:(NSInteger)section {
-return photos.count;
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-PhotoCell* cell = [tableView dequeueReusableCellWithIdentifier:PhotoCellIdentifier
-forIndexPath:indexPath];
-Photo* photo = [self photoAtIndexPath:indexPath];
-cell.label.text = photo.name;
-return cell;
-}</pre>
-
-
-<p>上面3个方法中都涉及到了数组，并且在最后一个方法中利用索引(indexPatha)给UITableViewCell指定了相应的图片(view controllers管理着这些图片资源)。下面我们就来试着把与数组相关的代码封装到我们自己的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/objcio/issue-1-lighter-view-controllers/blob/master/PhotoData/ArrayDataSource.h" target="_blank"><span style="color: #339966; text-decoration: underline;">一个类</span></a></span></span></strong>中。<br/>
-如下代码所示，这里通过一个block来配置UITableViewCell，当然，也可以使用delegate对UITableViewCell进行配置，这主要取决于开发者。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@implementation ArrayDataSource
-
-- (id)itemAtIndexPath:(NSIndexPath*)indexPath {
-return items[(NSUInteger)indexPath.row];
-}
-
-- (NSInteger)tableView:(UITableView*)tableView
-numberOfRowsInSection:(NSInteger)section {
-return items.count;
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-id cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier
-forIndexPath:indexPath];
-id item = [self itemAtIndexPath:indexPath];
-configureCellBlock(cell,item);
-return cell;
-}
-
-@end</pre>
-
-
-<p>有了上面这个自定义的类，我们就可以把view controllers中的那3个方法移除掉，并创建自定义类的一个示例对象，然后将其设置为table view的data source，如下代码所示。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void (^configureCell)(PhotoCell*, Photo*) = ^(PhotoCell* cell, Photo* photo) {
-cell.label.text = photo.name;
-};
-photosArrayDataSource = [[ArrayDataSource alloc] initWithItems:photos
-cellIdentifier:PhotoCellIdentifier
-configureCellBlock:configureCell];
-self.tableView.dataSource = photosArrayDataSource;</pre>
-
-
-<p>现在，当每次希望将数组中的内容显示到table view中时，不必再考虑如何将index path映射到数组中的准确位置了，只需要重新上面的代码即可。另外，我们也可以在自定义类中，实现另外的一些方法(例如tableView:commitEditingStyle:forRowAtIndexPath:)，以共享给所有的table view controllers。</p>
-
-<p>这也会带来一个好处：可以单独的对自定义的这个类进行测试，而不用担心要重新写一些测试代码。其实，如果我们写的代码跟这里的情况类似，那么也可以这样做。</p>
-
-<p>今年我在工作中写的一个应用程序，大量使用了Core Data。我也创建了类似的类。该类实现了动画更新的所有逻辑，section header处理，以及相关删除操作等。你可以创建该类的一个示例，然后设置一下对其调用的方法，以及配置cell的一个block，剩下的任务就能自动处理了。</p>
-
-<p>此外，上面介绍的这种方法可以延伸到别的protocols，这能够给程序开发中带来很大的灵活性。例如UICollectionViewDataSource，在开发过程中，如果希望用UICollectionView替换已有的UITableView，我们几乎不需要对view controllers做很大的改动，甚至还能使我们的data source同时支持两种protocols(UITableViewDataSource和UICollectionViewDataSource)。</p>
-
-<h2><strong><span style="color: #339966;">将业务逻辑移至Model Layer</span></strong></h2>
-
-<p>下面的示例代码(另外一个工程)位于view controller，作用是找出针对用户active priority的一个列表。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- (void)loadPriorities {
-NSDate* now = [NSDate date];
-NSString* formatString = @"startDate &lt;= %@ AND endDate &gt;= %@";
-NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
-NSSet* priorities = [self.user.priorities filteredSetUsingPredicate:predicate];
-self.priorities = [priorities allObjects];
-}</pre>
-
-
-<p>实际上，如果把这个方法移至User类的一个category中，会让代码更加清晰。此时，在View Controller.m文件中看起来应该是这样的：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- (void)loadPriorities {
-self.priorities = [user currentPriorities];
-}
-
-而在User+Extensions.m中则如下代码：
-- (NSArray*)currentPriorities {
-NSDate* now = [NSDate date];
-NSString* formatString = @"startDate &lt;= %@ AND endDate &gt;= %@";
-NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
-return [[self.priorities filteredSetUsingPredicate:predicate] allObjects];
-}</pre>
-
-
-<p>实际开发中，有一些代码很难将其移至model对象中，但是，很明显这些代码与model是相关的，针对这样的情况，我们可以单独为其写一个类，例如下面的store类。</p>
-
-<h2><strong><span style="color: #339966;">创建Store类</span></strong></h2>
-
-<p>本文给出示例工程的第一版代码中，有一部分代码是用来从文件中加载数据，并对其进行解析的，这些代码是在view controller中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- (void)readArchive {
-NSBundle* bundle = [NSBundle bundleForClass:[self class]];
-NSURL *archiveURL = [bundle URLForResource:@"photodata"
-withExtension:@"bin"];
-NSAssert(archiveURL != nil, @"Unable to find archive in bundle.");
-NSData *data = [NSData dataWithContentsOfURL:archiveURL
-options:0
-error:NULL];
-NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-_users = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"users"];
-_photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
-[unarchiver finishDecoding];
-}</pre>
-
-
-<p>实际上，view controller不应该关心这些事情的。在示例工程中，我创建了一个Store类来做这些事情——通过将这些代码从view controller中剥离出来，不仅可以对其重用和单独测试，另外还能对view controller瘦身。Store类专注于数据的加载、缓存，以及对数据库进行配置。这里的Store也经常叫做service layer或者repository。</p>
-
-<h2><strong><span style="color: #339966;">将Web Service逻辑移至Model Layer</span></strong></h2>
-
-<p>这里的方法实际上跟上面介绍的非常类似：不要在view controller中做web service逻辑处理，而是将相关的逻辑处理封装到不同的类中。然后我们的view controller通过callback handler(例如一个completion block)来调用这些类的方法。<br/>
-这样做带来的一个好处就是我们可以方便在这些封装类中做缓存和错误处理。</p>
-
-<h2><strong><span style="color: #339966;">将View代码移至View Layer</span></strong></h2>
-
-<p>切记不要在view controller中构建复杂的view结构。可选方案是：要么利用interface builder，或者就是将view的构建封装到一个UIView子类中。例如，如果你要构建一个date picker控件，可以基于DatePickerView类来构建，而不要把所有构建逻辑都放入view controller中。这样不仅能增加控件的可重用性，还能让代码简单化。<br/>
-如果你喜欢用interface builder，那么也同样可以在interface builder中做这些事情。我们的一些开发者可能认为只有view controller才能在interface builder中使用，其实我们可以通过加载一个单独的nib文件，来加载我们在nib文件中定制的view。在本文给出的示例工程中，我创建了一个PhotoCell.xib文件，该文件中定制了一个photo cell：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/photocell.png"><img class="alignnone size-full wp-image-1539" alt="photocell" src="http://beyondvincent.com/wp-content/uploads/2013/07/photocell.png" width="1168" height="838" /></a></p>
-
-<p>如上图所示，我在这个view中创建了两个属性：photoDateLable和photoTitleLable(注意：在这里的xib文件中没有使用File&#8217;s Owner object)，并将这两个属性连接到制定的subview中。<br/>
-上面介绍的技巧同样可以方便的用于别的一些custom view。</p>
-
-<h2><strong><span style="color: #339966;">与别的对象进行通讯</span></strong></h2>
-
-<p>在view controller中与别的view controller、model和view通讯是非常频繁的。虽然这确实是由controller负责的，不过，我们还是希望用最少的代码来完成相关的事情。<br/>
-目前已经有许多技术可以用于view controller和model对象之间的通讯(例如KVO)，不过view controller之间通讯的技术貌似不太明朗。<br/>
-我们可能会经常遇到这样的问题：一个view controller有许多状态需要与其它多个view controller进行勾兑。通常，需要把这些状态封装到一个单独的对象中，然后将其传送到对应的view controller中，在这些view controller中对这些状态进行观察并修改即可——这样带来的优点是所有的状态都在一个地方，开发者不用纠结于delegate的callback。<br/>
-实际上，关于对象间的通讯是一个复杂的topic，在今后的文章中，我们可能会对其进行深度分析。<span style="color: #339966;"><br /> </span></p>
-
-<h2><strong><span style="color: #339966;">小结</span></strong></h2>
-
-<p>上面我们学习了一些对view controller瘦身的技巧。这些技巧并不强求用与所有的地方，其实只有一个目标：编写可维护的代码。大家通过了解这些方法，可以知道有更多的方法来应对复杂的view controller，让其看起来更加清晰。</p>
-
-<h2><strong><span style="color: #339966;">延伸阅读</span></strong></h2>
-
-<ul>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#featuredarticles/ViewControllerPGforiPhoneOS/BasicViewControllers/BasicViewControllers.html"><span style="color: #339966; text-decoration: underline;">View Controller Programming Guide for iOS</span></a></span></span></li>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/mac/#documentation/General/Conceptual/DevPedia-CocoaCore/ControllerObject.html"><span style="color: #339966; text-decoration: underline;">Cocoa Core Competencies: Controller Object</span></a></span></span></li>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://subjective-objective-c.blogspot.de/2011/08/writing-high-quality-view-controller.html"><span style="color: #339966; text-decoration: underline;">Writing high quality view controllers</span></a></span></span></li>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://programmers.stackexchange.com/questions/184396/mvcs-model-view-controller-store"><span style="color: #339966; text-decoration: underline;">Stack Overflow: Model View Controller Store</span></a></span></span></li>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://speakerdeck.com/trianglecocoa/unburdened-viewcontrollers-by-jay-thrash"><span style="color: #339966; text-decoration: underline;">Unburdened View Controllers</span></a></span></span></li>
-<li><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://programmers.stackexchange.com/questions/177668/how-to-avoid-big-and-clumsy-uitableviewcontroller-on-ios"><span style="color: #339966; text-decoration: underline;">Stack Overflow: How to avoid big and clumsy UITableViewControllers on iOS</span></a></span></span></li>
-</ul>
-
-
-<p>&nbsp;</p>
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-05</time></p>
 ]]></content>
   </entry>
   
