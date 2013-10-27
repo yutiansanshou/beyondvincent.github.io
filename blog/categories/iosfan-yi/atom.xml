@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-19T23:50:21+08:00</updated>
+  <updated>2013-10-27T20:38:37+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,479 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 1]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1/"/>
+    <updated>2013-10-27T20:30:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/10/24.png"></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.raywenderlich.com/49695/sprite-kit-tutorial-making-a-universal-app-part-1"><code>Sprite Kit Tutorial: Making a Universal App: Part 1</code></a></p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><a href="#msgs">UI规划：概述</a></li>
+<li><a href="#msxj">UI规划：小结</a></li>
+<li><a href="#ks">开始</a></li>
+<li><a href="#wltj">纹理图集</a></li>
+<li><a href="#bjsb">背景设置</a></li>
+<li><a href="#asfz">鼹鼠的放置</a></li>
+<li><a href="#tcas">弹出鼹鼠</a></li>
+<li><a href="#hqhc">何去何从</a></li>
+</ul>
+
+
+<p>本文将介绍如何制作一个通用程序(打鼹鼠的游戏)——可以在iPhone和iPad上运行(包括retina显示的支持。)</p>
+
+<p>学习本文之前，需要掌握以下知识：</p>
+
+<p><a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
+<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
+
+<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
+
+<p><a href="http://beyondvincent.com/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1/"><code>Sprite Kit教程：动画和纹理图集 1</code></a>
+<a href="http://beyondvincent.com/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/"><code>Sprite Kit教程：动画和纹理图集 2</code></a></p>
+
+<p>英文原文在这里：<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
+
+<p><a href="http://beyondvincent.com/blog/2013/10/20/117-spritekit-tutorial-how-to-drag-and-drop-sprites/"><code>Sprite Kit教程：如何拖放Sprites</code></a></p>
+
+<p>英文原文在这里：<a href="http://www.raywenderlich.com/44270/sprite-kit-tutorial-how-to-drag-and-drop-sprites"><code>Sprite Kit Tutorial: How To Drag and Drop Sprites</code></a></p>
+
+<p>如果还没有看上面的这些文章(或者相关的知识)，建议你先去看一下。</p>
+
+<p>本文会有两篇文章。第一篇，会先创建一个基本的游戏——可爱的小鼹鼠聪洞里面弹出来。为了让游戏在iPhone和iPad(支持retina显示)上看起来很优美，本文还花了大量的时间来考虑如何做游戏的美术规划和坐标。</p>
+
+<h3><a id="msgs"></a>UI规划：概述</h3>
+
+<p>我们希望程序可以在iPhone 3.5英寸，4英寸(iPhone 5)和iPad上良好的运行，所以在开始之前，我们需要认真的做好UI规划。</p>
+
+<p>为了搞明白需要什么样的UI尺寸，我们先来看看下面的相关内容：</p>
+
+<ul>
+<li>Retina显示</li>
+<li>4英寸iPhone显示</li>
+<li>iPad和iPhone长宽比</li>
+</ul>
+
+
+<p>下面开始吧！</p>
+
+<h4><code>Retina显示</code></h4>
+
+<p>在iPhone中，non-retina和retina在显示上的最大区别就是retina的分辨率是non-retina的2倍。所以在non-retina上面分辨率为 480 * 320(landscape)，而retina则是960 * 640.</p>
+
+<p><img src="/images/2013/10/26.jpg" alt="" /></p>
+
+<p>同样iPad也分为non-retina和retina，它们的分辨率相差也为2倍，non-retina显示的分辨率是1024 * 768像素，而retina上面则是2048 * 1536像素！</p>
+
+<p><img src="/images/2013/10/27.jpg" alt="" /></p>
+
+<p>稍等，你可能在想：双倍分辨率岂不是打乱了所有已经写好的程序，例如iPhone上的480 * 320和iPad的1024 * 768？这是有可能的，除非是在Sprite Kit中设置尺寸或者坐标，此时实际上是在UIKit中进行设置，并且设置的尺寸单位叫做<code>points</code>，而不是像素(pixels)。</p>
+
+<p>在non-retina显示上，无论是iPhone火iPad，一个point代表一个pixel，而在retina上面，一个point代表2个pixels。所以将位置设置为(10,10)point时，non-retina上将是(10,10)，而retina上则是(20,20)，所以它们依然会显示在相同的偏移量上。不错吧！</p>
+
+<p>当使用苹果提供的控件或者Core Graphics时，苹果已经写好了相关代码，让它们在retina显示起来很好看。</p>
+
+<p>唯一需要注意的就是关于使用的图片。比如在iPhone或iPad程序中又一个200 * 200d 图片。如果什么事情都不做的话，在retina上面会自动的将这个图片放大两倍——这看起来不是太好，因为我们并没有提供相关分辨率的图片。</p>
+
+<p><img src="/images/2013/10/28.jpg" alt="" /></p>
+
+<p>因此针对retina显示我们需要提供所有图片的另外一个版本，也就是说需要一个普通的版本，以及另外2倍分辨率的一个版本。如果将2倍分辨率图片命名为"@2x"后缀，那么当利用[SKSpriteNode spriteNodeWithImageNamed:&hellip;]或者类似的APIs加载sprite时，它会自动的将@2x图片加载到retina显示上。</p>
+
+<p>所以在开发针对retina显示的Sprite Kit游戏时也很简单——只需要添加@2x的图片，基本上就搞定了。</p>
+
+<h4><code>4英寸iPhone显示</code></h4>
+
+<p>iPhone 5设备在屏幕上显示的分辨率比以前的更大了，对于游戏显示上来说，这非常的好。本文中的处理很简单，只需要将背景图片做一个扩展延伸即可。</p>
+
+<p>iPhone 5的分辨率是1136 * 640——宽高比为16:9。用point来衡量的话则是568 * 320.</p>
+
+<h3><code>iPad和iPhone的宽高比</code></h3>
+
+<p>上面我们已经看到要处理retina显示很容易，但是要想创建一个通用的程序呢(可以运行在iPhone和iPad设备上)。</p>
+
+<p>其实要想创建一个通用的程序还真有一个麻烦的事情——iPhone和iPad的宽高比不一样！</p>
+
+<p>iPhone的比例是1.5(480 * 320 或960 * 640)，而iPad是1.33(768 * 1024或1536 * 2048)。</p>
+
+<p>由于比例不同，如果一副能够在non-retina iPad(768×1024)上完整显示，你希望将其在iPhone上重用，那么不会完整的匹配上，如果将其缩放，按照宽度进行适配(乘以0.9375)，会得到720×960的尺寸，这样就会把高度剪切掉一部分。</p>
+
+<p><img src="/images/2013/10/29.jpg" alt="" /></p>
+
+<p>发生这种情况会让人比较烦恼，我们不仅需要处理背景图片的问题，不同的宽高比导致不同设备间使用相同的坐标比较困难。</p>
+
+<p>下面是我了解到的一些对应的处理方法：</p>
+
+<ul>
+<li>在3.5英寸的iPhone retina显示屏幕正中间确定一个<code>可玩区域</code>。这样剩下的区域可以用一个背景图片来覆盖，不要让玩家关注这一剩下的区域。这样一来在不同设备间进行左边的转换和重用要非常方便。本文将利用这种方法。</li>
+<li>让iPad显示内容的宽高比设置为跟iPhone一样：左右留出32points的边距，上下留出64point的边距，此时在正中间的区域就是1024×768 points。这样只要让游戏程序的内容显示在这1024×768的范围内，就可以在每个设备间对图片进行缩放了。</li>
+<li>由于pixel和point是有区别的。那么我们就创建出iPad retina显示的图片(536×2048 px)，然后将该图片除以2，这样也就可以用于non-retina iPad显示了！</li>
+</ul>
+
+
+<h3><code>iOS 模拟器选项</code></h3>
+
+<p>下面这些模拟器可以运行iOS 7：</p>
+
+<ul>
+<li>iPhone Retina (3.5-inch) – iPhone 4 和 4S</li>
+<li>iPhone Retina (4-inch) – iPhone 5, 5C, 和 5S</li>
+<li>iPad – iPad 1, 2, 和 Mini</li>
+<li>iPad Retina – iPad 3 和 4</li>
+</ul>
+
+
+<p>注意：这里并没有non-retina iPhone——因为没有任何一台no-retina iPhone或iPod touch可以运行iOS 7。</p>
+
+<p>另外由于Sprite Kit是在iOS 7中才引入的，所以就不用考虑no-retina iPhone或iPod touch设备了。</p>
+
+<h3><a id="msxj"></a>UI规划：小结</h3>
+
+<p>基于上面的一些讨论，下面是本文的相关计划：</p>
+
+<ul>
+<li>UI设计的范围(可玩区域)在960×640范围内，在retina iPhone(3.5英寸)中全屏显示，4英寸iPhone，iPad和retina iPad中居中显示。</li>
+<li>可用的UI元素放置在纹理图集文件中。@2x表示用于iPad retina显示的图片。</li>
+<li>由于需要全屏显示，所以背景图片是一个特例。创建一个1024x768 point尺寸的图片，这样可以完全显示在iPad中。并且这个图片可以缩放显示在3.5英寸的iPhone上，只不过背景图中的有些内容不能显示出来，但是这关系并不太大。</li>
+<li>4英寸的iPhone将通过代码来使用<code>-568</code>的纹理图集，并将其<code>可玩区域</code>居中。</li>
+<li>iPad和iPad retina通过代码使用<code>-ipad</code>的纹理图集，并将其坐标转换到<code>可玩区域</code>中，另外在使用适当的字体大小等。</li>
+</ul>
+
+
+<p>来这里可以下载到本文的<a href="http://cdn4.raywenderlich.com/downloads/WhackAMoleSKArt.zip">UI资源</a>。解压出下载到的文件，可以看到如下一些内容：</p>
+
+<ul>
+<li>在TextureAtlases中又3个文件夹。每个文件夹中的UI元素针对不同的显示(3.5英寸iPhone, 4英寸iPhone, 和 iPad)。</li>
+<li>iPad纹理图集文件夹中包含的图片是针对non-retina和retina iPad的。</li>
+<li>在foreground文件夹中，有两个前景图片(下部和上部的图片)。被分为了两部分，这样可以将鼹鼠放置在下部和上部，看起来鼹鼠就像到地下了一样。</li>
+<li>4英寸的iPhone是另外一个特列。因此在这里另外构建了新的前景图，以利用上更多的空间。</li>
+<li>在background文件夹中，虽然iPad的宽高比是1.33，但这里做的背景图宽高比为一半,这样做是因为背景图片基本上可以忽略不计（只是3个鼹鼠洞）。所以不值得在这上面耗费，因为只需要用小纹理的图片替代即可，在需要放大的时候放大一下。</li>
+<li>在sprite文件夹中，所有的sprite尺寸都适合显示在960×640大小的可玩区域中。注意，这里有一个鼹鼠和两个相关动画(鼹鼠笑和被打)。</li>
+</ul>
+
+
+<p>上面搞了这么多，现在终于可以开始了！</p>
+
+<h3><a id="ks"></a>开始</h3>
+
+<p>打开Xcode，选择File > New > Project…，然后选中Sprite Kit Game并单击Next。将工程命名为WhackAMole，devices选中universal，接着再单击Next。选择一个路径来保存工程，然后单击Create。</p>
+
+<p>当工程打开之后，应该能看到Project Navigator中的工程文件已经被选中了，如果没有选中，那么将其选中，然后在target中选中WhackAModle，以及选中顶部的General，在Deployment info里面可以看到一些设备朝向的勾选框。在这里我们的游戏是landscape的，所以勾选上iPhone和iPad的Landscape Left和Landscape Right。</p>
+
+<p><img src="/images/2013/10/30.png" alt="" /></p>
+
+<p>另外，为了让朝向正确，还需要对代码做一些修改。打开ViewController.m文件并用下面的viewWillLayoutSubviews:方法替换viewDidLoad方法：</p>
+
+<p>```objc
+&ndash; (void)viewWillLayoutSubviews
+{</p>
+
+<pre><code>[super viewWillLayoutSubviews];
+
+// Configure the view.
+SKView * skView = (SKView *)self.view;
+if (!skView.scene) {
+    skView.showsFPS = YES;
+    skView.showsNodeCount = YES;
+
+    // Create and configure the scene.
+    SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
+    scene.scaleMode = SKSceneScaleModeAspectFill;
+
+    // Present the scene.
+    [skView presentScene:scene];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>为什么要这样做呢？默认情况下View Controller views是以竖直的方式加载，所以横屏模式下，当viewDidLoad被调用的时候不能保证尺寸是正确的，不过当viewWillLayoutSubviews被调用的时候view的size将是正确的。如上代码所示，大多数代码与viewdidLoad中的相同。需要关注的就是if语句中关于skView.scene的配置。当然在这里需要判断一下skView.scene是否已经存在(viewWillLayoutSubviews方法可能会被多次调用)。</p>
+
+<h3><a id="wltj"></a>纹理图集</h3>
+
+<p>纹理图集的配置非常简单。首选创建一个文件夹并且文件名已<code>.atlas</code>结尾。接着将那些UI元素拷贝到这个文件夹里面。然后在Xcode工程中添加这个文件夹即可！</p>
+
+<p>简单吧！当在编译程序的时候，Xcode会把<code>.atlas</code>结尾的文件夹中的图片生成纹理图集。</p>
+
+<p>注意：添加到<code>.atlas</code>文件夹中的图片尺寸不能超过2048×2048 pixels，否则会出错——2048×2048 pixels是自动生成纹理图集的最大尺寸。</p>
+
+<p>下面看看具体如何做。找到之前下载的压缩文件，在压缩文件中有一个名为TextureAtlases的文件夹。这个文件夹中包含了3中设备类型的UI元素(iPad, iPhone, 和 WidescreeniPhone)。这些文件家中都包含有<code>.atlas</code>文件夹。我们将TextureAtlases文件夹拖至工程中，确保勾选上<code>Copy items into destination group’s folder (if needed)</code>。</p>
+
+<p><img src="/images/2013/10/31.png" alt="" /></p>
+
+<p>本文中为了让一切变得简单点，我们为每种类型的设备准备了一套纹理图集(iPhone 3.5-inch, iPhone 4-inch 和 iPads)。在iPhone 4英寸中可以重用iPhone3.5英寸中的一些纹理图集，</p>
+
+<h3><a id="bjsb"></a>背景设置</h3>
+
+<p>在开始修改scene中显示内容之前，我们需要添加一个宏以及一个helper方法。打开MyScene.m文件，并在文件的头部添加如下一行代码(在#import下面)：</p>
+
+<p>```objc</p>
+
+<h1>define IS_WIDESCREEN ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height &ndash; ( double )568 ) &lt; DBL_EPSILON )</h1>
+
+<p>```</p>
+
+<p>上面这个宏可以判断程序是否允许在4英寸的屏幕中，该宏将被用在helper方法中，如果要了解上面宏的详细内容，<a href="http://stackoverflow.com/questions/12446990/how-to-detect-iphone-5-widescreen-devices">看这里</a>。</p>
+
+<p>接着添加一个helper方法——为运行程序的设备获取正确的SKTextureAtla。这个方法接收一个文件名，并在文件名尾部添加一个正确的标示符，然后返回正确的一个SKTextureAtla。</p>
+
+<p>```objc
+&ndash; (SKTextureAtlas <em>)textureAtlasNamed:(NSString </em>)fileName
+{</p>
+
+<pre><code>if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+
+    if (IS_WIDESCREEN) {
+        // iPhone Retina 4-inch
+        fileName = [NSString stringWithFormat:@"%@-568", fileName];
+    } else {
+        // iPhone Retina 3.5-inch
+        fileName = fileName;
+    }
+
+} else {
+    fileName = [NSString stringWithFormat:@"%@-ipad", fileName];
+}
+
+SKTextureAtlas *textureAtlas = [SKTextureAtlas atlasNamed:fileName];
+
+return textureAtlas;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码做了些什么？</p>
+
+<ul>
+<li>首选判断设备是否为一台iPhone。</li>
+<li>如果是一台iPhone，然后利用之前定义的IS_WIDESCREEN宏判断是否为4英寸显示屏。如果是的话，就在文件名尾部添加<code>-568</code>。</li>
+<li>如果设备是iPad或iPad retina，那么在文件尾部添加<code>-ipad</code>。</li>
+<li>根据文件名创建并返回一个新的SKTextureAtlas。</li>
+</ul>
+
+
+<p>接着找到initWithSize:方法。移除掉设置背景颜色和创建Hell World lable的6行代码，然后用下面的代码替换之：</p>
+
+<p>```objc
+// Add background
+SKTextureAtlas <em>backgroundAtlas = [self textureAtlasNamed:@&ldquo;background&rdquo;];
+SKSpriteNode </em>dirt = [SKSpriteNode spriteNodeWithTexture:[backgroundAtlas textureNamed:@&ldquo;bg_dirt&rdquo;]];
+dirt.scale = 2.0;
+dirt.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+dirt.zPosition = 0;
+[self addChild:dirt];</p>
+
+<p>// Add foreground
+SKTextureAtlas <em>foregroundAtlas = [self textureAtlasNamed:@&ldquo;foreground&rdquo;];
+SKSpriteNode </em>upper = [SKSpriteNode spriteNodeWithTexture:[foregroundAtlas textureNamed:@&ldquo;grass_upper&rdquo;]];
+upper.anchorPoint = CGPointMake(0.5, 0.0);
+upper.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+upper.zPosition = 1;
+[self addChild:upper];</p>
+
+<p>SKSpriteNode *lower = [SKSpriteNode spriteNodeWithTexture:[foregroundAtlas textureNamed:@&ldquo;grass_lower&rdquo;]];
+lower.anchorPoint = CGPointMake(0.5, 1.0);
+lower.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+lower.zPosition = 3;
+[self addChild:lower];</p>
+
+<p>// Add more here later&hellip;
+```
+我们来看看上面的代码都做了什么。</p>
+
+<ul>
+<li><code>Add background</code> 这部分代码使用之前的helper方法创建一个背景纹理图集。接着从背景纹理图集中构建一个dirt sprite。最后将其缩小2倍，并将其添加到scene正中间。将其缩小的目的是为了节省空间。</li>
+<li><code>Add foreground</code> 这部分代码跟上面background中的十分相似，只不过这两个foreground sprite在同一个纹理图集中罢了。这里用了一种方便的方法来放置图片：设置anchor point(顶部图片设置middle/bottom，底部图片设置middle/top)。这种方法不需要做复杂的数学运算，就能在所有的设备上做出正确的显示。另外需要注意的是iPhone上的背景图片有一部分将不会显示出来，不过在这里并没有太大的影响。另外需要留意的是设置了图片的zPosition值，这样可以确保图片的正确排序。</li>
+<li><code>SKSpriteNode的zPosition属性</code> 这个数学用来决定每个sprite在scene所处层次的位置。可以将其看做一个蛋糕，其中dirt sprite处于最底层，所以使用最小的一个值。添加别的层时增加相应的值，所以上半部分前景图设置为1，而下半部分设置为3，那么2呢？这个值是留给鼹鼠的——因为鼹鼠将出现在上部前景图上面，而在下部前景图后面。</li>
+</ul>
+
+
+<p>在运行程序之前，再做一点清理工作。找到touchesBegan:方法，并将其删除掉。</p>
+
+<p>编译并运行程序，现在可以看到屏幕上显示出了背景图和前景图！并且在iPhone和iPad模拟器中运行，也能正确的显示！如下图所示：</p>
+
+<p><img src="/images/2013/10/32.png" alt="" /></p>
+
+<h3><a id="asfz"></a>鼹鼠的放置</h3>
+
+<p>在这个游戏中，我们将添加3个鼹鼠到scene中——上图中的每个洞放一个。鼹鼠默认是在地下的，偶尔会弹出来，当弹出来时，我们可以打击它们。</p>
+
+<p>首先我们先将鼹鼠放到每个洞中。为了确保鼹鼠位置的正确，最好先把鼹鼠显示在最上面，等调好位置之后，在将其放到后台去。</p>
+
+<p>打开MyScene.h文件，并按照如下代码进行修改：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;SpriteKit/SpriteKit.h></h1>
+
+<p>@interface MyScene : SKScene</p>
+
+<p>@property (strong, nonatomic) NSMutableArray <em>moles;
+@property (strong, nonatomic) SKTexture </em>moleTexture;</p>
+
+<p>@end
+```
+上面的代码添加了一个SKTexture和一个数组。创建鼹鼠的时候会用到SKTexture，创建好的每个鼹鼠会被添加到数组中，这样方便之后循环获得每个鼹鼠。</p>
+
+<p>在添加鼹鼠之前，首先定位到MyScene.m的顶部，并将下面这行代码添加到<code>@implementation MyScene</code>之前。</p>
+
+<p><code>objc
+const float kMoleHoleOffset = 155.0;
+</code></p>
+
+<p>这是一个float类型的常量，用来对鼹鼠进行定位。</p>
+
+<p>接着，将如下代码添加到initWithSize:方法最后面：</p>
+
+<p>```objc
+// Load sprites
+self.moles = [[NSMutableArray alloc] init];
+SKTextureAtlas *spriteAtlas = [self textureAtlasNamed:@&ldquo;sprites&rdquo;];
+self.moleTexture = [spriteAtlas textureNamed:@&ldquo;mole_1.png&rdquo;];</p>
+
+<p>float center = 240.0;</p>
+
+<p>if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &amp;&amp; IS_WIDESCREEN) {</p>
+
+<pre><code>center = 284.0;
+</code></pre>
+
+<p>}</p>
+
+<p>SKSpriteNode *mole1 = [SKSpriteNode spriteNodeWithTexture:self.moleTexture];
+mole1.position = [self convertPoint:CGPointMake(center &ndash; kMoleHoleOffset, 85.0)];
+mole1.zPosition = 999;
+mole1.name = @&ldquo;Mole&rdquo;;
+mole1.userData = [[NSMutableDictionary alloc] init];
+[self addChild:mole1];
+[self.moles addObject:mole1];</p>
+
+<p>SKSpriteNode *mole2 = [SKSpriteNode spriteNodeWithTexture:self.moleTexture];
+mole2.position = [self convertPoint:CGPointMake(center, 85.0)];
+mole2.zPosition = 999;
+mole2.name = @&ldquo;Mole&rdquo;;
+mole2.userData = [[NSMutableDictionary alloc] init];
+[self addChild:mole2];
+[self.moles addObject:mole2];</p>
+
+<p>SKSpriteNode *mole3 = [SKSpriteNode spriteNodeWithTexture:self.moleTexture];
+mole3.position = [self convertPoint:CGPointMake(center + kMoleHoleOffset, 85.0)];
+mole3.zPosition = 999;
+mole3.name = @&ldquo;Mole&rdquo;;
+mole3.userData = [[NSMutableDictionary alloc] init];
+[self addChild:mole3];
+[self.moles addObject:mole3];
+```</p>
+
+<p>上面的代码首先创建并加载一个SKTextureAtlas。接着根据sprite纹理图集中的mole_1.png 创建一个SKTexture，这将用来创建3个鼹鼠。Texture的重用性可以让Sprite Kit处理和渲染sprite更加高效。</p>
+
+<p>接下来的这个值用来设置center。如果设备是4英寸的iPhone，那么这个center值将反映出额外的尺寸。</p>
+
+<p>接着为每个鼹鼠创建对应的sprite，并将它们放置到scene中，还把它们添加到鼹鼠数组中。注意，每个鼹鼠的位置是利用center位置和文件头部定义的常量决定的。针对iPhone 3.5英寸的设备，鼹鼠位置处在480×320的可玩区域，而如何是iPad，相关位置需要做转换，所以下面写了一个helper方法convertPoint。</p>
+
+<p>将下面这个方法添加到initWithSize:方法后面：</p>
+
+<p>```objc
+&ndash; (CGPoint)convertPoint:(CGPoint)point
+{</p>
+
+<pre><code>if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    return CGPointMake(32 + point.x*2, 64 + point.y*2);
+} else {
+    return point;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面这个方法将可玩区域的point转换到iPad上适当的位置。记住：</p>
+
+<ul>
+<li>iPad的屏幕尺寸更大，所有的point都是双倍。</li>
+<li>由于是将960×640的区域转换为1024×786的iPad区域，所以需要将左右边距分别设置为32point，而上下边距则各位64。</li>
+</ul>
+
+
+<p>就这样，上面的方法就是简单的给出iPad中正确的位置。</p>
+
+<p>编译并运行程序，可以看到scene中有3个鼹鼠，它们的位置已经设置正确！你最好在iPhone 3.5-inch, iPhone 4-inch, iPad, 和 iPad Retina设备上都运行一下，以确保位置的正确。</p>
+
+<p><img src="/images/2013/10/33.png" alt="" /></p>
+
+<h3><a id="tcas"></a>弹出鼹鼠</h3>
+
+<p>至此，我们已经把鼹鼠放置好了，下面我们添加一些代码让鼹鼠从洞里面跳出来吧。</p>
+
+<p>首先，将这些sprite(鼹鼠)的zPosition从999设置为2，这样就可以把鼹鼠藏起来了。</p>
+
+<p>然后，将下面的代码添加到update:方法中：</p>
+
+<p>```objc
+for (SKSpriteNode *mole in self.moles) {</p>
+
+<pre><code>if (arc4random() % 3 == 0) {
+    if (!mole.hasActions) {
+        [self popMole:mole];
+    }
+}
+</code></pre>
+
+<p>}
+```
+需要注意的是每帧的显示都会调用update方法。该方法被调用的时候我们都会尝试着弹出一些鼹鼠。在代码中循环遍历处理了每个鼹鼠，并给每个鼹鼠1/3的机会从洞中弹出来。不过记住我们只能弹出那么还没有弹出来的鼹鼠——很简单的一个判断方法就是检查一下sprite的属性hasActions返回的值，如果还有action在运行，那么hasActions将返回YES。</p>
+
+<p>接着，实现一下popMole方法：</p>
+
+<p>```objc
+&ndash; (void)popMole:(SKSpriteNode *)mole
+{</p>
+
+<pre><code>SKAction *easeMoveUp = [SKAction moveToY:mole.position.y + mole.size.height duration:0.2f];
+easeMoveUp.timingMode = SKActionTimingEaseInEaseOut;
+SKAction *easeMoveDown = [SKAction moveToY:mole.position.y duration:0.2f];
+easeMoveDown.timingMode = SKActionTimingEaseInEaseOut;
+SKAction *delay = [SKAction waitForDuration:0.5f];
+
+SKAction *sequence = [SKAction sequence:@[easeMoveUp, delay, easeMoveDown]];
+[mole runAction:sequence];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码使用了Sprite Kit中的一些action，让鼹鼠弹出洞来，并暂停半秒钟，然后在弹回去。我们来细看一下上面代码的意思：</p>
+
+<ol>
+<li>创建一个action来将鼹鼠沿着Y轴移动鼹鼠高度的距离，这样就能将鼹鼠正好放置到洞上面。</li>
+<li>为了让移动行为看起来更自然一点，将action的timingMode设置为SKActionTimingEaseInEaseOut。这样可以让action在开始和结束时速度慢一点，这样鼹鼠看起来会有加速和减速的效果，看起来就会更自然一点了。</li>
+<li>创建一个action将鼹鼠移回原处，这个action跟上一个类似，只不过使用鼹鼠当前Y轴的位置。</li>
+<li>创建一个action，该action会让鼹鼠停留在洞口半秒钟。</li>
+<li>按顺序运行这些action：move up，delay和move down。</li>
+</ol>
+
+
+<p>搞定！编译并运行程序，可以看到鼹鼠会从它们的洞口弹出来！</p>
+
+<p><img src="/images/2013/10/34.png" alt="" /></p>
+
+<h3><a id="hqhc"></a>何去何从</h3>
+
+<p>本文的代码工程在<a href="http://cdn3.raywenderlich.com/downloads/WhackAMoleSK1.zip">这里</a>。</p>
+
+<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 1</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：如何拖放Sprites]]></title>
@@ -1250,402 +1723,6 @@ SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:YES]
 <p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
 
 <p>……Sprite Kit教程：初学者 3 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：初学者 2]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"/>
-    <updated>2013-09-29T00:06:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/09/10.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。(2013-10-14)</p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Sprite Kit的优点和缺点</li>
-<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
-<li>Hello, Sprite Kit!</li>
-<li><a href="#hpxs">横屏显示</a></li>
-<li><a href="#ydgs">移动怪兽</a></li>
-<li><a href="#fspd">发射炮弹</a></li>
-<li>碰撞检测: 概述</li>
-<li>碰撞检测: 实现</li>
-<li>收尾</li>
-<li>何去何从?</li>
-</ul>
-
-
-<h3><a id="hpxs"></a>横屏显示</h3>
-
-<p>首先，在Project Navigator中单击SpriteKitSimpleGame工程以打开target设置，选中SpriteKitSimpleGame target。然后在<code>Deployment Info</code>中，不要勾选<code>Portrait</code>，只选中<code>Landscape</code>和<code>Landscape Right</code>，如下所示：</p>
-
-<p><img src="/images/2013/09/11.png"></p>
-
-<p>编译并运行工程，会看到如下运行画面：</p>
-
-<p><img src="/images/2013/09/12.png"></p>
-
-<p>下面我们试着添加一个忍者(ninja)。</p>
-
-<p>首先，下载此<a href="http://cdn3.raywenderlich.com/wp-content/uploads/2015/01/SpriteKitSimpleGameResources.zip">工程的资源文件</a>，并将其拖拽到Xcode工程中。确保勾选上<code>“Copy items into destination group’s folder (if needed)”</code>和<code>SpriteKitSimpleGame target</code>。</p>
-
-<p>接着，打开<code>MyScene.m</code>，并用下面的内容替换之：</p>
-
-<p>```objc</p>
-
-<h1>import &ldquo;MyScene.h&rdquo;</h1>
-
-<p>// 1
-@interface MyScene ()
-@property (nonatomic) SKSpriteNode * player;
-@end</p>
-
-<p>@implementation MyScene</p>
-
-<p>&ndash;(id)initWithSize:(CGSize)size {</p>
-
-<pre><code>if (self = [super initWithSize:size]) {
-
-    // 2
-    NSLog(@"Size: %@", NSStringFromCGSize(size));
-
-    // 3
-    self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
-
-    // 4
-    self.player = [SKSpriteNode spriteNodeWithImageNamed:@"player"];
-    self.player.position = CGPointMake(100, 100);
-    [self addChild:self.player];
-
-}
-return self;
-</code></pre>
-
-<p>}</p>
-
-<p>@end
-```</p>
-
-<p>我们来看看上面的代码。</p>
-
-<ol>
-<li>为了给player(例如忍者)声明一个私有变量，在这里创建了一个私有的interface，之后可以把这个私有变量添加到场景中。</li>
-<li>在这里打印出了场景的size，至于什么原因很快你就会看到了。</li>
-<li>在Sprite Kit中设置一个场景的背景色非常简单——只需要设置<code>backgroundColor</code>属性，在这里将其设置位白色。</li>
-<li>在Sprite Kit场景中添加一个精灵同样非常简单，只需要使用<code>spriteNodeWithImageNamed</code>方法，并把一副图片的名称传递进去就可以创建一个精灵。接着设置一下精灵的位置，然后调用<code>addChild</code>方法将该精灵添加到场景中。在代码中将忍者的位置设置为<code>(100, 100)</code>，该位置是从屏幕的左下角到右上角计算的。</li>
-</ol>
-
-
-<p>编译并运行，看看效果如何…</p>
-
-<p><img src="/images/2013/09/13.png"></p>
-
-<p>呀！屏幕是白色的，并没有看到忍者。这是为什么呢？你可能在想设计之初就是这样的，实际上这里有一个问题。</p>
-
-<p>如果你观察一下控制台输出的内容，会看到如下内容</p>
-
-<p><code>objc
-SpriteKitSimpleGame[3139:907] Size: {320, 568}
-</code>
-scene认为自己的宽度是320，高度则是568——实际上刚好相反!</p>
-
-<p>我们来看看具体发生了什么：定位到<code>ViewController.m</code>的<code>viewDidLoad</code>方法：</p>
-
-<p>```objc
-&ndash; (void)viewDidLoad
-{</p>
-
-<pre><code>[super viewDidLoad];
-
-// Configure the view.
-SKView * skView = (SKView *)self.view;
-skView.showsFPS = YES;
-skView.showsNodeCount = YES;
-
-// Create and configure the scene.
-SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
-scene.scaleMode = SKSceneScaleModeAspectFill;
-
-// Present the scene.
-[skView presentScene:scene];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，view还没被添加到view层级结构中，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
-
-<p><code>提醒</code>：要想了解更多相关内容，请看由Rob Mayoff带来的<a href="http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame">最佳解释</a>。</p>
-
-<p>解决方法就是将开启场景代码的过程再靠后一点。用下面的代码替换<code>viewDidLoad</code>:
-```objc
-&ndash; (void)viewWillLayoutSubviews
-{</p>
-
-<pre><code>[super viewWillLayoutSubviews];
-
-// Configure the view.
-SKView * skView = (SKView *)self.view;
-if (!skView.scene) {
-  skView.showsFPS = YES;
-  skView.showsNodeCount = YES;
-
-  // Create and configure the scene.
-  SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
-  scene.scaleMode = SKSceneScaleModeAspectFill;
-
-  // Present the scene.
-  [skView presentScene:scene];
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>编译并运行程序，可以看到，忍者已经显示在屏幕中了！</p>
-
-<p><img src="/images/2013/09/14.png"></p>
-
-<p>如上图所示，可以看到坐标系已经正确了，如果想要把忍者的位置设置为其中间靠左，那么在<code>MyScene.m</code>中用下面的代码来替换设置忍者位置相关的代码：</p>
-
-<p>```objc</p>
-
-<p>self.player.position = CGPointMake(self.player.size.width/2, self.frame.size.height/2);</p>
-
-<p>```</p>
-
-<h3><a id="ydgs"></a>移动怪兽</h3>
-
-<p>接下来，我们希望在场景中添加一些怪兽，让忍者进行攻击。为了让游戏更有趣一点，希望怪兽能够移动——否则没有太大的挑战！OK，我们就在屏幕的右边，离屏的方式创建怪兽，并给怪兽设置一个动作：告诉它们往左边移动。</p>
-
-<p>将下面这个方法添加到<code>MyScene.m</code>中：</p>
-
-<p>```objc
-&ndash; (void)addMonster {</p>
-
-<pre><code>// Create sprite
-SKSpriteNode * monster = [SKSpriteNode spriteNodeWithImageNamed:@"monster"];
-
-// Determine where to spawn the monster along the Y axis
-int minY = monster.size.height / 2;
-int maxY = self.frame.size.height - monster.size.height / 2;
-int rangeY = maxY - minY;
-int actualY = (arc4random() % rangeY) + minY;
-
-// Create the monster slightly off-screen along the right edge,
-// and along a random position along the Y axis as calculated above
-monster.position = CGPointMake(self.frame.size.width + monster.size.width/2, actualY);
-[self addChild:monster];
-
-// Determine speed of the monster
-int minDuration = 2.0;
-int maxDuration = 4.0;
-int rangeDuration = maxDuration - minDuration;
-int actualDuration = (arc4random() % rangeDuration) + minDuration;
-
-// Create the actions
-SKAction * actionMove = [SKAction moveTo:CGPointMake(-monster.size.width/2, actualY) duration:actualDuration];
-SKAction * actionMoveDone = [SKAction removeFromParent];
-[monster runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>在上面，我尽量让代码看起来容易理解。首先是通过一个简单的计算，确定怪兽出现的位置，并将该位置设置给怪兽，然后将其添加到场景中。</p>
-
-<p>接着是添加动作(actions)。跟Cocos2D一样，Sprite Kit同样提供了很多方便的内置动作，例如移动动作、旋转动作、淡入淡出动作、动画动作等。在这里我们只需要在怪兽上使用3中动作即可：</p>
-
-<ul>
-<li><code>moveTo:duration:</code>使用这个动作可以把怪兽从屏幕外边移动到左边。移动过程中，我们可以指定移动持续的时间，上面的代码中，指定为2-4秒之间的一个随机数。</li>
-<li><code>removeFromParent:</code>在Sprite Kit中，可以使用该方法，方便的将某个node从parent中移除，能有效的从场景中删除某个对象。此处，将不再需要显示的怪兽从场景中移除。这个功能非常的重要，否则当有源源不断的怪兽出现在场景中时，会耗尽设备的所有资源。</li>
-<li><code>sequence:</code>sequence动作可以一次性就把一系列动作串联起来按照一定顺序执行。通过该方法我们就能让<code>moveTo:</code>方法先执行，当完成之后，在执行<code>removeFromParent:</code>动作。</li>
-</ul>
-
-
-<p>最后，我们需要做的事情就是调用上面这个方法<code>addMonster</code>，以实际的创建出怪兽！为了更加好玩，下面我们来让怪兽随着时间持续的出现在屏幕中。</p>
-
-<p>在Sprite Kit中，并不能像Cocos2D一样，可以配置每隔X秒就回调一下update方法。同样也不支持将从上次更新到目前为止的时间差传入方法中。(非常令人吃惊！)。</p>
-
-<p>不过，我们可以通过一小段代码来仿造这种行为。首先在<code>MyScene.m</code>的private interface中添加如下属性：</p>
-
-<p><code>objc
-@property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
-@property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
-</code>
-通过<code>lastSpawnTimeInterval</code>可以记录着最近出现怪兽时的时间，而<code>lastUpdateTimeInterval</code>可以记录着上次更新时的时间。</p>
-
-<p>接着，我们写一个方法，该方法在画面每一帧更新的时候都会被调用。记住，该方法不会被自动调用——需要另外写一个方法来调用它：</p>
-
-<p>```objc
-&ndash; (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {</p>
-
-<pre><code>self.lastSpawnTimeInterval += timeSinceLast;
-if (self.lastSpawnTimeInterval &gt; 1) {
-    self.lastSpawnTimeInterval = 0;
-    [self addMonster];
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的代码中简单的将上次更新(update调用)的时间追加到<code>self.lastSpawnTimeInterval</code>中。一旦该时间大于1秒，就在场景中新增一个怪兽，并将<code>lastSpawnTimeInterval</code>重置。</p>
-
-<p>最后，添加如下方法来调用上面的方法：</p>
-
-<p>```objc
-&ndash; (void)update:(NSTimeInterval)currentTime {</p>
-
-<pre><code>// Handle time delta.
-// If we drop below 60fps, we still want everything to move the same distance.
-CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
-self.lastUpdateTimeInterval = currentTime;
-if (timeSinceLast &gt; 1) { // more than a second since last update
-    timeSinceLast = 1.0 / 60.0;
-    self.lastUpdateTimeInterval = currentTime;
-}
-
-[self updateWithTimeSinceLastUpdate:timeSinceLast];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Sprite Kit在显示每帧时都会调用上面的<code>update:</code>方法。</p>
-
-<p>上面的代码其实是来自苹果提供的Adventure示例中。该方法会传入当前的时间，在其中，会做一些计算，以确定出上一帧更新的时间。注意，在代码中做了一些合理性的检查，以避免从上一帧更新到现在已经过去了大量时间，并且将间隔重置为1/60秒，避免出现奇怪的行为。</p>
-
-<p>现在编译并运行程序，可以看到许多怪兽从左边移动到屏幕右边并消失。</p>
-
-<p><img src="/images/2013/09/15.png"></p>
-
-<h3><a id="fspd"></a>发射炮弹</h3>
-
-<p>现在我们开始给忍者添加一些动作，首先从发射炮弹开始！实际上有多种方法来实现炮弹的发射，不过，在这里要实现的方法时当用户tap屏幕时，从忍者的方位到tap的方位发射一颗炮弹。</p>
-
-<p>由于本文是针对初级开发者，所以在这里我使用<code>moveTo:</code>动作来实现，不过这需要做一点点的数学运算——因为<code>moveTo:</code>方法需要指定炮弹的目的地，但是又不能直接使用touch point(因为touch point仅仅代表需要发射的方向)。实际上我们需要让炮弹穿过touch point，直到炮弹在屏幕中消失。</p>
-
-<p>如下图，演示了上面的相关内容：</p>
-
-<p><img src="/images/2013/09/16.jpg"></p>
-
-<p>如图所示，我们可以通过origin point到touch point得到一个小的三角形。我们要做的就是根据这个小三角形的比例创建出一个大的三角形——而你知道你想要的一个端点是离开屏幕的地方。</p>
-
-<p>为了做这个计算，如果有一些基本的矢量方法可供调用(例如矢量的加减法)，那么会非常有帮助，但很不幸的时Sprite Kit并没有提供相关方法，所以，我们必须自己实现。</p>
-
-<p>不过很幸运的时这非常容易实现。将下面的方法添加到文件的顶部(implementation之前)：</p>
-
-<p>```objc
-static inline CGPoint rwAdd(CGPoint a, CGPoint b) {</p>
-
-<pre><code>return CGPointMake(a.x + b.x, a.y + b.y);
-</code></pre>
-
-<p>}</p>
-
-<p>static inline CGPoint rwSub(CGPoint a, CGPoint b) {</p>
-
-<pre><code>return CGPointMake(a.x - b.x, a.y - b.y);
-</code></pre>
-
-<p>}</p>
-
-<p>static inline CGPoint rwMult(CGPoint a, float b) {</p>
-
-<pre><code>return CGPointMake(a.x * b, a.y * b);
-</code></pre>
-
-<p>}</p>
-
-<p>static inline float rwLength(CGPoint a) {</p>
-
-<pre><code>return sqrtf(a.x * a.x + a.y * a.y);
-</code></pre>
-
-<p>}</p>
-
-<p>// Makes a vector have a length of 1
-static inline CGPoint rwNormalize(CGPoint a) {</p>
-
-<pre><code>float length = rwLength(a);
-return CGPointMake(a.x / length, a.y / length);
-</code></pre>
-
-<p>}
-```
-上面实现了一些标准的矢量函数。如果你看得不是太明白，请看这里关于<a href="http://www.mathsisfun.com/algebra/vectors.html">矢量方法的解释</a>。</p>
-
-<p>接着，在文件中添加一个新的方法：</p>
-
-<p>```objc
-&ndash;(void)touchesEnded:(NSSet <em>)touches withEvent:(UIEvent </em>)event {</p>
-
-<pre><code>// 1 - Choose one of the touches to work with
-UITouch * touch = [touches anyObject];
-CGPoint location = [touch locationInNode:self];
-
-// 2 - Set up initial location of projectile
-SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
-projectile.position = self.player.position;
-
-// 3- Determine offset of location to projectile
-CGPoint offset = rwSub(location, projectile.position);
-
-// 4 - Bail out if you are shooting down or backwards
-if (offset.x &lt;= 0) return;
-
-// 5 - OK to add now - we've double checked position
-[self addChild:projectile];
-
-// 6 - Get the direction of where to shoot
-CGPoint direction = rwNormalize(offset);
-
-// 7 - Make it shoot far enough to be guaranteed off screen
-CGPoint shootAmount = rwMult(direction, 1000);
-
-// 8 - Add the shoot amount to the current position       
-CGPoint realDest = rwAdd(shootAmount, projectile.position);
-
-// 9 - Create the actions
-float velocity = 480.0/1.0;
-float realMoveDuration = self.size.width / velocity;
-SKAction * actionMove = [SKAction moveTo:realDest duration:realMoveDuration];
-SKAction * actionMoveDone = [SKAction removeFromParent];
-[projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的代码中做了很多事情，我们来详细看看。</p>
-
-<ol>
-<li>SpriteKit为我们做了很棒的一件事情就是它提供了一个UITouch的category，该category中有<code>locationInNode:</code>和<code>previousLocationInNode:</code>方法。这两个方法可以帮助我们定位到在SKNode内部坐标系中touch的坐标位置。这样一来，我们就可以寻得到在场景坐标系中touch的位置。</li>
-<li>然后创建一个炮弹，并将其放置到忍者的地方，以当做其开始位置。注意，现在还没有将其添加到场景中，因为还需要先做一个合理性的检查——该游戏不允许忍者向后发射。</li>
-<li>接着利用touch位置减去炮弹的当前位置，这样就能获得一个从当前位置到touch位置的矢量。</li>
-<li>如果X值小于0，就意味着忍者将要向后发射，由于在这里的游戏中是不允许的(真实中的忍者是不回头的！)，所以就return。</li>
-<li>否则，将可以将炮弹添加到场景中。</li>
-<li>调用方法<code>rwNormalize</code>，将offset转换为一个单位矢量(长度为1)。这样做可以让在相同方向上，根据确定的长度来构建一个矢量更加容易（因为1 * length = length）。</li>
-<li>在单位矢量的方向上乘以1000。为什么是1000呢？因为着肯定足够超过屏幕边缘了 :]</li>
-<li>将上一步中计算得到的位置与炮弹的位置相加，以获得炮弹最终结束的位置。</li>
-<li>最后，参照之前构建怪物时的方法，创建<code>moveTo:</code>和<code>removeFromParent:</code>两个actions。</li>
-</ol>
-
-
-<p>编译并运行程序，现在忍者可以发射炮弹了！</p>
-
-<p><img src="/images/2013/09/17.png"></p>
-
-<p>……Sprite Kit教程：初学者 2 结束……</p>
 ]]></content>
   </entry>
   
