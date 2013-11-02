@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-27T20:38:37+08:00</updated>
+  <updated>2013-11-02T18:43:44+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,405 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 2]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/02/119-sprite-kit-tutorial-making-a-universal-app-part-2/"/>
+    <updated>2013-11-02T18:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/02/119-sprite-kit-tutorial-making-a-universal-app-part-2</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/10/25.png"></p>
+
+<!--more-->
+
+
+<p>注1：本文译自<a href="http://www.raywenderlich.com/49697/sprite-kit-tutorial-making-a-universal-app-part-2"><code>Sprite Kit Tutorial: Making a Universal App: Part 2</code></a></p>
+
+<p>注2：我最近长时间在广西南宁出差，比较忙，跑步和篮球都歇着了，博客更新频率也有点慢。下周⑥又是某某人的生日，估计是回不去了%>_&lt;%，下半年还有一些重要的事情要做，时间太少！加油！</p>
+
+<p>上周发现住的附近有一个公园，考察了一下，适合跑步，所以呢，我计划本周末去买点运动的衣服，重启跑步计划 :]</p>
+
+<p>看吧，下图就是公园照的</p>
+
+<p><img src="/images/2013/11/1.jpg" alt="南宁市人民公园" /></p>
+
+<p>好啦，下面开始本文正题：</p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><a href="#dhkx">动画的定义：可行性</a></li>
+<li><a href="#sxlb">属性列表</a></li>
+<li><a href="#yxlj">添加游戏逻辑</a></li>
+<li><a href="#tjyx">添加音效</a></li>
+<li><a href="#hqhc">何去何从</a></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1/">上一篇文章中</a>，创建了一个基本的游戏程序：一些可爱的鼹鼠从洞里面跳出来。并且为了能够让程序很好的运行在iPhone 3.5英寸，iPhone 4英寸，iPad和iPad Retina上，还花费了大量的篇幅介绍UI设计和坐标系相关知识。</p>
+
+<p>本文，将给鼹鼠添加一些可爱的动画：笑和被打时的表情，并添加一种玩法：可以通过敲打鼹鼠来赚取点数，另外还会添加一些音效。</p>
+
+<h3><a id="dhkx"></a>动画的定义：可行性</h3>
+
+<p>为了让游戏更加有趣，我们将在游戏中给鼹鼠添加两个动画。首先，当鼹鼠从洞里面跳出来时是笑的动画，然后，当你敲打它们的时候，是一个被敲打的表情。</p>
+
+<p>在开始之前，我们先来看看在代码里面定义动画的可行性。</p>
+
+<p>鼹鼠笑的动画需要用到的图片和相关顺序是这样的：
+mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.png, mole_laugh1.png。</p>
+
+<p>我们可以通过硬编码的方式来配置我们的动画，如下代码所示：</p>
+
+<p>```objc
+[animFrames addObject:</p>
+
+<pre><code>[SKTexture textureWithImageNamed:@"mole_laugh1.png"]];
+</code></pre>
+
+<p>[animFrames addObject:</p>
+
+<pre><code>[SKTexture textureWithImageNamed:@"mole_laugh2.png"]];
+</code></pre>
+
+<p>[animFrames addObject:</p>
+
+<pre><code>[SKTexture textureWithImageNamed:@"mole_laugh3.png"]];
+</code></pre>
+
+<p>[animFrames addObject:</p>
+
+<pre><code>[SKTexture textureWithImageNamed:@"mole_laugh2.png"]];
+</code></pre>
+
+<p>// And so on&hellip;
+```</p>
+
+<p>不过，这很容易让我们的代码剧增。为了简洁一点，此处我们不用上面的代码来定义动画，而是使用属性列表来代替。</p>
+
+<h3><a id="sxlb"></a>属性列表</h3>
+
+<p>如果之前你没有用过属性列表，也没关系。属性列表就是一个特殊的文件，可以用Xcode创建，文件按照一定的格式包含数组、字典、字符串和数字，所以非常容易创建，并且在代码中叶能够方便的读取到这些值。</p>
+
+<p>下面我们在Xcode中试试吧。右键单击ShackAMole，选择"New File…"，接着选择 “iOS\Resource\Property List”，然后单击"Next"。将文件命名为"laughAnim.plist"，最后单击创建。现在可以在Xcode中看到laughAnim.plist的可视化编辑界面，如下图所示：</p>
+
+<p><img src="/images/2013/11/2.png" alt="南" /></p>
+
+<p>每个属性列表都有一个root element。一般这是一个数组或者字典。在我们创建的这个文件中，将包含让鼹鼠笑起来所需动画的所有图片名称，是一个数组，所以点击root element的第二列(Type，当前为Dictionary)，将其修改为Array。</p>
+
+<p>接着，单击Root单词右边的加号按钮，以在数组中添加一个新的entry。默认情况下，entry的类型是String(刚好是我们想要的).将这个entry的值修改为"mole_laugh1.png"。</p>
+
+<p>继续点击加号按钮添加新的一条记录，直到所有的图片名称都添加进来了，如下图所示：</p>
+
+<p><img src="/images/2013/11/3.png" alt="" /></p>
+
+<p>接着添加一个鼹鼠被打击所需要图片的属性列表文件，跟上面的步骤一样，不过记得将文件命名为hitAnim.plist文件，如下所示：</p>
+
+<p><img src="/images/2013/11/4.png" alt="" /></p>
+
+<p>下面，我们就在代码中加载这些图片吧。打开MyScene.h文件，并为每个动画动作添加对应的属性，如下代码所示：</p>
+
+<p><code>objc
+// Inside @interface MyScene
+@property (strong, nonatomic) SKAction *laughAnimation;
+@property (strong, nonatomic) SKAction *hitAnimation;
+</code></p>
+
+<p>我们用上面这两个属性记录每个SKAction，这样可以在代码中方便的查找和重用。</p>
+
+<p>接着在MyScene.m中添加一个方法，方法中的代码根据传入的属性列表创建并返回SKAction，如下所示：</p>
+
+<p>```objc
+&ndash; (SKAction <em>)animationFromPlist:(NSString </em>)animPlist
+{</p>
+
+<pre><code>NSString *plistPath = [[NSBundle mainBundle] pathForResource:animPlist ofType:@"plist"]; // 1
+NSArray *animImages = [NSArray arrayWithContentsOfFile:plistPath]; // 2
+NSMutableArray *animFrames = [NSMutableArray array]; // 3
+for (NSString *imageName in animImages) { // 4
+    [animFrames addObject:[SKTexture textureWithImageNamed:imageName]]; // 5
+}
+
+float framesOverOneSecond = 1.0f/(float)[animFrames count];
+
+return [SKAction animateWithTextures:animFrames timePerFrame:framesOverOneSecond resize:NO restore:YES]; // 6
+</code></pre>
+
+<p>}
+```</p>
+
+<p>理解上面的代码很重要，我们一行一行的来看看吧：</p>
+
+<ol>
+<li>由于属性列表是包含在工程里面的，所以它应该在程序的"main bundle"中。这个helper方法计算出了属性列表文件在main bundle中的全路径。</li>
+<li>这行代码是读取属性列表文件中的内容。NSArray中有一个名为arrayWithContentsOfFile的方法，此处将文件名传递进去，就可以将属性列表中的内容读取到数组中了。（注意，之所以可以这样，是因为属性列表中的root element设置为NSArray），如果是一个字典的话，可以使用[NSDictionary dictionaryWithContentsOfFile…]。</li>
+<li>创建一个空的数组，用来存储动画的每一帧。</li>
+<li>循环遍历数组获得每个图片名字。</li>
+<li>获得每个图片的纹理，然后将其添加到数组中。</li>
+<li>根据纹理数组返回一个SKAction。</li>
+</ol>
+
+
+<p>接下来，在init方法的尾部为每个动画调用上面这个helper方法，如下代码所示：</p>
+
+<p><code>objc
+self.laughAnimation = [self animationFromPlist:@"laughAnim"];
+self.hitAnimation = [self animationFromPlist:@"hitAnim"];
+</code></p>
+
+<p>最后一步：使用动画(让鼹鼠笑起来)。修改popMole方法，如下代码所示：</p>
+
+<p>```objc
+&ndash; (void)popMole:(SKSpriteNode *)mole
+{</p>
+
+<pre><code>SKAction *easeMoveUp = [SKAction moveToY:mole.position.y + mole.size.height duration:0.2f];
+easeMoveUp.timingMode = SKActionTimingEaseInEaseOut;
+SKAction *easeMoveDown = [SKAction moveToY:mole.position.y duration:0.2f];
+easeMoveDown.timingMode = SKActionTimingEaseInEaseOut;
+
+
+SKAction *sequence = [SKAction sequence:@[easeMoveUp, self.laughAnimation, easeMoveDown]];
+[mole runAction:sequence];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码与之前唯一不同的就是用laughAnimation action替代了pop down之前的延迟一秒。laughAnimation action会使用laughAnim.plist中的纹理，注意之前已经把restore设置为YES了，所以当动画播放完之后，鼹鼠会回到正常的表情。</p>
+
+<p>现在编译并运行程序，可以看到鼹鼠跳出来，并笑了！如下图所示：</p>
+
+<p><img src="/images/2013/11/5.png" alt="" /></p>
+
+<p>下面我们来看看如何停止鼹鼠的<code>微笑</code>动画，并开始敲打它们。</p>
+
+<h3><a id="yxlj"></a>添加游戏逻辑</h3>
+
+<p>现在我们准备给游戏添加玩法，也就是游戏逻辑。基本想法就是会有一定数量的鼹鼠出现，当玩家打击到这些出现的鼹鼠时，就会获得相应的点数，玩家将尽力获得最多的点数。</p>
+
+<p>因此，我们需要记录分数，并将分数显示在屏幕中。当鼹鼠显示完毕时候，我们将对用户做出提示。</p>
+
+<p>先打开MyScene.h文件，并将下面这些实例变量添加到之前写的action后面：</p>
+
+<p><code>objc
+@property (strong, nonatomic) SKLabelNode *scoreLabel;
+@property (nonatomic) NSInteger score;
+@property (nonatomic) NSInteger totalSpawns;
+@property (nonatomic) BOOL gameOver;
+</code>
+有一个用于显示分数的label，一个记录当前分数的变量，一个记录已经弹出了多少个鼹鼠，以及游戏是否结束。</p>
+
+<p>接着，将下面的代码添加到文件MyScene.m文件中initWithSize:方法尾部：</p>
+
+<p>```objc
+// Add score label
+float margin = 10;</p>
+
+<p>self.scoreLabel = [SKLabelNode labelNodeWithFontNamed:@&ldquo;Chalkduster&rdquo;];
+self.scoreLabel.text = @&ldquo;Score: 0&rdquo;;
+self.scoreLabel.fontSize = [self convertFontSize:14];
+self.scoreLabel.zPosition = 4;
+self.scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+self.scoreLabel.position = CGPointMake(margin, margin);
+[self addChild:self.scoreLabel];
+```</p>
+
+<p>上面的代码创建了一个用于分数显示的label。label位于屏幕的左下角，并且距离左下角的边距为10 point。并将label的属性horizontalAlignmentMode设置为SKLabelHorizontalAlignmentModeLeft，这样可以让label的文字从左侧对齐。</p>
+
+<p>另外，此处并没有直接给label设置字体大小，而是先通过一个helper函数将字体大小做转换。这是因为在iPad和iPad retina上字体的尺寸要大一点。下面是convertFontSize方法的实现：</p>
+
+<p>```objc
+&ndash; (float)convertFontSize:(float)fontSize
+{</p>
+
+<pre><code>if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    return fontSize * 2;
+} else {
+    return fontSize;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如上代码所示，如果是iPad和iPad retina，那么就将字体尺寸变为原来的两倍，否则保持原样。</p>
+
+<p>接着，我们需要添加触摸检测的代码，用来判断是否打击了某个鼹鼠。不过在开始之前，我们需要给鼹鼠添加一个flag，以此知道鼹鼠当前是否可以点击(tappable)。只有当鼹鼠笑的时候才可以点击，而当它移动或者在底下时是不可以点击的，也就是“安全的”。</p>
+
+<p>我们可以创建一个SKSpriteNode的子类来记录这个flag，不过在此我们只需要存储一个信息，因此我们可以使用SKSpriteNode中的userData属性来代替。如下，再次将popMole做修改：</p>
+
+<p>```objc
+&ndash; (void)popMole:(SKSpriteNode *)mole
+{</p>
+
+<pre><code>if (self.totalSpawns &gt; 50) return;
+self.totalSpawns++;
+
+// Reset texture of mole sprite
+mole.texture = self.moleTexture;
+
+SKAction *easeMoveUp = [SKAction moveToY:mole.position.y + mole.size.height duration:0.2f];
+easeMoveUp.timingMode = SKActionTimingEaseInEaseOut;
+SKAction *easeMoveDown = [SKAction moveToY:mole.position.y duration:0.2f];
+easeMoveDown.timingMode = SKActionTimingEaseInEaseOut;
+
+SKAction *setTappable = [SKAction runBlock:^{
+    [mole.userData setObject:@1 forKey:@"tappable"];
+}];
+
+SKAction *unsetTappable = [SKAction runBlock:^{
+    [mole.userData setObject:@0 forKey:@"tappable"];
+}];
+
+
+SKAction *sequence = [SKAction sequence:@[easeMoveUp, setTappable, self.laughAnimation, unsetTappable, easeMoveDown]];
+[mole runAction:sequence completion:^{
+    [mole removeAllActions];
+}];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>主要做了如下修改：</p>
+
+<ul>
+<li>如果显示的鼹鼠数量有50个，那么立即返回，也就是说，在游戏中，50是最大的上限。</li>
+<li>在函数开头，重置一下鼹鼠的图片(&ldquo;mole_1.png&rdquo;)。这样做是因为如果鼹鼠在上一次显示的时候被击打了，它仍然显示被击打的图片，所以在这里显示之前，需要重置一下。</li>
+<li>在鼹鼠笑之前，先运行一个action，该action会在block中运行一段代码。该block将userData字典中名为tappable的key值设置为1，这样就可以表示鼹鼠可以被击打了。</li>
+<li>类似的，当鼹鼠笑过之后，同样运行一个action：将tappable的值设置为0.</li>
+</ul>
+
+
+<p>现在，鼹鼠有一个flag可以表示它是否可以被击中了。接着我们可以添加touchesBegan:方法了。将如下代码添加到文件中：</p>
+
+<p>```objc
+&ndash; (void)touchesBegan:(NSSet <em>)touches withEvent:(UIEvent </em>)event
+{</p>
+
+<pre><code>UITouch *touch = [touches anyObject];
+CGPoint touchLocation = [touch locationInNode:self];
+
+SKNode *node = [self nodeAtPoint:touchLocation];
+if ([node.name isEqualToString:@"Mole"]) {
+    SKSpriteNode *mole = (SKSpriteNode *)node;
+
+    if (![[mole.userData objectForKey:@"tappable"] boolValue]) return;
+
+    self.score += 10;
+
+    [mole.userData setObject:@0 forKey:@"tappable"];
+    [mole removeAllActions];
+
+    SKAction *easeMoveDown = [SKAction moveToY:(mole.position.y - mole.size.height) duration:0.2f];
+    easeMoveDown.timingMode = SKActionTimingEaseInEaseOut;
+
+    // Slow down the animation by half
+    easeMoveDown.speed = 0.5;
+
+    SKAction *sequence = [SKAction sequence:@[self.hitAnimation, easeMoveDown]];
+    [mole runAction:sequence];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的touchesBegan:方法首先获得触摸的位置，然后找到触摸位置对于的SKNode，如果node的名字是Mole，那么会进一步判断这个鼹鼠的tappable。</p>
+
+<p>如果鼹鼠被击中，会将该鼹鼠设置为不可再被击中，并把分数增加。然后停止所有运行的action，并播放被击中的动画，动画播放完毕之后，就立即把鼹鼠放回洞中。</p>
+
+<p>最后一步：添加一些代码对分数进行更新，并且做一个级别完成条件的检查，如下代码所示：</p>
+
+<p>```objc
+if (self.gameOver) return;</p>
+
+<p>if (self.totalSpawns >= 50) {</p>
+
+<pre><code>SKLabelNode *gameOverLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+gameOverLabel.text = @"Level Complete!";
+gameOverLabel.fontSize = 48;
+gameOverLabel.zPosition = 4;
+gameOverLabel.position = CGPointMake(CGRectGetMidX(self.frame),
+                                     CGRectGetMidY(self.frame));
+
+[gameOverLabel setScale:0.1];
+
+[self addChild:gameOverLabel];
+[gameOverLabel runAction:[SKAction scaleTo:1.0 duration:0.5]];
+
+self.gameOver = YES;
+return;
+</code></pre>
+
+<p>}</p>
+
+<p>[self.scoreLabel setText:[NSString stringWithFormat:@&ldquo;Score: %d&rdquo;, self.score]];
+```</p>
+
+<p>搞定！编译并运行程序，应该可以击打鼹鼠，并看到分数在增加！如下图所示：</p>
+
+<p><img src="/images/2013/11/6.png" alt="" /></p>
+
+<h3><a id="tjyx"></a>添加音效</h3>
+
+<p>为了让程序更加有趣，下面我们给这游戏添加音效。先来这里下载<a href="http://cdn5.raywenderlich.com/downloads/WhackAMoleSKSounds.zip">音效</a>吧。加压出文件，并把声音资源拖拽到WhackAMole文件件中。确保勾选上<code>Copy items into destination group’s folder</code>，然后单击Finish。</p>
+
+<p>将下面声明语句添加到MyScene.h文件顶部：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;AVFoundation/AVFoundation.h></h1>
+
+<p>```</p>
+
+<p>接着将如下属性添加到@end前面：</p>
+
+<p><code>objc
+@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+@property (strong, nonatomic) SKAction *laughSound;
+@property (strong, nonatomic) SKAction *owSound;
+</code></p>
+
+<p>然后在MyScene.m文件中做如下修改：</p>
+
+<p>```objc
+// Add at the bottom of your initWithSize: method
+// Preload whack sound effect
+self.laughSound = [SKAction playSoundFileNamed:@&ldquo;laugh.caf&rdquo; waitForCompletion:NO];
+self.owSound = [SKAction playSoundFileNamed:@&ldquo;ow.caf&rdquo; waitForCompletion:NO];</p>
+
+<p>NSURL <em>url = [[NSBundle mainBundle] URLForResource:@&ldquo;whack&rdquo; withExtension:@&ldquo;caf&rdquo;];
+NSError </em>error = nil;
+self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&amp;error];</p>
+
+<p>if (!self.audioPlayer) {</p>
+
+<pre><code>NSLog(@"Error creating player: %@", error);
+</code></pre>
+
+<p>}</p>
+
+<p>[self.audioPlayer play];</p>
+
+<p>// Add at bottom of popMole method, change the sequence action to:
+SKAction *sequence = [SKAction sequence:@[easeMoveUp, setTappable, self.laughSound, self.laughAnimation, unsetTappable, easeMoveDown]];</p>
+
+<p>// Add inside touchesBegan: method, change the sequence action to:
+SKAction *sequence = [SKAction sequence:@[self.owSound, self.hitAnimation, easeMoveDown]];
+```</p>
+
+<p>搞定！编译并运行程序试试吧！</p>
+
+<h3><a id="hqhc"></a>何去何从</h3>
+
+<p>本文的代码工程在<a href="http://cdn2.raywenderlich.com/downloads/WhackAMoleSK2.zip">这里</a>。</p>
+
+<p>至此，关于如何制作通用程序的介绍到此结束！</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 1]]></title>
@@ -482,7 +881,7 @@ SKAction *sequence = [SKAction sequence:@[easeMoveUp, delay, easeMoveDown]];
 
 <p>本文的代码工程在<a href="http://cdn3.raywenderlich.com/downloads/WhackAMoleSK1.zip">这里</a>。</p>
 
-<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 1</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
+<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 2</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
 ]]></content>
   </entry>
   
@@ -1364,365 +1763,6 @@ return;
 <p><img src="/images/2013/10/11.png" alt="" /></p>
 
 <p>……Sprite Kit教程：动画和纹理图集 1 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：初学者 3]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"/>
-    <updated>2013-10-12T00:06:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/09/18.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Sprite Kit的优点和缺点</li>
-<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
-<li>Hello, Sprite Kit!</li>
-<li>横屏显示</li>
-<li>移动怪兽</li>
-<li>发射炮弹</li>
-<li><a href="#pzjcgs">碰撞检测和物理特性: 概述</a></li>
-<li><a href="#pzjcsx">碰撞检测和物理特性: 实现</a></li>
-<li><a href="#sw">收尾</a></li>
-<li><a href="#hqhc">何去何从?</a></li>
-</ul>
-
-
-<h3><a id="pzjcgs"></a>碰撞检测和物理特性: 概述</h3>
-
-<p>至此我们已经可以让炮弹任意的发射了——现在我们要让忍者利用炮弹来消灭这些怪物。下面就添加一些代码来给炮弹与怪物相交做检测。</p>
-
-<p>Sprite Kit内置了一个物理引擎，这非常的棒！该物理引擎不仅可以模拟现实运动，还能进行碰撞检测。</p>
-
-<p>下面我们就在游戏中使用Sprite Kit的物理引擎来检测炮弹与怪物的碰撞。首先，我们来看看需要做些神马事情：</p>
-
-<ul>
-<li><code>物理世界的配置</code>。物理世界是一个模拟的空间，用来进行物理计算。默认情况下，在场景(scene)中已经创建好了一个，我们可以对其做一些属性配置，例如重力感应。</li>
-<li><code>为精灵(sprite)创建对应的物体(physics bodies)</code>。在Sprite Kit中，为了碰撞检测，我们可以为每个精灵创建一个相应的形状，并设置一些属性,这就称为<code>物体(physics body)</code>。注意：图文的形状不一定跟精灵的外形一模一样。一般情况，这个形状都是简单的、大概的(而不用精确到像素级别)——毕竟这已经足以够大多数游戏使用了。</li>
-<li><code>将精灵分类</code>。在物体(physics body)上可以设置的一个属性是<code>category</code>，该属性是一个位掩码(bitmask)。通过该属性可以将精灵分类。在本文的游戏中，有两个类别——一类是炮弹，另一类则是怪物。设置之后，当两种物体相互碰撞时，就可以很容易的通过类别对精灵做出相应的处理。</li>
-<li><code>设置一个contact(触点) delegate</code>。还记得上面提到的物理世界吗？我们可以在物理世界上设置一个<code>contact delegate</code>，通过该delegate，当两个物体碰撞时，可以收到通知。收到通知后，我们可以通过代码检查物体的类别，如果是怪物和炮弹，那么就做出相应的动作！</li>
-</ul>
-
-
-<p>上面大致介绍了一下游戏策略，下面就来看看如何实现！</p>
-
-<h3><a id="pzjcsx"></a>碰撞检测和物理特性: 实现</h3>
-
-<p>首先在<code>MyScene.m</code>文件顶部添加如下两个常量：</p>
-
-<p>```objc</p>
-
-<p>static const uint32_t projectileCategory     =  0x1 &lt;&lt; 0;
-static const uint32_t monsterCategory        =  0x1 &lt;&lt; 1;</p>
-
-<p>```</p>
-
-<p>上面设置了两个类别，记住需要用位(bit)的方式表达——一个用于炮弹，另一个则是怪物。</p>
-
-<p><code>注意:</code>看到上面的语法你可能感到奇怪。在Sprite Kit中category是一个32位整数，当做一个位掩码(bitmask)。这种表达方法比较奇特：在一个32位整数中的每一位表示一种类别(因此最多也就只能有32类)。在这里，第一位表示炮弹，下一位表示怪兽。</p>
-
-<p>接着，在<code>initWithSize</code>中，将下面的代码添加到位置：添加player到场景涉及代码的后面。</p>
-
-<p><code>objc
-self.physicsWorld.gravity = CGVectorMake(0,0);
-self.physicsWorld.contactDelegate = self;
-</code>
-上面的代码将物理世界的重力感应设置为0，并将场景设置位物理世界的代理（当有两个物体碰撞时，会受到通知）。</p>
-
-<p>在<code>addMonster</code>方法中，将如下代码添加创建怪兽相关代码后面：</p>
-
-<p><code>objc
-monster.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:monster.size]; // 1
-monster.physicsBody.dynamic = YES; // 2
-monster.physicsBody.categoryBitMask = monsterCategory; // 3
-monster.physicsBody.contactTestBitMask = projectileCategory; // 4
-monster.physicsBody.collisionBitMask = 0; // 5
-</code>
-来看看上面代码意思：</p>
-
-<ol>
-<li>为怪兽创建一个对应的物体。此处，物体被定义为一个与怪兽相同尺寸的矩形(这样与怪兽形状比较接近)。</li>
-<li>将怪兽设置位<code>dynamic</code>。这意味着物理引擎将不再控制这个怪兽的运动——我们自己已经写好相关运动的代码了。</li>
-<li>将categoryBitMask设置为之前定义好的<code>monsterCategory</code>。</li>
-<li><code>contactTestBitMask</code>表示与什么类型对象碰撞时，应该通知contact代理。在这里选择炮弹类型。</li>
-<li><code>collisionBitMask</code>表示物理引擎需要处理的碰撞事件。在此处我们不希望炮弹和怪物被相互弹开——所以再次将其设置为0。</li>
-</ol>
-
-
-<p>接着在<code>touchesEnded:withEvent:</code>方法中设置炮弹位置的代码后面添加如下代码。</p>
-
-<p>```objc</p>
-
-<p>projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
-projectile.physicsBody.dynamic = YES;
-projectile.physicsBody.categoryBitMask = projectileCategory;
-projectile.physicsBody.contactTestBitMask = monsterCategory;
-projectile.physicsBody.collisionBitMask = 0;
-projectile.physicsBody.usesPreciseCollisionDetection = YES;</p>
-
-<p>```</p>
-
-<p>在上面的代码中跟之前的类似，只不过有些不同，我们来看看：
-1. 为了更好的效果，炮弹的形状是圆形的。
-2. <code>usesPreciseCollisionDetection</code>属性设置为YES。这对于快速移动的物体非常重要(例如炮弹)，如果不这样设置的话，有可能快速移动的两个物体会直接相互穿过去，而不会检测到碰撞的发生。</p>
-
-<p>接着，添加如下方法，当炮弹与怪物发生碰撞时，会被调用。注意这个方法是不会被自动调用，稍后会看到我们如何调用它。</p>
-
-<p>```objc
-&ndash; (void)projectile:(SKSpriteNode <em>)projectile didCollideWithMonster:(SKSpriteNode </em>)monster {</p>
-
-<pre><code>NSLog(@"Hit");
-[projectile removeFromParent];
-[monster removeFromParent];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>当怪物和炮弹发生碰撞，上面的代码会将他们从场景中移除。很简单吧！</p>
-
-<p>下面该实现contact delegate方法了。将如下方法添加到文件中：</p>
-
-<p>```objc
-&ndash; (void)didBeginContact:(SKPhysicsContact *)contact
-{</p>
-
-<pre><code>// 1
-SKPhysicsBody *firstBody, *secondBody;
-
-if (contact.bodyA.categoryBitMask &lt; contact.bodyB.categoryBitMask)
-{
-    firstBody = contact.bodyA;
-    secondBody = contact.bodyB;
-}
-else
-{
-    firstBody = contact.bodyB;
-    secondBody = contact.bodyA;
-}
-
-// 2
-if ((firstBody.categoryBitMask &amp; projectileCategory) != 0 &amp;&amp;
-    (secondBody.categoryBitMask &amp; monsterCategory) != 0)
-{
-    [self projectile:(SKSpriteNode *) firstBody.node didCollideWithMonster:(SKSpriteNode *) secondBody.node];
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>还记得之前给物理世界设置的<code>contactDelegate</code>吗？当两个物体发生碰撞之后，就会调用上面的方法。</p>
-
-<p>在上面的方法中，可以分为两部分来理解：</p>
-
-<ol>
-<li>该方法会传递给你发生碰撞的两个物体，但是并不一定符合特定的顺序(如炮弹在前，或者炮弹在后)。所以这里的代码是通过物体的category bit mask来对其进行排序，以便后续做出正确的判断。注意，这里的代码来自苹果提供的Adventure示例。</li>
-<li>最后，检测一下这两个碰撞的物体是否就是炮弹和怪物，如果是的话就调用之前的方法。</li>
-</ol>
-
-
-<p>最后一步，为了编译器没有警告，确保private interface 中添加一下<code>SKPhysicsContactDelegate</code>：
-<code>objc
-@interface MyScene () &lt;SKPhysicsContactDelegate&gt;
-</code>
-现在编译并运行程序，可以发现，当炮弹与怪物接触时，他们就会消失！</p>
-
-<h3><a id="sw"></a>收尾</h3>
-
-<p>现在，本文的游戏快完成了。接下来我们就来为游戏添加音效和音乐，以及一些简单的游戏逻辑吧。</p>
-
-<p>苹果提供的Sprite Kit里面并没有音频引擎(Cocos2D中是有的)，不过我们可以通过action来播放音效，并且可以使用AVFoundation播放后台音乐。</p>
-
-<p>在工程中我已经准备好了一些音效和很酷的后台音乐，在本文开头已经将resources添加到工程中了，现在只需要播放它们即可！</p>
-
-<p>首先在<code>ViewController.m</code>文件顶部添加如下import：</p>
-
-<p><code>objc
-@import AVFoundation;
-</code></p>
-
-<p>上面的语法是iOS 7中新的modules功能 —— 只需要使用新的关键字@import，就可以框架的头文件和库文件添加到工程中，这功能非常方便。要了解更多相关内容，请看到<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS 7 by Tutorials</a>中的第十章内容中的：What’s New with Objective-C and Foundation。</p>
-
-<p>接着添加一个新的属性和private interface：</p>
-
-<p><code>objc
-@interface ViewController ()
-@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
-@end
-</code>
-接着将下面的代码添加到<code>viewWillLayoutSubviews</code>方法中(在<code>[super viewWillLayoutSubviews]</code>后面)：</p>
-
-<p><code>objc
-NSError *error;
-NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"background-music-aac" withExtension:@"caf"];
-self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&amp;error];
-self.backgroundMusicPlayer.numberOfLoops = -1;
-[self.backgroundMusicPlayer prepareToPlay];
-[self.backgroundMusicPlayer play];
-</code></p>
-
-<p>上面的代码会开始无限循环的播放后台音乐。</p>
-
-<p>下面我们来看看如何处理音效。切换到<code>MyScene.m</code>文件中，并将下面这行代码添加到<code>touchesEnded:withEvent:</code>方法的顶部：</p>
-
-<p>```objc
-[self runAction:[SKAction playSoundFileNamed:@&ldquo;pew-pew-lei.caf&rdquo; waitForCompletion:NO]];</p>
-
-<p>```</p>
-
-<p>如上，一行代码就可以播放音效了，很简单吧！</p>
-
-<p>下面，我们创建一个新的创建和layer，用来显示<code>你赢了(You Win)</code>或<code>你输了(You Lose)</code>。用模板<code>iOS\Cocoa Touch\Objective-C class</code>创建一个新的文件，将其命名为<code>GameOverScene</code>，并让其继承自<code>SKScene</code>，然后点击<code>Next</code>和<code>Create</code>。</p>
-
-<p>接着用如下代码替换<code>GameOverScene.h</code>中的内容：</p>
-
-<p>```objc</p>
-
-<h1>import &lt;SpriteKit/SpriteKit.h></h1>
-
-<p>@interface GameOverScene : SKScene</p>
-
-<p>&ndash;(id)initWithSize:(CGSize)size won:(BOOL)won;</p>
-
-<p>@end
-```</p>
-
-<p>在上面的代码中导入了Sprite Kit头文件，并声明了一个特定的初始化方法，该方法的第一个参数用来定位显示的位置，第二个参数won用来判断用户是否赢了。</p>
-
-<p>接着用下面的代码替换<code>GameOverLayer.m</code>中的内容：</p>
-
-<p>```objc</p>
-
-<h1>import &ldquo;GameOverScene.h&rdquo;</h1>
-
-<h1>import &ldquo;MyScene.h&rdquo;</h1>
-
-<p>@implementation GameOverScene</p>
-
-<p>&ndash;(id)initWithSize:(CGSize)size won:(BOOL)won {</p>
-
-<pre><code>if (self = [super initWithSize:size]) {
-
-    // 1
-    self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
-
-    // 2
-    NSString * message;
-    if (won) {
-        message = @"You Won!";
-    } else {
-        message = @"You Lose :[";
-    }
-
-    // 3
-    SKLabelNode *label = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-    label.text = message;
-    label.fontSize = 40;
-    label.fontColor = [SKColor blackColor];
-    label.position = CGPointMake(self.size.width/2, self.size.height/2);
-    [self addChild:label];
-
-    // 4
-    [self runAction:
-        [SKAction sequence:@[
-            [SKAction waitForDuration:3.0],
-            [SKAction runBlock:^{
-                // 5
-                SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-                SKScene * myScene = [[MyScene alloc] initWithSize:self.size];
-                [self.view presentScene:myScene transition: reveal];
-            }]
-        ]]
-    ];
-
-}
-return self;
-</code></pre>
-
-<p>}</p>
-
-<p>@end
-```</p>
-
-<p>上面的代码可以分为4部分内容，我们来分别看看：</p>
-
-<ol>
-<li>将背景色设置为白色(与主场景一样颜色)。</li>
-<li>根据<code>won</code>参数，将信息设置为"You Won"或"You Lose"。</li>
-<li>这里的代码是利用Sprite Kit将一个文本标签显示到屏幕中。如代码所示，只需要选择一个字体，并设置少量的参数即可，也非常简单。</li>
-<li>设置并运行有个有两个action的sequence。为了看起来方便，此处我将它们放到一块(而不是为每个action创建单独的一个变量)。首先是等待3秒，然后是利用<code>runBlock</code>action来运行一些代码。</li>
-<li>演示了在Sprite Kit中如何过渡到新的场景。首先可以选择任意的一种不同的动画过渡效果，用于场景的显示，在这里选择了翻转效果(持续0.5秒)。然后是创建一个想要显示的场景，接着使用self.view的方法<code>presentScene:transition:</code>来显示出场景。</li>
-</ol>
-
-
-<p>OK，万事俱备，只欠东风了！现在只需要在主场景中，适当的情况下加载game over scene就可以了。</p>
-
-<p>首先，在<code>MyScene.m</code>中导入新的场景：</p>
-
-<p>```objc</p>
-
-<h1>import &ldquo;GameOverScene.h&rdquo;</h1>
-
-<p>```</p>
-
-<p>然后，在<code>addMonster</code>中，用下面的代码替换最后一行在怪物上运行action的代码：</p>
-
-<p>```objc
-SKAction * loseAction = [SKAction runBlock:^{</p>
-
-<pre><code>SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:NO];
-[self.view presentScene:gameOverScene transition: reveal];
-</code></pre>
-
-<p>}];
-[monster runAction:[SKAction sequence:@[actionMove, loseAction, actionMoveDone]]];
-```</p>
-
-<p>上面创建了一个"lose action"，当怪物离开屏幕时，显示game over场景。</p>
-
-<p>在这里为什么<code>loseAction</code>要在<code>actionMoveDone</code>之前运行呢？
-原因在于如果将一个精灵从场景中移除了，那么它就不在处于场景的层次结构中了，也就不会有action了。所以需要过渡到lose场景之后，才能将精灵移除。不过，实际上actionMoveDone永远都不会被调用——因为此时已经过渡到新的场景中了，留在这里就是为了达到教学的目的。</p>
-
-<p>现在，需要处理一下赢了的情况。在private interface中添加一个新的属性：</p>
-
-<p><code>objc
-@property (nonatomic) int monstersDestroyed;
-</code></p>
-
-<p>然后将如下代码添加到<code>projectile:didCollideWithMonster:</code>的底部：</p>
-
-<p>```objc
-self.monstersDestroyed++;
-if (self.monstersDestroyed > 30) {</p>
-
-<pre><code>SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:YES];
-[self.view presentScene:gameOverScene transition: reveal];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>编译并运行程序，尝试一下赢了和输了会看到的画面！</p>
-
-<h3><a id="hqhc"></a>何去何从?</h3>
-
-<p>至此<code>Sprite Kit教程：初学者</code>结束！这里可以下到<a href="http://cdn2.raywenderlich.com/downloads/SpriteKitSimpleGame2.zip">完整的代码</a>。</p>
-
-<p>希望本文能帮助你学习Sprite Kit，并写出你自己的游戏！</p>
-
-<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
-
-<p>……Sprite Kit教程：初学者 3 结束……</p>
 ]]></content>
   </entry>
   

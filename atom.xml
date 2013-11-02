@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-10-27T20:38:37+08:00</updated>
+  <updated>2013-11-02T18:43:44+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,530 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 2]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/02/119-sprite-kit-tutorial-making-a-universal-app-part-2/"/>
+    <updated>2013-11-02T18:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/02/119-sprite-kit-tutorial-making-a-universal-app-part-2</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/10/25.png"></p>
+
+<!--more-->
+
+
+<p>注1：本文译自<a href="http://www.raywenderlich.com/49697/sprite-kit-tutorial-making-a-universal-app-part-2"><code>Sprite Kit Tutorial: Making a Universal App: Part 2</code></a></p>
+
+<p>注2：我最近长时间在广西南宁出差，比较忙，跑步和篮球都歇着了，博客更新频率也有点慢。下周⑥又是某某人的生日，估计是回不去了%>_&lt;%，下半年还有一些重要的事情要做，时间太少！加油！</p>
+
+<p>上周发现住的附近有一个公园，考察了一下，适合跑步，所以呢，我计划本周末去买点运动的衣服，重启跑步计划 :]</p>
+
+<p>看吧，下图就是公园照的</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/1.jpg" alt="南宁市人民公园" /></p>
+
+<p>好啦，下面开始本文正题：</p>
+
+<h3><strong>目录</strong></h3>
+
+<ul>
+<li><a href="#dhkx">动画的定义：可行性</a></li>
+<li><a href="#sxlb">属性列表</a></li>
+<li><a href="#yxlj">添加游戏逻辑</a></li>
+<li><a href="#tjyx">添加音效</a></li>
+<li><a href="#hqhc">何去何从</a></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1/">上一篇文章中</a>，创建了一个基本的游戏程序：一些可爱的鼹鼠从洞里面跳出来。并且为了能够让程序很好的运行在iPhone 3.5英寸，iPhone 4英寸，iPad和iPad Retina上，还花费了大量的篇幅介绍UI设计和坐标系相关知识。</p>
+
+<p>本文，将给鼹鼠添加一些可爱的动画：笑和被打时的表情，并添加一种玩法：可以通过敲打鼹鼠来赚取点数，另外还会添加一些音效。</p>
+
+<h3><a id="dhkx"></a>动画的定义：可行性</h3>
+
+<p>为了让游戏更加有趣，我们将在游戏中给鼹鼠添加两个动画。首先，当鼹鼠从洞里面跳出来时是笑的动画，然后，当你敲打它们的时候，是一个被敲打的表情。</p>
+
+<p>在开始之前，我们先来看看在代码里面定义动画的可行性。</p>
+
+<p>鼹鼠笑的动画需要用到的图片和相关顺序是这样的：
+mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.png, mole_laugh1.png。</p>
+
+<p>我们可以通过硬编码的方式来配置我们的动画，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">animFrames</span> <span class="nl">addObject:</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">SKTexture</span> <span class="nl">textureWithImageNamed:</span><span class="s">@&quot;mole_laugh1.png&quot;</span><span class="p">]];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animFrames</span> <span class="nl">addObject:</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">SKTexture</span> <span class="nl">textureWithImageNamed:</span><span class="s">@&quot;mole_laugh2.png&quot;</span><span class="p">]];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animFrames</span> <span class="nl">addObject:</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">SKTexture</span> <span class="nl">textureWithImageNamed:</span><span class="s">@&quot;mole_laugh3.png&quot;</span><span class="p">]];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animFrames</span> <span class="nl">addObject:</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">SKTexture</span> <span class="nl">textureWithImageNamed:</span><span class="s">@&quot;mole_laugh2.png&quot;</span><span class="p">]];</span>
+</span><span class='line'><span class="c1">// And so on...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过，这很容易让我们的代码剧增。为了简洁一点，此处我们不用上面的代码来定义动画，而是使用属性列表来代替。</p>
+
+<h3><a id="sxlb"></a>属性列表</h3>
+
+<p>如果之前你没有用过属性列表，也没关系。属性列表就是一个特殊的文件，可以用Xcode创建，文件按照一定的格式包含数组、字典、字符串和数字，所以非常容易创建，并且在代码中叶能够方便的读取到这些值。</p>
+
+<p>下面我们在Xcode中试试吧。右键单击ShackAMole，选择&#8221;New File…&#8221;，接着选择 “iOS\Resource\Property List”，然后单击&#8221;Next&#8221;。将文件命名为&#8221;laughAnim.plist&#8221;，最后单击创建。现在可以在Xcode中看到laughAnim.plist的可视化编辑界面，如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/2.png" alt="南" /></p>
+
+<p>每个属性列表都有一个root element。一般这是一个数组或者字典。在我们创建的这个文件中，将包含让鼹鼠笑起来所需动画的所有图片名称，是一个数组，所以点击root element的第二列(Type，当前为Dictionary)，将其修改为Array。</p>
+
+<p>接着，单击Root单词右边的加号按钮，以在数组中添加一个新的entry。默认情况下，entry的类型是String(刚好是我们想要的).将这个entry的值修改为&#8221;mole_laugh1.png&#8221;。</p>
+
+<p>继续点击加号按钮添加新的一条记录，直到所有的图片名称都添加进来了，如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/3.png" alt="" /></p>
+
+<p>接着添加一个鼹鼠被打击所需要图片的属性列表文件，跟上面的步骤一样，不过记得将文件命名为hitAnim.plist文件，如下所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/4.png" alt="" /></p>
+
+<p>下面，我们就在代码中加载这些图片吧。打开MyScene.h文件，并为每个动画动作添加对应的属性，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Inside @interface MyScene</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKAction</span> <span class="o">*</span><span class="n">laughAnimation</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKAction</span> <span class="o">*</span><span class="n">hitAnimation</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们用上面这两个属性记录每个SKAction，这样可以在代码中方便的查找和重用。</p>
+
+<p>接着在MyScene.m中添加一个方法，方法中的代码根据传入的属性列表创建并返回SKAction，如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">SKAction</span> <span class="o">*</span><span class="p">)</span><span class="nf">animationFromPlist:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">animPlist</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSString</span> <span class="o">*</span><span class="n">plistPath</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">pathForResource:</span><span class="n">animPlist</span> <span class="nl">ofType:</span><span class="s">@&quot;plist&quot;</span><span class="p">];</span> <span class="c1">// 1</span>
+</span><span class='line'>    <span class="n">NSArray</span> <span class="o">*</span><span class="n">animImages</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithContentsOfFile:</span><span class="n">plistPath</span><span class="p">];</span> <span class="c1">// 2</span>
+</span><span class='line'>    <span class="n">NSMutableArray</span> <span class="o">*</span><span class="n">animFrames</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableArray</span> <span class="n">array</span><span class="p">];</span> <span class="c1">// 3</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">imageName</span> <span class="k">in</span> <span class="n">animImages</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 4</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">animFrames</span> <span class="nl">addObject:</span><span class="p">[</span><span class="n">SKTexture</span> <span class="nl">textureWithImageNamed:</span><span class="n">imageName</span><span class="p">]];</span> <span class="c1">// 5</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">framesOverOneSecond</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="o">/</span><span class="p">(</span><span class="kt">float</span><span class="p">)[</span><span class="n">animFrames</span> <span class="n">count</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">animateWithTextures:</span><span class="n">animFrames</span> <span class="nl">timePerFrame:</span><span class="n">framesOverOneSecond</span> <span class="nl">resize:</span><span class="n">NO</span> <span class="nl">restore:</span><span class="n">YES</span><span class="p">];</span> <span class="c1">// 6</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>理解上面的代码很重要，我们一行一行的来看看吧：</p>
+
+<ol>
+<li>由于属性列表是包含在工程里面的，所以它应该在程序的&#8221;main bundle&#8221;中。这个helper方法计算出了属性列表文件在main bundle中的全路径。</li>
+<li>这行代码是读取属性列表文件中的内容。NSArray中有一个名为arrayWithContentsOfFile的方法，此处将文件名传递进去，就可以将属性列表中的内容读取到数组中了。（注意，之所以可以这样，是因为属性列表中的root element设置为NSArray），如果是一个字典的话，可以使用[NSDictionary dictionaryWithContentsOfFile…]。</li>
+<li>创建一个空的数组，用来存储动画的每一帧。</li>
+<li>循环遍历数组获得每个图片名字。</li>
+<li>获得每个图片的纹理，然后将其添加到数组中。</li>
+<li>根据纹理数组返回一个SKAction。</li>
+</ol>
+
+
+<p>接下来，在init方法的尾部为每个动画调用上面这个helper方法，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">laughAnimation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">animationFromPlist:</span><span class="s">@&quot;laughAnim&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">hitAnimation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">animationFromPlist:</span><span class="s">@&quot;hitAnim&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后一步：使用动画(让鼹鼠笑起来)。修改popMole方法，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">popMole:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="nv">mole</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveUp</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">mole</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">easeMoveUp</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveDown</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">easeMoveDown</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">easeMoveUp</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughAnimation</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">mole</span> <span class="nl">runAction:</span><span class="n">sequence</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码与之前唯一不同的就是用laughAnimation action替代了pop down之前的延迟一秒。laughAnimation action会使用laughAnim.plist中的纹理，注意之前已经把restore设置为YES了，所以当动画播放完之后，鼹鼠会回到正常的表情。</p>
+
+<p>现在编译并运行程序，可以看到鼹鼠跳出来，并笑了！如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/5.png" alt="" /></p>
+
+<p>下面我们来看看如何停止鼹鼠的<code>微笑</code>动画，并开始敲打它们。</p>
+
+<h3><a id="yxlj"></a>添加游戏逻辑</h3>
+
+<p>现在我们准备给游戏添加玩法，也就是游戏逻辑。基本想法就是会有一定数量的鼹鼠出现，当玩家打击到这些出现的鼹鼠时，就会获得相应的点数，玩家将尽力获得最多的点数。</p>
+
+<p>因此，我们需要记录分数，并将分数显示在屏幕中。当鼹鼠显示完毕时候，我们将对用户做出提示。</p>
+
+<p>先打开MyScene.h文件，并将下面这些实例变量添加到之前写的action后面：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKLabelNode</span> <span class="o">*</span><span class="n">scoreLabel</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSInteger</span> <span class="n">score</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSInteger</span> <span class="n">totalSpawns</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">gameOver</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有一个用于显示分数的label，一个记录当前分数的变量，一个记录已经弹出了多少个鼹鼠，以及游戏是否结束。</p>
+
+<p>接着，将下面的代码添加到文件MyScene.m文件中initWithSize:方法尾部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Add score label</span>
+</span><span class='line'><span class="kt">float</span> <span class="n">margin</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKLabelNode</span> <span class="nl">labelNodeWithFontNamed:</span><span class="s">@&quot;Chalkduster&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">@&quot;Score: 0&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertFontSize:</span><span class="mi">14</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">.</span><span class="n">horizontalAlignmentMode</span> <span class="o">=</span> <span class="n">SKLabelHorizontalAlignmentModeLeft</span><span class="p">;</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">margin</span><span class="p">,</span> <span class="n">margin</span><span class="p">);</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码创建了一个用于分数显示的label。label位于屏幕的左下角，并且距离左下角的边距为10 point。并将label的属性horizontalAlignmentMode设置为SKLabelHorizontalAlignmentModeLeft，这样可以让label的文字从左侧对齐。</p>
+
+<p>另外，此处并没有直接给label设置字体大小，而是先通过一个helper函数将字体大小做转换。这是因为在iPad和iPad retina上字体的尺寸要大一点。下面是convertFontSize方法的实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="nf">convertFontSize:</span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="nv">fontSize</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">UI_USER_INTERFACE_IDIOM</span><span class="p">()</span> <span class="o">==</span> <span class="n">UIUserInterfaceIdiomPad</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">fontSize</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">fontSize</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上代码所示，如果是iPad和iPad retina，那么就将字体尺寸变为原来的两倍，否则保持原样。</p>
+
+<p>接着，我们需要添加触摸检测的代码，用来判断是否打击了某个鼹鼠。不过在开始之前，我们需要给鼹鼠添加一个flag，以此知道鼹鼠当前是否可以点击(tappable)。只有当鼹鼠笑的时候才可以点击，而当它移动或者在底下时是不可以点击的，也就是“安全的”。</p>
+
+<p>我们可以创建一个SKSpriteNode的子类来记录这个flag，不过在此我们只需要存储一个信息，因此我们可以使用SKSpriteNode中的userData属性来代替。如下，再次将popMole做修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">popMole:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="nv">mole</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">totalSpawns</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">totalSpawns</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Reset texture of mole sprite</span>
+</span><span class='line'>    <span class="n">mole</span><span class="p">.</span><span class="n">texture</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">moleTexture</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveUp</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">mole</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">easeMoveUp</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveDown</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">easeMoveDown</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">setTappable</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">runBlock:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span><span class="p">.</span><span class="n">userData</span> <span class="nl">setObject:</span><span class="err">@</span><span class="mi">1</span> <span class="nl">forKey:</span><span class="s">@&quot;tappable&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">unsetTappable</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">runBlock:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span><span class="p">.</span><span class="n">userData</span> <span class="nl">setObject:</span><span class="err">@</span><span class="mi">0</span> <span class="nl">forKey:</span><span class="s">@&quot;tappable&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}];</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">easeMoveUp</span><span class="p">,</span> <span class="n">setTappable</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughAnimation</span><span class="p">,</span> <span class="n">unsetTappable</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">mole</span> <span class="nl">runAction:</span><span class="n">sequence</span> <span class="nl">completion:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span> <span class="n">removeAllActions</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>主要做了如下修改：</p>
+
+<ul>
+<li>如果显示的鼹鼠数量有50个，那么立即返回，也就是说，在游戏中，50是最大的上限。</li>
+<li>在函数开头，重置一下鼹鼠的图片(&ldquo;mole_1.png&rdquo;)。这样做是因为如果鼹鼠在上一次显示的时候被击打了，它仍然显示被击打的图片，所以在这里显示之前，需要重置一下。</li>
+<li>在鼹鼠笑之前，先运行一个action，该action会在block中运行一段代码。该block将userData字典中名为tappable的key值设置为1，这样就可以表示鼹鼠可以被击打了。</li>
+<li>类似的，当鼹鼠笑过之后，同样运行一个action：将tappable的值设置为0.</li>
+</ul>
+
+
+<p>现在，鼹鼠有一个flag可以表示它是否可以被击中了。接着我们可以添加touchesBegan:方法了。将如下代码添加到文件中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">touchLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKNode</span> <span class="o">*</span><span class="n">node</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">nodeAtPoint:</span><span class="n">touchLocation</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">node</span><span class="p">.</span><span class="n">name</span> <span class="nl">isEqualToString:</span><span class="s">@&quot;Mole&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">mole</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="n">node</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="n">mole</span><span class="p">.</span><span class="n">userData</span> <span class="nl">objectForKey:</span><span class="s">@&quot;tappable&quot;</span><span class="p">]</span> <span class="n">boolValue</span><span class="p">])</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">score</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span><span class="p">.</span><span class="n">userData</span> <span class="nl">setObject:</span><span class="err">@</span><span class="mi">0</span> <span class="nl">forKey:</span><span class="s">@&quot;tappable&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span> <span class="n">removeAllActions</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveDown</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="p">(</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">mole</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">)</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">easeMoveDown</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Slow down the animation by half</span>
+</span><span class='line'>        <span class="n">easeMoveDown</span><span class="p">.</span><span class="n">speed</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">hitAnimation</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">mole</span> <span class="nl">runAction:</span><span class="n">sequence</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的touchesBegan:方法首先获得触摸的位置，然后找到触摸位置对于的SKNode，如果node的名字是Mole，那么会进一步判断这个鼹鼠的tappable。</p>
+
+<p>如果鼹鼠被击中，会将该鼹鼠设置为不可再被击中，并把分数增加。然后停止所有运行的action，并播放被击中的动画，动画播放完毕之后，就立即把鼹鼠放回洞中。</p>
+
+<p>最后一步：添加一些代码对分数进行更新，并且做一个级别完成条件的检查，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">gameOver</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">totalSpawns</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SKLabelNode</span> <span class="o">*</span><span class="n">gameOverLabel</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKLabelNode</span> <span class="nl">labelNodeWithFontNamed:</span><span class="s">@&quot;Chalkduster&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">gameOverLabel</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">@&quot;Level Complete!&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">gameOverLabel</span><span class="p">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="mi">48</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">gameOverLabel</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">gameOverLabel</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span>
+</span><span class='line'>                                         <span class="n">CGRectGetMidY</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">[</span><span class="n">gameOverLabel</span> <span class="nl">setScale:</span><span class="mf">0.1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">gameOverLabel</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">gameOverLabel</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">scaleTo:</span><span class="mf">1.0</span> <span class="nl">duration:</span><span class="mf">0.5</span><span class="p">]];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">gameOver</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">scoreLabel</span> <span class="nl">setText:</span><span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;Score: %d&quot;</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">score</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>搞定！编译并运行程序，应该可以击打鼹鼠，并看到分数在增加！如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/6.png" alt="" /></p>
+
+<h3><a id="tjyx"></a>添加音效</h3>
+
+<p>为了让程序更加有趣，下面我们给这游戏添加音效。先来这里下载<a href="http://cdn5.raywenderlich.com/downloads/WhackAMoleSKSounds.zip">音效</a>吧。加压出文件，并把声音资源拖拽到WhackAMole文件件中。确保勾选上<code>Copy items into destination group’s folder</code>，然后单击Finish。</p>
+
+<p>将下面声明语句添加到MyScene.h文件顶部：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;AVFoundation/AVFoundation.h&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着将如下属性添加到@end前面：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">AVAudioPlayer</span> <span class="o">*</span><span class="n">audioPlayer</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKAction</span> <span class="o">*</span><span class="n">laughSound</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKAction</span> <span class="o">*</span><span class="n">owSound</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在MyScene.m文件中做如下修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Add at the bottom of your initWithSize: method</span>
+</span><span class='line'><span class="c1">// Preload whack sound effect</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">laughSound</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">playSoundFileNamed:</span><span class="s">@&quot;laugh.caf&quot;</span> <span class="nl">waitForCompletion:</span><span class="n">NO</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">owSound</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">playSoundFileNamed:</span><span class="s">@&quot;ow.caf&quot;</span> <span class="nl">waitForCompletion:</span><span class="n">NO</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSURL</span> <span class="o">*</span><span class="n">url</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">URLForResource:</span><span class="s">@&quot;whack&quot;</span> <span class="nl">withExtension:</span><span class="s">@&quot;caf&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">AVAudioPlayer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithContentsOfURL:</span><span class="n">url</span> <span class="nl">error:</span><span class="o">&amp;</span><span class="n">error</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Error creating player: %@&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span> <span class="n">play</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Add at bottom of popMole method, change the sequence action to:</span>
+</span><span class='line'><span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">easeMoveUp</span><span class="p">,</span> <span class="n">setTappable</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughSound</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughAnimation</span><span class="p">,</span> <span class="n">unsetTappable</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Add inside touchesBegan: method, change the sequence action to:</span>
+</span><span class='line'><span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">owSound</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">hitAnimation</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>搞定！编译并运行程序试试吧！</p>
+
+<h3><a id="hqhc"></a>何去何从</h3>
+
+<p>本文的代码工程在<a href="http://cdn2.raywenderlich.com/downloads/WhackAMoleSK2.zip">这里</a>。</p>
+
+<p>至此，关于如何制作通用程序的介绍到此结束！</p>
+
+<p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 1]]></title>
@@ -597,7 +1121,7 @@
 
 <p>本文的代码工程在<a href="http://cdn3.raywenderlich.com/downloads/WhackAMoleSK1.zip">这里</a>。</p>
 
-<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 1</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
+<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 2</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
 ]]></content>
   </entry>
   
@@ -5228,238 +5752,6 @@ ___destroy_helper_block_:
 <p>在下一集中我将调查<strong><span style="color: #339966;">Block_copy</span></strong>相关代码，并看看相关工作处理情况，以此来深度围观一下block运行时。通过下一集的学习，你也将会深入了解拷贝和销毁函数(也就是本文中我们刚刚看到的在block拷贝对象时使用的函数)。</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-10</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[深度围观block：第一集]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/09/99/"/>
-    <updated>2013-07-09T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/09/99</id>
-    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png"><img class="alignnone size-full wp-image-1563" alt="blocks_2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png" width="1140" height="420" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.galloway.me.uk/2012/10/a-look-inside-blocks-episode-1/" target="_blank"><span style="color: #339966; text-decoration: underline;">galloway</span></a></span></strong></span>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>还记得之前的两篇文章吗：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/19/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(1)</span></a></span></span></strong>和<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/20/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm2/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(2)</span></a></span></strong></span>，里面介绍了Objective-C生成的汇编代码。本文介绍的内容也跟汇编相关，只不过是与block相关，如果对汇编有不了解的，可以先去看看那两篇带有启蒙性质的文章哟。本文将从汇编的角度来介绍block相关知识。另外，如果你对block还不了解的话，建议你先去看看我的上一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/08/%e5%88%9d%e5%a7%8bblock/" target="_blank"><span style="color: #339966; text-decoration: underline;">初识block</span></a></span></span></strong>。</p>
-
-<!--more-->
-
-
-<p><strong style="font-size: 1.5em;"><span style="color: #339966;">目录：</span></strong></p>
-
-<ul>
-<li><strong><span style="color: #339966;">简介</span></strong></li>
-<li><strong><span style="color: #339966;">基础知识</span></strong></li>
-<li><strong><span style="color: #339966;">深入一个简单示例</span></strong></li>
-<li><span style="color: #339966;"><b>源码在这里</b></span></li>
-<li><span style="color: #339966;"><b>何去何从</b></span></li>
-</ul>
-
-
-<h3><strong><span style="color: #339966;">正文</span></strong></h3>
-
-<h2><strong><span style="color: #339966;">简介</span></strong></h2>
-
-<p>今天我们从编译器的角度观察一下block内部是如何工作的。这里说的block是指苹果为C语言增加的具有闭包性(closure)的一个功能，block已经是clang/LLVM编译器所支持的一部分了。我一直在想block是什么，以及它是如何奇迹般的出现在Objective-C对象中(开发者可以像处理实例对象一样，对block进行<strong><span style="color: #339966;">copy</span></strong>、<span style="color: #339966;"><strong>retain</strong></span>、<strong><span style="color: #339966;">release</span></strong>)。本文我首先深入的介绍一点关于block的那些事。</p>
-
-<h2><strong><span style="color: #339966;">基础知识</span></strong></h2>
-
-<p>用过block的开发者都知道，下面的代码就是一个block：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void(^block)(void) = ^{
-    NSLog(@"I&#039;m a block!");
-};</pre>
-
-
-<p>上面的代码中创建了一个名为<strong><span style="color: #339966;">block</span></strong>的变量，并把一个简单的block代码赋值给这个变量。代码很简单，不是吗？不！！！在这里我想要搞清楚编译器对这点代码都做了些什么。<br/>
-更进一步，下面的代码我给block传递了一个变量：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void(^block)(int a) = ^{
-    NSLog(@"I&#039;m a block! a = %i", a);
-};</pre>
-
-
-<p>而下面的代码是从block中返回一个值：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">int(^block)(void) = ^{
-    NSLog(@"I&#039;m a block!");
-    return 1;
-};</pre>
-
-
-<p>作为一个封闭的包，block将所处的上下文封装到了block中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">int a = 1;
-void(^block)(void) = ^{
-    NSLog(@"I&#039;m a block! a = %i", a);
-};</pre>
-
-
-<p>编译器对上面这些代码具体是如何处理的——这才是我所感兴趣的。</p>
-
-<h2><strong><span style="color: #339966;">深入一个简单示例</span></strong></h2>
-
-<p>首先我的思路是看看编译器是如何编译一个非常简单的block。来看看如下代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;dispatch/dispatch.h&gt;
-
-typedef void(^BlockA)(void);
-
-__attribute__((noinline))
-void runBlockA(BlockA block) {
-    block();
-}
-
-void doBlockA() {
-    BlockA block = ^{
-        // Empty block
-    };
-    runBlockA(block);
-}</pre>
-
-
-<p>之所以要用上面这样的代码，是因为我想看看block是如何创建的，以及如何调用一个block。如果block的创建和调用都在一个函数里面，那么优化器(optimiser)可能会对代码做优化处理，导致我们看不到任何感兴趣的东西，所以我给<strong><span style="color: #339966;">runBlockA</span></strong>函数添加了<strong><span style="color: #339966;">noinline</span></strong>，这样优化器就不会在<strong><span style="color: #339966;">doBlockA</span></strong>函数中对runBlockA的调用做内联优化处理。</p>
-
-<p>上面代码通过编译器编译之后(armv7，03)，会得到如下汇编指令：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">.globl  _runBlockA
-    .align  2
-    .code   16                      @ @runBlockA
-    .thumb_func     _runBlockA
-_runBlockA:
-@ BB#0:
-    ldr     r1, [r0, #12]
-    bx      r1</pre>
-
-
-<p>上面的汇编代码是对应<strong><span style="color: #339966;">runBlockA</span></strong>函数——这相当的简单。注意观察之前的源码，可以知道这个函数只是简单的调用了block。在ARM EABI中，将<strong><span style="color: #339966;">r0</span></strong>(寄存器r0)设置为第一个参数。第一条指令(r1)是将存储在地址为<strong><span style="color: #339966;">r0 + 12</span></strong>的值装载到寄存器<strong><span style="color: #339966;">r1</span></strong>中。这可以理解为指针的解引用——读12个字节到寄存器中。然后跳转到这个地址执行后面的指令。注意，这里使用了<strong><span style="color: #339966;">r1</span></strong>，而<strong><span style="color: #339966;">r0</span></strong>没有被修改，仍然是原来的block。所以这里很有可能是利用第一个参数来调用block。<br/>
-据此，可以确定block在结构中的一些排序规则：block被当做执行的函数时存储在某个结构中，并占据了12个字节。当传递一个block时，指向这些结构的一个指针被传递进来了。</p>
-
-<p>下面来看看<strong><span style="color: #339966;">doBlockA</span></strong>函数：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">.globl  _doBlockA
-    .align  2
-    .code   16                      @ @doBlockA
-    .thumb_func     _doBlockA
-_doBlockA:
-    movw    r0, :lower16:(___block_literal_global-(LPC1_0+4))
-    movt    r0, :upper16:(___block_literal_global-(LPC1_0+4))
-LPC1_0:
-    add     r0, pc
-    b.w     _runBlockA</pre>
-
-
-<p>OK，上面的代码也不复杂——这是关于pc(program counter)的相关加载。你可以将其看做是把变量<strong><span style="color: #339966;">___block_literal_global</span></strong>的地址加载到<strong><span style="color: #339966;">r0</span></strong>中。然后调用<strong><span style="color: #339966;">runBlockA</span></strong>函数。因为从之前的源码中，可以知道我们把block传递给了<strong><span style="color: #339966;">runBlockA</span></strong>，所以这里的<strong><span style="color: #339966;">___block_literal_global</span></strong>一定就是那个被传递的block对象了。<br/>
-到目前为止，我们对上面的源码的运作有一些眉目了！不过这里的<strong><span style="color: #339966;">___block_literal_global</span></strong>是什么呢？继续看汇编代码，可以找到如下这样的内容：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">.align  2                       @ @__block_literal_global
-___block_literal_global:
-    .long   __NSConcreteGlobalBlock
-    .long   1342177280              @ 0x50000000
-    .long   0                       @ 0x0
-    .long   ___doBlockA_block_invoke_0
-    .long   ___block_descriptor_tmp</pre>
-
-
-<p>Cool！上面的汇编代码看起来像是一个结构体。在结构体中又5个值，每个值有4个字节(long)。这肯定就是<strong><span style="color: #339966;">RunBlockA</span></strong>调用中涉及到的那个block对象。再细看一下，12个字节所在处就像一个函数指针：<strong><span style="color: #339966;">___doBlockA_block_invoke_0</span></strong>。这也是<strong><span style="color: #339966;">runBlockA</span></strong>函数中跳转执行的那个分支(bx r1)。</p>
-
-<h2></h2>
-
-<p>那么上面的汇编代码中<strong><span style="color: #339966;">__NSConcreteGlobalBlock</span></strong>又是何物？OK，现在先不介绍这个，后面会做介绍哦！下面我们来看看另外两个感兴趣的东西：<strong><span style="color: #339966;">___doBlockA_block_invoke_0</span></strong>和<strong><span style="color: #339966;">___block_descriptor_tmp</span></strong>，这两个东东同样出现在了汇编代码中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">.align  2
-    .code   16                      @ @__doBlockA_block_invoke_0
-    .thumb_func     ___doBlockA_block_invoke_0
-___doBlockA_block_invoke_0:
-    bx      lr
-
-    .section        __DATA,__const
-    .align  2                       @ @__block_descriptor_tmp
-___block_descriptor_tmp:
-    .long   0                       @ 0x0
-    .long   20                      @ 0x14
-    .long   L_.str
-    .long   L_OBJC_CLASS_NAME_
-
-    .section        __TEXT,__cstring,cstring_literals
-L_.str:                                 @ @.str
-    .asciz   "v4@?0"
-
-    .section        __TEXT,__objc_classname,cstring_literals
-L_OBJC_CLASS_NAME_:                     @ @"\01L_OBJC_CLASS_NAME_"
-    .asciz   "\001"</pre>
-
-
-<p>上面的代码中<strong><span style="color: #339966;">___doBlockA_block_invoke_0</span></strong>看起来有点像block的实现部分，只不过这里的block是空的，所以会立即返回(刚开始我们就期望编译一个空的block哦)。<br/>
-接着看看<strong><span style="color: #339966;">___block_descriptor_tmp</span></strong>。这里可以看到另外一个数据结构——有4个值。其中第2个是<strong><span style="color: #339966;">20</span></strong>，这表示<strong><span style="color: #339966;">___block_literal_global</span></strong>的大小。接着是一个名为<strong><span style="color: #339966;">.str</span></strong>的C字符串，它的值为<strong><span style="color: #339966;">v4@?0</span></strong>，看起来有点像某个类型的编码形式。这可能是block 类型的编码(例如返回void和不携带任何参数)。上面代码中别的一些值我暂时还不清楚。</p>
-
-<h2><strong><span style="color: #339966;">源码在这里</span></strong></h2>
-
-<p>没错，这里有源代码！这是LLVM中<strong><span style="color: #339966;">compiler-rt</span></strong>项目的一部分。查看代码，我发现在<span style="color: #339966;"><strong><span style="text-decoration: underline;"><a href="https://llvm.org/svn/llvm-project/compiler-rt/trunk/BlocksRuntime/Block_private.h" target="_blank"><span style="color: #339966; text-decoration: underline;">Block_private.h</span></a></span></strong></span>文件中，有如下相关代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">struct Block_descriptor {
-    unsigned long int reserved;
-    unsigned long int size;
-    void (*copy)(void *dst, void *src);
-    void (*dispose)(void *);
-};
-
-struct Block_layout {
-    void *isa;
-    int flags;
-    int reserved;
-    void (*invoke)(void *, ...);
-    struct Block_descriptor *descriptor;
-    /* Imported variables. */
-};</pre>
-
-
-<p>这看起来很熟悉吧！其中<strong><span style="color: #339966;">Block_layout</span></strong>结构体就是<strong><span style="color: #339966;">___block_literal_global</span></strong>，而<strong><span style="color: #339966;">Block_descriptor</span></strong>结构体则是<strong><span style="color: #339966;">__block_descriptor_tmp</span></strong>。细看Block_descriptor中的第2个变量size正如我之前描述的一样(表示___block_literal_global的大小)。在<strong><span style="color: #339966;">Block_descriptor</span></strong>中的第3和第4个值有点奇怪。这看起来有点想函数指针，但是在上面的汇编代码中看起来更像是两个字符串。现在我忽略掉这个细节。</p>
-
-<p><strong><span style="color: #339966;"> Block_layout</span></strong>中的<span style="color: #339966;"><strong>isa</strong></span>肯定就是<strong><span style="color: #339966;">__NSConcreteGlobalBlock</span></strong>，这也将确定block如何能够模拟Objective-C对象。如果<strong><span style="color: #339966;">__NSConcreteGlobalBlock</span></strong>是一个<strong><span style="color: #339966;">Class</span></strong>，那么Objective-C消息派送系统会将block对象当做一个普通的对象来处理。这跟如何处理toll-free bridging工作类似。更多相关toll-free bridging信息，可以阅读Mike Ash写的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.mikeash.com/pyblog/friday-qa-2010-01-22-toll-free-bridging-internals.html" target="_blank"><span style="color: #339966; text-decoration: underline;">一篇优秀文章</span></a></span></span></strong>。</p>
-
-<p>将所有的代码片段拼凑起来，编译器做的工作内容看起来如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;dispatch/dispatch.h&gt;
-
-__attribute__((noinline))
-void runBlockA(struct Block_layout *block) {
-    block-&gt;invoke();
-}
-
-void block_invoke(struct Block_layout *block) {
-    // Empty block function
-}
-
-void doBlockA() {
-    struct Block_descriptor descriptor;
-    descriptor-&gt;reserved = 0;
-    descriptor-&gt;size = 20;
-    descriptor-&gt;copy = NULL;
-    descriptor-&gt;dispose = NULL;
-
-    struct Block_layout block;
-    block-&gt;isa = _NSConcreteGlobalBlock;
-    block-&gt;flags = 1342177280;
-    block-&gt;reserved = 0;
-    block-&gt;invoke = block_invoke;
-    block-&gt;descriptor = descriptor;
-
-    runBlockA(&amp;block);
-}</pre>
-
-
-<p>非常不错！通过上面的介绍，我们可以了解很多关于block内部的东西。</p>
-
-<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
-
-<p>下一步我将介绍携带一个参数的block，以及从封闭范围内拷贝一个变量的block。这些内容跟本文介绍的又稍显不同！期待吧！</p>
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-09</time></p>
 ]]></content>
   </entry>
   

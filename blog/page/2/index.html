@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Aug 3rd, 2013 github 利用Octopress搭建一个Github博客 小引 Octopress是利用Jekyll博客引擎开发的一个博客系统，生成的静态页面能够很好的在github page上展现。号称是hacker专属的一个博客系统(A blogging framework &hellip;">
+	<meta name="description" content="Aug 9th, 2013 iOS翻译 Professional iOS Network Programming翻译第一章：iOS网络功能简介 小引 在iOS开发中，网络是非常重要的功能，针对iOS开发者来说，掌握好iOS中网络功能的开发也是必不可少的。最近在看一本书:Professional &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,46 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-09T16:52:00+08:00" data-updated="true" itemprop="datePublished">Aug 9<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/iosfan-yi/'>iOS翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/08/09/109-introducing-ios-networking-capabilities/" itemprop="url">Professional iOS Network Programming翻译第一章：iOS网络功能简介</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="/images/2013/07/simple_social_network.png" width="400" height="300"></p>
+
+<h2><strong>小引</strong></h2>
+
+<p>在iOS开发中，网络是非常重要的功能，针对iOS开发者来说，掌握好iOS中网络功能的开发也是必不可少的。最近在看一本书:<a href="http://www.amazon.com/Professional-iOS-Network-Programming-Connecting/dp/1118362403"><code>Professional iOS Network Programming</code></a>，网络编程方面介绍比较全面，非常适合iOS开发者去读一读，由于精力有限，我在这里可能会挑选一部分内容进行翻译，也有可能全书翻译。</p>
+
+
+		
+		<a href="/blog/2013/08/09/109-introducing-ios-networking-capabilities/" class="more-link">继续阅读 &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -450,50 +490,6 @@
 
 		
 		<a href="/blog/2013/07/10/100/" class="more-link">继续阅读 &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-09T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jul 9<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosfan-yi/'>iOS翻译</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/07/09/99/" itemprop="url">深度围观block：第一集</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png"><img class="alignnone size-full wp-image-1563" alt="blocks_2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks_2x.png" width="1140" height="420" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.galloway.me.uk/2012/10/a-look-inside-blocks-episode-1/" target="_blank"><span style="color: #339966; text-decoration: underline;">galloway</span></a></span></strong></span>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>还记得之前的两篇文章吗：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/19/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(1)</span></a></span></span></strong>和<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://beyondvincent.com/2013/06/20/ios%e6%b1%87%e7%bc%96%e6%95%99%e7%a8%8b%ef%bc%9aarm2/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS汇编教程：ARM(2)</span></a></span></strong></span>，里面介绍了Objective-C生成的汇编代码。本文介绍的内容也跟汇编相关，只不过是与block相关，如果对汇编有不了解的，可以先去看看那两篇带有启蒙性质的文章哟。本文将从汇编的角度来介绍block相关知识。另外，如果你对block还不了解的话，建议你先去看看我的上一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/07/08/%e5%88%9d%e5%a7%8bblock/" target="_blank"><span style="color: #339966; text-decoration: underline;">初识block</span></a></span></span></strong>。</p>
-
-
-		
-		<a href="/blog/2013/07/09/99/" class="more-link">继续阅读 &rarr;</a>
 	</div>
 
 </article>
