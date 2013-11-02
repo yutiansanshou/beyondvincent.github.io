@@ -423,5 +423,5 @@ for (SKSpriteNode *mole in self.moles) {
 
 本文的代码工程在[这里](http://cdn3.raywenderlich.com/downloads/WhackAMoleSK1.zip)。
 
-下一篇文章`Sprite Kit教程：制作一个通用程序 1`中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。
+下一篇文章`Sprite Kit教程：制作一个通用程序 2`中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。
 
