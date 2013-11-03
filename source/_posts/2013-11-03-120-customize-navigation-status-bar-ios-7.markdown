@@ -16,7 +16,7 @@ published: true
 
 注：本文译自[`Customizing Navigation Bar and Status Bar in iOS 7`](http://www.appcoda.com/customize-navigation-status-bar-ios-7/)
 
-近期，更大多数开发者一样，我也正忙于对程序进行升级以适配iOS 7。最新的iOS 7外观上有大量的改动。从开发者的角度来看，导航栏和状态栏就发生了明显的变化。状态栏现在是半透明的了，这也就意味着导航栏会显示在状态栏后面。有些情况下，导航栏的背景图片可以延伸显示到状态栏后面。
+近期，跟大多数开发者一样，我也正忙于对程序进行升级以适配iOS 7。最新的iOS 7外观上有大量的改动。从开发者的角度来看，导航栏和状态栏就发生了明显的变化。状态栏现在是半透明的了，这也就意味着导航栏会显示在状态栏后面。有些情况下，导航栏的背景图片可以延伸显示到状态栏后面。
 
 之前我曾经写过一篇关于[如何定制导航栏](http://www.appcoda.com/customize-navigation-bar-back-butto/)的文章。不过现在是时候对其进行更新了。下面就是本文将要介绍的内容：
 
