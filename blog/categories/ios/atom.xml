@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-11-02T18:43:44+08:00</updated>
+  <updated>2013-11-03T21:23:17+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,238 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 7 教程：定制iOS 7中的导航栏和状态栏]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7/"/>
+    <updated>2013-11-03T22:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/11/7.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.appcoda.com/customize-navigation-status-bar-ios-7/"><code>Customizing Navigation Bar and Status Bar in iOS 7</code></a></p>
+
+<p>近期，更大多数开发者一样，我也正忙于对程序进行升级以适配iOS 7。最新的iOS 7外观上有大量的改动。从开发者的角度来看，导航栏和状态栏就发生了明显的变化。状态栏现在是半透明的了，这也就意味着导航栏会显示在状态栏后面。有些情况下，导航栏的背景图片可以延伸显示到状态栏后面。</p>
+
+<p>之前我曾经写过一篇关于<a href="http://www.appcoda.com/customize-navigation-bar-back-butto/">如何定制导航栏</a>的文章。不过现在是时候对其进行更新了。下面就是本文将要介绍的内容：</p>
+
+<ul>
+<li><a href="#0">iOS 7中默认的导航栏</a></li>
+<li><a href="#1">设置导航栏的背景颜色</a></li>
+<li><a href="#2">在导航栏中使用背景图片</a></li>
+<li><a href="#3">定制返回按钮的颜色</a></li>
+<li><a href="#4">修改导航栏标题的字体</a></li>
+<li><a href="#44">修改导航栏标题为图片</a></li>
+<li><a href="#5">添加多个按钮</a></li>
+<li><a href="#6">修改状态栏的风格</a></li>
+<li><a href="#7">隐藏状态栏</a></li>
+<li><a href="#8">总结</a></li>
+</ul>
+
+
+<p><img src="/images/2013/11/9.jpg" alt="" /></p>
+
+<p>本文提供的代码需要用Xcode 5来执行。如果你还在使用老版本的Xcode，那么在运行示例之前请将Xcode升级到Xcode 5。</p>
+
+<h3><a id="0"></a>iOS 7中默认的导航栏</h3>
+
+<p>在开始定制之前，我们先来看看iOS 7中默认导航栏的外观。通过Xcode用<code>Single View Controller</code>模板创建一个工程。然后将view controller嵌入到一个navigation controller中。如果你不想从头开始，那么也可以在这里下载到这个<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程</a>。</p>
+
+<p>Xcode 5包含有iOS 6和iOS 7模拟器，我们可以在这两个不同的模拟器版本中运行示例程序，进行对比，如下图所示：</p>
+
+<p><img src="/images/2013/11/10.jpg" alt="" /></p>
+
+<p>如上图所示，在iOS 7中的导航栏默认情况下跟状态栏是交织在一起的，并且它的颜色也被修改为亮灰色。</p>
+
+<h3><a id="1"></a>设置导航栏的背景颜色</h3>
+
+<p>在iOS 7中，不再使用tintColor属性来设置导航栏的颜色，而是使用barTintColor属性来修改背景色。我们可以在<code>AppDelegate.m</code>文件中的方法<code>didFinishLaunchingWithOptions:</code>里面添加如下代码来修改颜色：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:[UIColor yellowColor]];
+</code></p>
+
+<p>效果如下图所示：</p>
+
+<p><img src="/images/2013/11/11.jpg" alt="" /></p>
+
+<p>一般情况，我们都会使用自己的颜色，下面这个宏用来设置RGB颜色非常方便：</p>
+
+<p>```objc</p>
+
+<h1>define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) >> 16))/255.0 green:((float)((rgbValue &amp; 0xFF00) >> 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</h1>
+
+<p>```</p>
+
+<p>将上面这个宏放到<code>AppDelegate.m</code>文件中，然后通过这个宏来创建一个UIColor对象(根据指定的RGB)。如下示例：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x067AB5)];
+</code></p>
+
+<p>默认情况下，导航栏的translucent属性为YES。另外，系统还会对所有的导航栏做模糊处理，这样可以让iOS 7中导航栏的颜色更加饱和。如下图，是translucent值为NO和YES的对比效果：</p>
+
+<p><img src="/images/2013/11/12.jpg" alt="" /></p>
+
+<p>要想禁用translucent属性，可以在Storyboard中选中导航栏，然后在Attribute Inspectors中，取消translucent的勾选。</p>
+
+<h3><a id="2"></a>在导航栏中使用背景图片</h3>
+
+<p>如果希望在导航栏中使用一个图片当做背景，那么你需要提供一个稍微高一点的图片(这样可以延伸到导航栏背后)。导航栏的高度从44 points(88 pixels)变为了64 points(128 pixels)。</p>
+
+<p>我们依然可以使用<code>setBackgroundImage:</code>方法为导航栏设置自定义图片。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bg.png"] forBarMetrics:UIBarMetricsDefault];
+</code></p>
+
+<p>示例工程中提供了两个背景图片：nav_bg.png 和 nav_bg_ios7.png。运行一下试试看吧，如下效果：</p>
+
+<p><img src="/images/2013/11/13.jpg" alt="" /></p>
+
+<h3><a id="3"></a>定制返回按钮的颜</h3>
+
+<p>在iOS 7中，所有的按钮都是无边框的。其中返回按钮会有一个V型箭头，以及上一个屏幕中的标题(如果上一屏幕的标题是空，那么就显示"返回")。要想给返回按钮着色，可以使用tintColor属性。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+</code></p>
+
+<p>除了返回按钮，tintColor属性会影响到所有按钮标题和图片。</p>
+
+<p><img src="/images/2013/11/14.jpg" alt="" /></p>
+
+<p>如果想要用自己的图片替换V型，可以设置图片的<code>backIndicatorImage</code>和<code>backIndicatorTransitionMaskImage</code>。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
+[[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
+</code></p>
+
+<p>图片的颜色是由tintColor属性控制的。</p>
+
+<p><img src="/images/2013/11/15.jpg" alt="" /></p>
+
+<h3><a id="4"></a>修改导航栏标题的字体</h3>
+
+<p>跟iOS 6一样，我们可以使用导航栏的<code>titleTextAttributes</code>属性来定制导航栏的文字风格。在text attributes字典中使用如下一些key，可以指定字体、文字颜色、文字阴影色以及文字阴影偏移量：</p>
+
+<ul>
+<li>UITextAttributeFont – 字体key</li>
+<li>UITextAttributeTextColor – 文字颜色key</li>
+<li>UITextAttributeTextShadowColor – 文字阴影色key</li>
+<li>UITextAttributeTextShadowOffset – 文字阴影偏移量key</li>
+</ul>
+
+
+<p>如下代码所示，对导航栏的标题风格做了修改：</p>
+
+<p>```objc
+NSShadow *shadow = [[NSShadow alloc] init];</p>
+
+<pre><code>shadow.shadowColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8];
+shadow.shadowOffset = CGSizeMake(0, 1);
+[[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor colorWithRed:245.0/255.0 green:245.0/255.0 blue:245.0/255.0 alpha:1.0], NSForegroundColorAttributeName,
+                                                       shadow, NSShadowAttributeName,
+                                                       [UIFont fontWithName:@"HelveticaNeue-CondensedBlack" size:21.0], NSFontAttributeName, nil]];
+</code></pre>
+
+<p>```</p>
+
+<p>运行效果如下图所示：</p>
+
+<p><img src="/images/2013/11/16.jpg" alt="" /></p>
+
+<h3><a id="44"></a>修改导航栏标题为图片</h3>
+
+<p>如果要想将导航栏标题修改为一个图片或者logo，那么只需要使用下面这行代码即可：</p>
+
+<p><code>objc
+self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appcoda-logo.png"]];
+</code></p>
+
+<p>上面的代码简单的修改了titleView属性，将一个图片赋值给它。
+注意：这不是iOS 7中的新功能，之前的iOS版本就可以已经有了。</p>
+
+<p>具体效果如下图所示：</p>
+
+<p><img src="/images/2013/11/17.jpg" alt="" /></p>
+
+<h3><a id="5"></a>添加多个按钮</h3>
+
+<p>同样，这个技巧也不是iOS 7的，开发者经常会在导航栏中添加多个按钮，所以我决定在这里进行介绍。我们可以在导航栏左边或者右边添加多个按钮。例如，我们希望在导航栏右边添加一个照相机和分享按钮，那只需要使用下面的代码即可：</p>
+
+<p>```objc</p>
+
+<pre><code>UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:nil];
+UIBarButtonItem *cameraItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:nil];
+
+NSArray *actionButtonItems = @[shareItem, cameraItem];
+self.navigationItem.rightBarButtonItems = actionButtonItems;
+</code></pre>
+
+<p>```</p>
+
+<p>如下效果：</p>
+
+<p><img src="/images/2013/11/18.jpg" alt="" /></p>
+
+<h3><a id="6"></a>修改状态栏的风格</h3>
+
+<p>在老版本的iOS中，状态栏永远都是白色风格。而在iOS 7中，我们可以修改每个view controller中状态栏的外观。通过UIStatusBarStyle常量可以指定状态栏的内容是暗色或亮色。默认情况下，状态栏的显示是暗色。也就是说，状态栏上的时间、电池指示器和Wi-Fi信号显示为暗色。如果导航栏中使用暗色为背景，那么看起来的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/19.jpg" alt="" /></p>
+
+<p>如上图这种情况下，我们可能希望将导航栏的风格修改为亮色。这里有两个方法可以实现。在iOS 7中，我们可以在每个view controller中overriding<code>preferredStatusBarStyle:</code>方法，如下所示：</p>
+
+<p>```objc
+&ndash;(UIStatusBarStyle)preferredStatusBarStyle
+{</p>
+
+<pre><code>return UIStatusBarStyleLightContent; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面代码的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/20.jpg" alt="" /></p>
+
+<p>在iOS 7中，通过上面的方法来修改状态栏风格非常的棒。另外，我们也可以使用UIApplication的statusBarStyle方法来设置状态栏，不过，首先需要停止使用<code>View controller-based status bar appearance</code>。在project target的Info tab中，插入一个新的key，名字为<code>View controller-based status bar appearance</code>，并将其值设置为NO。</p>
+
+<p><img src="/images/2013/11/21.jpg" alt="" /></p>
+
+<p>然后就可以使用下面的代码来设置状态栏风格了：</p>
+
+<p><code>objc
+[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+</code></p>
+
+<h3><a id="7"></a>隐藏状态栏</h3>
+
+<p>有时候我们需要隐藏状态栏，那么此时我们在view controller中override方法prefersStatusBarHidden:即可，如下代码所示：</p>
+
+<p>```objc
+&ndash; (BOOL)prefersStatusBarHidden
+{</p>
+
+<pre><code>return YES;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3><a id="8"></a>总结</h3>
+
+<p>iOS 7给开发者提供了一些新的自由度来定制导航栏和状态栏的外观。希望上面的这些技巧能对你有用。</p>
+
+<p>这里可以下载到<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程源码</a>。只需要取消相关代码注释即可进行测试。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mac和iOS开发资源汇总—更新于2013-10-14]]></title>
@@ -880,415 +1112,6 @@ YourOperation *operation = [[YourOperation alloc] init];
 <p>还记得使用Xcode 3版本开发iOS程序的时候，感觉这个工具不好使用，当时的IB和Xcode还是分开的，打开个xib文件，IB也要启动半天，更别说界面与代码的整体开发效率了。现如今看到苹果对Xcode做了很多改进，使用越来越方便，开发效率也大大提升，这对大多数开发者来说，绝对是福利！！！</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-15</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Block剧终：Objective-C中的闭包性和匿名函数]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/12/102/"/>
-    <updated>2013-07-12T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/12/102</id>
-    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg"><img class="alignnone size-full wp-image-1586" alt="blocks-1024x576" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg" width="1024" height="576" /></a></p>
-
-<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">xs-labs</span></a></span></span></strong>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>还记得昨天我给大家推荐的文章吗：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></strong></span>。今天手痒，还想继续敲几个字，索性我就把这篇文章敲出来，以此对block说声代码里见吧。</p>
-
-<!--more-->
-
-
-<h2><strong><span style="color: #339966;">目录</span></strong></h2>
-
-<p><strong><span style="color: #339966;">1、关于</span></strong><br/>
-<strong><span style="color: #339966;">    1.1匿名函数</span></strong><br/>
-<strong><span style="color: #339966;">    1.2闭包性</span></strong></p>
-
-<p><strong><span style="color: #339966;">2、Objective-C中的实现</span></strong><br/>
-<strong><span style="color: #339966;">    2.1将block当做参数来传递</span></strong><br/>
-<strong><span style="color: #339966;">    2.2闭包性</span></strong><br/>
-<strong><span style="color: #339966;">    2.3内存管理</span></strong><br/>
-<strong><span style="color: #339966;">    2.4示例</span></strong></p>
-
-<h3><strong><span style="color: #339966;">正文</span></strong></h3>
-
-<h2><strong><span style="color: #339966;">1、关于</span></strong></h2>
-
-<p>许多脚本语言都支持<strong><span style="color: #339966;">lambda表达式</span></strong>和<strong><span style="color: #339966;">匿名函数</span></strong>。这两个概念经常与<strong><span style="color: #339966;">闭包性</span></strong>(<strong><span style="color: #339966;">closure</span></strong>)相关。例如在JavaScript、ActionScript或PHP(5.3之后)中都有相关的概念。</p>
-
-<p>其实在Objective-C语言中也提供了这两个概念的实现：叫做<strong><span style="color: #339966;">block</span></strong>。</p>
-
-<p>自从Mac OS X 10.6之后，就可以使用block了，其实这样归功于Clang。</p>
-
-<h3><strong><span style="color: #339966;">1.1 匿名函数</span></strong></h3>
-
-<p>就如名字暗示的一样，匿名函数实际上就是一个没有名字或者标示(<strong><span style="color: #339966;">identifier</span></strong>)的函数。匿名函数只有内容(也可以叫做body)，我们可以将其存储在一个变量中，以便之后使用，或者将其当做一个参数传递给另外一个函数使用。</p>
-
-<p>在脚本语言的回调中经常使用到这个概念。</p>
-
-<p>例如，在下面的JavaScript中，有一个名为<strong><span style="color: #339966;">foo</span></strong>的标准函数，接收一个callback当做参数，在函数中，调用了这个callback：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
-{
-    callback();
-}</pre>
-
-
-<p>这里有可能是定义了另外一个标准函数， 然后将这个标准函数当做参数传递给上面的函数：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function bar()
-{
-    alert( &#039;hello, world&#039; );
-}
-
-foo( bar );</pre>
-
-
-<p>不过这样一来，<strong><span style="color: #339966;">bar</span></strong>函数就会被声明在全局范围内，这就会带来一个风险：被另外一个相同名称的函数覆盖(<strong><span style="color: #339966;">override</span></strong>)了。</p>
-
-<p>但是别担心，JavaScript语言允许callback函数在调用的时候才进行声明：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">foo
-{
-    function()
-    {
-        alert( &#039;hello, world&#039; );
-    }
-);</pre>
-
-
-<p>在上面，可以看到这个callback实际上并没有标示(identifier)。它也不会存在于全局范围，因此也不会与别的已有函数产生冲突。</p>
-
-<p>我们也可以把callback存储到一个变量中，同样也不回存在于全局范围，不过我们可以通过这个变量对这个callback进行重复利用：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myCallback = function()
-{
-    alert( &#039;hello, world&#039; );
-};
-
-foo( myCallback );</pre>
-
-
-<h3><strong><span style="color: #339966;"> 1.2闭包性</span></strong></h3>
-
-<p>闭包性这个概念是允许一个函数访问其所声明上下文中的变量，甚至是在不同的运行上下文中。</p>
-
-<p>下面我们再来看看JavaScript的相关代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
-{
-    alert( callback() );
-}
-
-function bar()
-{
-    var str = &#039;hello, world&#039;;
-
-    foo
-    (
-        function()
-        {
-            return str;
-        }
-    );
-}
-
-bar();</pre>
-
-
-<p>上面的代码中，callback被从bar函数的运行上下文中传递给了foo函数，该callback函数返回变量str的值。</p>
-
-<p>不过在这里请注意，变量str是声明在bar函数中的，也就是说这个变量仅存于bar函数中。</p>
-
-<p>而callback是在另外一个不同的函数中被执行的(跟变量str不在一起)，我们这是可能会猜测foo函数中什么也不会显示出来。</p>
-
-<p>但是，在这里引入了闭包性这个概念。</p>
-
-<p>也就是说在不同的函数中(运行上下文中)，一个函数可以访问到变量所声明上下文中的内容。</p>
-
-<p>因此上面的代码中，callback可以访问到str变量——即使这个callback所在的foo函数不能直接访问这个str变量。</p>
-
-<p>&nbsp;</p>
-
-<h2><span style="color: #339966;"><strong>2、Objective-C中的实现</strong></span></h2>
-
-<p>实际上闭包性和匿名函数在Objective-C中是可以使用的，只不过Objective-C是构建于C语言之上，属于强类型编译语言，所以跟上面介绍的解释性脚本语言有许多不同之处。</p>
-
-<p>注意：block其实在纯C或C++(以及Objective-C++)中都是可用的。</p>
-
-<p>在标准C函数中，定义block(匿名函数)之前需要先声明原型。</p>
-
-<p>block的语法有一点点棘手，不过要是熟悉函数指针的话，就非常容易理解了。</p>
-
-<p>下面是block的原型：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSString * ( ^ myBlock )( int );</pre>
-
-
-<p>上面的代码是声明了一个block(^)原型，名字就叫做myBlock，携带一个int参数，返回只为NSString类型的指针。</p>
-
-<p>下面来看看block的定义：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( int number )
-{
-    return [ NSString stringWithFormat: @"Passed number: %i", number ];
-};</pre>
-
-
-<p>如上所示，将一个函数体赋值给了myBlock变量，其接收一个名为number的参数。该函数返回一个NSString对象。</p>
-
-<p><strong><span style="color: #ff0000;">注意：不要忘记block后面的分号。</span></strong></p>
-
-<p>在脚本语言中是可以忽略掉分号的，但是在编译性语言(如Objective-C)是必须有的。</p>
-
-<p>如果没有写这个分号，编译器会产生一个错误，当然也不会生成可执行文件。</p>
-
-<p>定义好block之后，就可以像使用标准函数一样使用它了：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock(5);</pre>
-
-
-<p>下面是完整的Objective-C程序源代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    NSString * ( ^ myBlock )( int );
-
-    pool    = [ [ NSAutoreleasePool alloc ] init ];
-    myBlock = ^( int number )
-    {
-        return [ NSString stringWithFormat: @"Passed number: %i", number ];
-    };
-
-    NSLog( @"%@", myBlock(5) );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>我们可以用下面的命令来编译(在Terminal中)：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">gcc -Wall -framework Cocoa -o test test.m</pre>
-
-
-<p>上面的命令会根据test.m源代码文件生成一个名为name的可执行文件。可以用下面的命令来运行这个可执行文件：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">./test</pre>
-
-
-<p>如果不把block赋值给变量的话，可以忽略掉block原型的声明，例如直接将block当做参数进行传递。如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">someFunction( ^ NSString * ( void ) { return @"hello, world" } );</pre>
-
-
-<p>注意，上面这种情况必须声明返回值的类型——这里是返回NSString对象。</p>
-
-<h3><span style="color: #339966;"><strong>2.1将block当做参数来传递</strong></span></h3>
-
-<p>之前说过了，block可以当做参数传递给某个C函数。</p>
-
-<p>如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void logBlock( NSString * ( ^ theBlock )( int ) )
-{
-    NSLog( @"Block returned: %@", theBlock() );
-}</pre>
-
-
-<p>由于Objective-C是强制类型语言，所以作为函数参数的block也必须要指定返回值的类型，以及相关参数类型(如果需要的话)。</p>
-
-<p>其实在Objective-C方法中也是一样的：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- ( void )logBlock: ( NSString * ( ^ )( int ) )theBlock;</pre>
-
-
-<h3><span style="color: #339966;"><strong>2.2闭包性</strong></span></h3>
-
-<p>之前有说过，闭包性在Objective-C中是可用的，只不过其行为跟解释性语言有所不同罢了。</p>
-
-<p>我们来看看下面的程序：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-void logBlock( int ( ^ theBlock )( void ) )
-{
-    NSLog( @"Closure var X: %i", theBlock() );
-}
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    int ( ^ myBlock )( void );
-    int x;
-
-    pool = [ [ NSAutoreleasePool alloc ] init ];
-    x    = 42;
-
-    myBlock = ^( void )
-    {
-        return x;
-    };
-
-    logBlock( myBlock );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>上面的代码在main函数中声明了一个整型，并赋值42，另外还声明了一个block，该block会将42返回。</p>
-
-<p>然后将block传递给logBlock函数，该函数会显示出返回的值42。</p>
-
-<p>即使是在函数logBlock中执行block，而block又声明在main函数中，但是block仍然可以访问到x变量，并将这个值返回。</p>
-
-<p><strong><span style="color: #ff0000;">注意：block同样可以访问全局变量，即使是static。</span></strong></p>
-
-<p>下面来看看第一点不同之处：通过block进行闭包的变量是const的。也就是说不能在block中直接修改这些变量。</p>
-
-<p>来看看当block试着增加x的值时，会发生什么：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( void )
-{
-    x++
-
-    return x;
-};</pre>
-
-
-<p>编译器会生成一个错误：大概意思是在block中x变量是只读的。</p>
-
-<p>不过也别担心，为了允许在block中修改变量，也是可以做到的：用__block关键字来声明变量即可。</p>
-
-<p>基于之前的代码，给x变量添加__block关键字，如下：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">__block int x;</pre>
-
-
-<h3><span style="color: #339966;"><strong>2.3内存管理</strong></span></h3>
-
-<p>从C语言的角度来看，实际上block是一个结构体，可以被拷贝和销毁的。有两个函数可以使用：Block_copy和Block_destroy()。</p>
-
-<p>而在Objective-C中，block可以接收retain、release和copie消息，这就跟普通对象一样。如果一个block需要被存储下来供以后使用，这些消息是非常重要的(例如，将block存储到一个类的实例变量中)。例如，为了避免错误的使用block，对block进行retain是非常有必要的。</p>
-
-<p><span style="color: #339966;"><strong>2.4示例</strong></span></p>
-
-<p>Block可以用在许多不同的环境中，这样可以让代码更加简单，以及减少函数声明的数量。</p>
-
-<p>下面有一个实例：</p>
-
-<p>我们将给NSArrary类添加一个static方法(类方法)，该方法通过一个callback，根据另外一个数组中的内容产生一个新的数组。</p>
-
-<p>在PHP程序员眼里，该方法就如一个array_filter()。</p>
-
-<p>首先，需要为NSArray类声明一个category。（通过category可以给已有的类添加新方法）。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@interface NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
-
-@end</pre>
-
-
-<p>上面，声明了一个方法，该方法返回一个NSArray对象，另外接收两个参数：NSArray对象，以及一个callback (为block)。</p>
-
-<p>在callback中会判断根据传入数组参数中的每一个元素。并将返回一个boolean值，以确定当前array中的元素是否需要存储到返回的数组中。</p>
-
-<p>block只有一个参数，代表数组中的某个元素。</p>
-
-<p>我们来看看该方法的具体实现：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@implementation NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
-{
-    NSMutableArray * result;
-    id               element;
-
-    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
-
-    for( element in source ) {
-
-        if( callback( element ) == YES ) {
-
-            [ result addObject: element ];
-        }
-    }
-
-    return result;
-}
-
-@end</pre>
-
-
-<p>上面的代码中，首先是创建了一个可以动态改变尺寸的数组：NSMutableArray，然后根据source array的数目来初始化该数组。</p>
-
-<p>然后对source array中的每个元素进行迭代， 如果callback返回值为YES的话，就将该元素添加到result数组中。</p>
-
-<p>下面是使用该方法的一个完整示例：利用callback构建一个数组：该数组中只包含source array中为NSString类型的元素：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-@interface NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
-
-@end
-
-@implementation NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
-{
-    NSMutableArray * result;
-    id               element;
-
-    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
-
-    for( element in source ) {
-
-        if( callback( element ) == YES ) {
-
-            [ result addObject: element ];
-        }
-    }
-
-    return result;
-}
-
-@end
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    NSArray           * array1;
-    NSArray           * array2;
-
-    pool   = [ [ NSAutoreleasePool alloc ] init ];
-    array1 = [ NSArray arrayWithObjects: @"hello, world", [ NSDate date ], @"hello, universe", nil ];
-    array2 = [ NSArray
-                    arrayByFilteringArray: array1
-                    withCallback:          ^ BOOL ( id element )
-                    {
-                        return [ element isKindOfClass: [ NSString class ] ];
-                    }
-             ];
-
-    NSLog( @"%@", array2 );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-12</time></p>
 ]]></content>
   </entry>
   

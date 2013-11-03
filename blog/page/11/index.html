@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 8th, 2013 iOS Framed: 一个UIView的Category 当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。 如果要在代码中创建如下一个界面布局，你会怎么做呢？ 下面是一种方法： &hellip;">
+	<meta name="description" content="May 9th, 2013 iOS, iOS设计模式 iOS设计模式(02):单例模式 什么是单例模式？ 单例模式是一个类在系统中只有一个实例对象。通过全局的一个入口点对这个实例对象进行访问。在iOS开发中，单例模式是非常有用的一种设计模式。如下图，是一个单例模式的UML类图。 &nbsp; &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,336 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-09T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 9<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/09/20/" itemprop="url">iOS设计模式(02):单例模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/singleton-design-pattern.png"><img class="alignnone size-full wp-image-555" alt="singleton-design-pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/singleton-design-pattern.png" width="976" height="313" /></a></h2>
+
+<h2><strong><span style="color: #339966;">什么是单例模式？</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Singleton_pattern" target="_blank"><span style="color: #339966; text-decoration: underline;">单例模式</span></a></span></strong></span>是一个类在系统中只有一个实例对象。通过全局的一个入口点对这个实例对象进行访问。在iOS开发中，单例模式是非常有用的一种设计模式。如下图，是一个单例模式的UML类图。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/singleton_uml_class_structure.jpeg"><img class="alignnone size-full wp-image-551" alt="singleton_uml_class_structure" src="http://beyondvincent.com/wp-content/uploads/2013/05/singleton_uml_class_structure.jpeg" width="600" height="219" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>iOS SDK中也有许多类使用了单例模式，例如，<span style="text-decoration: underline; color: #339966;"><strong><a href="http://developer.apple.com/library/ios/#DOCUMENTATION/UIKit/Reference/UIApplication_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">UIApplication</span></a></strong></span>：当程序启动的时候，会调用UIApplicationMain方法，在该方法中，会实例化一个UIApplication对象，之后在程序中的任意地方调用sharedApplication方法都将返回一个与当前应用程序相关的UIApplication实例（UIApplicationMain方法中创建的UIApplication单例）。</p>
+
+<h2><strong><span style="color: #339966;">什么时候使用单例模式？</span></strong></h2>
+
+<p>在程序中，单例模式经常用于只希望一个类只有一个实例，而不运行一个类还有两个以上的实例。当然，在iOS SDK中，根据特定的需求，有些类不仅提供了单例访问的接口，还为开发者提供了实例化一个新的对象接口，例如，NSFileManager可以通过defaultManager方法返回相同的一个NSFileManager对象。如果需要新的一个NSFileManager实例对象，可以通过init方法。</p>
+
+<h2><span style="color: #339966;"><strong>iOS中单例模式的实现 </strong></span></h2>
+
+<p>iOS中单例模式的实现方式一般分为两种：Non-ARC(非ARC)和ARC+GCD。</p>
+
+<ol>
+<li><h3><strong><span style="color: #339966;">Non-ARC(非ARC)</span></strong></h3></li>
+</ol>
+
+
+<p>非ARC的实现方法如下所示：</p>
+
+<p><span style="color: #339966;">BVNonARCSingleton.h</span></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVNonARCSingleton.h
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import &lt;Foundation/Foundation.h&gt;
+
+@interface BVNonARCSingleton : NSObject
+
+@property  ( nonatomic, retain) NSString  *tempProperty;
++ (BVNonARCSingleton *)sharedInstance; 
+
+@end</pre>
+
+
+<p><span style="color: #339966;">BVNonARCSingleton.m</span></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVNonARCSingleton.m
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVNonARCSingleton.h"
+
+@implementation BVNonARCSingleton
+
+static BVNonARCSingleton *sharedInstance = nil;
+
+// 获取一个sharedInstance实例，如果有必要的话，实例化一个
++ (BVNonARCSingleton *)sharedInstance {
+    if (sharedInstance == nil) {
+        sharedInstance = [[super allocWithZone:NULL] init];
+    }
+
+    return sharedInstance;
+}
+
+// 当第一次使用这个单例时，会调用这个init方法。
+- (id)init
+{
+    self = [super init];
+
+    if (self) {
+        // 通常在这里做一些相关的初始化任务
+    }
+
+    return self;
+}
+
+// 这个dealloc方法永远都不会被调用--因为在程序的生命周期内容，该单例一直都存在。（所以该方法可以不用实现）
+-(void)dealloc
+{
+    [super dealloc];
+}
+
+// 通过返回当前的sharedInstance实例，就能防止实例化一个新的对象。
++ (id)allocWithZone:(NSZone*)zone {
+    return [[self sharedInstance] retain];
+}
+
+// 同样，不希望生成单例的多个拷贝。
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+// 什么也不做——该单例并不需要一个引用计数（retain counter）
+- (id)retain {
+    return self;
+}
+
+// 替换掉引用计数——这样就永远都不会release这个单例。
+- (NSUInteger)retainCount {
+    return NSUIntegerMax;
+}
+
+// 该方法是空的——不希望用户release掉这个对象。
+- (oneway void)release {
+
+}
+
+//除了返回单例外，什么也不做。
+- (id)autorelease {
+    return self;
+}
+
+@end</pre>
+
+
+<p>实际上上面的代码苹果官网也有提供：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html#//apple_ref/doc/uid/TP40002974-CH4-SW32" target="_blank"><span style="color: #339966; text-decoration: underline;">Creating a Singleton Instance</span></a></span></span>，只不过没有给出头文件的定义。上面用非ARC实现单例的方法是线程不安全的，如果有多个线程同时调用sharedInstance方法获取一个实例，而sharedInstance方法需要花费1-2秒钟的时间，那么BVNonARCSingleton的init方法就可能会被多次调用，也就是不同线程获得的BVNonARCSingleton有可能不是同一个实例。怎么解决线程的不安全呢？答案是使用<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html" target="_blank"><span style="color: #339966; text-decoration: underline;">@synchronized</span></a></span></span>来创建互斥锁即可。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 保证在实例化的时候是线程安全的（当然，该方法不能保证该单例中所有方法的调用都是线程安全的）
+@synchronized (self)
+{
+    if(sharedInstance == nil)
+    {
+        sharedInstance = [[super allocWithZone:NULL] init];
+    }
+}</pre>
+
+
+<p>通过上面的代码就能保存线程安全。<br/>
+提醒：在iOS中，一般不建议使用非ARC来实现单例模式。更好的方法是使用ARC+GCD来实现。</p>
+
+<ol start="2">
+  <li>
+    <h3>
+      <strong><span style="color: #339966;">ARC+GCD</span></strong>
+    </h3>
+  </li>
+</ol>
+
+
+<p>通过ARC+GCD的方法来实现单例模式的非常简单的。下面先来看看具体实现：</p>
+
+<p>BVARCSingleton.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVARCSingleton.h
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import &lt;Foundation/Foundation.h&gt;
+
+@interface BVARCSingleton : NSObject
+
+@property  ( nonatomic, weak) NSString  *tempProperty;
++ (BVARCSingleton *)sharedInstance;
+
+@end</pre>
+
+
+<p>BVARCSingleton.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVARCSingleton.m
+//  SingletonPattern
+//
+//  Created by BeyondVincent on 13-5-9.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVARCSingleton.h"
+
+@implementation BVARCSingleton
+
++ (BVARCSingleton *) sharedInstance
+{
+    static  BVARCSingleton *sharedInstance = nil ;
+    static  dispatch_once_t onceToken;  // 锁
+    dispatch_once (&amp; onceToken, ^ {     // 最多调用一次
+        sharedInstance = [[self  alloc] init];
+    });
+    return  sharedInstance;
+}
+
+// 当第一次使用这个单例时，会调用这个init方法。
+- (id)init
+{
+    self = [super init];
+
+    if (self) {
+        // 通常在这里做一些相关的初始化任务
+    }
+
+    return self;
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，调用<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD)</span></a></span></span>中的<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html#//apple_ref/c/func/dispatch_once" target="_blank"><span style="color: #339966; text-decoration: underline;">dispatch_once</span></a></span></span>方法就可以确保BVARCSingleton只被实例化一次。并且该方法是线程安全的，我们不用担心在不同的线程中，会获得不同的实例。（当然，该方法同样不能保证该单例中所有方法的调用都是线程安全的）。</p>
+
+<p>当然，在ARC中，不用GCD也是可以做到线程安全的，跟之前非ARC代码中使用@synchronized一样，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 不使用GCD，通过@synchronized
+@synchronized (self)
+{
+    if(sharedInstance == nil)
+    {
+        sharedInstance = [[self alloc] init];
+    }
+}</pre>
+
+
+<p>为了简化使用ARC+GCD来创建单例，可以定义下面这样的一个宏：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define DEFINE_SHARED_INSTANCE_USING_BLOCK(block) \
+static dispatch_once_t onceToken = 0; \
+__strong static id sharedInstance = nil; \
+dispatch_once(&amp;onceToken, ^{ \
+sharedInstance = block(); \
+}); \
+return sharedInstance; \</pre>
+
+
+<p>实例化的实现方法如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (BVARCSingleton *) sharedInstance
+{
+    DEFINE_SHARED_INSTANCE_USING_BLOCK(^{
+        return [[self alloc] init];
+    });
+}</pre>
+
+
+<h2><strong><span style="color: #339966;">单例的使用 </span></strong></h2>
+
+<p>单例的使用方法很简单，在代码中的任意位置，如下使用即可：</p>
+
+<p>在BVAppDelegate.m中添加头文件：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "BVNonARCSingleton.h"
+#import "BVARCSingleton.h"</pre>
+
+
+<p>如下使用方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [BVNonARCSingleton sharedInstance].tempProperty = @"非ARC单例的实现";
+    NSLog(@"%@", [BVNonARCSingleton sharedInstance].tempProperty);
+
+    [BVARCSingleton sharedInstance].tempProperty = @"ARC单例的实现";
+    NSLog(@"%@", [BVARCSingleton sharedInstance].tempProperty);
+
+    return YES;
+}</pre>
+
+
+<p>运行程序，会在控制台窗口输出如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-09 16:44:07.649 SingletonPattern[5159:c07] 非ARC单例的实现
+2013-05-09 16:44:33.204 SingletonPattern[5159:c07] ARC单例的实现</pre>
+
+
+<h2><strong><span style="color: #339966;">代码实例</span></strong></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/SingletonPattern" target="_blank"><img class="alignnone size-full wp-image-561" alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a style="font-size: 1.5em;" href="https://github.com/BeyondVincent/ios_patterns/raw/master/SingletonPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-02-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p>本文在写作的时候，参考了许多网上的优秀文章，包括如下：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://my.safaribooksonline.com/book/programming/objective-c/9781430233305/chapter-7-singleton/what_is_the_singleton_pattern_question#X2ludGVybmFsX0h0bWxWaWV3P3htbGlkPTk3ODE0MzAyMzMzMDUlMkZpbXBsZW1lbnRpbmdfYV9zaW5nbGV0b25faW5fb2JqZWN0aXZlJnF1ZXJ5PQ==" target="_blank"><span style="color: #339966; text-decoration: underline;">What Is the Singleton Pattern?</span></a></span></span>（Pro Objective-C Design Patterns for iOS书中对单例模式的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://maleevdimka.wordpress.com/2013/01/30/ios-patterns-singleton/" target="_blank"><span style="color: #339966; text-decoration: underline;">ios-patterns-singleton</span></a></span></span>（需翻墙，是俄文的）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.galloway.me.uk/tutorials/singleton-classes/" target="_blank"><span style="color: #339966; text-decoration: underline;">Singletons in Objective-C</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.johnwordsworth.com/2010/04/iphone-code-snippet-the-singleton-pattern/" target="_blank"><span style="color: #339966; text-decoration: underline;">Implementing a Singleton in Objective-C / iOS</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD) Reference</span></a></span></span>（dispatch_once的介绍）<br/>
+<span style="text-decoration: underline; color: #339966;"><a href="http://blog.devtang.com/blog/2012/02/22/use-gcd/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用GCD</span></a></span>（来自唐巧的一篇文章，对GCD总结不错）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Threading Programming Guide</span></a></span></span>（@synchronized关键字的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Cocoa Fundamentals Guide</span></a></span></span>（苹果官方给的一个非ARC单例实现）</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1319,68 +1649,6 @@ _<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<st
 
 <p style="text-align: right;">
   <span style="color: #c0c0c0;">破船撰于2013.04.18</span>
-</p>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-18T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 18<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/04/18/10/" itemprop="url">在Xcode4.6中如何将xib for iPhone的文件转换为for iPad</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2><strong><span style="color: #339966;">在Xcode4.6中将xib for iPhone的文件转换为for iPad</span></strong></h2>
-
-<p>有时候你已经开发了iPhone项目，但是没有针对iPad开发，现在需要iPhone程序也能iPad上很好的运行，那么直接将之前的项目拿过来进行改造，是最好的。本文的内容对你或许有用。<a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2.png"><img class="alignright size-medium wp-image-372" alt="QQ20130418-2" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130418-2-300x162.png" width="300" height="162" /></a></p>
-
-<h2><strong><span style="color: #339966;">我的操作步骤如下：</span></strong></h2>
-
-<ol>
-<li>在Xcode中选中要转换的xib文件，然后选择File->Duplicate，复制一份xib文件。</li>
-<li>在新复制出来的这个xib文件上，右键单击->Open As->Source Code。</li>
-<li>将打开源码文件中&#8221;com.apple.InterfaceBuilder3.CocoaTouch.XIB&#8221;替换为&#8221;com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB&#8221;。</li>
-<li>将所有的&#8221;IBCocoaTouchFramework&#8221;替换为&#8221;IBIPadFramework&#8221;</li>
-<li>保存并关闭Source Code，重新将这个xib文件用IB打开（选中xib文件，右键单击->Open As->Interface Builder &#8211; iOS）</li>
-<li>选中针对这个xib文件的main viewcontroller或者UIView，然后打开attributes inspector(在xcode的右边)，在Size里面选择“iPad Full Screen”。就可以根据自己的设计来调整UI界面了。</li>
-</ol>
-
-
-<p>如果需要将iPad的xib文件转换为iPhone的，那么反过来操作3和4步骤中的内容也同样可以。</p>
-
-<p>关于xib文件的转换，如果你有任何问题或者更好的办法，请留言告诉我！:]</p>
-
-<p>本文参考了stackoverflow上面的一个QA：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5347198/xcode-4-xib-create-ipad-version" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode 4 .xib Create iPad Version</span></a></span></span></p>
-
-<p style="text-align: right;">
-  <span style="color: #c0c0c0;">破船撰写于@2013.04.18</span>
 </p>
 
 

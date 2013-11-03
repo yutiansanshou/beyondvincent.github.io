@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS翻译 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iosfan-yi/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-11-02T18:43:44+08:00</updated>
+  <updated>2013-11-03T21:23:17+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,238 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 7 教程：定制iOS 7中的导航栏和状态栏]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7/"/>
+    <updated>2013-11-03T22:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/11/7.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.appcoda.com/customize-navigation-status-bar-ios-7/"><code>Customizing Navigation Bar and Status Bar in iOS 7</code></a></p>
+
+<p>近期，更大多数开发者一样，我也正忙于对程序进行升级以适配iOS 7。最新的iOS 7外观上有大量的改动。从开发者的角度来看，导航栏和状态栏就发生了明显的变化。状态栏现在是半透明的了，这也就意味着导航栏会显示在状态栏后面。有些情况下，导航栏的背景图片可以延伸显示到状态栏后面。</p>
+
+<p>之前我曾经写过一篇关于<a href="http://www.appcoda.com/customize-navigation-bar-back-butto/">如何定制导航栏</a>的文章。不过现在是时候对其进行更新了。下面就是本文将要介绍的内容：</p>
+
+<ul>
+<li><a href="#0">iOS 7中默认的导航栏</a></li>
+<li><a href="#1">设置导航栏的背景颜色</a></li>
+<li><a href="#2">在导航栏中使用背景图片</a></li>
+<li><a href="#3">定制返回按钮的颜色</a></li>
+<li><a href="#4">修改导航栏标题的字体</a></li>
+<li><a href="#44">修改导航栏标题为图片</a></li>
+<li><a href="#5">添加多个按钮</a></li>
+<li><a href="#6">修改状态栏的风格</a></li>
+<li><a href="#7">隐藏状态栏</a></li>
+<li><a href="#8">总结</a></li>
+</ul>
+
+
+<p><img src="/images/2013/11/9.jpg" alt="" /></p>
+
+<p>本文提供的代码需要用Xcode 5来执行。如果你还在使用老版本的Xcode，那么在运行示例之前请将Xcode升级到Xcode 5。</p>
+
+<h3><a id="0"></a>iOS 7中默认的导航栏</h3>
+
+<p>在开始定制之前，我们先来看看iOS 7中默认导航栏的外观。通过Xcode用<code>Single View Controller</code>模板创建一个工程。然后将view controller嵌入到一个navigation controller中。如果你不想从头开始，那么也可以在这里下载到这个<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程</a>。</p>
+
+<p>Xcode 5包含有iOS 6和iOS 7模拟器，我们可以在这两个不同的模拟器版本中运行示例程序，进行对比，如下图所示：</p>
+
+<p><img src="/images/2013/11/10.jpg" alt="" /></p>
+
+<p>如上图所示，在iOS 7中的导航栏默认情况下跟状态栏是交织在一起的，并且它的颜色也被修改为亮灰色。</p>
+
+<h3><a id="1"></a>设置导航栏的背景颜色</h3>
+
+<p>在iOS 7中，不再使用tintColor属性来设置导航栏的颜色，而是使用barTintColor属性来修改背景色。我们可以在<code>AppDelegate.m</code>文件中的方法<code>didFinishLaunchingWithOptions:</code>里面添加如下代码来修改颜色：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:[UIColor yellowColor]];
+</code></p>
+
+<p>效果如下图所示：</p>
+
+<p><img src="/images/2013/11/11.jpg" alt="" /></p>
+
+<p>一般情况，我们都会使用自己的颜色，下面这个宏用来设置RGB颜色非常方便：</p>
+
+<p>```objc</p>
+
+<h1>define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) >> 16))/255.0 green:((float)((rgbValue &amp; 0xFF00) >> 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</h1>
+
+<p>```</p>
+
+<p>将上面这个宏放到<code>AppDelegate.m</code>文件中，然后通过这个宏来创建一个UIColor对象(根据指定的RGB)。如下示例：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x067AB5)];
+</code></p>
+
+<p>默认情况下，导航栏的translucent属性为YES。另外，系统还会对所有的导航栏做模糊处理，这样可以让iOS 7中导航栏的颜色更加饱和。如下图，是translucent值为NO和YES的对比效果：</p>
+
+<p><img src="/images/2013/11/12.jpg" alt="" /></p>
+
+<p>要想禁用translucent属性，可以在Storyboard中选中导航栏，然后在Attribute Inspectors中，取消translucent的勾选。</p>
+
+<h3><a id="2"></a>在导航栏中使用背景图片</h3>
+
+<p>如果希望在导航栏中使用一个图片当做背景，那么你需要提供一个稍微高一点的图片(这样可以延伸到导航栏背后)。导航栏的高度从44 points(88 pixels)变为了64 points(128 pixels)。</p>
+
+<p>我们依然可以使用<code>setBackgroundImage:</code>方法为导航栏设置自定义图片。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bg.png"] forBarMetrics:UIBarMetricsDefault];
+</code></p>
+
+<p>示例工程中提供了两个背景图片：nav_bg.png 和 nav_bg_ios7.png。运行一下试试看吧，如下效果：</p>
+
+<p><img src="/images/2013/11/13.jpg" alt="" /></p>
+
+<h3><a id="3"></a>定制返回按钮的颜</h3>
+
+<p>在iOS 7中，所有的按钮都是无边框的。其中返回按钮会有一个V型箭头，以及上一个屏幕中的标题(如果上一屏幕的标题是空，那么就显示"返回")。要想给返回按钮着色，可以使用tintColor属性。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+</code></p>
+
+<p>除了返回按钮，tintColor属性会影响到所有按钮标题和图片。</p>
+
+<p><img src="/images/2013/11/14.jpg" alt="" /></p>
+
+<p>如果想要用自己的图片替换V型，可以设置图片的<code>backIndicatorImage</code>和<code>backIndicatorTransitionMaskImage</code>。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
+[[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
+</code></p>
+
+<p>图片的颜色是由tintColor属性控制的。</p>
+
+<p><img src="/images/2013/11/15.jpg" alt="" /></p>
+
+<h3><a id="4"></a>修改导航栏标题的字体</h3>
+
+<p>跟iOS 6一样，我们可以使用导航栏的<code>titleTextAttributes</code>属性来定制导航栏的文字风格。在text attributes字典中使用如下一些key，可以指定字体、文字颜色、文字阴影色以及文字阴影偏移量：</p>
+
+<ul>
+<li>UITextAttributeFont – 字体key</li>
+<li>UITextAttributeTextColor – 文字颜色key</li>
+<li>UITextAttributeTextShadowColor – 文字阴影色key</li>
+<li>UITextAttributeTextShadowOffset – 文字阴影偏移量key</li>
+</ul>
+
+
+<p>如下代码所示，对导航栏的标题风格做了修改：</p>
+
+<p>```objc
+NSShadow *shadow = [[NSShadow alloc] init];</p>
+
+<pre><code>shadow.shadowColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8];
+shadow.shadowOffset = CGSizeMake(0, 1);
+[[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor colorWithRed:245.0/255.0 green:245.0/255.0 blue:245.0/255.0 alpha:1.0], NSForegroundColorAttributeName,
+                                                       shadow, NSShadowAttributeName,
+                                                       [UIFont fontWithName:@"HelveticaNeue-CondensedBlack" size:21.0], NSFontAttributeName, nil]];
+</code></pre>
+
+<p>```</p>
+
+<p>运行效果如下图所示：</p>
+
+<p><img src="/images/2013/11/16.jpg" alt="" /></p>
+
+<h3><a id="44"></a>修改导航栏标题为图片</h3>
+
+<p>如果要想将导航栏标题修改为一个图片或者logo，那么只需要使用下面这行代码即可：</p>
+
+<p><code>objc
+self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appcoda-logo.png"]];
+</code></p>
+
+<p>上面的代码简单的修改了titleView属性，将一个图片赋值给它。
+注意：这不是iOS 7中的新功能，之前的iOS版本就可以已经有了。</p>
+
+<p>具体效果如下图所示：</p>
+
+<p><img src="/images/2013/11/17.jpg" alt="" /></p>
+
+<h3><a id="5"></a>添加多个按钮</h3>
+
+<p>同样，这个技巧也不是iOS 7的，开发者经常会在导航栏中添加多个按钮，所以我决定在这里进行介绍。我们可以在导航栏左边或者右边添加多个按钮。例如，我们希望在导航栏右边添加一个照相机和分享按钮，那只需要使用下面的代码即可：</p>
+
+<p>```objc</p>
+
+<pre><code>UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:nil];
+UIBarButtonItem *cameraItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:nil];
+
+NSArray *actionButtonItems = @[shareItem, cameraItem];
+self.navigationItem.rightBarButtonItems = actionButtonItems;
+</code></pre>
+
+<p>```</p>
+
+<p>如下效果：</p>
+
+<p><img src="/images/2013/11/18.jpg" alt="" /></p>
+
+<h3><a id="6"></a>修改状态栏的风格</h3>
+
+<p>在老版本的iOS中，状态栏永远都是白色风格。而在iOS 7中，我们可以修改每个view controller中状态栏的外观。通过UIStatusBarStyle常量可以指定状态栏的内容是暗色或亮色。默认情况下，状态栏的显示是暗色。也就是说，状态栏上的时间、电池指示器和Wi-Fi信号显示为暗色。如果导航栏中使用暗色为背景，那么看起来的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/19.jpg" alt="" /></p>
+
+<p>如上图这种情况下，我们可能希望将导航栏的风格修改为亮色。这里有两个方法可以实现。在iOS 7中，我们可以在每个view controller中overriding<code>preferredStatusBarStyle:</code>方法，如下所示：</p>
+
+<p>```objc
+&ndash;(UIStatusBarStyle)preferredStatusBarStyle
+{</p>
+
+<pre><code>return UIStatusBarStyleLightContent; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面代码的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/20.jpg" alt="" /></p>
+
+<p>在iOS 7中，通过上面的方法来修改状态栏风格非常的棒。另外，我们也可以使用UIApplication的statusBarStyle方法来设置状态栏，不过，首先需要停止使用<code>View controller-based status bar appearance</code>。在project target的Info tab中，插入一个新的key，名字为<code>View controller-based status bar appearance</code>，并将其值设置为NO。</p>
+
+<p><img src="/images/2013/11/21.jpg" alt="" /></p>
+
+<p>然后就可以使用下面的代码来设置状态栏风格了：</p>
+
+<p><code>objc
+[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+</code></p>
+
+<h3><a id="7"></a>隐藏状态栏</h3>
+
+<p>有时候我们需要隐藏状态栏，那么此时我们在view controller中override方法prefersStatusBarHidden:即可，如下代码所示：</p>
+
+<p>```objc
+&ndash; (BOOL)prefersStatusBarHidden
+{</p>
+
+<pre><code>return YES;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3><a id="8"></a>总结</h3>
+
+<p>iOS 7给开发者提供了一些新的自由度来定制导航栏和状态栏的外观。希望上面的这些技巧能对你有用。</p>
+
+<p>这里可以下载到<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程源码</a>。只需要取消相关代码注释即可进行测试。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 2]]></title>
@@ -1535,234 +1767,6 @@ SKAction </em>doneAction = [SKAction runBlock:(dispatch_block_t)^() {</p>
 <p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
 
 <p>……Sprite Kit教程：动画和纹理图集 2 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 1]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1/"/>
-    <updated>2013-10-16T12:40:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/10/2.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li><a href="#cjgc">创建一个工程</a></li>
-<li><a href="#wltj">纹理图集和熊</a></li>
-<li><a href="#jddh">一个简单的动画</a></li>
-<li>改变动画运动的方向</li>
-<li>在屏幕上让熊移动</li>
-<li>何去何从?</li>
-</ul>
-
-
-<p>从本文，可以学习到如何使用iOS 7中的Sprite Kit框架创建一个简单的动画：在屏幕上行走的熊。</p>
-
-<p>另外还可以学习到如何使用纹理图集来制作动画效果，如何在触摸事件发生时让熊移动，以及改变熊运动的方向。</p>
-
-<p>学习本文之前，最好先看看下面的文章：
-<a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
-
-<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<p>下面我们就开始吧。</p>
-
-<h3><a id="cjgc"></a>创建一个工程</h3>
-
-<p>我们先创建好一个工程架子——选择<code>File\New Project…</code>，在<code>iOS Application</code>中选择<code>Sprite Kit Game</code>，如下图所示：</p>
-
-<p><img src="/images/2013/10/4.png"></p>
-
-<p>选择<code>Next</code>，并将工程命名为<code>AnimatedBear</code>，把Class Prefix中的内容清除掉，并将Devices选择为<code>iPad</code>，如下图所示：</p>
-
-<p><img src="/images/2013/10/5.png"></p>
-
-<p>接着选择<code>Next</code>，将工程保存到磁盘中。</p>
-
-<p>现在编译并运行程序的话，当点击屏幕时，可以看到在屏幕中有一个自动旋转的飞船。如下图所示：</p>
-
-<p><img src="/images/2013/10/6.png"></p>
-
-<p>这样工程架子就准备好了，下面我们去寻找一些熊的动画资源——从这里下载即可：<a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/08/BearImages.zip">BearImages Art</a>。如下图所示：</p>
-
-<p><img src="/images/2013/10/7.jpg" alt="熊的示例图片" /></p>
-
-<p>上面下载到的图片有所需要的最大分辨率——iPad retina显示(2X)和non-retina版本(1x)。这些文件的命名方式为bear1..n@2x~ipad和bear1..n~ipad.png。</p>
-
-<p>在这里，构建一个动画，你可以只需要将这些图片直接添加到Sprite Kit工程中即可。不过，还有另外一种更加方便的方法来构建动画——使用纹理图集。</p>
-
-<h3><a id="wltj"></a>纹理图集和熊</h3>
-
-<p>如果之前你没使用过纹理图集，那你可以把它想象为一副很大的图片，其中包括动画中需要使用到的各种图片。这个图集可以看做是一个文件，它指定了每个sprite的边界范围，当在代码中需要使用时，可以将这些sprite取出来。</p>
-
-<p>使用纹理图集是因为Sprite Kit和图形引擎会对其做相应的优化处理。<code>后面这段话暂时不知道什么意思:</code></p>
-
-<p>```</p>
-
-<pre><code>If you use sprites within a texture atlas properly, rather than making one OpenGL ES draw call per sprite it just makes one per texture atlas sheet.
-</code></pre>
-
-<p>```</p>
-
-<p>简而言之——使用纹理图集会非常的快，特别是有大量sprite的时候！</p>
-
-<p>Xcode会自动的生成这个纹理图集文件，并指定好每个sprite的边界范围，这样当在代码中需要用到某个sprite的时候，可以方便取出来。这一切都会自动处理，开发者不用亲力为之。</p>
-
-<p><code>
-注意：当纹理图集有问题时(例如错误的图片等)，那么建议clean一下工程(Product\Clean)——这样可以强制让纹理图集重新构建。
-</code></p>
-
-<p>为纹理图集创建一个文件夹，并将图片文件放置到该文件夹中，然后在文件夹名称尾部添加<code>.atlas</code>。这样Xcode就能识别出.atlas扩展名，进而自动的将图片合并为一个纹理图集。</p>
-
-<p>之前下载的图片资源中有一个名为<code>BearImages.atlas</code>的文件夹，里面包含了各种分辨率的图片(是其它两个文件夹中的图片合集)。</p>
-
-<p>将名为<code>BearImages.atlas</code>的文件夹拖拽到程序中，如下图所示：</p>
-
-<p><img src="/images/2013/10/8.png" alt="" /></p>
-
-<p>当释放鼠标时，会看到如下图片中的对话框：是关于如何添加到工程中的。确保选中这三项：<code>Copy items into destination group’s folder</code>, <code>Create groups for any added folder</code>, 和 <code>the AnimatedBear</code>，然后点击<code>Finish</code>：</p>
-
-<p><img src="/images/2013/10/9.png" alt="" /></p>
-
-<p>在Xcode中展开这个文件夹<code>BearImages.atlas</code>，会看到如下内容：</p>
-
-<p><img src="/images/2013/10/10.png" alt="" /></p>
-
-<p>下面，是时候让熊动起来了！</p>
-
-<h3><a id="jddh"></a>一个简单的动画</h3>
-
-<p>这里我们先把熊显示在屏幕中间，并开启永久循环动画。</p>
-
-<p>此处主要都是在<code>MyScene.m</code>中写代码。打开这个文件，并用下面的代码替换之：</p>
-
-<p>```objc</p>
-
-<h1>import &lt;AVFoundation/AVFoundation.h></h1>
-
-<h1>import &ldquo;MyScene.h&rdquo;</h1>
-
-<p>@implementation MyScene
-{</p>
-
-<pre><code>SKSpriteNode *_bear;
-NSArray *_bearWalkingFrames;
-</code></pre>
-
-<p>}</p>
-
-<p>&ndash;(id)initWithSize:(CGSize)size
-{</p>
-
-<pre><code>if (self = [super initWithSize:size]) {
-    /* Setup your scene here */
-
-    self.backgroundColor = [SKColor blackColor];
-
-    // TODO...
-
-}
-return self;
-</code></pre>
-
-<p>}</p>
-
-<p>&ndash;(void)update:(CFTimeInterval)currentTime {</p>
-
-<pre><code>/* Called before each frame is rendered */
-</code></pre>
-
-<p>}</p>
-
-<p>@end
-```</p>
-
-<p>上面的代码很简单，只是定义了几个稍后会用到的变量。编译并运行一下，确保没有错误——会看到屏幕是黑色的。</p>
-
-<p>接下来要让熊动起来，有5步需要处理，我们就来看看吧。</p>
-
-<p>记得将下面的代码添加到<code>initWithSize</code>方法的<code>TODO</code>位置。</p>
-
-<p><code>1) 构建一个用于保存行走帧(walking frame)</code></p>
-
-<p><code>objc
-NSMutableArray *walkFrames = [NSMutableArray array];
-</code>
-<code>2) 加载纹理图集</code></p>
-
-<p><code>objc
-SKTextureAtlas *bearAnimatedAtlas = [SKTextureAtlas atlasNamed:@"BearImages"];
-</code>
-上面的代码会从程序bundle的数据区中创建一个图集。Sprite Kit会根据设备的寻找对应分辨率的图片文件，在iPad retina上会使用BearImages@2x~ipad.png。</p>
-
-<p><code>3) 构建帧列表</code></p>
-
-<p>```objc
-int numImages = bearAnimatedAtlas.textureNames.count;
-for (int i=1; i &lt;= numImages/2; i++) {</p>
-
-<pre><code>NSString *textureName = [NSString stringWithFormat:@"bear%d", i];
-SKTexture *temp = [bearAnimatedAtlas textureNamed:textureName];
-[walkFrames addObject:temp];
-</code></pre>
-
-<p>}
-_bearWalkingFrames = walkFrames;
-```</p>
-
-<p>上面的代码根据图片名称从图集中循环获取到一个帧列表(这些图片的命名为bear1.png->bear8.png)，注意到<code>numImages</code>这个变量了吗？它为啥要除以2呢？</p>
-
-<p>这是因为：纹理图集包含了所有分辨率的图片文件(non-retina和retina)。共有16个文件，每种分辨率有8个文件。要想加载某种分辨率的图片，就需要除以2。这样通过名称和计数器，就能获取到正确的分辨率图片。</p>
-
-<p><code>4) 创建sprite，并将其位置设置为屏幕中间，然后将其添加到场景中</code></p>
-
-<p><code>objc
-SKTexture *temp = _bearWalkingFrames[0];
-_bear = [SKSpriteNode spriteNodeWithTexture:temp];
-_bear.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
-[self addChild:_bear];
-[self walkingBear];
-</code></p>
-
-<p>利用帧列表的第一帧构建一个sprite，然后将其放置到屏幕正中间。最后调用walkingBear方法，让熊开始走动。</p>
-
-<p><code>5) 在initWithSize方法后面添加一个新的方法walkingBear</code></p>
-
-<p>```objc
-&ndash;(void)walkingBear
-{</p>
-
-<pre><code>//This is our general runAction method to make our bear walk.
-[_bear runAction:[SKAction repeatActionForever:
-                  [SKAction animateWithTextures:_bearWalkingFrames
-                                   timePerFrame:0.1f
-                                         resize:NO
-                                        restore:YES]] withKey:@"walkingInPlaceBear"];
-return;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的这个action会以0.1秒的间隔开始播放各帧。如果你的代码再次调用这个方法使动画重新开始的话，<code>walkingInPlaceBear</code>这个key会强制移除动画。这对于确保动画不相互干扰非常重要。<code>withKey</code>参数还提供了一个钟方法对动画进行检查，来判断其是否通过名称运行的。</p>
-
-<p>这个action是永久重复的，内部的actionan <code>imateWithTextures</code>会按顺序动画播放帧列表中的图片。</p>
-
-<p><code>完工!</code></p>
-
-<p>现在编译并运行程序，一切正常的话，会在屏幕中看到一个会动的熊，如下图所示：</p>
-
-<p><img src="/images/2013/10/11.png" alt="" /></p>
-
-<p>……Sprite Kit教程：动画和纹理图集 1 结束……</p>
 ]]></content>
   </entry>
   
