@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-11-12T01:08:14+08:00</updated>
+  <updated>2013-11-19T17:04:55+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,173 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 7 教程：让程序同时支持iOS 6和iOS 7]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/19/122-working-with-ios-6-and-7/"/>
+    <updated>2013-11-19T22:18:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/19/122-working-with-ios-6-and-7</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/11/35.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>注：本文由破船译自<a href="http://blog.ittybittyapps.com/blog/2013/11/08/working-with-ios-6-and-7/">Itty Bitty Labs</a>。</p>
+
+<ol>
+<li><a href="#1">iOS 7中的布局问题</a></li>
+<li><a href="#2">iOS 6运行异常</a></li>
+<li><a href="#3">Xcode 4编译错误</a></li>
+<li><a href="#4">UILabel不一致的background</a></li>
+<li><a href="#5">全屏时隐藏状态栏</a></li>
+<li><a href="#6">UIToolbar barStyle</a></li>
+<li><a href="#7">更多</a></li>
+</ol>
+
+
+<p>由于各种原因，我们的程序需要同时支持iOS 7以及之前的版本(例如iOS 6)，也就是说开发者不得不同时在iOS 7和iOS 6之间进行开发。实际上开发者对此是比较讨厌的。</p>
+
+<h3><a id="1"></a>iOS 7中的布局问题</h3>
+
+<p>下面是非常简单的一个程序，运行在iOS 6中的界面：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/36.png" alt="" /></p>
+
+<p>而要是运行在iOS 7的模拟器中，会看不到label了：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/37.png" alt="" /></p>
+
+<p>这是为什么呢？我们对其reveal一下看看吧：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/38.png" alt="" /></p>
+
+<p>从上图可以看出，实际上label躲在NavigationBar后面了。在iOS 7中，苹果引入了一个新的属性，叫做<code>[UIViewController setEdgesForExtendedLayout:]</code>，它的默认值为<code>UIRectEdgeAll</code>。当你的容器是navigation controller时，默认的布局将从navigation bar的顶部开始。这就是为什么所有的UI元素都往上漂移了44pt。</p>
+
+<p>修复这个问题的快速方法就是在方法<code>- (void)viewDidLoad</code>中添加如下一行代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">edgesForExtendedLayout</span> <span class="o">=</span> <span class="n">UIRectEdgeNone</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样问题就修复了。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2013/11/39.png" alt="" /></p>
+
+<h3><a id="2"></a>iOS 6运行异常</h3>
+
+<p>现在如果在iOS 6中运行程序，会遇到下面这样的运行时异常错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">LAViewController</span> <span class="nl">setEdgesForExtendedLayout:</span><span class="p">]</span><span class="o">:</span> <span class="n">unrecognized</span> <span class="n">selector</span> <span class="n">sent</span> <span class="n">to</span> <span class="n">instance</span> <span class="mh">0x778a210</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有只能在iOS 7中运行的API需要重新封装一下，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">if</span> <span class="p">([</span><span class="n">self</span> <span class="nl">respondsToSelector:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">setEdgesForExtendedLayout:</span><span class="p">)])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">edgesForExtendedLayout</span> <span class="o">=</span> <span class="n">UIRectEdgeNone</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a id="3"></a>Xcode 4编译错误</h3>
+
+<p>有些机器可能还在使用Xcode 4.6，当用4.6来编译代码时，会遇到下面的编译错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Property</span> <span class="err">&#39;</span><span class="n">edgesForExtendedLayout</span><span class="err">&#39;</span> <span class="n">not</span> <span class="n">found</span> <span class="n">on</span> <span class="n">object</span> <span class="n">of</span> <span class="n">type</span> <span class="err">&#39;</span><span class="n">LAViewController</span> <span class="o">*</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">Use</span> <span class="n">of</span> <span class="n">undeclared</span> <span class="n">identifier</span> <span class="err">&#39;</span><span class="n">UIRectEdgeNone</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为了避免这个错误，可以创建下面的这个宏：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#if __IPHONE_OS_VERSION_MAX_ALLOWED &gt;= 70000</span>
+</span><span class='line'><span class="cp">#define IOS7_SDK_AVAILABLE 1</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在需要的地方将iOS 7的代码包装一下即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#ifdef IOS7_SDK_AVAILABLE</span>
+</span><span class='line'><span class="p">...</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a id="4"></a>UILabel不一致的background</h3>
+
+<p>对于UILabel，在iOS 7中它的background颜色默认是clearColor，而在iOS 6中默认的是白色。所以，我们最好在代码中对label的background颜色进行明确的设置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">clearColor</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a id="5"></a>全屏时隐藏状态栏</h3>
+
+<p>在iOS 6中，当调用<code>presentViewController</code>时，默认的modal screen将是全屏(<code>UIModalPresentationFullScreen</code>)。为了在iOS 7中也能获得相同的效果，我们可以在modal controller中添加如下代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">prefersStatusBarHidden</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a id="6"></a>UIToolbar barStyle</h3>
+
+<p>有时候，我们会将UIToolbar与系统键盘结合起来使用。而在iOS 6中的键盘是黝黑色的，此时toolbar的style一般也是类似的，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">barStyle</span> <span class="o">=</span> <span class="n">UIBarStyleBlack</span><span class="p">;</span><span class="c1">// or UIBarStyleBlackTranslucents</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在iOS 7中，键盘变为了亮色，因此我们需要根据不同的iOS 版本，设置不同的bar style。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">if</span> <span class="p">([[[</span><span class="n">UIDevice</span> <span class="n">currentDevice</span><span class="p">]</span> <span class="n">systemVersion</span><span class="p">]</span> <span class="nl">compare:</span><span class="s">@&quot;7.0&quot;</span> <span class="nl">options:</span><span class="n">NSNumericSearch</span><span class="p">]</span> <span class="o">!=</span> <span class="n">NSOrderedAscending</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">barStyle</span> <span class="o">=</span> <span class="n">UIBarStyleDefault</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">barStyle</span> <span class="o">=</span> <span class="n">UIBarStyleBlack</span><span class="p">;</span><span class="c1">//or UIBarStyleBlackTranslucent</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a id="7"></a>更多</h3>
+
+<p>上面这些技巧是我目前在开发中遇到的，肯定还有更多的技巧，大家要是知道的话可以告诉我。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS 7 教程：浅析Text Kit]]></title>
@@ -5392,415 +5559,6 @@ YourOperation *operation = [[YourOperation alloc] init];
 <p>还记得使用Xcode 3版本开发iOS程序的时候，感觉这个工具不好使用，当时的IB和Xcode还是分开的，打开个xib文件，IB也要启动半天，更别说界面与代码的整体开发效率了。现如今看到苹果对Xcode做了很多改进，使用越来越方便，开发效率也大大提升，这对大多数开发者来说，绝对是福利！！！</p>
 
 <p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-15</time></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Block剧终：Objective-C中的闭包性和匿名函数]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/12/102/"/>
-    <updated>2013-07-12T00:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/12/102</id>
-    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg"><img class="alignnone size-full wp-image-1586" alt="blocks-1024x576" src="http://beyondvincent.com/wp-content/uploads/2013/07/blocks-1024x576.jpg" width="1024" height="576" /></a></p>
-
-<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">xs-labs</span></a></span></span></strong>转载请注明出处！</p>
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>还记得昨天我给大家推荐的文章吗：<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.xs-labs.com/en/archives/articles/objc-blocks/" target="_blank"><span style="color: #339966; text-decoration: underline;">Closure and anonymous functions in Objective-C</span></a></span></strong></span>。今天手痒，还想继续敲几个字，索性我就把这篇文章敲出来，以此对block说声代码里见吧。</p>
-
-<!--more-->
-
-
-<h2><strong><span style="color: #339966;">目录</span></strong></h2>
-
-<p><strong><span style="color: #339966;">1、关于</span></strong><br/>
-<strong><span style="color: #339966;">    1.1匿名函数</span></strong><br/>
-<strong><span style="color: #339966;">    1.2闭包性</span></strong></p>
-
-<p><strong><span style="color: #339966;">2、Objective-C中的实现</span></strong><br/>
-<strong><span style="color: #339966;">    2.1将block当做参数来传递</span></strong><br/>
-<strong><span style="color: #339966;">    2.2闭包性</span></strong><br/>
-<strong><span style="color: #339966;">    2.3内存管理</span></strong><br/>
-<strong><span style="color: #339966;">    2.4示例</span></strong></p>
-
-<h3><strong><span style="color: #339966;">正文</span></strong></h3>
-
-<h2><strong><span style="color: #339966;">1、关于</span></strong></h2>
-
-<p>许多脚本语言都支持<strong><span style="color: #339966;">lambda表达式</span></strong>和<strong><span style="color: #339966;">匿名函数</span></strong>。这两个概念经常与<strong><span style="color: #339966;">闭包性</span></strong>(<strong><span style="color: #339966;">closure</span></strong>)相关。例如在JavaScript、ActionScript或PHP(5.3之后)中都有相关的概念。</p>
-
-<p>其实在Objective-C语言中也提供了这两个概念的实现：叫做<strong><span style="color: #339966;">block</span></strong>。</p>
-
-<p>自从Mac OS X 10.6之后，就可以使用block了，其实这样归功于Clang。</p>
-
-<h3><strong><span style="color: #339966;">1.1 匿名函数</span></strong></h3>
-
-<p>就如名字暗示的一样，匿名函数实际上就是一个没有名字或者标示(<strong><span style="color: #339966;">identifier</span></strong>)的函数。匿名函数只有内容(也可以叫做body)，我们可以将其存储在一个变量中，以便之后使用，或者将其当做一个参数传递给另外一个函数使用。</p>
-
-<p>在脚本语言的回调中经常使用到这个概念。</p>
-
-<p>例如，在下面的JavaScript中，有一个名为<strong><span style="color: #339966;">foo</span></strong>的标准函数，接收一个callback当做参数，在函数中，调用了这个callback：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
-{
-    callback();
-}</pre>
-
-
-<p>这里有可能是定义了另外一个标准函数， 然后将这个标准函数当做参数传递给上面的函数：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function bar()
-{
-    alert( &#039;hello, world&#039; );
-}
-
-foo( bar );</pre>
-
-
-<p>不过这样一来，<strong><span style="color: #339966;">bar</span></strong>函数就会被声明在全局范围内，这就会带来一个风险：被另外一个相同名称的函数覆盖(<strong><span style="color: #339966;">override</span></strong>)了。</p>
-
-<p>但是别担心，JavaScript语言允许callback函数在调用的时候才进行声明：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">foo
-{
-    function()
-    {
-        alert( &#039;hello, world&#039; );
-    }
-);</pre>
-
-
-<p>在上面，可以看到这个callback实际上并没有标示(identifier)。它也不会存在于全局范围，因此也不会与别的已有函数产生冲突。</p>
-
-<p>我们也可以把callback存储到一个变量中，同样也不回存在于全局范围，不过我们可以通过这个变量对这个callback进行重复利用：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myCallback = function()
-{
-    alert( &#039;hello, world&#039; );
-};
-
-foo( myCallback );</pre>
-
-
-<h3><strong><span style="color: #339966;"> 1.2闭包性</span></strong></h3>
-
-<p>闭包性这个概念是允许一个函数访问其所声明上下文中的变量，甚至是在不同的运行上下文中。</p>
-
-<p>下面我们再来看看JavaScript的相关代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">function foo( callback )
-{
-    alert( callback() );
-}
-
-function bar()
-{
-    var str = &#039;hello, world&#039;;
-
-    foo
-    (
-        function()
-        {
-            return str;
-        }
-    );
-}
-
-bar();</pre>
-
-
-<p>上面的代码中，callback被从bar函数的运行上下文中传递给了foo函数，该callback函数返回变量str的值。</p>
-
-<p>不过在这里请注意，变量str是声明在bar函数中的，也就是说这个变量仅存于bar函数中。</p>
-
-<p>而callback是在另外一个不同的函数中被执行的(跟变量str不在一起)，我们这是可能会猜测foo函数中什么也不会显示出来。</p>
-
-<p>但是，在这里引入了闭包性这个概念。</p>
-
-<p>也就是说在不同的函数中(运行上下文中)，一个函数可以访问到变量所声明上下文中的内容。</p>
-
-<p>因此上面的代码中，callback可以访问到str变量——即使这个callback所在的foo函数不能直接访问这个str变量。</p>
-
-<p>&nbsp;</p>
-
-<h2><span style="color: #339966;"><strong>2、Objective-C中的实现</strong></span></h2>
-
-<p>实际上闭包性和匿名函数在Objective-C中是可以使用的，只不过Objective-C是构建于C语言之上，属于强类型编译语言，所以跟上面介绍的解释性脚本语言有许多不同之处。</p>
-
-<p>注意：block其实在纯C或C++(以及Objective-C++)中都是可用的。</p>
-
-<p>在标准C函数中，定义block(匿名函数)之前需要先声明原型。</p>
-
-<p>block的语法有一点点棘手，不过要是熟悉函数指针的话，就非常容易理解了。</p>
-
-<p>下面是block的原型：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSString * ( ^ myBlock )( int );</pre>
-
-
-<p>上面的代码是声明了一个block(^)原型，名字就叫做myBlock，携带一个int参数，返回只为NSString类型的指针。</p>
-
-<p>下面来看看block的定义：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( int number )
-{
-    return [ NSString stringWithFormat: @"Passed number: %i", number ];
-};</pre>
-
-
-<p>如上所示，将一个函数体赋值给了myBlock变量，其接收一个名为number的参数。该函数返回一个NSString对象。</p>
-
-<p><strong><span style="color: #ff0000;">注意：不要忘记block后面的分号。</span></strong></p>
-
-<p>在脚本语言中是可以忽略掉分号的，但是在编译性语言(如Objective-C)是必须有的。</p>
-
-<p>如果没有写这个分号，编译器会产生一个错误，当然也不会生成可执行文件。</p>
-
-<p>定义好block之后，就可以像使用标准函数一样使用它了：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock(5);</pre>
-
-
-<p>下面是完整的Objective-C程序源代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    NSString * ( ^ myBlock )( int );
-
-    pool    = [ [ NSAutoreleasePool alloc ] init ];
-    myBlock = ^( int number )
-    {
-        return [ NSString stringWithFormat: @"Passed number: %i", number ];
-    };
-
-    NSLog( @"%@", myBlock(5) );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>我们可以用下面的命令来编译(在Terminal中)：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">gcc -Wall -framework Cocoa -o test test.m</pre>
-
-
-<p>上面的命令会根据test.m源代码文件生成一个名为name的可执行文件。可以用下面的命令来运行这个可执行文件：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">./test</pre>
-
-
-<p>如果不把block赋值给变量的话，可以忽略掉block原型的声明，例如直接将block当做参数进行传递。如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">someFunction( ^ NSString * ( void ) { return @"hello, world" } );</pre>
-
-
-<p>注意，上面这种情况必须声明返回值的类型——这里是返回NSString对象。</p>
-
-<h3><span style="color: #339966;"><strong>2.1将block当做参数来传递</strong></span></h3>
-
-<p>之前说过了，block可以当做参数传递给某个C函数。</p>
-
-<p>如下所示：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void logBlock( NSString * ( ^ theBlock )( int ) )
-{
-    NSLog( @"Block returned: %@", theBlock() );
-}</pre>
-
-
-<p>由于Objective-C是强制类型语言，所以作为函数参数的block也必须要指定返回值的类型，以及相关参数类型(如果需要的话)。</p>
-
-<p>其实在Objective-C方法中也是一样的：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- ( void )logBlock: ( NSString * ( ^ )( int ) )theBlock;</pre>
-
-
-<h3><span style="color: #339966;"><strong>2.2闭包性</strong></span></h3>
-
-<p>之前有说过，闭包性在Objective-C中是可用的，只不过其行为跟解释性语言有所不同罢了。</p>
-
-<p>我们来看看下面的程序：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-void logBlock( int ( ^ theBlock )( void ) )
-{
-    NSLog( @"Closure var X: %i", theBlock() );
-}
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    int ( ^ myBlock )( void );
-    int x;
-
-    pool = [ [ NSAutoreleasePool alloc ] init ];
-    x    = 42;
-
-    myBlock = ^( void )
-    {
-        return x;
-    };
-
-    logBlock( myBlock );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>上面的代码在main函数中声明了一个整型，并赋值42，另外还声明了一个block，该block会将42返回。</p>
-
-<p>然后将block传递给logBlock函数，该函数会显示出返回的值42。</p>
-
-<p>即使是在函数logBlock中执行block，而block又声明在main函数中，但是block仍然可以访问到x变量，并将这个值返回。</p>
-
-<p><strong><span style="color: #ff0000;">注意：block同样可以访问全局变量，即使是static。</span></strong></p>
-
-<p>下面来看看第一点不同之处：通过block进行闭包的变量是const的。也就是说不能在block中直接修改这些变量。</p>
-
-<p>来看看当block试着增加x的值时，会发生什么：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">myBlock = ^( void )
-{
-    x++
-
-    return x;
-};</pre>
-
-
-<p>编译器会生成一个错误：大概意思是在block中x变量是只读的。</p>
-
-<p>不过也别担心，为了允许在block中修改变量，也是可以做到的：用__block关键字来声明变量即可。</p>
-
-<p>基于之前的代码，给x变量添加__block关键字，如下：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">__block int x;</pre>
-
-
-<h3><span style="color: #339966;"><strong>2.3内存管理</strong></span></h3>
-
-<p>从C语言的角度来看，实际上block是一个结构体，可以被拷贝和销毁的。有两个函数可以使用：Block_copy和Block_destroy()。</p>
-
-<p>而在Objective-C中，block可以接收retain、release和copie消息，这就跟普通对象一样。如果一个block需要被存储下来供以后使用，这些消息是非常重要的(例如，将block存储到一个类的实例变量中)。例如，为了避免错误的使用block，对block进行retain是非常有必要的。</p>
-
-<p><span style="color: #339966;"><strong>2.4示例</strong></span></p>
-
-<p>Block可以用在许多不同的环境中，这样可以让代码更加简单，以及减少函数声明的数量。</p>
-
-<p>下面有一个实例：</p>
-
-<p>我们将给NSArrary类添加一个static方法(类方法)，该方法通过一个callback，根据另外一个数组中的内容产生一个新的数组。</p>
-
-<p>在PHP程序员眼里，该方法就如一个array_filter()。</p>
-
-<p>首先，需要为NSArray类声明一个category。（通过category可以给已有的类添加新方法）。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@interface NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
-
-@end</pre>
-
-
-<p>上面，声明了一个方法，该方法返回一个NSArray对象，另外接收两个参数：NSArray对象，以及一个callback (为block)。</p>
-
-<p>在callback中会判断根据传入数组参数中的每一个元素。并将返回一个boolean值，以确定当前array中的元素是否需要存储到返回的数组中。</p>
-
-<p>block只有一个参数，代表数组中的某个元素。</p>
-
-<p>我们来看看该方法的具体实现：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@implementation NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
-{
-    NSMutableArray * result;
-    id               element;
-
-    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
-
-    for( element in source ) {
-
-        if( callback( element ) == YES ) {
-
-            [ result addObject: element ];
-        }
-    }
-
-    return result;
-}
-
-@end</pre>
-
-
-<p>上面的代码中，首先是创建了一个可以动态改变尺寸的数组：NSMutableArray，然后根据source array的数目来初始化该数组。</p>
-
-<p>然后对source array中的每个元素进行迭代， 如果callback返回值为YES的话，就将该元素添加到result数组中。</p>
-
-<p>下面是使用该方法的一个完整示例：利用callback构建一个数组：该数组中只包含source array中为NSString类型的元素：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Cocoa/Cocoa.h&gt;
-
-@interface NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback;
-
-@end
-
-@implementation NSArray( BlockExample )
-
-+ ( NSArray * )arrayByFilteringArray: ( NSArray * )source withCallback: ( BOOL ( ^ )( id ) )callback
-{
-    NSMutableArray * result;
-    id               element;
-
-    result = [ NSMutableArray arrayWithCapacity: [ source count ] ];
-
-    for( element in source ) {
-
-        if( callback( element ) == YES ) {
-
-            [ result addObject: element ];
-        }
-    }
-
-    return result;
-}
-
-@end
-
-int main( void )
-{
-    NSAutoreleasePool * pool;
-    NSArray           * array1;
-    NSArray           * array2;
-
-    pool   = [ [ NSAutoreleasePool alloc ] init ];
-    array1 = [ NSArray arrayWithObjects: @"hello, world", [ NSDate date ], @"hello, universe", nil ];
-    array2 = [ NSArray
-                    arrayByFilteringArray: array1
-                    withCallback:          ^ BOOL ( id element )
-                    {
-                        return [ element isKindOfClass: [ NSString class ] ];
-                    }
-             ];
-
-    NSLog( @"%@", array2 );
-
-    [ pool release ];
-
-    return EXIT_SUCCESS;
-}</pre>
-
-
-<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-12</time></p>
 ]]></content>
   </entry>
   
