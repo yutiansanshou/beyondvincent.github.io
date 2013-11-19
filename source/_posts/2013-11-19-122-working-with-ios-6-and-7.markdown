@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "iOS 7 教程：让程序同时支持iOS 6和iOS 7"
-date: 2013-11-18 23:18
+date: 2013-11-19 22:18
 comments: true
 categories: iOS7
 published: true
