@@ -12,7 +12,24 @@ published: true
 
 <!--more-->
 
-注：本文由破船译自[The Build Process](http://www.objc.io/issue-6/build-process.html)。
+注1：本文由破船译自[The Build Process](http://www.objc.io/issue-6/build-process.html)。
+
+注2：
+
+```
+本文将轻度解密Xcode build日志，还原iOS程序build的过程。
+另外将介绍如何对build过程的控制，进而定制出自己希望的流程，
+例如通过Build phase的定制，给app icon打水印(包括版本号和日期)。
+
+通过对工程文件的解读，为你揭开工程文件(.pbxproj)与
+build settings的关系。这对于解决工程文件的merge冲突非常有帮助。
+
+PS：实际上各开发平台的build过程都比较相似，如果你熟悉了
+某个平台的build过程，那么同样的原理也适用于别的平台。
+可以说换汤不换药，本质是一样的。
+```
+
+下面开始吧：
 
 本文目录如下所示：
 
