@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 16th, 2013 iOS iOS调试 — 基本技巧 在程序中，无论是你想弄清楚为什么数组中有3个对象而不是5个，或者为什么一个新的玩家开始之后，游戏在倒退——调试在这些处理过程中是比较重要的一部分。通过本文的学习，我们将知道在程序中，可以使用的大多数重要调试功能， &hellip;">
+	<meta name="description" content="May 16th, 2013 iOS, iOS设计模式 iOS设计模式(03):工厂方法 什么是工厂方法？ GOF是这样描述工厂模式的： Define an interface for creating an object, but let subclasses decide which &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,482 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/16/23/" itemprop="url">iOS设计模式(03):工厂方法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><strong><span style="color: #339966;">什么是工厂方法？</span></strong></h2>
+
+<p>GOF是这样描述工厂模式的：</p>
+
+<blockquote><p>Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses.</p></blockquote>
+
+<p>在基类中定义创建对象的一个接口，让子类决定实例化哪个类。工厂方法让一个类的实例化延迟到子类中进行。</p>
+
+<p>工厂方法要解决的问题是对象的创建时机，它提供了一种扩展的策略，很好地符合了开放封闭原则。工厂方法也叫做虚构造器（Virtual Constructor）。</p>
+
+<p>如下图所示，是工厂方法的类结构图：<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-4.png"><img class="alignnone size-full wp-image-600" alt="QQ20130516-4" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-4.png" width="829" height="300" /></a></p>
+
+<p><strong style="font-size: 1.5em;"><span style="color: #339966;">什么时候使用工厂方法？</span></strong></p>
+
+<p>当是如下情况是，可以使用工厂方法：</p>
+
+<ol>
+<li>一个类不知道它所必须创建的对象的类时</li>
+<li>一个类希望有它的子类决定所创建的对象时</li>
+</ol>
+
+
+<p>更多关于工厂方法的介绍，可以参考本文最后给出的参考内容。下面我们就来看看在iOS中工厂方法的一种实现方法。</p>
+
+<h2><strong><span style="color: #339966;">iOS中工厂方法的实现</span></strong></h2>
+
+<p>如下有一个类图，该图描述了下面即将实现的工厂方法（利用工厂方法，创建出不同的形状）。其中BVShapeFactory为工厂方法的基类，BVShape为形状的基类，BVClient通过BVShapeFactory，利用 BVShapeFactory的子类（BVCircleShapeFactory和BVSquareShapeFactory）分别创建出BVCircleShape和BVSquareShape。</p>
+
+<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/factory-method-pattern.png"><img class="alignnone size-full wp-image-599" title="点击图片查看大图" alt="factory-method-pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/factory-method-pattern.png" width="1181" height="384" /></a></h2>
+
+<p>如下图，是在Xcode中创建的相关文件</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-5.png"><img class="alignnone size-full wp-image-606" alt="QQ20130516-5" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130516-5.png" width="261" height="426" /></a></p>
+
+<p>具体实现步骤如下（建议下载本文最后给出的代码实例，用Xcode查阅代码）：</p>
+
+<ol>
+<li>创建一个形状基类BVShape</li>
+</ol>
+
+
+<p>该类中定义了形状的基本行为和属性，如下代码所示：</p>
+
+<p>BVShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#define BV_Exception_Format @"在%@的子类中必须override:%@方法"
+
+@interface BVShape : NSObject
+
+@property (nonatomic, weak)NSString *name;
+
+// 子类必须重写这个draw方法，否则会抛出异常错误
+-(void)draw;
+
+@end</pre>
+
+
+<p>BVShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@implementation BVShape
+
+-(id)init
+{
+   self = [super init];
+    if (self) {
+        // 做一些初始化任务
+    }
+    return self;
+}
+
+-(void)draw
+{
+    // 如果是通过BVShape的实例调用此处的draw，则绘制一个BVShape图形
+    if ([self isMemberOfClass:[BVShape class]]) {
+        NSLog(@"绘制一个BVShape图形");
+    } else {
+        // 如果是通过BVShape子类的实例调用了此处的draw，则抛出一个异常：表明子类并没有重写draw方法。
+        // 注：在OC中并没有abstract class的概念，只有protocol，如果在基类中只定义接口(没有具体方法的实现)，
+        //    则可以使用protocol，这样会更方便。 
+        [NSException raise:NSInternalInconsistencyException
+                    format:BV_Exception_Format, [NSString stringWithUTF8String:object_getClassName(self)], NSStringFromSelector(_cmd)];
+    }
+}
+
+@end</pre>
+
+
+<p>在上面的代码中定义了一个draw方法，为了让子类必须实现该方法，在BVShape中做了特殊处理，具体内容可以看上面的代码，已经有注视了。</p>
+
+<ol start="2">
+  <li>
+    子类化形状基类
+  </li>
+</ol>
+
+
+<p>首先子类化一个圆形类：BVCircleShape。</p>
+
+<p>BVCircleShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVCircleShape : BVShape
+
+@end</pre>
+
+
+<p>BVCircleShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVCircleShape.h"
+
+@implementation BVCircleShape
+
+-(void)draw
+{
+    NSLog(@"绘制一个BVCircleShape图形");
+}
+
+@end</pre>
+
+
+<p>在上面的子类中，重写了基类的draw方法。同样，我们再子类化一个正方形类，并重写draw方法，如下代码所示：</p>
+
+<p>BVSquareShape.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShape.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVSquareShape : BVShape
+
+@end</pre>
+
+
+<p>BVSquareShape.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShape.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVSquareShape.h"
+
+@implementation BVSquareShape
+
+-(void)draw
+{
+    NSLog(@"绘制一个BVSquareShape图形");
+}
+
+@end</pre>
+
+
+
+
+<ol start="3">
+  <li>
+     创建一个工厂方法的基类BVShapeFactory
+  </li>
+</ol>
+
+
+<p>BVShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShape.h"
+
+@interface BVShapeFactory : NSObject
+
+-(BVShape *) factoryMethod;
+
+@end</pre>
+
+
+<p>BVShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+
+@implementation BVShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    // 在此处，子类必须重写factoryMethod方法。当然，在工厂模式中，也可以在此处返回一个默认的Product。
+    // 如果是通过BVShapeFactory子类的实例调用了此处的factoryMethod，则抛出一个异常：表明子类并没有重写factoryMethod方法。
+    [NSException raise:NSInternalInconsistencyException
+                format:BV_Exception_Format, [NSString stringWithUTF8String:object_getClassName(self)], NSStringFromSelector(_cmd)];
+
+    // 下面这个return语句只是为了消除警告，实际上永远都不会执行到这里。
+    return nil;
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，定义了一个factoryMethod，该类的子类必须实现该方法，通过实现该方法，返回一个具体的形状对象。下面来看看该类的子类化。</p>
+
+<ol start="4">
+  <li>
+    子类化工厂方法的基类
+  </li>
+</ol>
+
+
+<p>首先子类化一个圆形工厂方法BVCircleShapeFactory：</p>
+
+<p>BVCircleShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+#import "BVCircleShape.h"
+
+@interface BVCircleShapeFactory : BVShapeFactory
+
+@end</pre>
+
+
+<p>BVCircleShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVCircleShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVCircleShapeFactory.h"
+
+@implementation BVCircleShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    return [[BVCircleShape alloc] init];
+}
+
+@end</pre>
+
+
+<p>如上代码所示，重写了factoryMethod，返回一个BVCircleShape实例。下面来看看另外一个子类BVSquareShapeFactory：</p>
+
+<p>BVSquareShapeFactory.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShapeFactory.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVShapeFactory.h"
+#import "BVSquareShape.h"
+
+@interface BVSquareShapeFactory : BVShapeFactory
+
+@end</pre>
+
+
+<p>BVSquareShapeFactory.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVSquareShapeFactory.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVSquareShapeFactory.h"
+
+@implementation BVSquareShapeFactory
+
+-(BVShape *)factoryMethod
+{
+    return [[BVSquareShape alloc] init];
+}
+
+@end</pre>
+
+
+<p>该子类返回的是一个BVSquareShape实例。</p>
+
+<ol start="5">
+  <li>
+    工厂方法的使用
+  </li>
+</ol>
+
+
+<p>定义一个BVClient类，在该类中演示工厂方法的使用。代码如下：</p>
+
+<p>BVClient.h</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVClient.h
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+@interface BVClient : NSObject
+
+-(void)doSomething;
+
+@end</pre>
+
+
+<p>BVClient.m</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//
+//  BVClient.m
+//  FactoryMethodPattern
+//
+//  Created by BeyondVincent on 13-5-15.
+//  Copyright (c) 2013年 BeyondVincent. All rights reserved.
+//
+
+#import "BVClient.h"
+
+#import "BVShapeFactory.h"
+#import "BVCircleShapeFactory.h"
+#import "BVSquareShapeFactory.h"
+
+#import "BVShape.h"
+#import "BVCircleShape.h"
+#import "BVSquareShape.h"
+
+@implementation BVClient
+
+-(void)doSomething
+{
+    // 工厂方法的实例化
+    BVShapeFactory *circleShapefactory = [[BVCircleShapeFactory alloc] init];
+    BVShapeFactory *squareShapefactory = [[BVSquareShapeFactory alloc] init];
+
+    // 通过工厂方法实例化对应的形状
+    BVShape *circleShape = [circleShapefactory factoryMethod];
+    BVShape *squareShape = [squareShapefactory factoryMethod];
+
+    // 调用形状的方法
+    [circleShape draw];
+    [squareShape draw];
+}
+
+@end</pre>
+
+
+<p>如上代码所示，首先实例化两个工厂方法，并通过工厂方法创建出对应的形状，最后调用形状的draw方法进行测试。会在控制台窗口输出如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-16 10:12:46.292 FactoryMethodPattern[2845:c07] 绘制一个BVCircleShape图形
+2013-05-16 10:12:46.295 FactoryMethodPattern[2845:c07] 绘制一个BVSquareShape图形</pre>
+
+
+<h2><span style="color: #339966;"><strong>代码实例</strong></span></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/FactoryMethodPattern" target="_blank"><img alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a href="https://github.com/BeyondVincent/ios_patterns/raw/master/FactoryMethodPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-03-%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<h2><span style="color: #339966;"><strong>参考</strong></span></h2>
+
+<p>在学习工厂方法时，参考了如下一些文章和视频：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://zh.wikipedia.org/wiki/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95" target="_blank"><span style="color: #339966; text-decoration: underline;">工厂方法</span></a></span></span>wiki上对工厂方法的介绍<br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/General/Conceptual/CocoaEncyclopedia/ClassFactoryMethods/ClassFactoryMethods.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Class Factory Methods</span></a> </span></span>苹果官网对类工厂方法的介绍<br/>
+<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><span style="text-decoration: underline;"><a href="http://maleevdimka.wordpress.com/2013/01/23/ios-patterns-fabric-method/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS Patterns. Factory Method</span></a></span></span></span><span style="color: #000000;">(一篇介绍工厂方法的文章，俄文，需要楼梯)</span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://my.safaribooksonline.com/book/programming/objective-c/9781430233305/chapter-4-factory-method/what_is_the_factory_method_pattern_quest" target="_blank"><span style="color: #339966; text-decoration: underline;">What Is the Factory Method Pattern?</span></a></span></span>（Pro Objective-C Design Patterns for iOS书中对工厂方法的介绍）<br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://terrylee.cnblogs.com/archive/2006/01/04/310716.html " target="_blank"><span style="color: #339966; text-decoration: underline;">.NET设计模式（5）：工厂方法模式（Factory Method）</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.csdn.net/cjjky/article/details/7314118" target="_blank"><span style="color: #339966; text-decoration: underline;">java实现工厂方法</span></a></span></span><br/>
+<span style="text-decoration: underline; color: #339966;"><a href="http://www.youtube.com/watch?feature=player_detailpage&v=cDF5tyiamww" target="_blank"><span style="color: #339966; text-decoration: underline;">JAVA: Factory Method Design Pattern</span></a></span><span style="color: #000000;">youtube上一个关于工厂方法的视频介绍</span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/3653929/iphone-sdk-difference-between-iskindofclass-and-ismemberofclass" target="_blank"><span style="color: #339966; text-decoration: underline;">iphone-sdk-difference-between-iskindofclass-and-ismemberofclass</span></a></span></span> iskindofclass和ismemberofclass区别</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1641,82 +2117,6 @@ _<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<st
 &lt;span style="color: #999999;"&gt;To address this issue, choose Product &gt; Clean before building your product. 13663167&lt;/span&gt;&lt;/li&gt; &lt;/ul&gt; &lt;/section&gt; 
 &amp;nbsp;
 </code></pre>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-20T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 20<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/04/20/13/" itemprop="url">返璞归真，忘掉NSUserDefaults</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/back_to_basics_featured1-e1366472202828.jpg"><img class="alignnone size-full wp-image-439" alt="back_to_basics_featured1" src="http://beyondvincent.com/wp-content/uploads/2013/04/back_to_basics_featured1-e1366472202828.jpg" width="975" height="312" /></a></p>
-
-<p>在iOS程序中，有许多种方法来存储数据。</p>
-
-<p>Core Data，SQlite和UIDocuments都可以使用，但往往用NSUserDefaults来存储数据是一种非常快速和容易的方法。一般都是使用键值对来存储数据，许多开发者忘记了NSUserDefaults一些原始的使用方法，默认设置就是其中一种。</p>
-
-<p>这里我要介绍的方法是<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://developer.apple.com/library/iOS/documentation/Cocoa/Reference/Foundation/Classes/NSUserDefaults_Class/Reference/Reference.html#//apple_ref/occ/instm/NSUserDefaults/registerDefaults:" target="_blank"><span style="color: #339966; text-decoration: underline;">&ndash; (void)registerDefaults:(NSDictionary *)dictionary</span></a></span></strong></span>。这个方法跟NSUserDefaults中别的方法一样，在iOS2.0开始的时候就有了。</p>
-
-<p>如下代码我遇到过多次了：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-if ([standardDefaults stringForKey:@"favoriteColor"] == nil) {
-[standardDefaults setObject:@"Green" forKey:@"favoriteColor"];
-[standardDefaults synchronize];
-}</pre>
-
-
-<p>上面的代码首先检测一下，某个键是否已经设置值了，如果没有，就设置一个默认值。这样设置之后，在程序中，就可以使用这样 的代码来查询这个值：<strong><span style="color: #339966;"> [standardDefaults stringForKey:@&ldquo;favoriteColor&rdquo;]</span> </strong>，这样能保证获得一个有效的值。实际上，<strong><span style="color: #339966;">registerDefaults:</span></strong>正是做这样事情的。</p>
-
-<p>上面的代码完全可以用下面的代码来替换：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-[standardDefaults registerDefaults:@{@"favoriteColor": @"Green"}];
-[standardDefaults synchronize];</pre>
-
-
-<p>每次程序启动的时候调用<strong><span style="color: #339966;">registerDefaults:</span> </strong>方法都是安全的。完全可以将这个方法的调用放到applicationDidFinishLaunching:方法中. 这个方法永远都不会覆盖用户设置的值。如果之后在程序中用户设置了一个Red值：<strong><span style="color: #339966;">[standardDefaults setObject:@&ldquo;Red&rdquo; forKey:@&ldquo;favoriteColor&rdquo;];</span> </strong>下次程序启动运行registerDefaults: 时，并不会用Green覆盖Red值。</p>
-
-<p>iOS系统默认已经包含NSUserDefaults接口了。关于NSUserDefaults除了常用的键值存储，还有很多可用接口。理解NSUserDefaults提供的接口，可以写出更好的程序。强烈建议在苹果官网上阅读一下相关更多信息： <strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/iOS/#documentation/Cocoa/Reference/Foundation/Classes/NSUserDefaults_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">NSUserDefaults 文档</span></a></span></span></strong>。</p>
-
-<div>
-  <p>
-    _________________________________________
-  </p>
-  
-  <p>
-    本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/03/back-to-basics-forgotten-nsuserdefaults/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br /> 转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br /> _________________________________________
-  </p>
-</div>
-
-
-
 
 		
 		
