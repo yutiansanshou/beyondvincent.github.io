@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-11-21T21:29:17+08:00</updated>
+  <updated>2013-11-22T00:24:26+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -23,7 +23,33 @@
 <!--more-->
 
 
-<p>注：本文由破船译自<a href="http://www.objc.io/issue-6/build-process.html">The Build Process</a>。</p>
+<p>注1：本文由破船译自<a href="http://www.objc.io/issue-6/build-process.html">The Build Process</a>。</p>
+
+<p>注2：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>本文将轻度解密Xcode build日志，还原iOS程序build的过程。
+</span><span class='line'>另外将介绍如何对build过程的控制，进而定制出自己希望的流程，
+</span><span class='line'>例如通过Build phase的定制，给app icon打水印(包括版本号和日期)。
+</span><span class='line'>
+</span><span class='line'>通过对工程文件的解读，为你揭开工程文件(.pbxproj)与
+</span><span class='line'>build settings的关系。这对于解决工程文件的merge冲突非常有帮助。
+</span><span class='line'>
+</span><span class='line'>PS：实际上各开发平台的build过程都比较相似，如果你熟悉了
+</span><span class='line'>某个平台的build过程，那么同样的原理也适用于别的平台。
+</span><span class='line'>可以说换汤不换药，本质是一样的。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面开始吧：</p>
 
 <p>本文目录如下所示：</p>
 

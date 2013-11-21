@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-11-21T21:29:17+08:00</updated>
+  <updated>2013-11-22T00:24:26+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -23,7 +23,24 @@
 <!--more-->
 
 
-<p>注：本文由破船译自<a href="http://www.objc.io/issue-6/build-process.html">The Build Process</a>。</p>
+<p>注1：本文由破船译自<a href="http://www.objc.io/issue-6/build-process.html">The Build Process</a>。</p>
+
+<p>注2：</p>
+
+<p>```
+本文将轻度解密Xcode build日志，还原iOS程序build的过程。
+另外将介绍如何对build过程的控制，进而定制出自己希望的流程，
+例如通过Build phase的定制，给app icon打水印(包括版本号和日期)。</p>
+
+<p>通过对工程文件的解读，为你揭开工程文件(.pbxproj)与
+build settings的关系。这对于解决工程文件的merge冲突非常有帮助。</p>
+
+<p>PS：实际上各开发平台的build过程都比较相似，如果你熟悉了
+某个平台的build过程，那么同样的原理也适用于别的平台。
+可以说换汤不换药，本质是一样的。
+```</p>
+
+<p>下面开始吧：</p>
 
 <p>本文目录如下所示：</p>
 
