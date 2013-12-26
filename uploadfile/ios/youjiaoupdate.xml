@@ -2,7 +2,7 @@
 <VersionUpdateQueryRep>
 	<result>
 	  <VersionInfo>
-		<VersionNumber>0.0.2</VersionNumber>
+		<VersionNumber>0.0.1</VersionNumber>
 		<forcedUpdate>NO</forcedUpdate>
 		<newFeature><![CDATA[
 1、版本发布
