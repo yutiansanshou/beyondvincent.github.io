@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2013-12-31T23:42:05+08:00</updated>
+  <updated>2014-01-02T00:03:16+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,34 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我在2014年中的一些计划]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/01/129-some_of_my_plan_in_2014/"/>
+    <updated>2014-01-01T23:59:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/01/129-some_of_my_plan_in_2014</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/01/1.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>现在已经是2014年了，一直以来都是按照年来做计划的，虽然还不知道2014年里会发生的全部事情，但是我心里还是有一些计划想要去做，暂且先把想到的列举出来，等2014年12月31日时，可以回头看看，年初的计划，有多少已经实现了，有多少半途而废，又有多少一直没有启动。</p>
+
+<p>注意：此处只对8小时之外做计划。最近会对此计划做更新。</p>
+
+<ul>
+<li>完婚：把终生大事搞定</li>
+<li>跑步：2014年跑量达到1500km，完成一次马拉松</li>
+<li>写书：筹备写一本关于iOS 8开发方面的书</li>
+<li>翻译：翻译一本外文书籍</li>
+<li>博客：不低于每周写一篇博文</li>
+<li>考证：把信息系统项目管理师拿下</li>
+</ul>
+
+
+<p>hello 2014！</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我的2013时间线]]></title>
@@ -5487,160 +5515,6 @@ Although this provides an overview of run loops, Apple provides several in-depth
 <h3>7、小结</h3>
 
 <p>本文介绍了如何利用Octopress搭建一个Github博客。大家在搭建的时候，要是遇到问题，可以回复我。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[你好！github页面]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github/"/>
-    <updated>2013-07-27T14:44:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/07/27/107-hello-page-of-github</id>
-    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/07/wordpress_to_octopress.png"></p>
-
-<h3>大家好，我是破船！欢迎大家关注我的小站！</h3>
-
-<p>我写博文经历了这些平台：
-百度空间-><a href="http://www.devdiv.com/home.php?mod=space&amp;uid=12&amp;do=blog&amp;view=me&amp;from=space"><code>devdiv</code></a>><a href="http://blog.sina.com.cn/beyondvincent"><code>新浪博客</code></a>&ndash;><a href="http://blog.csdn.net/beyondvincent"><code>CSDN</code></a>&ndash;><code>wordpress</code>&ndash;><code>octopress</code>(现在)</p>
-
-<!--more-->
-
-
-<p>用wordpress搭建的博客，用了4个月，由于有好多麻烦事(备份、空间和流量等各种不爽)，现在果断在github上配合octopress搭建一个博客。</p>
-
-<p>由于<code>git</code>和<a href="http://en.wikipedia.org/wiki/Markdown"><code>markdown</code></a>对我来说就是小白，所以搭建的时间断断续续持续了约一周。其实网上已经有很好的参考资料了，只要照着弄，很容易就能搭建好的。</p>
-
-<p>这篇文章是第一篇，我用的markdown编辑器是<a href="http://mouapp.com/"><code>Mou</code></a>，感觉不错。</p>
-
-<p>下面是一些在mac机器上用octopress写博文需要用到的操作(持续更新)</p>
-
-<h3>目录</h3>
-
-<ul>
-<li>发表并部署博文</li>
-<li>添加多说评论功能</li>
-<li>起草文章 暂不公开</li>
-<li>域名解析</li>
-<li>添加百度统计和google analytics</li>
-</ul>
-
-
-<h3>发表并部署博文</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake new_post["New Post"]
-</span><span class='line'>$ rake generate
-</span><span class='line'>$ git add .
-</span><span class='line'>$ git commit -am "Some comment here." 
-</span><span class='line'>$ git push origin source
-</span><span class='line'>$ rake deploy</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>添加多说评论功能</h3>
-
-<h4>A 获取<code>short_name</code></h4>
-
-<p>去多说网注册账号，获取站点的short_name</p>
-
-<h4>B 在<code>_config.yml</code>文件中添加如下内容</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># duoshuo comments
-</span><span class='line'>duoshuo_comments: true
-</span><span class='line'>duoshuo_short_name: yourname</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>C 在<code>source/_layouts/post.html</code>中添加多说评论模块</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>｛% if site.duoshuo_short_name and site.duoshuo_comments == true and page.comments == true %｝
-</span><span class='line'>  &lt;section&gt;
-</span><span class='line'>    &lt;h1&gt;Comments&lt;/h1&gt;
-</span><span class='line'>    &lt;div id="comments" aria-live="polite"&gt;｛% include post/duoshuo1.html %｝&lt;/div&gt;
-</span><span class='line'>  &lt;/section&gt;
-</span><span class='line'>｛% endif %｝</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>D 创建<code>source/_includes/post/duoshuo.html</code>，并填入如下内容</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;!-- Duoshuo Comment BEGIN --&gt;
-</span><span class='line'>&lt;div class="ds-thread"&gt;&lt;/div&gt;
-</span><span class='line'>&lt;script type="text/javascript"&gt;
-</span><span class='line'>  var duoshuoQuery = {short_name:"beyondvincent"};
-</span><span class='line'>  (function() {
-</span><span class='line'>    var ds = document.createElement('script');
-</span><span class='line'>    ds.type = 'text/javascript';ds.async = true;
-</span><span class='line'>    ds.src = 'http://static.duoshuo.com/embed.js';
-</span><span class='line'>    ds.charset = 'UTF-8';
-</span><span class='line'>    (document.getElementsByTagName('head')[0] 
-</span><span class='line'>    || document.getElementsByTagName('body')[0]).appendChild(ds);
-</span><span class='line'>  })();
-</span><span class='line'>&lt;/script&gt;
-</span><span class='line'>&lt;!-- Duoshuo Comment END --&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>E 发布到站点</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake generate
-</span><span class='line'>$ git add .
-</span><span class='line'>$ git commit -am "添加多说评论" 
-</span><span class='line'>$ git push origin source
-</span><span class='line'>$ rake deploy</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>起草文章暂不公开</h3>
-
-<p>在文章头部添加<code>published: false</code>，就能起到暂时不公开文章了(即使已经部署到了github中)，要公开文章只需要将false修改<code>true</code>即可。</p>
-
-<h3>域名解析</h3>
-
-<p>我们可以给GitHub上的page指定一个域名，具体做法如下2个步骤</p>
-
-<h4>1、给repo配置域名</h4>
-
-<p>在<code>source</code>根目录下新建一个名为CNAME的文件，并把你的域名填写进去，例如<code>beyondvincent.com</code>。这样做的目的是告诉GitHub服务器开始将repo中的page(例如<code>beyondvincent.github.io</code>)指向到某个域名中。</p>
-
-<h4>2、配置DNS(我的域名是在godaddy上购买的)</h4>
-
-<p>添加一条A记录：
-<code>@  204.232.175.78</code>
-在CNAME中添加一条记录：
-<code>http   beyondvincent.github.com</code></p>
-
-<h3>添加百度统计和google analytics</h3>
-
-<p>从百度统计获取脚本，然后添加到文件<code>source/_includes/after_footer.html</code>文件中
-从google analytics获取跟踪ID，然后将这个ID添加到<code>_config.yml</code>文件的<code>google_analytics_tracking_id</code>后面即可。</p>
 ]]></content>
   </entry>
   

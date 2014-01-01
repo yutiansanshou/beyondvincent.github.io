@@ -7,10 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Apr 11th, 2013 raywenderlich翻译 25个增强iOS应用程序性能的提示和技巧 — 高级篇 _____________
-本文由破船译自：raywenderlich
-转载请注明出处：BeyondVincent的博客
-_____________ 在开发iOS应用程序时， &hellip;">
+	<meta name="description" content="Apr 11th, 2013 iOS, iOS开发记录 Xcode 4.6.1遇到链接错误‘ File Is Universal (2 Slices) but Does Not Contain a(n) Armv7s Slice’ 今天在新系统OS X10.8.3安装了最新版本的Xcode( &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +77,99 @@ _____________ 在开发iOS应用程序时， &hellip;">
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-11T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 11<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ioskai-fa-ji-lu/'>iOS开发记录</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/11/7/" itemprop="url">Xcode 4.6.1遇到链接错误‘ File Is Universal (2 Slices) but Does Not Contain a(n) Armv7s Slice’</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>今天在新系统OS X10.8.3安装了最新版本的Xcode(Version 4.6.1 (4H512))，尝试把之前的iOS项目运行到iPad 2 上面，Xcode在编译的时候遇到了如下问题：</p>
+
+<p><span style="color: #999999;"><em>(null): File is universal (2 slices) but does not contain a(n) armv7s slice: /Users/beyondvincent/Desktop/IOS/iPhone/iPhone/YYJK/libCorePlot-CocoaTouch.a for architecture armv7s</em></span></p>
+
+<p><span style="color: #800080;"><em>Linker command failed with exit code 1(use -v to see invocation)</em></span></p>
+
+<p>如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-1.png"><img class="alignnone size-medium wp-image-219" alt="QQ20130408-1" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-1-300x25.png" width="300" height="25" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>这是什么原因引起的呢？</p>
+
+<p>实际上是因为Xcode4.6.1增加了对armv7s架构的支持，此时如果工程中使用到的库没有编译为armv7s，而工程又是设置了支持armv7s，那么就会得到上面的错误。在我编译的工程中，我使用Core Plot库就是没有编译为armv7s，所以引起了上面的错误。</p>
+
+<p>修改这个问题有两种方法</p>
+
+<ol>
+<li><span style="line-height: 13px;">把Core Plot库编译为armv7s架构即可。</span></li>
+<li>把valid architectures设置项中的armv7s移除即可。如下步骤：</li>
+</ol>
+
+
+<p>在工程导航面板中选中工程</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-3.png"><img class="alignnone size-full wp-image-220" alt="QQ20130408-3" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-3.png" width="261" height="40" /></a></p>
+
+<p>在target列表中，选中对于的target</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-4.png"><img class="alignnone size-full wp-image-221" alt="QQ20130408-4" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-4.png" width="111" height="48" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>选中build settings选项</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-5.png"><img class="alignnone size-full wp-image-222" alt="QQ20130408-5" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-5.png" width="297" height="64" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>找到Valid Architectures设置，现在显示的是<strong>armv7 armv7s</strong></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-6.png"><img class="alignnone size-medium wp-image-223" alt="QQ20130408-6" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-6-300x39.png" width="300" height="39" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>在armv7 armv7s上双击，选中armv7s，选择－按钮</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-7.png"><img class="alignnone size-medium wp-image-224" alt="QQ20130408-7" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-7-300x157.png" width="300" height="157" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>现在valid architectures设置项看起来如下所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-8.png"><img class="alignnone size-medium wp-image-225" alt="QQ20130408-8" src="http://beyondvincent.com/wp-content/uploads/2013/04/QQ20130408-8-300x46.png" width="300" height="46" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>再次编译并运行程序，可以看到iPad 2上已经能够运行了。:]</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1789,7 +1879,7 @@ var duoshuoQuery = {short_name:"beyondvincent"};
 </div>
 			</div>
 			<footer id="footer" class="inner"><p>
-  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

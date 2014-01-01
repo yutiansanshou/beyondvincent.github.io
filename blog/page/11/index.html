@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 30th, 2013 iOS, iOS开发记录 Could Not Change Executable Permissions on the Application Bug描述 利用Xcode编译调试程序的时候提示：Could not change executable &hellip;">
+	<meta name="description" content="May 31st, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[001]平台简介  谈到Windows 8开发，虽然开发者可以直接使用VS来编写代码，但是了解一下Windows 8开发平台是最好的，哪怕只做稍微了解， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,103 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/31/27/" itemprop="url">Windows Store App开发[001]平台简介</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;"> 谈到Windows 8开发，虽然开发者可以直接使用VS来编写代码，但是了解一下</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台是最好的，哪怕只做稍微了解，所谓知己知彼百战百胜嘛。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    这里我就首先稍微与大家分享一下我所了解的</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8开发平台。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">    同时，也欢迎各位大牛来拍砖。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <span style="font-family: 微软雅黑;"><span style="font-size: medium;">首先上一个图吧，相信看了图，你对</span></span><span style="font-family: 微软雅黑;"><span style="font-size: medium;">Windows 8的开发会有所了解。</span></span>
+</p>
+
+
+
+
+<p align="left">
+  <a href="http://beyondvincent.com/wp-content/uploads/2013/05/111.png"><img class="alignnone size-full wp-image-685" alt="111" src="http://beyondvincent.com/wp-content/uploads/2013/05/111.png" width="614" height="441" /></a>
+</p>
+
+
+
+
+<p><p align="left">
+  <p align="left"></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;如你所看到的，在Windows 8中有两种基本的方法来创建应用程序，即&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Desktop Apps&lt;/span&gt;和&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;&lt;span style="color: #ff0000;"&gt;Metro style apps&lt;/span&gt;。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    右边的桌面应用程序（Desktop Apps）与现在的情况一样，同样包含WinForms，ASP.NET，C++，WPF，Silverlight等应用程序，也就是说，除了.NET被升级到4.5了，桌面应用程序没有改变。在这里，我们的重点不是桌面应用程序。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;    上图中，左边才是最大的变化，Metro style apps本质上是一种新型的应用程序，并且它的开发方法也是新的。HTML5/JavaScript是开发Metro app的一种方法，同时，开发者同样可以结合XAML/C#(或XAML/VB，&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C-C++&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;)来进行开发。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+<p>  <p></p>
+
+<pre><code>&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;   &lt;span style="color: #ff0000;"&gt; 注意：&lt;/span&gt;在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;XAML/C#下面，添加了新的一层——WinRT（Windows Runtime library）。也就是说，在创建Metro app时，WinRT给开发者提供了Windows强大的功能，在&lt;/span&gt;&lt;/span&gt;&lt;span style="font-family: 微软雅黑;"&gt;&lt;span style="font-size: medium;"&gt;WinRT之上，开发者可以选择C#，VB,C++或者JavaScript。&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+
+<p>  </p></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1882,121 +1979,6 @@ _<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<st
 
 </article>
 
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/wei-fen-lei/'>未分类</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/05/02/17/" itemprop="url">如何利用GCD Group批量下载文件</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/%E6%9C%AA%E5%91%BD%E5%90%8D.png"><img class="alignnone size-full wp-image-499" alt="未命名" src="http://beyondvincent.com/wp-content/uploads/2013/05/未命名.png" width="976" height="313" /></a></p>
-
-<p>小引：有时候，我们在开发iOS程序时，需要批量下载一些文件（比如图片），只有当全部文件下载完毕，我们才做相应的处理（界面更新，通知用户等）——也就是说虽然有多个文件在下载，但是我们只需要收到一个全部下载完毕的通知。</p>
-
-<p>在网上搜索了一番，感觉使用GCD的高级功能Group，比较方便。下面写了一个小Demo，实现了多个图片文件的异步并发下载，缓存到本地，并显示到界面中。</p>
-
-<p>参考了唐巧的一篇博文：<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://blog.devtang.com/blog/2012/02/22/use-gcd/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用GCD</span></a></span></span>。</p>
-
-<p>另外感兴趣的同学可以看看下面几篇GCD相关文章，非常不错：</p>
-
-<p>raywenderlich：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/4295/multithreading-and-grand-central-dispatch-on-ios-for-beginners-tutorial" target="_blank"><span style="color: #339966; text-decoration: underline;">Multithreading and Grand Central Dispatch on iOS for Beginners Tutorial</span></a></span></span></p>
-
-<p>苹果官网：<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Grand Central Dispatch (GCD) Reference</span></a></span></span><span style="color: #339966;"><span style="color: #339966;"> </span></span>和<span style="color: #339966;"> </span><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Concurrency Programming Guide</span></a></span></span></p>
-
-<p>Demo可以到Github上下载：</p>
-
-<p><span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="https://github.com/BeyondVincent/DownloadImage_GCD" target="_blank"><span style="color: #339966; text-decoration: underline;"> <a href="https://github.com/BeyondVincent/DownloadImage_GCD">https://github.com/BeyondVincent/DownloadImage_GCD</a></span></a></span></span></p>
-
-<p>下面是使用GCD Group的关键代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">- (IBAction)downloadAction:(UIButton *)sender
-{
-    [self resetImage];
-    self.status.text = @"正在下载";
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_group_t downloadImage = dispatch_group_create();
-
-    for (ImageInfo *info in self.imageList) {
-        NSString* imagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:info.imageName];
-
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        // 如果本地不存在图片，则从网络中下载
-        if (![fileManager fileExistsAtPath:imagePath]) {
-            dispatch_group_async(downloadImage, queue, ^{
-                NSLog(@"Starting image download:%@", imagePath);
-                // URL组装和编码
-                NSString *urlString = [NSString stringWithFormat:@"%@/%@", self.baseUrl, info.imageName];
-                NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-                NSLog(@"image download from url:%@", urlString);
-
-                // 开始下载图片
-                NSData *responseData = [NSData dataWithContentsOfURL:url];
-                // 将图片保存到指定路径中
-                [responseData writeToFile:imagePath atomically:YES];
-                // 将下载的图片赋值给info
-                info.image = [UIImage imageWithData:responseData];
-                NSLog(@"image download finish:%@", imagePath);
-            });
-        } else { // 将本地图片加载到systemInfo.MyImage
-            info.image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imagePath]];
-        }
-    }
-    dispatch_group_notify(downloadImage, dispatch_get_main_queue(), ^{
-        // 图片加载完毕之后，显示出来
-        self.status.text = @"图片文件下载并缓存完毕";
-        [self showImage];
-    });
-}
-</pre>
-
-
-<p>上面关键的代码是dispatch_group_async（并行执行线程1）和dispatch_group_notify（全部下载完毕，由此进行回调通知）。在for语句中循环开启了6个并发任务。当6个任务完成之后，调用showImage方法，将图片显示出来。<br/>
-下面是运行效果图（第一个图为程序刚刚启动时的效果，第二个为点击开始异步下载图片按钮之后的效果）：<br/>
-<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-3.png"><img class="alignnone size-full wp-image-501" alt="QQ20130502-3" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-3.png" width="618" height="448" /><br/>
-</a><br/>
-<a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-2.png"><img alt="QQ20130502-2" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130502-2.png" width="621" height="427" /></a><br/>
-&nbsp;</p>
-
-<p>在写本Demo的时候，遇到了以下两个问题</p>
-
-<ol>
-<li>关于图片的加载，UIImage中的imageNamed:方法只能加载程序main bundle中的图片。要想加载Document中的图片，需要使用UIImage的imageWithData方法。更多相关资料可以阅读苹果官方介绍：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIImage_Class/Reference/Reference.html" target="_blank"><span style="color: #339966;">UIImage</span></a></span></span></li>
-<li>NSURL URLWithString:myString returns Nil。在初始化NSURL实例对象是，一直都返回Nil。后来在这里（<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stackoverflow.com/questions/5839877/nsurl-urlwithstringmystring-returns-nil" target="_blank"><span style="color: #339966;">Here</span></a></span></span>）发现原来是URL中含有特殊字符，需要进行编码处理，照着链接中的方法搞定。</li>
-</ol>
-
-
-<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>本文由破船原创<br/>
-转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
-_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-		
-		
-	</div>
-
-</article>
-
 </div>
 <nav id="pagenavi">
     
@@ -2023,7 +2005,7 @@ var duoshuoQuery = {short_name:"beyondvincent"};
 </div>
 			</div>
 			<footer id="footer" class="inner"><p>
-  Copyright &copy; 2013 - 破船(BeyondVincent) -
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
