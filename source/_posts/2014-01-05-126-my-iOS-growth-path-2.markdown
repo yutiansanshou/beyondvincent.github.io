@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "我的iOS成长之路-2-我的第一个iOS Demo"
-date: 2014-01-05 21:18
+date: 2014-01-06 23:57
 comments: true
 categories: iOS探索
 published: true
@@ -121,6 +121,6 @@ published: true
 
 ![](/images/2013/12/16.png)
 
-####小结####
+###小结###
 
 以上就是我在学习iOS开发初期，写的第一个iOS Demo，功能虽然略显粗糙，希望对初学者有一个参考作用，如果你对文中的内容有想法，可以在下面的回复中，与我交流。
