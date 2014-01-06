@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 2nd, 2013 未分类 如何利用GCD Group批量下载文件 小引：有时候，我们在开发iOS程序时，需要批量下载一些文件（比如图片），只有当全部文件下载完毕，我们才做相应的处理（界面更新，通知用户等）——也就是说虽然有多个文件在下载，但是我们只需要收到一个全部下载完毕的通知。 &hellip;">
+	<meta name="description" content="May 5th, 2013 iOS设计模式, 未分类 iOS设计模式(01):观察者 什么是观察者模式 什么是观察者模式？你曾经订阅过报纸吗？在订阅报纸的时候，你不用去任何地方，只需要将你的个人地址信息以及订阅信息告诉出版社，出版社就知道如何将相关报纸传递给你。这种模式的第二个名称叫做发布/ &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,303 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/iosshe-ji-mo-shi/'>iOS设计模式</a>, <a class='category' href='/blog/categories/wei-fen-lei/'>未分类</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/05/18/" itemprop="url">iOS设计模式(01):观察者</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/iOS-Observer-Pattern.png"><img class="alignnone size-full wp-image-517" title="点击查看大图" alt="iOS-Observer-Pattern" src="http://beyondvincent.com/wp-content/uploads/2013/05/iOS-Observer-Pattern.png" width="976" height="313" /></a></h2>
+
+<h2><strong><span style="color: #339966;">什么是观察者模式</span></strong></h2>
+
+<p>什么是<strong>观察者模式</strong>？你曾经订阅过报纸吗？在订阅报纸的时候，你不用去任何地方，只需要将你的个人地址信息以及订阅信息告诉出版社，出版社就知道如何将相关报纸传递给你。这种模式的第二个名称叫做<strong><span style="color: #339966;">发布/订阅模式</span></strong>。</p>
+
+<p>在GoF中是这样描述观察者模式的——观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个主题对象在状态上发生变化时，会通知所有观察者对象，使它们能够自动更新自己。</p>
+
+<p><span>观察者模式的的思想非常简单，Subject（主题）允许别的对象——观察者（这些对象实现了观察者接口）对这个Subject的改变进行订阅和取消订阅。当Subject发生了变化——那么Subject会将这个变化发送给所有的观察者，观察者就能对Subject的变化做出更新。在这里，Subject是报纸的出版社，而观察者则是订阅报纸的我和你，当Subject发生变化——有新的报纸，会做出通知——将报纸发送给所有的订阅者。</span></p>
+
+<h2><strong><span style="color: #339966;">什么时候使用观察者模式？</span></strong></h2>
+
+<ol>
+<li><span style="line-height: 13px;">当你需要将改变通知所有的对象时，而你又不知道这些对象的具体类型，此时就可以使用观察者模式。</span></li>
+<li>改变发生在同一个对象中，并在别的地方需要将相关的状态进行更新。</li>
+</ol>
+
+
+<h2><strong><span style="color: #339966;">iOS中观察者模式的实现方法</span></strong></h2>
+
+<p>在iOS中观察者模式的实现有三种方法：</p>
+
+<ol>
+<li><h3><span style="color: #339966;">Notification</span></h3></li>
+</ol>
+
+
+<p>Notification - NotificationCenter机制使用了操作系统的功能。通过NSNotificationCenter可以让对象之间进行进行通讯，这些对象相互间可以不认识。当你用一个并行的流来推送通知，或者刷新数据库，并希望在界面中能够看到时，这非常有用。</p>
+
+<p>NotificationCenter发布消息的方法如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSNotification  * broadcastMessage = [ NSNotification  notificationWithName: AnyNotification  object: Self ];
+NSNotificationCenter  * notificationCenter = [ NSNotificationCenter  defaultCenter];
+[NotificationCenter postNotification: broadCastMessage];</pre>
+
+
+<p>上面的代码中，创建了一个NSNotification类型的对象，并指定名称为&#8221;broadcastMessage&#8221;，然后通过notificationCenter来发布这个消息。</p>
+
+<p>要订阅感兴趣的对象中的相关事件，可以按照如下方法进行：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSNotificationCenter  * notificationCenter = [ NSNotificationCenter  defaultCenter];
+[NotificationCenter addObserver: Self  selector: @ selector (update:) name: AnyNotification  object: nil ];</pre>
+
+
+<p>如上代码所示：订阅了一个事件，并通过@selector指定了一个方法。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// 收到通知中心发来的通知
+-(void)update:(NSNotification *) notification
+{
+    if ([[notification name] isEqualToString:AnyNotification])
+        NSLog (@"成功收到通知中心发来的名为%@的通知", AnyNotification);
+}</pre>
+
+
+<p>下面是运行上面代码，在控制台输出的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:43:15.570 ObserverPattern[1738:c07] 成功收到通知中心发来的名为broadcastMessage的通知</pre>
+
+
+
+
+<ol start="2">
+  <li>
+    <h3>
+      <span style="line-height: 13px; color: #339966;"> KVO</span>
+    </h3>
+  </li>
+</ol>
+
+
+<p>通过KVO，某个对象中的特定属性发生了改变，别的对象可以获得通知。苹果官方文档对KVO有了很好的解释：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueObserving/KeyValueObserving.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Key-Value Observing Programming Guide</span></a></span></span>。下面两种方法都可以改变对象中属性的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">kvoSubj.changeableProperty = @"新的一个值";
+
+[kvoSubj setValue:@"新的一个值" forKey:@"changeableProperty"];</pre>
+
+
+<p>上面这种值改变的灵活性可以让我们对键值进行观察。</p>
+
+<p>下面是新建的一个类KVOSubject，这个类中有一个属性changeableProperty：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface KVOSubject : NSObject
+
+@property (nonatomic, strong) NSString *changeableProperty;
+
+@end
+
+@implementation KVOSubject
+
+@end</pre>
+
+
+<p>接着新建了另外一个类KVOObserver，通过该类可以监听changeableProperty属性值的改变。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface KVOObserver : NSObject
+@end
+
+@implementation KVOObserver
+
+-(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    NSLog(@"KVO:值发生了改变");
+}
+
+@end</pre>
+
+
+<p>如上代码所示，KVOObserver类只有一个方法observeValueForKeyPath。当changeableProperty属性值的改变时，这个方法会被调用。下面是测试的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (IBAction)btnKVOObservationTest:(id)sender {
+    KVOSubject *kvoSubj = [[KVOSubject alloc] init];
+    KVOObserver *kvoObserver = [[KVOObserver alloc] init];
+
+    [kvoSubj addObserver:kvoObserver forKeyPath:@"changeableProperty"
+                 options:NSKeyValueObservingOptionNew context:nil];
+
+    kvoSubj.changeableProperty = @"新的一个值";
+
+    [kvoSubj setValue:@"新的一个值" forKey:@"changeableProperty"];
+
+    [kvoSubj removeObserver:kvoObserver forKeyPath:@"changeableProperty"];
+}</pre>
+
+
+<p>执行上面的代码，可以看到控制台输出如下结果：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:10:20.789 ObserverPattern[1358:c07] KVO:值发生了改变
+2013-05-05 23:10:20.790 ObserverPattern[1358:c07] KVO:值发生了改变</pre>
+
+
+
+
+<ol start="3">
+  <li>
+    <h3>
+      <span style="color: #339966;">标准方法</span>
+    </h3>
+  </li>
+</ol>
+
+
+<p>先来看看Gof中对观察者模式定义的结构图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/Observer-Structure.jpg"><img class="alignnone size-full wp-image-512" alt="Observer-Structure" src="http://beyondvincent.com/wp-content/uploads/2013/05/Observer-Structure.jpg" width="615" height="243" /></a></p>
+
+<p>标准方法的实现是这样的：Subject（主题）知道所有的观察者，但是不知道它们的类型。下面我们就从创建Subject和Observer（观察者）的协议（protocol）开始。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@protocol StandardObserver 
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *) newValue;
+@end
+
+@protocol StandardSubject 
+-(void) addObserver:(id) observer;
+-(void) removeObserver:(id) observer;
+-(void) notifyObjects;
+@end</pre>
+
+
+<p>下面，我们来创建一个Subject的implementation （实现）</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface StandardSubjectImplementation : NSObject 
+{
+    @private NSString *_valueName;
+    @private NSString *_newValue;
+}
+@property (nonatomic, strong) NSMutableSet *observerCollection;
+-(void)changeValue:(NSString *)valueName andValue:(NSString *) newValue;
+@end
+
+@implementation StandardSubjectImplementation
+
+-(NSMutableSet *) observerCollection
+{
+    if (_observerCollection == nil)
+        _observerCollection = [[NSMutableSet alloc] init];
+
+    return _observerCollection;
+}
+
+-(void) addObserver:(id)observer
+{
+    [self.observerCollection addObject:observer];
+}
+
+-(void) removeObserver:(id)observer
+{
+    [self.observerCollection removeObject:observer];
+}
+
+-(void) notifyObjects
+{
+    for (id observer in self.observerCollection) {
+        [observer valueChanged: _valueName newValue:_newValue];
+    }
+}
+
+-(void)changeValue:(NSString *)valueName andValue:(NSString *) newValue
+{
+    _newValue = newValue;
+    _valueName = valueName;
+    [self notifyObjects];
+}
+@end</pre>
+
+
+<p>接下来是Observer的implementation （实现）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface SomeSubscriber : NSObject 
+@end
+
+@implementation SomeSubscriber
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *)newValue
+{
+    NSLog(@"SomeSubscriber输出: 值 %@ 已变为 %@", valueName, newValue);
+}
+@end
+
+@interface OtherSubscriber : NSObject 
+
+@end
+
+@implementation OtherSubscriber
+
+-(void) valueChanged:(NSString *)valueName newValue:(NSString *)newValue
+{
+    NSLog(@"OtherSubscriber输出: 值 %@ 已变为 %@", valueName, newValue);
+}
+@end</pre>
+
+
+<p>下面是演示的代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">StandardSubjectImplementation * subj = [[StandardSubjectImplementation alloc] init];
+SomeSubscriber * someSubscriber = [[SomeSubscriber alloc] init];
+OtherSubscriber * otherSubscriber = [[OtherSubscriber alloc] init];
+
+[Subj addObserver: someSubscriber];
+[Subj addObserver: otherSubscriber];
+
+[subj changeValue:@"version" andValue:@"1.0.0"];</pre>
+
+
+<p>上面代码运行的log如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2013-05-05 23:19:04.662 ObserverPattern[1459:c07] OtherSubscriber输出: 值 version 已变为 1.0.0
+2013-05-05 23:19:04.664 ObserverPattern[1459:c07] SomeSubscriber输出: 值 version 已变为 1.0.0</pre>
+
+
+<h2><span style="color: #339966;"><strong>代码实例</strong></span></h2>
+
+<p>本文涉及到的相关实例代码和PDF归档可以到点击下图下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/ios_patterns/tree/master/ObserverPattern" target="_blank"><img alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a>            <a href="https://github.com/BeyondVincent/ios_patterns/raw/master/ObserverPattern/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20For%20iOS-01-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.pdf" target="_blank"><img alt="pdf-icon" src="http://beyondvincent.com/wp-content/uploads/2013/05/pdf-icon.png" width="150" height="150" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>美文推荐：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://blog.shinetech.com/2011/06/14/delegation-notification-and-observation/" target="_blank"><span style="color: #339966; text-decoration: underline;">When to use Delegation, Notification, or Observation in iOS</span></a></span></span></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船原创<br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1334,388 +1631,6 @@ if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateChanged) {
 
 
 
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 16<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/04/16/8/" itemprop="url">iOS中如何创建一个滑出式导航面板(1)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
-转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
-_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>本文将介绍如何创建类似Facebook和Path iOS程序中的滑出式导航面板。</p>
-
-<div class="wp-caption alignright" style="width: 223px">
-  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png" width="213" height="320" /></a><p class="wp-caption-text">
-    向右滑动
-  </p>
-</div>
-
-
-<p>滑出式设计模式可以让开发者在程序中添加常用的导航功能，而又不会浪费屏幕上宝贵的空间。用户可以在任意时间滑出导航面板，并且还可以看到当前屏幕上显示的内容。</p>
-
-<p>现在，互联网上已经有一些库已经内置滑出式设计模式，比如John-Lluch开发的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a></span></span>。如果你在寻找更加快捷和简单的方法，那么使用SWRevealViewController库可能是一个很不错的方法。</p>
-
-<p>不过，如果你是一名DIY类型的程序员(像我)，那么你可能希望自己理解这功能是如何实现的。</p>
-
-<p>在本文中，你会看到该功能的实现并不复杂。通过少即是多的方法，并忽略掉复杂大的且不是必须的代码，就可以轻松的在程序中集成滑出式导航面板技术。</p>
-
-<p>下面，就开始学习如何做滑出式导航面板——附带手势滑出的功能！</p>
-
-<h2><strong><span style="color: #339966;">开始</span></strong></h2>
-
-<p>那么这里创建的滑出式导航面板的功能具体是什么呢？</p>
-
-<p>iOS设计师和开发者Ken Yarmosh的解释比较恰当：“滑出式导航面板拥有一个面板，这个面板从主画面的左边或者右边滑出来，然后在面板中显示一个垂直的、独立的滚动视图（Scroll view），把该视图当作程序的主导航。”</p>
-
-<p><em>注意:</em> Ken在这里的文章中详细的解释了滑出式导航面板的设计模式，并介绍了该模式带来的好处：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://kenyarmosh.com/ios-pattern-slide-out-navigation/" target="_blank"><span style="color: #339966; text-decoration: underline;">新的iOS设计模式:滑出式导航面板</span></a></span></span>。</p>
-
-<p>首先下载本文的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://cdn2.raywenderlich.com/downloads/SlideOutNavigationStarter.zip" target="_blank"><span style="color: #339966; text-decoration: underline;">启动工程</span></a></span></span>。这是一个ZIP文件，只需要将其保存到本地，并解压一下就可以得到工程。</p>
-
-<p>接着在Xcode中打开这个工程，并看看工程的组织结构：</p>
-
-<p>工程被分为3个主要的文件夹：</p>
-
-<ul>
-<li><strong><span style="color: #339966;"><em>Assets</em></span></strong>: 包含所有的图片文件和其它非代码资源（例如attribution文件）。</li>
-<li><strong><span style="color: #339966;"><em>Views</em></span></strong>: 包含本文涉及到的所有xib文件。</li>
-<li><strong><span style="color: #339966;"><em>Classes</em></span></strong>: 包含Objective-C代码文件</li>
-</ul>
-
-
-<p><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/projectLayout.png" width="262" height="737" /></p>
-
-<p>不要担心Assets中有许多文件，其实你并不需要修改这些内容，所有需要用到的资源文件都添加进来了。</p>
-
-<p>在Views文件夹中有4个主要的view controller。下面是相关简介：</p>
-
-<ul>
-<li><strong><span style="color: #339966;">MainViewController</span></strong>: 这是主要的一个画面！这个文件需要添加到你自己的工程中（需要一些小的改动）。</li>
-<li><strong><span style="color: #339966;">CenterViewController</span></strong>: 这是正中间的面板。该view controller可以替换为你自己的view controller（记住按钮的action也实现了）</li>
-<li><strong><span style="color: #339966;">LeftPanelViewController</span></strong>: 左边的面板。该view controller可以替换为你自己的view controller。</li>
-<li><strong><span style="color: #339966;">RightPanelViewController</span></strong>: 右边的面板。该view controller可以替换为你自己的view controller</li>
-</ul>
-
-
-<p>现在打开<strong><span style="color: #339966;">AppDelegate.m</span></strong>文件。虽然你不需要对这个文件做任何改变，但是你应该知道MainViewContorller是左，中和右view controller的容器。这个controller的初始化在19行代码中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">self.viewController = [[MainViewController alloc] initWithNibName:@"MainViewController" bundle:nil];</pre>
-
-
-<p>现在，你已经对工程的结构熟悉了， 下面我们就正在的开始啦——从正中间的面板开始。</p>
-
-<h2><span style="color: #339966;"><strong>找到中心</strong></span></h2>
-
-<p>本小节中，我将在MainViewConroller中放置一个CenterViewController，将CenterViewController当做MainViewConroller的子view controller。</p>
-
-<p><span style="color: #999999;"><strong>注意</strong>：本小节会用到iOS 5中的新增的一个概念：View Controller Containment。如果你还不熟悉这个概念，可以看看<a href="http://www.raywenderlich.com/store-beta/ios-5-and-ios-6-by-tutorials-bundle" target="_blank"><span style="text-decoration: underline; color: #999999;"><span style="color: #339966; text-decoration: underline;">iOS 5 by Tutorials</span></span></a>中的第22章“UIViewController Containment”。</span></p>
-
-<p>打开MainViewController.m文件，并将下面的import语句添加到文件的顶部：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import "CenterViewController.h"</pre>
-
-
-<p>接着，添加一个常量定义：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#define CENTER_TAG 1</pre>
-
-
-<p>接着在@interface中添加下面这个属性，以方便控制center view。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) CenterViewController *centerViewController;</pre>
-
-
-<p>找到setupView并在里面添加如下代码块：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">self.centerViewController = [[CenterViewController alloc] initWithNibName:@"CenterViewController" bundle:nil];
-self.centerViewController.view.tag = CENTER_TAG;
-self.centerViewController.delegate = self;
-
-[self.view addSubview:self.centerViewController.view];
-[self addChildViewController:_centerViewController];
-
-[_centerViewController didMoveToParentViewController:self];</pre>
-
-
-<p>上面的代码分配了一个新的CenterViewController并将其赋值给centerViewController属性。然后将这个view controller view的tag设置为CENTER_TAG。</p>
-
-<p>接着将delegate设置为MainViewController。也就意味着你需要对MainViewController进行修改，以遵循CenterViewControllerDelegate协议——只需要将文件顶部@interface代码行替换为如下即可：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()</pre>
-
-
-<p>最后，在setupView方法的代码中，使用addSubview:方法将centerViewController的view添加到MainViewController的view中，另外还调用了addChildViewContoller:将_centerViewController添加为MainViewController的子view controller。最后调用了didMoveToParentViewController:方法。</p>
-
-<p>现在就编译并运行程序的话，可以看到类似如下的画面：</p>
-
-<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png" width="333" height="500" /></a></p>
-
-<p>在画面顶部的按钮可以让你切换到小猫（kitties）和小狗（puppies）。有什么更好的理由需要在这里创建一个滑出式的导航面板呢？在这里要想看到不同的小动物，那就开始滑动吧。首先从左边开始！</p>
-
-<h2><span style="color: #339966;"><strong> 靠向左边</strong></span></h2>
-
-<p>现在已经添加好了center panel，不过要添加left view controller需要一些不同的操作。</p>
-
-<p>回到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，并将下面的import语句添加到文件顶部：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import "LeftPanelViewController.h"</pre>
-
-
-<p>然后再定义一个常量：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#define LEFT_PANEL_TAG 2</pre>
-
-
-<p>接着在@interface中添加一些属性，这跟center view类似：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) LeftPanelViewController *leftPanelViewController;
-@property (nonatomic, assign) BOOL showingLeftPanel;</pre>
-
-
-<p>现在找到<strong><span style="color: #339966;">getLeftView</span></strong>方法，删除掉已有的代码并添加如下代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
-if (_leftPanelViewController == nil)    
-{
-    // this is where you define the view for the left panel
-    self.leftPanelViewController = [[LeftPanelViewController alloc] initWithNibName:@"LeftPanelViewController" bundle:nil];
-    self.leftPanelViewController.view.tag = LEFT_PANEL_TAG;
-    self.leftPanelViewController.delegate = _centerViewController;
-
-    [self.view addSubview:self.leftPanelViewController.view];
-
-    [self addChildViewController:_leftPanelViewController];
-    [_leftPanelViewController didMoveToParentViewController:self];
-
-    _leftPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-}
-
-self.showingLeftPanel = YES;
-
-// set up view shadows
-[self showCenterViewWithShadow:YES withOffset:-2];
-
-UIView *view = self.leftPanelViewController.view;
-return view;</pre>
-
-
-<p>上面的代码首先检查一下看看leftPanelViewController属性是否为nil，如果是nil的话，就分配并初始化一个LeftPanelViewController给leftPanelViewController属性。</p>
-
-<p>接着是赋值一个tag和delegate——用于图片的选择，以及将新创建的view添加到main view中。</p>
-
-<p>然后将showingLeftPanel属性设置为YES，并添加了一些视觉上的处理，在下一节中将介绍相关内容。</p>
-
-<p>最后将view返回给调用者。为什么要这样操作——在后面小节中你将看到为什么。</p>
-
-<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow-480x177.png" width="480" height="177" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>下面，我们来处理一下阴影。</p>
-
-<h2><strong><span style="color: #339966;">不要忘记阴影效果</span></strong></h2>
-
-<p>在上面刚刚添加的代码中，你已经看到调用了showCenterViewWithShow:withOffset:方法。该方法使用QuartzCore框架创建并添加一个阴影效果。</p>
-
-<p>为了访问该框架的提供的许多精彩功能，将下面的import语句添加到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件顶部：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;QuartzCore/QuartzCore.h&gt;</pre>
-
-
-<p>同样，在文件顶部定义一个常量，代表圆角。这样，如果你想要修改圆角的话，只需要在一个地方修改即可。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#define CORNER_RADIUS 4</pre>
-
-
-<p>现在找到<strong><span style="color: #339966;">showCenterViewWithShadow:withOffset: </span></strong>方法，并将下面的代码块添加进去:</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">if (value)
-{        
-    [_centerViewController.view.layer setCornerRadius:CORNER_RADIUS];
-    [_centerViewController.view.layer setShadowColor:[UIColor blackColor].CGColor];
-    [_centerViewController.view.layer setShadowOpacity:0.8];
-    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
-
-}
-else
-{
-    [_centerViewController.view.layer setCornerRadius:0.0f];
-    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
-}</pre>
-
-
-<p>上面的代码中，如果传递过进来的value是非零，就会给center view设置一个圆角和一个阴影。否则就将圆角设置为非圆形。</p>
-
-<p>如果现在运行程序的话，还看不到效果，因为上面的代码还没有用到。</p>
-
-<p><a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png"><img class="alignnone" alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png" width="480" height="177" /></a></p>
-
-<p>&nbsp;</p>
-
-<h2><strong><span style="color: #339966;">现在回到左边</span></strong></h2>
-
-<p>现在已经获得了滑动导航面板所需的一些材料了，接着继续完成left view controller。一旦完成之后，右边如何移动你也会清楚了。</p>
-
-<p>本文中，为了将注意力几种在重要的地方，我已经把IB文件中涉及到的IBAction和IBOutlet连接好了。不过，为了实现你自己的DIY滑出式导航面板，你需要知道这些IB中的按钮是如何配置的。</p>
-
-<p>看看下面这个张关于截图<strong><span style="color: #339966;">CenterViewController.xib</span></strong>文件的截图，注意其中的连接：</p>
-
-<p><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/xcodeLeftButtonSetup-sm.png" width="700" height="626" /></p>
-
-<p>如上图中的kitties按钮，已经连接到一个名为leftButton的IBOutlet上了，并且这个按钮的Touch Up Inside事件连接到了一个名为btnMovePanelRight:的IBAction上。这个按钮控制着center panel的滑动，以显示出左边的panel。</p>
-
-<p>btnMovePanelRight:现在还是空的，下面我们就来看看如何实现：</p>
-
-<p>打开<strong><span style="color: #339966;">CenterViewController.m</span></strong>文件，并将下面的代码块添加到<strong><span style="color: #339966;">btnMovePanelRight:</span></strong>方法中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;
-switch (button.tag) {
-    case 0: {
-        [_delegate movePanelToOriginalPosition];
-        break;
-    }
-
-    case 1: {
-        [_delegate movePanelRight];
-        break;
-    }
-
-    default:
-        break;
-}</pre>
-
-
-<p>上面的代码使用了一个switch语句，通过判断leftButton的tag属性来确定center panel是需要移动到右边，还是需要将其移动到原来的正中间位置。这里的leftButton是通过sender参数传递过来的。button的tag设置为0表示center panel已经移动到右边了，如果设置为1的话，表示center panel已经在原来的正中间位置。</p>
-
-<p>如果你看一下CenterViewController.xib文件，会看到我已经将leftButton的tag默认值设置为1。</p>
-
-<p>看到上面的代码中调用了delegate方法吗？如果你还记得的话，之前在配置CenterViewController示例时，已经将它的delegate设置为MainViewController。因此这里的调用就涉及到了MainViewController中的相关方法。</p>
-
-<p>在实现这些delegate方法之前，首先看看<strong><span style="color: #339966;">CenterViewController.h</span></strong>文件中协议CenterViewControllerDelegate的定义：</p>
-
-<p>如下图所示，协议中定义了两个optional协议方法，以及一个required协议方法，分别是：movePanelLeft, movePanelRight 和 movePanelToOriginalPosition。</p>
-
-<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png" width="700" height="625" /></a></p>
-
-<p>因为CenterViewController的delegate是MainViewController，所以我们在MainViewController中添加这些delegate方法。</p>
-
-<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并添加如下两个常量定义：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#define SLIDE_TIMING .25
-#define PANEL_WIDTH 60</pre>
-
-
-<p>接着找到<strong><span style="color: #339966;">movePanelRight</span></strong>方法，并将如下代码块添加到里面：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getLeftView];
-[self.view sendSubviewToBack:childView];
-
-[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
-                animations:^{
-                    _centerViewController.view.frame = CGRectMake(self.view.frame.size.width - PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
-                }
-                completion:^(BOOL finished) {
-                    if (finished) {
-
-                        _centerViewController.leftButton.tag = 0;
-                    }
-                }];</pre>
-
-
-<p><strong>注意</strong>：这个方法是由CenterViewController中的btnMovePanelRight:调用的。更多如何实现delegate相关的信息，请参考：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果开发者文档</span></a></span></span>。</p>
-
-<p>上面的代码就是奇迹发生的地方！:]</p>
-
-<p>首先调用getLeftView方法，该方法返回一个view，然后将view推到背后，接着是进入动画处理过程：使用一个animateWithDuration:animations:completion: 块。在动画中使用到的SLIDE_TIMING和PANEL_WIDTH值可以随意调整。其中SLIDE_TIMING是控制动画的速度，而PANEL_WIDTH是控制动画过后，center view留在屏幕中的宽度。</p>
-
-<p>另外，记住海的把leftButton的tag属性设置为0。如果你还记得的话，这个tag属性用来跟踪记录center view的当前位置。</p>
-
-<p>现在编译并运行一下程序，看看效果如何。</p>
-
-<p>当程序启动后，点击kitties按钮，center panel应该会滑动到右边，并显示出left panel。此时，屏幕上显示的效果如下图所示：</p>
-
-<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a></p>
-
-<p>注意观察center view左边缘的圆角和阴影——这两个效果是执行showCenterViewWithShadow:withOffset:（之前添加的方法）方法得到的结果。</p>
-
-<p>再点击一下kitties按钮——什么事情都没有发生。这是因为还没有实现movePanelToOriginalPosition方法。</p>
-
-<p>回到<span style="color: #339966;"><strong>MainViewController.m</strong></span>文件，并将下面的代码块添加到<span style="color: #339966;"><strong>movePanelToOriginalPosition</strong></span>方法中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
-                animations:^{
-                    _centerViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-                }
-                completion:^(BOOL finished) {
-                    if (finished) {
-
-                        [self resetMainView];
-                    }
-                }];</pre>
-
-
-<p>同样，在上面的代码中使用了一个animateWithDuration:animations:completion: 块来处理动画。不过这次是将center view的位置以动画的方式设置为最初的位置。</p>
-
-<p>当动画完成的时候，调用了resetMainView方法。目前该方法还没有具体的实现。在该方法中需要重置一下view，下面我们来实现一下吧！</p>
-
-<p>找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并将下面的代码添加到方法中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// remove left view and reset variables, if needed
-if (_leftPanelViewController != nil)
-{
-    [self.leftPanelViewController.view removeFromSuperview];
-    self.leftPanelViewController = nil;
-
-    _centerViewController.leftButton.tag = 1;
-    self.showingLeftPanel = NO;
-}
-
-// remove view shadows
-[self showCenterViewWithShadow:NO withOffset:0];</pre>
-
-
-<p>上的代码将left panel从view中移除，并将kitties按钮重置为1（表示center view目前是在最初的位置），另外还移除了center view的圆角和阴影效果。</p>
-
-<p>编译并运行程序，当点击kitties按钮后，再次点击kitties按钮，center view会回到最初的位置，如下图所示：</p>
-
-<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png" width="333" height="500" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>下面，在右边添加相关的功能——小狗！——请阅读<span style="text-decoration: underline;"><a href="http://beyondvincent.com/2013/04/17/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF2/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(2)</span></strong></a></span></p>
-
-<h2><span style="font-size: 13px;"> </span></h2>
 
 		
 		
