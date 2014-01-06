@@ -12,9 +12,9 @@ published: true
 
 <!--more-->
 
-注1：本文我在2011年9月花了两周时间做了我的第一个iOS Demo。这篇文章是我的iOS成长之路系列文章中的第二篇文章，第一篇文章请来这里看[iOS成长之路-1-入门](http://beyondvincent.com/blog/2013/12/17/125-my-iOS-growth-path-1/)
+注1：本文是我在2011年9月花了两周时间做了我的第一个iOS Demo。这篇文章是我的iOS成长之路系列文章中的第二篇文章，第一篇文章请来这里看[iOS成长之路-1-入门](http://beyondvincent.com/blog/2013/12/17/125-my-iOS-growth-path-1/)
 
-下面先来看看目录
+下面先来看看本文的目录
 
 1. 概述
 2. 业务需求
