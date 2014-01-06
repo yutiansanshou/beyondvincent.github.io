@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-06T23:54:57+08:00</updated>
+  <updated>2014-01-06T23:57:45+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[我的iOS成长之路-2-我的第一个iOS Demo]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2014/01/05/126-my-iOS-growth-path-2/"/>
-    <updated>2014-01-05T21:18:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2014/01/05/126-my-iOS-growth-path-2</id>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/06/126-my-iOS-growth-path-2/"/>
+    <updated>2014-01-06T23:57:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/06/126-my-iOS-growth-path-2</id>
     <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/12/10.png" alt="" /></p>
 
 <!--more-->
@@ -153,7 +153,7 @@
 
 <p><img src="http://BeyondVincent.github.io/images/2013/12/16.png" alt="" /></p>
 
-<h4>小结</h4>
+<h3>小结</h3>
 
 <p>以上就是我在学习iOS开发初期，写的第一个iOS Demo，功能虽然略显粗糙，希望对初学者有一个参考作用，如果你对文中的内容有想法，可以在下面的回复中，与我交流。</p>
 ]]></content>
