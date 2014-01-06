@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[049]数据绑定(1)绑定模型 在Windows Store app开发中，数据绑定非常的重要，它提供了一个简单的方法，使我们的程序可以很方便的显示数据并与数据进行交互。 &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果 小引 在Windows 8的开始屏幕上全是一些方块，当我们用鼠标或者手去触摸时，会有不同的按下倾斜效果，移动的时候也会有放大+ &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,159 +77,6 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/78/" itemprop="url">Windows Store App开发[049]数据绑定(1)绑定模型</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>在Windows Store app开发中，数据绑定非常的重要，它提供了一个简单的方法，使我们的程序可以很方便的显示数据并与数据进行交互。今天我先给大家简单的介绍一下Windows Store app中的数据绑定，在后面的文章中，我会展开详细的介绍。</h3>
-
-<h3><a name="t4"></a>简介</h3>
-
-<p>数据绑定在UI控件中显示数据是非常重要的一部分内容。当任意一个UI控件使用了绑定，那么它将会显示出相应的数据。当然，很重要的一个因素就是当绑定的数据发生了改变，此时UI控件显示的内容就会自动的改变。同样，当用户在UI控件上做了改变，这些变动的数据也会被自动保存到数据对象中。</p>
-
-<p>在数据绑定中，每一个绑定都有一个Mode属性，该属性决定了数据流是如何走向的。在Windows Store Apps中，如果使用XAML和C#开发，有3中Mode可以使用：</p>
-
-<p>OneWay绑定</p>
-
-<p>TwoWay绑定</p>
-
-<p>Onetime绑定</p>
-
-<h3><a name="t5"></a>OneWay</h3>
-
-<p>这是默认的绑定模型。OneWay绑定中，数据流的走向是从绑定源流向绑定目标的，不能反过来。当绑定源的数据发生了改变，那么绑定目标会得到更新。</p>
-
-<p>示例：TextBox的Background为绑定目标，ListBox的SelectedItem.Content为绑定源</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="BurlyWood"&gt;
-
-    &lt;grid height="150" width="165"&gt;
-
-        &lt;textbox background="{Binding ElementName=listBox, Path=SelectedItem.Content, Mode=OneWay}" height="82" fontsize="30" name="textBox" margin="0,-117,-218,0" verticalalignment="Top" foreground="Red" text="OneWay绑定模式"&gt;
-
-        &lt;/textbox&gt;
-
-        &lt;listbox fontsize="30" name="listBox" margin="0,0,-218,-70"&gt;
-
-            &lt;listboxitem content="Green" /&gt;
-
-            &lt;listboxitem content="Blue" isselected="True" /&gt;
-
-            &lt;listboxitem content="Orange" /&gt;
-
-        &lt;/listbox&gt;
-
-    &lt;/grid&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/118.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb16.jpg" width="546" height="420" /></a></p>
-
-<h3>TwoWay</h3>
-
-<p>就如名字一样，TwoWay绑定模式可以在绑定源于绑定目标之间相互同步数据。也就是说，无论是绑定源还是绑定目标，谁的数据改变了，另外一方的数据也会得到更新。</p>
-
-<p>示例：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="Green"&gt;
-
-    &lt;grid height="180" width="165"&gt;
-
-        &lt;textbox height="56" fontsize="30" name="textBox" margin="0,-101,-192,0" verticalalignment="Top" text="{Binding ElementName=listBox,&#13;&#10;&#13;&#10;                    Path=SelectedItem.Content,&#13;&#10;&#13;&#10;                    Mode=TwoWay}"&gt;
-
-        &lt;/textbox&gt;
-
-        &lt;listbox fontsize="30" name="listBox" margin="0,0,-192,-62"&gt;
-
-            &lt;listboxitem content="破船" /&gt;
-
-            &lt;listboxitem content="BeyondVincent" /&gt;
-
-            &lt;listboxitem content="小破船" /&gt;
-
-            &lt;listboxitem content="小BeyondVincent" /&gt;
-
-        &lt;/listbox&gt;
-
-    &lt;/grid&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p>当选择ListBox中的数据时，TextBox中的内容也会跟着改变</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/214.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb13.jpg" width="510" height="451" /></a></p>
-
-<p>当在TextBox中修改文本内容，ListBox中对应选中项也会改变[注意，TextBox需要失去Focus，才会触发数据改变]</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/310.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb10.jpg" width="553" height="456" /></a></p>
-
-<h3>OneTime</h3>
-
-<p>OneTime绑定模式，数据流是从绑定源到绑定目标的，并且只有一次。当绑定源的数据第一次发生改变时，绑定目标会得到更新。以后绑定源再怎么改变，绑定目标都不会更新。当需要查看数据首次加载情况时，可以选择这种模式。</p>
-
-<p>示例：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="Green"&gt;
-
-    &lt;stackpanel verticalalignment="Center" orientation="Vertical"&gt;
-
-        &lt;slider background="Wheat" margin="593,0,354,0" value="50" maximum="100" minimum="1" x:name="sliderOneTimeDataSource" /&gt;
-
-        &lt;textbox height="86" text="{Binding ElementName=sliderOneTimeDataSource, Path=Value, Mode=OneTime}" margin="608,0,354,0" fontsize="50" x:name="tbOneTimeDataBound" /&gt;
-
-    &lt;/stackpanel&gt;
-
-&lt;/grid&gt;</pre>
-
-
-<p>当源数据确定后，绑定就已经完成了。所以之后Slider再怎么改变数据，都不会影响到TextBox的内容。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/410.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb10.jpg" width="531" height="273" /></a></p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/BindingMode" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1997,6 +1844,133 @@ async void OnLoaded(object sender, RoutedEventArgs arg)
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/68/" itemprop="url">Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在之前的博文中，我曾对Toast通知进行了介绍，如下链接，建议不清楚Toast通知的可以去看看</p>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91009%e9%80%9a%e7%9f%a5%e6%a6%82%e8%bf%b0toasttile%e5%92%8cbadge/"><u>Windows Store App开发[009]通知概述(Toast,Tile和Badge)</u></a></h4>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91010%e9%80%9a%e7%9f%a5%e4%bd%bf%e7%94%a8toasttile%e5%92%8cbadge/"><u>Windows Store App开发[010]通知使用(Toast,Tile和Badge)</u></a></h4>
+
+<p>在这篇文章中，我将对Toast通知进行深入的介绍：如何让Toast通知携带参数，并且在程序中如何获取Toast通知的携带的参数。</p>
+
+<p>这个主题在有些时候非常有用：当用户点击Toast通知时，根据Toast通知的内容，直接使程序打开某个特定的画面。</p>
+
+<h3><a name="t4"></a>Toast通知的数据走向步骤</h3>
+
+<p>我们先来看看Toast通知的数据走向步骤</p>
+
+<p>1、程序或者web service创建并发送一个包含launch字符串的toast通知</p>
+
+<p>2、toast通知到达</p>
+
+<p>3、用户选择toast通知(单击或者触摸)</p>
+
+<p>4、OnLaunched事件被触发</p>
+
+<p>5、在程序的OnLaunched处理函数中读取launch字符串</p>
+
+<p>6、程序根据launch字符串做出响应的处理（打开指定画面、进行数据请求等）</p>
+
+<h3><a name="t5"></a>如何创建并发送一个带launch字符串的toast通知</h3>
+
+<p>看下面的代码：注意在这里为了创建toast的方便：使用了NotificationsExtensions，关于NotificationsExtensions的使用，参考下面的链接：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/hh969156.aspx"><u>使用 NotificationsExtensions 填充锁屏提醒、磁贴和 Toast 模板</u></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void sendToast(object sender, RoutedEventArgs e)
+{
+    IToastImageAndText01 toastContent = ToastContentFactory.CreateToastImageAndText01();
+    toastContent.Launch = &quot;this is launch string test&quot;;
+    toastContent.TextBodyWrap.Text = &quot;破船，恭喜你，中500W！&quot;;
+    toastContent.Image.Src = &quot;/Assets/98_avatar_big.jpg&quot;;
+
+    ToastNotificationManager.CreateToastNotifier().Show(toastContent.CreateNotification());
+}</pre>
+
+
+<h3>在程序中获得launch字符串</h3>
+
+<p>当用户点击或者触摸Toast通知，都会启动相应的程序。并触发OnLaunched事件。</p>
+
+<p>一定要注意：如果在toast通知中没有包含launch字符串，那么OnLaunched是不会被触发的。</p>
+
+<p>下面的代码演示了如何在程序中获得launch字符串</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">protected override void OnLaunched(LaunchActivatedEventArgs args)
+{
+    string launchString = args.Arguments
+    ....
+}</pre>
+
+
+<h3>运行效果</h3>
+
+<p>1、发送toast通知</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/114.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb12.jpg" width="404" height="150" /></a></p>
+
+<p>2、触发toast通知</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb10.jpg" width="471" height="277" /></a></p>
+
+<p>3、获取launch字符串</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/36.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb6.jpg" width="682" height="436" /></a></p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Toast" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
 </div>
 
 
