@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 5th, 2013 iOS设计模式, 未分类 iOS设计模式(01):观察者 什么是观察者模式 什么是观察者模式？你曾经订阅过报纸吗？在订阅报纸的时候，你不用去任何地方，只需要将你的个人地址信息以及订阅信息告诉出版社，出版社就知道如何将相关报纸传递给你。这种模式的第二个名称叫做发布/ &hellip;">
+	<meta name="description" content="May 8th, 2013 iOS Framed: 一个UIView的Category 当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。 如果要在代码中创建如下一个界面布局，你会怎么做呢？ 下面是一种方法： &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,87 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-08T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 8<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/08/19/" itemprop="url">Framed: 一个UIView的Category</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg"><img class="alignnone size-full wp-image-545" alt="UIView_Easing_Frame" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg" width="1200" height="620" /></a></p>
+
+<h1><strong><span style="color: #339966;">当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。</span></strong></h1>
+
+<p>如果要在代码中创建如下一个界面布局，你会怎么做呢？</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png"><img class="alignnone size-full wp-image-546" alt="UIViewCategory2" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png" width="744" height="396" /></a></p>
+
+<p>下面是一种方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+CGRect blueViewFrame = self.blueView.frame;
+blueViewFrame.origin.x = self.whiteView.frame.origin.x + offset;
+blueViewFrame.origin.y = self.whiteView.frame.origin.y + offset;
+self.blueView.frame = blueViewFrame;
+
+CGRect greyViewFrame = self.greyView.frame;
+greyViewFrame.origin.x = self.whiteView.frame.origin.x + self.whiteView.frame.size.width - self.greyView.frame.size.width - offset;
+greyViewFrame.origin.y = self.whiteView.frame.origin.y + self.whiteView.frame.size.height - self.greyView.frame.size.height - offset;
+self.greyView.frame = greyViewFrame;</pre>
+
+
+<p>上面的方法可以达到目的，但看起来非常的笨拙；要弄清楚如何设置frame需要一定的计算，这样的代码可读性不高。</p>
+
+<p>下面是一种非常简单的方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+self.blueView.deFrameLeft = self.whiteView.deFrameLeft + offset;
+self.blueView.deFrameTop = self.whiteView.deFrameTop + offset;
+
+self.greyView.deFrameRight = self.whiteView.deFrameRight - offset;
+self.greyView.deFrameBottom = self.whiteView.deFrameBottom - offset;</pre>
+
+
+<p>如上所示，对界面布局的设置更加方便，并且还减少了不少代码。</p>
+
+<p>上面的方法是定义了UIView的一个category，并暴露出一些设置frame的属性。这些属性对UIView的frame属性进行了简单的封装，每个属性都定义了getter和setter方法。通过这些属性，使用很少的几行代码就可以更加方便的设置UIView（以及UIView的子类）的frame。</p>
+
+<p>上面代码涉及到的category可以到这里下载：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://gist.github.com/BeyondVincent/5540827" target="_blank"><span style="color: #339966; text-decoration: underline;">UIView+DEFrameAdditions</span></a></span></span>。将两个代码文件添加到你的工程中，就可以使用啦。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/05/a-uiview-category/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1303,330 +1384,6 @@ _<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<st
 
 <p style="text-align: right;">
   <span style="color: #c0c0c0;">破船撰写于@2013.04.18</span>
-</p>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-17T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 17<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/04/17/8/" itemprop="url">iOS中如何创建一个滑出式导航面板(2)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
-转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
-_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>接着上一篇<a href="http://beyondvincent.com/2013/04/16/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF1/" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(1)</span></span></a></p>
-
-<h2><strong><span style="color: #339966;">现在靠向右边</span></strong></h2>
-
-<p>在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，将下面的import语句添加到文件顶部：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#import "RightPanelViewController.h"</pre>
-
-
-<p>然后添加下面的常量定义：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">#define RIGHT_PANEL_TAG 3</pre>
-
-
-<p>接着在@interface里面添加如下属性，这样就容易获取到right view和它的当前状态：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) RightPanelViewController *rightPanelViewController;
-@property (nonatomic, assign) BOOL showingRightPanel;</pre>
-
-
-<p>然后是找到<strong><span style="color: #339966;">getRightView</span></strong>方法，并移除里面已有的代码，然后添加下面的代码进去：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
-if (_rightPanelViewController == nil)
-{
-    // this is where you define the view for the right panel
-    self.rightPanelViewController = [[RightPanelViewController alloc] initWithNibName:@"RightPanelViewController" bundle:nil];
-    self.rightPanelViewController.view.tag = RIGHT_PANEL_TAG;
-    self.rightPanelViewController.delegate = _centerViewController;
-
-    [self.view addSubview:self.rightPanelViewController.view];
-
-    [self addChildViewController:self.rightPanelViewController];
-    [_rightPanelViewController didMoveToParentViewController:self];
-
-    _rightPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-}
-
-self.showingRightPanel = YES;
-
-// set up view shadows
-[self showCenterViewWithShadow:YES withOffset:2];
-
-UIView *view = self.rightPanelViewController.view;
-return view;</pre>
-
-
-<p>上面的代码是拷贝getLeftView的，只不过其中的类和属性不同而已。如果对上面的代码有任何疑问，可以回头看看之前的解释。</p>
-
-<p>跟之前的一样，在xib文件中已经连接好了相关的IBAction和IBOutlet。下面是CenterViewController.xib文件的一个截图，显示出了puppies按钮的连接关系：</p>
-
-<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png" width="700" height="626" /></a></p>
-
-<p>如上图所示，跟kitties按钮类似，puppies按钮连接到的IBOutlet是rightButton，IBAction是btnMovePanelLeft:。这个按钮控制着center panel的滑动以显示出右边的panel。</p>
-
-<p>下面我们就来让panel移动起来吧。</p>
-
-<p>打开<strong><span style="color: #339966;">CenterController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">btnMovePanelLeft:</span></strong>中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;    
-switch (button.tag) {
-    case 0: {
-        [_delegate movePanelToOriginalPosition];
-        break;
-    }
-
-    case 1: {
-        [_delegate movePanelLeft];
-        break;
-    }
-
-    default:
-        break;
-}</pre>
-
-
-<p>同样，上面的代码与btnMovePanelRight:方法的实现没有什么不同。可以看到delegate的调用方法几乎是一样的。</p>
-
-<p>因为之前已经实现了movePanelToOriginalPostion方法，所以剩下的任务只需要添加movePanelLeft 方法，并修改一下resetMainView以处理right panel即可。</p>
-
-<p>&nbsp;</p>
-
-<h2><span style="color: #339966;"><strong>将右边显示出来</strong></span></h2>
-
-<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">movePanelLeft:</span></strong>方法中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getRightView];
-[self.view sendSubviewToBack:childView];
-
-[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
-                animations:^{
-                    _centerViewController.view.frame = CGRectMake(-self.view.frame.size.width + PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
-                }
-                completion:^(BOOL finished) {
-                    if (finished) {
-
-                        _centerViewController.rightButton.tag = 0;
-                    }
-                }];</pre>
-
-
-<p>上面的代码与movePanelRight方法中的基本相同，这里就不再做过多的解释。</p>
-
-<p>接着找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并用下面的代码替换已有的内容：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// remove left and right views, and reset variables, if needed
-if (_leftPanelViewController != nil)
-{
-    [self.leftPanelViewController.view removeFromSuperview];
-    self.leftPanelViewController = nil;
-
-    _centerViewController.leftButton.tag = 1;
-    self.showingLeftPanel = NO;
-}
-
-if (_rightPanelViewController != nil)
-{
-    [self.rightPanelViewController.view removeFromSuperview];
-    self.rightPanelViewController = nil;
-
-    _centerViewController.rightButton.tag = 1;
-    self.showingRightPanel = NO;
-}
-
-// remove view shadows
-[self showCenterViewWithShadow:NO withOffset:0];</pre>
-
-
-<p>上面代码中唯一修改的地方是增加了一个if语句代码块：if(_rightPanelViewController != nil)。该语句判断一下right panel view是否存在，这跟之前检查left panel view一样，并且对_rightPanelViewController做相同的处理！</p>
-
-<p>现在编译并运行程序，点击puppies按钮，将看到如下画面：</p>
-
-<p><a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
-
-<p>看起来不错吧？</p>
-
-<p>在下面一节中，将介绍如何添加手势功能。</p>
-
-<h2><strong><span style="color: #339966;">来回移动你的手指</span></strong></h2>
-
-<p>在程序中添加手势处理非常简单，不要以为太复杂，很容易就能实现的！</p>
-
-<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png" width="480" height="177" /></a></p>
-
-<p>还是在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，找到<strong><span style="color: #339966;">setupView</span></strong>方法，并在方法的尾部添加如下一行代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">[self setupGestures];</pre>
-
-
-<p>接着，需要让MainViewController遵循UIGestureRecognizerDelegate协议——将UIGestureRecognizerDelegate添加到文件顶部的@interface中，添加后的代码如下：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()&lt;UIGestureRecognizerDelegate, CenterViewControllerDelegate&gt;</pre>
-
-
-<p>最后，找到<span style="color: #339966;"><strong>setupGestures</strong></span>方法，并将下面的代码块添加进去：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(movePanel:)];
-[panRecognizer setMinimumNumberOfTouches:1];
-[panRecognizer setMaximumNumberOfTouches:1];
-[panRecognizer setDelegate:self];
-
-[_centerViewController.view addGestureRecognizer:panRecognizer];</pre>
-
-
-<p>上面的代码定义了一个UIPanGestureRecognizer，并将movePanel:方法赋值给它，当有检测到手势时，就会调用这个方法。（稍后需要实现movePanel:方法。）</p>
-
-<p>接着，配置一下panRecognizer：将触摸的最大数目和最小数目设置为1，另外还设置了一下delegate。最后，将刚刚创建好的panRecognizer添加到_centerViewController.view中。</p>
-
-<p><strong>注意</strong>：更多关于UIGestureRecognizer类的信息, 请参考<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/uikit/reference/UIGestureRecognizer_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果官方文档</span></a></span></span>。</p>
-
-<p>接着，再做一件事情就可以用手势进行滑动了。</p>
-
-<h2><strong><span style="color: #339966;">现在就来移动View吧</span></strong></h2>
-
-<p>当识别到手势之后会调用movePanel:方法。所以，本文最后一个任务就是来实现一下这个方法。</p>
-
-<p>movePanel:方法使用到两个属性：showPanel 和 preVelocity。在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件的@interface中添加上这两个属性：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, assign) BOOL showPanel;
-@property (nonatomic, assign) CGPoint preVelocity;</pre>
-
-
-<p>找到<em>movePanel:</em> 并将下面这段代码添加进去（很多哦！）：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">[[[(UITapGestureRecognizer*)sender view] layer] removeAllAnimations];
-
-CGPoint translatedPoint = [(UIPanGestureRecognizer*)sender translationInView:self.view];
-CGPoint velocity = [(UIPanGestureRecognizer*)sender velocityInView:[sender view]];
-
-if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateBegan) {
-        UIView *childView = nil;
-
-        if(velocity.x &gt; 0) {
-            if (!_showingRightPanel) {
-                childView = [self getLeftView];
-            }
-        } else {
-            if (!_showingLeftPanel) {
-                childView = [self getRightView];
-            }
-
-        }
-        // Make sure the view you&#039;re working with is front and center.
-        [self.view sendSubviewToBack:childView];
-        [[sender view] bringSubviewToFront:[(UIPanGestureRecognizer*)sender view]];
-}
-
-if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
-
-        if(velocity.x &gt; 0) {
-            // NSLog(@"gesture went right");
-        } else {
-            // NSLog(@"gesture went left");
-        }
-
-        if (!_showPanel) {
-            [self movePanelToOriginalPosition];
-        } else {
-            if (_showingLeftPanel) {
-                [self movePanelRight];
-            }  else if (_showingRightPanel) {
-                [self movePanelLeft];
-            }
-        }
-}
-
-if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateChanged) {
-        if(velocity.x &gt; 0) {
-            // NSLog(@"gesture went right");
-        } else {
-            // NSLog(@"gesture went left");
-        }
-
-        // Are you more than halfway? If so, show the panel when done dragging by setting this value to YES (1).
-        _showPanel = abs([sender view].center.x - _centerViewController.view.frame.size.width/2) &gt; _centerViewController.view.frame.size.width/2;
-
-        // Allow dragging only in x-coordinates by only updating the x-coordinate with translation position.
-        [sender view].center = CGPointMake([sender view].center.x + translatedPoint.x, [sender view].center.y);
-        [(UIPanGestureRecognizer*)sender setTranslation:CGPointMake(0,0) inView:self.view];
-
-        // If you needed to check for a change in direction, you could use this code to do so.
-        if(velocity.x*_preVelocity.x + velocity.y*_preVelocity.y &gt; 0) {
-            // NSLog(@"same direction");
-        } else {
-            // NSLog(@"opposite direction");
-        }
-
-        _preVelocity = velocity;
-}</pre>
-
-
-<p>上面代码中的注视已经有对功能做了不错的解释。下面是一些需要明白的关键信息：</p>
-
-<ul>
-<li>需要处理3个状态：UIGestureRecognizerStateBegan, UIGestureRecognizerStateEnded和 UIGestureRecognizerStateChanged。</li>
-<li>translationInView：返回某个位置在指定view的坐标系中的point，并将这个point赋值给translatedPoint变量, 该变量用来设置view的位置。</li>
-<li>velocityInView: 返回每秒钟手势的移动速率。该变量有助于确定方向的改变。</li>
-</ul>
-
-
-<p>你可以移动center，left和right view，并结合上面提到的3个状态，就可以确定手势的位置和速率/方向。</p>
-
-<p>例如，如果手势方向是向右的，那么就显示出left panel。如果方向是向左，则显示出right panel。通过查看代码和相关的注释，就可以知道每一种状态都发生了什么。</p>
-
-<p>再次编译并运行程序。现在应该可以把center panel滑动到左边或者右边了，并显示出center panel下面的panel。</p>
-
-<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a> <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
-
-<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
-
-<p>如果你完全按照本文介绍的方法来操作，那么恭喜你，你已经成为一名滑出式导航面板忍者了！</p>
-
-<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg" width="300" height="247" /></a></p>
-
-<p>希望本文对你有用！这里是本文涉及到的完整示例工程：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cdn5.raywenderlich.com/downloads/SlideOutNavigationFinal.zip"><span style="color: #339966; text-decoration: underline;">completed project file</span></a></span></span>。</p>
-
-<p>之前我提到过，如果你更喜欢已经定义好了的库，而不是DIY，那么请看<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a>.</span></span> 看看这里的<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/John-Lluch/SWRevealViewController#usage" target="_blank"><span style="color: #339966; text-decoration: underline;">开发者相关介绍</span></a></span></span>，很容易就能使用它了。</p>
-
-<p style="text-align: right;">
-  <span style="color: #c0c0c0;">全文完毕！ 破船翻译于2013.04.17</span>
 </p>
 
 

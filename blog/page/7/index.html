@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么 小引 在之前的博文中，我曾对Toast通知进行了介绍，如下链接，建议不清楚Toast通知的可以去看看 Windows &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[040]使用默认程序打开文件 小引 在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,204 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/69/" itemprop="url">Windows Store App开发[040]使用默认程序打开文件</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接，这时候我们就需要用到Windows.System.Launcher。今天我就通过代码示例，来介绍如何打开文件或者链接。</p>
+
+<p>本文参考了：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-SG/library/hh779671"></a><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher"><u>http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher</u></a></p>
+
+<h3><a name="t4"></a>打开文件</h3>
+
+<h4><a name="t5"></a>通过默认程序打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DefaultLaunch(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\[DevDiv翻译]Metro Revealed_ Building Windows 8 apps with XAML and C#中文翻译合集_2012_09_03.pdf&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Launch the retrieved file
+        var success = await Windows.System.Launcher.LaunchFileAsync(file);
+
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.png" width="682" height="403" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.png" width="682" height="386" /></a></p>
+
+<h4>通过程序列表打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DisplayApplicationPicker(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\7.jpg&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the option to show the picker
+        var options = new Windows.System.LauncherOptions();
+        options.DisplayApplicationPicker = true;
+
+        // Launch the retrieved file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.png" width="682" height="527" /></a></p>
+
+<h4>去商店搜索对应的程序来打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void RecommendedApp(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\1.BeyondVincent&quot;;
+
+    // Get the image file from the package&#039;s image directory
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the recommended app
+        var options = new Windows.System.LauncherOptions();
+
+        // 设置为应用商店中要推荐的应用的程序包系列名称
+        options.PreferredApplicationPackageFamilyName = &quot;BeyondVincent格式文件程序&quot;;
+
+        // 设置为该应用的名称
+        options.PreferredApplicationDisplayName = &quot;BV_Launcher&quot;;
+
+
+        // Launch the retrieved file pass in the recommended app 
+        // in case the user has no apps installed to handle the file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.png" width="682" height="354" /></a></p>
+
+<h3>打开链接</h3>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void OpenDevDiv(object sender, RoutedEventArgs e)
+{
+    // The URI to launch
+    string uriToLaunch = @&quot;http://www.DevDiv.com&quot;;
+
+    // Create a Uri object from a URI string 
+    var uri = new Uri(uriToLaunch);
+
+    // Launch the URI
+    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+
+    if (success)
+    {
+        // URI launched
+    }
+    else
+    {
+        // URI launch failed
+    }
+}</pre>
+
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Launcher" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1149,275 +1347,6 @@ a、Properties文件夹包含一些程序集信息和项目属性。</p>
 
 
 <p>本篇文章的内容虽然少，但是小小功能，非常有用。祝你调戏代码成功！</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/59/" itemprop="url">Windows Store App开发[032]C++/CX Part 2 of [N]: Hat(^)类型</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>注：本文由BeyondVincent(破船)翻译</p>
-
-<p>&#160;</p>
-
-<p>关于本次系列的一个介绍：</p>
-
-<h4><a href="http://beyondvincent.com/2013/06/04/windows-store-app%e5%bc%80%e5%8f%91027ccx-part-1-of-n-%e4%b8%80%e4%b8%aa%e7%ae%80%e5%8d%95%e7%9a%84%e7%b1%bb/"><u>Windows Store App开发[027]C++/CX Part 1 of [n]: 一个简单的类</u></a></h4>
-
-<p>&#160;&#160;&#160; hat(^)是C++/CX中非常明显的一个特征——当第一次看C++/CX代码时，几乎很难不注意到它的存在。那么，hat(^)究竟是什么类型呢？hat类型是这样的一个智能指针：</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; (1)、自动管理Windows Runtime对象的生命周期</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; (2)、提供自动类型转换的功能，以简化Windows Runtime对象的使用</p>
-
-<p>&#160;&#160;&#160; 首先，开始讨论如何通过WRL来使用Windows Runtime对象，然后解释C++/CX的hat是如何让事情变得简单。为了演示的目的，我使用如下Number类的修改版本，Number类在Part1中有介绍：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">public interface struct IGetValue
-{
-    int GetValue() = 0;
-};
-
-public interface struct ISetValue
-{
-    void SetValue(int value) = 0;
-};
-
-public ref class Number sealed : public IGetValue, ISetValue
-{
-public:
-    Number() : _value(0) { }
-
-    virtual int  GetValue()          { return _value;  }
-    virtual void SetValue(int value) { _value = value; }
-
-private:
-    int _value;
-};</pre>
-
-
-<p>在被修改的Number类实现中，我定义了一对接口：IGetValue和ISetValue，这是声明了Number的两个成员函数；接着Number实现了这两个接口。其它的，看起来应该很熟悉。</p>
-
-<p>&#160;&#160;&#160; 注意：Number实际上实现了三个Windows Runtime接口：除了IGetValue和ISetValue，编译器仍然会生成__INumberPublicNonVirtuals接口，这个接口由Number实现。因为Number的所有成员都已经被显示的声明在接口中(IGetValue和ISetValue)了，所以编译器生成的__INumberPublicNonVirtuals接口没有声明任何成员。及时这样，这个接口也是必须要有的，因为它是作为Number类的缺省接口。每一个runtime对象都必须有一个缺省接口，并且缺省接口对类来说总是唯一的。稍后，我们会看到为什么缺省接口非常重要。</p>
-
-<h3><a name="t2"></a>生命周期管理</h3>
-
-<p>&#160;&#160;&#160; Windows Runtime引用类型使用引用计数来管理对象的生命周期。所有的Windows Runtime接口(包括Number实现的三个接口)都直接继承自<a href="http://msdn.microsoft.com/en-us/library/br205821.aspx">IInspectable</a>接口，该接口继承自COM <a href="http://msdn.microsoft.com/en-us/library/ms680509.aspx">IUnknown</a>接口。IUnknown有三个成员方法，用于控制对象的生命周期和允许类型转换。</p>
-
-<p>&#160;&#160;&#160; 在MSDN上的一篇文章“<a href="http://msdn.microsoft.com/en-us/library/ms692481.aspx">引用计数管理的规则</a>”全面的概述了IUnknown生命周期管理是如何进行的。规则非常的简单：每次创建一个新的引用对象时，必须调用<a href="http://msdn.microsoft.com/en-us/library/ms691379.aspx">IUnknown::AddRef</a>方法来将对象的引用计数加1；每当销毁一个引用对象时，必须调用IUnknown::Release方法来将对象的引用计数减1。引用计数初始化时为0，之后会有一系列关于AddRef和Release的调用，当引用计数再次为0时，对象将被销毁。&#160;&#160;&#160;</p>
-
-<p>&#160;&#160;&#160; 当然在进行C++编程时，我们应该很少——几乎从来没有——去直接调用AddRef和Release方法。取而代之的是，使用智能指针，可以在需要的时候自动的进行调用。使用智能指针可以确保对象不会因为没有调用Release而泄露，或者过早调用Release而引起对象销毁，从而导致AddRef失败。</p>
-
-<p>&#160;&#160;&#160; ATL包含<a href="http://msdn.microsoft.com/en-us/library/ezzw7k98.aspx">CComPtr</a>和一些相关的智能指针，它们已经长期用于COM编程中对象的自动管理引用计数，同样它们都实现了IUnknown。WRL包含<a href="http://msdn.microsoft.com/en-us/library/br244983.aspx">ComPtr</a>，该指针对CComPtr进行了改进（例如：ComPtr不需要重载运算符&amp;，而CComPtr是需要的）。</p>
-
-<p>&#160;&#160;&#160; 对于那些不常使用COM编程以及不熟悉ComPtrs的开发者：如果你使用的是shared_ptr（包含在C++11，C++ TR1和Boost），ComPtr在生命周期管理上具有同样的作用。机制不相同（ComPtr使用了IUnknown提供的内部引用计数，而shared_ptr支持任意类型，因此必须使用外部引用计数），但是生命周期管理的行为是相同的。</p>
-
-<p>&#160;&#160;&#160; C++/CX hat的生命周期管理语义上跟ComPtr完全相同。当复制一个T^时，AddRef被调用，以将引用计数加1，当T^出了作用域或者被重新赋值，则会调用Release来讲引用计数减1。下面，我们通过一个简单的例子，演示引用计数的行为：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">{
-     T^ t0 = ref new A();
-     T^ t1 = ref new B();
-
-     t0 = t1;
-     t0 = nullptr;
- }</pre>
-
-
-<p>首先，创建了一个A对象，并将其所有权给t0。这个A对象的引用计数将是1，因为有一个T^对其有一个引用。然后创建了一个B对象，并将其所有权给t1。B对象的引用计数同样是1。</p>
-
-<p>&#160;&#160;&#160; t0 = t1的结果是t0和t1都指向相同的一个对象。这里有三个步骤一定要做。首先，t1->AddRef()会被调用，以使B对象引用计数加1，因为t1具有该对象的所有权。其次，t0-Release()被调用，以释放t0对A对象的所有权，这就会引起A对象的引用计数为0，并且A对象自行销毁。同时，也会引起B对象的引用计数为2。最后，t1被设置为指向B对象。</p>
-
-<p>&#160;&#160;&#160; 然后赋值t0 = nullptr。这回将t0重置为null，也就是说，它会释放对B对象的所有权。这会调用t0->Release()，引起B对象的引用计数减1。</p>
-
-<p>&#160;&#160;&#160; 最后，将执行只代码块的右大括弧：}。在这里，所有的局部变量会被销毁，以相反的顺序进行。首先，t1被销毁（智能指针，不是所指向的对象）。这会调用t1->Release()，引起B对象的引用计数为0，因此B对象自行销毁。然后是t0被销毁，因为t0是null，所以这个没有指向任何对象。</p>
-
-<p>&#160;&#160;&#160; 如果我们只是考虑生命周期，那么完全没必要使用hat(^)：ComPtr<T>可以满足管理对象的生命周期。</p>
-
-<h3><a name="t3"></a>类型转换</h3>
-
-<p>&#160;&#160;&#160; 在C++中，一些类型转换涉及到的类类型是隐式的；其它的一些可能需要使用cast或者一些列的casts。例如，如果Number类以及它实现的接口是普通的C++类型，而不是Windows Runtime类型，那么从Number*转换到IGetValue*将是隐式的，而要将IGetValue*转换为Number*则需要使用static_cast或dynamic_cast。</p>
-
-<p>&#160;&#160;&#160; 这种转换方式在Windows runtime引用类型中是不能使用的，因为引用类型的实现是不透明的，并且引用类型在内存中的布局也是未知的。用C#实现的引用类型，在内存中的布局与用C++实现的引用类型是不同的。因此，当使用Windows Runtime类型时，我们不能依赖于C++语言的特定功能，如隐式的将派生类转换至基类和强制类型转换。</p>
-
-<p>&#160;&#160;&#160; 为了执行这些转换，我们必须使用IUnknown接口的第三个成员方法：<a href="http://msdn.microsoft.com/en-us/library/ms682521.aspx">IUnknown::QueryInterface</a>。这个成员函数被当做与语言无关的转换(dynamic_cast)：它尝试将类转换为特定的接口，并返回是否转换成功。因为每个runtime类型都实现了IUnknown接口，并提供它自己定义的QueryInterface，只要是它实现了的语言和框架，如果需要，都可以返回正确的对应接口指针。</p>
-
-<h3><a name="t4"></a>通过WRL使用对象</h3>
-
-<p>&#160;&#160;&#160; 我们来看看如何通过WRL来使用之前定义的Number类。这个示例接收一个Number实例，并调用SetValue方法进行值的设置，调用GetValue方法获取值。（为了简洁，省略了异常检查。）</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void F(ComPtr&lt;__INumberPublicNonVirtuals&gt; const&amp; numberIf)
-    {
-        // Get a pointer to the object&#039;s ISetValue interface and set the value:
-        ComPtr&lt;isetvalue&gt; setValueIf;
-        numberIf.As(&amp;setValueIf);
-    
-        setValueIf-&gt;SetValue(42);
-    
-        // Get a pointer to the object&#039;s IGetValue interface and get the value:
-        ComPtr&lt;igetvalue&gt; getValueIf;
-        numberIf.As(&amp;getValueIf);
-    
-        int value = 0;
-        getValueIf-&gt;GetValue(&amp;value);
-    }&lt;/igetvalue&gt;&lt;/isetvalue&gt;</pre>
-
-
-<p>WRL ComPtr模板的成员函数As简单的封装了IUnknown::QueryInterface的调用，主要是为了防止常见的编程错误。首先，用它来获得ISetValue接口指针并调用SetValue，然后在获取IGetValue接口指针并调用GetValue。</p>
-
-<p>&#160;&#160;&#160; 如果我们能够获得Number*，并通过该指针调用SetValue和GetValue，将会简单很多。不幸的是，我们不能这样做：之前说过，引用类型的实现是不透明的，我们只能使用一个指向它所实现的接口中的一个接口的指针来与对象进行交互。在Number对象中，只能通过IGetValue*，ISetValue*，或者_INumberPublicNonVirtuals*。</p>
-
-<p>&#160;&#160;&#160; 这里调用两个成员方法使用了许多代码，通过这个示例演示了一个主要的障碍，我们必须要克服它，使Windows Runtime类型的使用更简单。不像COM，Windows Runtime不允许一个接口继承自另外一个Windows Runtime接口；所有的接口必须直接继承自IInspectable。每一个接口都是独立的，我们只能通过这些接口与对象进行交互，如果使用实现了多个接口（大多数类型都是这样的）的一个类型，那么我们不得不写很多非常冗余的类型转换代码，以便于得到正确的接口指针，来调用每一个函数。</p>
-
-<h3><a name="t5"></a>通过C++/CX使用对象</h3>
-
-<p>&#160;&#160;&#160; C++/CX的一个优点是编译器知道哪种类型是Windows Runtime类型。编译器访问Windows Metadata（WinMD）文件，这个文件定义了每一个接口和runtime类型，因此，除了别的事情外，编译器知道每一个runtime类型实现的接口集。例如，编译器知道Number类型实现的ISetValue和IGetValue接口，因为metadata里面有描述。编译器能根据这些类型信息来自动的生成类型转换代码。</p>
-
-<p>&#160;&#160;&#160; 看看下面的C++/CX代码，作用跟上面的WRL示例一样：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
-    {
-        ISetValue^ setValueIf = number;
-        setValueIf-&gt;SetValue(42);
-    
-        IGetValue^ getValueIf = number;
-        int value = getValueIf-&gt;GetValue();
-    }</pre>
-
-
-<p>因为编译器知道Number实现了ISetValue和IGetValue接口，所以它允许隐式的将Number^转换为ISetValue^何IGetValue。这中隐式的转换会引发编译器生成这样的代码：调用IUnknown::QueryInterface来获得正确的接口指针。出了整洁的语法外，这里没有奇怪的行为：编译器只是生成类型转换的代码，否则需要我们自己来写。</p>
-
-<p>&#160;&#160;&#160; 我们同样期待dynamic_cast可用：当然，这是可以的，例如，下面的代码从IsetValue^获取IGetValue^：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
-   {
-       ISetValue^ setValueIf = number;
-       setValueIf-&gt;SetValue(42);
-   
-       IGetValue^ getValueIf = dynamic_cast&lt;igetvalue  ^&gt;(setValueIf);
-       int value = getValueIf-&gt;GetValue();
-   }&lt;/IGETVALUE^&gt;</pre>
-
-
-<p>这个示例的行为与上面那个例子一样，我们只是使用不同的步骤获得相同的行为。如果转换失败，dynamic_cast会返回nullptr。C++/CX同样提供了safe_cast，如果转换失败的话，会抛出一个<a href="http://msdn.microsoft.com/en-us/library/hh755790.aspx">Platform::InvalidCastException</a>异常。</p>
-
-<p>&#160;&#160;&#160; 当我们在讨论上面的WRL示例时，我们注意到，示例中并没有Number*，只能使用接口指针。这引出了一个问题：Number^是什么？在runtime中，Number^是__INumberPublicNonVirtuals^。hat(^)涉及到的runtime类型(不是一个接口)实际上是代表一个指针，该指针指向runtime类型的缺省接口。</p>
-
-<p>&#160;&#160;&#160; 在编译时，编译器将Number^当做整个Number对象。编译器聚集了Number实现的所有的成员接口，并允许通过Number^来直接调用这些成员。我们可以使用Number^来代替IGetValue^和ISetValue，编译器会植入QueryInterface的调用，以执行相关的转换，来完成函数调用。</p>
-
-<p>&#160;&#160;&#160; 因此，我们可以进一步简化C++/CX编程：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
-   {
-       number-&gt;SetValue(42);
-       int value = number-&gt;GetValue();
-   }</pre>
-
-
-<p>这里的代码做的事情与第一个C++/CX示例和WRL示例一样。这同样没有神奇的地方：编译器简单的生成所有的样式，来对类型进行转换，以使每个函数被调用。</p>
-
-<p>&#160;&#160;&#160; 你可能发现到这个示例代码非常的段，并不像WRL示例那样冗长，这就是我们的开始。:&ndash;)所有的转换代码都不需要我们来写，我们只需要使用^和ref来告诉编译器，我们将要处理Windows Runtime类型——看起来跟C++代码写的普通C++类型非常相似。这是一个点，理想情况下，我们的Windows Runtime类型代码应该竟可能的与C++类型代码相似。</p>
-
-<h3><a name="t6"></a>最后：注意事项</h3>
-
-<p>&#160;&#160;&#160; ComPtr<T>和T^都是无开销的智能指针：每一个智能指针的size跟普通指针的size一样，操作使用它们不需要做任何不必要的工作。如果你需要在C++/CX代码和WRL代码间互操作，你可以简单的使用reinterpret_cast将T^转换为T*：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">ABI::ISetValue* setValuePtr = reinterpret_cast(setValueIf);</pre>
-
-
-<p>（ABI中对象级别的定义是在ABI名称空间下，所有这不会与C++/CX高级别的定义产生冲突，C++/CX定义在全局名称空间。）<a href="http://www.devdiv.com/_DevDiv%E5%8E%9F%E5%88%9B_Windows_8_Metro_App%E5%BC%80%E5%8F%91_19_C___CX_Part_0_of__n___C___CX%E7%AE%80%E4%BB%8B-thread-134499-1-1.html"></a></p>
-
-<p>&#160;&#160;&#160; 除了提供类型转换功能外，hat(^)还提供了其它一些好处，这些好处通过普通的智能指针（如ComPtr）是不能完成的。其中最重要的一个好处就是hat到处都可以使用。后面这段话不太理解，等理解了再来翻译一下吧（A member function that takes an interface pointer as an argument is declared as taking a raw pointer (this is part of the Windows Runtime ABI, which is designed to be simple and language-neutral, and thus knows nothing of what a C++ smart pointer is). So, while one can use</p>
-
-<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
-  <table cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="line-numbers">
-        <div>
-          1<br />
-        </div>
-      </td>
-      
-      <td>
-        <div class="text codecolorer">
-          ComPtr
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-
-
-<p>most places, raw pointers still need to be used at the ABI boundary, and there is room for subtle (and not-so-subtle) programming errors.）</p>
-
-<p>&#160;&#160;&#160; 最后一段话我想下面这段话也贴原文吧，是不是太难以理解了，不知道作者表达的意思（With C++/CX, the compiler already transforms member function signatures to translate between exceptions and HRESULTs and the compiler is also able to inject conversions from</p>
-
-<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
-  <table cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="line-numbers">
-        <div>
-          1<br />
-        </div>
-      </td>
-      
-      <td>
-        <div class="text codecolorer">
-          T^
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-
-
-<p>to</p>
-
-<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
-  <table cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="line-numbers">
-        <div>
-          1<br />
-        </div>
-      </td>
-      
-      <td>
-        <div class="text codecolorer">
-          T*
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-
-
-<p>where required, substantially reducing the opportunity for programming errors.）</p>
 
 		
 		
