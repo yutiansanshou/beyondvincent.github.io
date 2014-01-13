@@ -14,7 +14,7 @@ published: true
 
 ###小引###
 
-本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。
+本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。本文参考[Animating UITableView cells](http://www.thinkandbuild.it/animating-uitableview-cells/)
 
 下面先来看看最终的效果：
 
