@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-11T01:08:15+08:00</updated>
+  <updated>2014-01-13T17:18:08+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,104 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[给tableview cell添加动画]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/13/animation-tableview-cell/"/>
+    <updated>2014-01-13T17:30:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/13/animation-tableview-cell</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/01/5.png" alt="" /></p>
+
+<!--more-->
+
+
+<h3>小引</h3>
+
+<p>本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。</p>
+
+<p>下面先来看看最终的效果：</p>
+
+<iframe height=498 width=510 src="http://player.youku.com/embed/XNjYxMTgxOTQw" frameborder=0 allowfullscreen></iframe>
+
+
+<p>从上面的视频中，可以看出，当cell显示出来的时候，是在Y和Z轴上进行3D旋转。</p>
+
+<p>下面来看看是如何实现的：</p>
+
+<p>首先假设你已经能够熟练使用UITableView了。那么我们只需要实现UITableViewDelegate中的tableView:WillDisplayCell:ForRowAtIndexPath:即可。当cell显示之前，会先调用该方法，因此给cell添加动画，在这个方法里面即可。</p>
+
+<p>如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">tableView:</span><span class="p">(</span><span class="n">UITableView</span> <span class="o">*</span><span class="p">)</span><span class="nv">tableView</span> <span class="nf">willDisplayCell:</span><span class="p">(</span><span class="n">UITableViewCell</span> <span class="o">*</span><span class="p">)</span><span class="nv">cell</span> <span class="nf">forRowAtIndexPath:</span><span class="p">(</span><span class="n">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span><span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. 配置CATransform3D的内容</span>
+</span><span class='line'>    <span class="n">CATransform3D</span> <span class="n">transform</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">transform</span> <span class="o">=</span> <span class="n">CATransform3DMakeRotation</span><span class="p">(</span> <span class="p">(</span><span class="mf">90.0</span><span class="o">*</span><span class="n">M_PI</span><span class="p">)</span><span class="o">/</span><span class="mi">180</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">transform</span><span class="p">.</span><span class="n">m34</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span> <span class="o">-</span><span class="mi">600</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. 定义cell的初始状态</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowColor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">]</span><span class="n">CGColor</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowOffset</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">anchorPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. 定义cell的最终状态，并提交动画</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIView</span> <span class="nl">beginAnimations:</span><span class="s">@&quot;transform&quot;</span> <span class="nl">context:</span><span class="nb">NULL</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIView</span> <span class="nl">setAnimationDuration:</span><span class="mf">0.5</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">CATransform3DIdentity</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowOffset</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cell</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">cell</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">cell</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIView</span> <span class="n">commitAnimations</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一步：使用CATransform3D在Y和Z轴上做旋转设置。</p>
+
+<p>第二步：定义cell的初始状态，添加了一些阴影，并将第一步中的transform设置给cell中layer的transform matrix。然后将anchor设置为0.0, 0.5，也就是说让cell围绕着左边进行旋转。</p>
+
+<p>第三步：通过动画，将cell设置为原始状态。此处利用了UIView的beginAnimations:context方法来更新cell中layer的值。当然还有别的方法来执行动画，不过这种方法比较简单，我们可以设置持续时间。代码里面将transform设置为CATransform3DIdentity。</p>
+
+<p>这样通过第二步和第三步的状态就能够引导动画，以此完成最终效果。</p>
+
+<p>完整代码工程下载地址：
+<a href="https://github.com/BeyondVincent/BVTableViewAnimation">BVTableViewAnimation</a></p>
+
+<p>下面是网上看到的两个内容，可以参考：</p>
+
+<p><a href="http://maniacdev.com/2013/05/library-allowing-you-to-create-table-views-with-wacky-highly-detailed-ripple-cell-animations">Library Allowing You To Create Table Views With Wacky Highly Detailed Ripple Cell Animations
+</a></p>
+
+<p><a href="http://maniacdev.com/2012/05/drop-in-open-source-library-for-creating-wacky-animated-uitableviews">Drop-In Open Source Library For Creating Wacky Animated UITableViews</a></p>
+
+<p>希望上面介绍对你有帮助，如果有问题，可以在下面的回复我。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我的iOS成长之路-3-iOS开发个人提升]]></title>
@@ -5313,79 +5411,6 @@ mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.p
 <p>上面只是列出了少许新内容，你可以通过苹果提供的文档<a href="https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html">What’s New in iOS</a> 查阅更多相关内容。</p>
 
 <p>注：本文是iOS 7开发者指南中的11篇中的第1篇。你可以在<a href="http://www.doubleencore.com/2013/09/essential-ios-7-developers-guide">这里</a>看到指南的全部内容。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Xcode 5中的Interface Builder更有利于团队协作开发]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"/>
-    <updated>2013-09-04T11:45:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/04/111-xcode-5-finally-makes-interface-builder-a-viable-option-for-teams</id>
-    <content type="html"><![CDATA[<h2><strong>小引</strong></h2>
-
-<p>在iOS开发中，开发者有各种理由选择用代码来构建界面，其中最多的理由就是Interface Builder绘制的代码不利于团队间协作(代码的可读性和合并)。虽然Interface Builder来绘制界面有诸多优势，但是由于致命的缺陷，许多开发团队不得不远离它，当然也有一些开发团队为了在协同开发时也使用IB来绘制界面，他们尽量确保同一时期只由一个人来操作某个xib文件，以此避免提交代码的时候需要合并xib文件。然而，在Xcode 5中，苹果的开发团队已经对xib文件格式做了大量的简化工作。本文就来简要的看看相关内容。</p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://nilsou.com/blog/2013/08/07/xcode-5-finally-makes-interface-builder-a-viable-option-for-teams/"><code>Xcode 5 Finally Makes Interface Builder a Viable Option for Teams</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Xcode 4中xib文件的格式</li>
-<li>Xcode 5中xib文件的格式</li>
-<li>小结</li>
-</ul>
-
-
-<p>上周我将代码merge到我的working branch时，注意到以前没曾见过的提示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/1.png"></p>
-
-<p>Git会自动合并<strong>xib文件</strong>！我在想，Xcode 5中肯定对xib文件的格式做了修改，所以我准备深入研究一下。</p>
-
-<p>原来由Xcode 5生成的xib文件是一种全新的格式。看起来苹果这次对xib文件格式的变更将有助于开发团队开始考虑使用IB来绘制界面。</p>
-
-<h3><strong>* Xcode 4中xib文件的格式</strong></h3>
-
-<p>为了演示xib文件格式在Xcode 4和Xcode 5中的差异，我首先在Xcode 4中创建了一个新的xib文件，并添加了一些view进去：一个UIScrollView，该scrollview中包含一些UIButton、UILable和TextView等。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/2.png"></p>
-
-<p>然后我在工程导航窗口中右键单击该文件，并选择<code>Open As &gt; Source Code</code>。下面的链接中是看到的内容：</p>
-
-<p><a href="https://gist.github.com/nilsou/6057457">Xcode 4生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
-
-<p>可以看到，这么简单的一个view居然有<code>1108行</code>代码！这太多了。</p>
-
-<p>对开发者来说它的可读性非常的糟糕。这是开发者为什么不喜欢xib文件的主要原因(由此放弃使用interface builder)。</p>
-
-<p>更糟糕的是这个xib文件的格式还具有不确定性。也就是说如果我在Interface Builder创建相同的UI界面，但是我们看到的文件内容并不是相同的。这就导致xib文件的合并非常的困难，甚至不可能进行合并。这事开发者不使用xib文件的另外一个重要原因。</p>
-
-<h3><strong>* Xcode 5中xib文件的格式</strong></h3>
-
-<p>接着，我在Xcode 5中打开同一个工程。当在Xcode 5中打开用Xcode 4创建的xib文件时，会提示将文件升级到新的格式。这里需要注意的是升级之后的文件只能在Xcode 5中打开，这种新格式的文件不能在老版本中的Xcode中打开。所以，如果是团队协作开发，那么升级的时候，需要确保所有的开发者都使用Xcode 5。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/3.png"></p>
-
-<p>我点击<code>Upgrade</code>，然后再次打开xib文件的source code，看看有什么变化。如下链接中所示：</p>
-
-<p><a href="https://gist.github.com/nilsou/6057474">Xcode 5生成的.xib文件</a>(需要点击“File suppressed. Click to show.”)</p>
-
-<p><code>133行</code>！这与Xcode 4中创建的xib文件相差约10倍。可见苹果的开发团队已经对xib文件格式做了大量的简化。</p>
-
-<p>再看看里面的具体内容，可以看出它的可读性也加强了。xib文件中的源代码现在也能够反应出view的层次(Interface Builder左边看到的内容结构！)，等熟悉之后，开发者可以直接对这个xml代码进行编写。</p>
-
-<p>最重要的一点，可以看出Xcode 5生成的xib文件内容源码位置是确定的。这非常利于文件的合并。</p>
-
-<h3><strong>小结</strong></h3>
-
-<p>这种新的格式带来的最大好处不仅仅是增强开发者对xib文件的可读性，另外在大多数情况下，git还可以对xib文件进行自动合并，不用开发者手动进行。</p>
-
-<p>现在如果还有开发者告诉你他不想用xib文件，那么请把这篇文章发给他看看吧，我相信已经没有太多理由不使用xib文件了。</p>
-
-<p>其实在Xcode 5中不仅对Interface Builder进行了改善，还有其它一些功能也做了改进，例如自动布局约束的设置已经没有以前痛苦了。</p>
 ]]></content>
   </entry>
   
