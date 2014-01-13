@@ -67,6 +67,8 @@ published: true
 
 下面是网上看到的两个内容，可以参考：
 
+[From RW：Table View Animations Tutorial: Drop-In Cards](http://www.raywenderlich.com/49311/advanced-table-view-animations-tutorial-drop-in-cards)[`@bluesea哈哈哈`](http://weibo.com/522056706)推荐本链接
+
 [Library Allowing You To Create Table Views With Wacky Highly Detailed Ripple Cell Animations
 ](http://maniacdev.com/2013/05/library-allowing-you-to-create-table-views-with-wacky-highly-detailed-ripple-cell-animations)
 
