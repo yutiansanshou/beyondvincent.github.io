@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-13T17:18:08+08:00</updated>
+  <updated>2014-01-13T17:41:22+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -101,6 +101,8 @@
 <a href="https://github.com/BeyondVincent/BVTableViewAnimation">BVTableViewAnimation</a></p>
 
 <p>下面是网上看到的两个内容，可以参考：</p>
+
+<p><a href="http://www.raywenderlich.com/49311/advanced-table-view-animations-tutorial-drop-in-cards">From RW：Table View Animations Tutorial: Drop-In Cards</a><a href="http://weibo.com/522056706"><code>@bluesea哈哈哈</code></a>推荐本链接</p>
 
 <p><a href="http://maniacdev.com/2013/05/library-allowing-you-to-create-table-views-with-wacky-highly-detailed-ripple-cell-animations">Library Allowing You To Create Table Views With Wacky Highly Detailed Ripple Cell Animations
 </a></p>
