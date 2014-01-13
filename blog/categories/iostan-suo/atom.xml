@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-13T17:41:22+08:00</updated>
+  <updated>2014-01-13T23:39:20+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -25,7 +25,7 @@
 
 <h3>小引</h3>
 
-<p>本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。</p>
+<p>本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。本文参考<a href="http://www.thinkandbuild.it/animating-uitableview-cells/">Animating UITableView cells</a></p>
 
 <p>下面先来看看最终的效果：</p>
 
