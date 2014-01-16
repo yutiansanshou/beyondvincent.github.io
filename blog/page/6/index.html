@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[051]数据绑定(3)通知属性改变 小引 当绑定源的某个属性改变了，有时候在绑定目标上需要得到实时更新，比如航班起飞时间延误了，那么需要实时的将此信息告知乘客。本文， &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[052]变换(Transform)(1)简介 小引 在程序的开发过程中，变换是一个常用的操作，比如图片的缩放、旋转、移动等，都涉及到变换。在接下来的几篇文章中， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,157 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/81/" itemprop="url">Windows Store App开发[052]变换(Transform)(1)简介</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>在程序的开发过程中，变换是一个常用的操作，比如图片的缩放、旋转、移动等，都涉及到变换。在接下来的几篇文章中，我将对变换进行详细的介绍，欢迎你的阅读。</p>
+
+<h3><a name="t4"></a>变换简介</h3>
+
+<p>变换在数学上的定义是这样的：</p>
+
+<p>非空集合A到自身的一个映射f：A→A称为集合A的变换。</p>
+
+<p>变换是基于一个数学公式：从一个Point到新的一个Point。如果将某个对象所有的Point都应用到这个公式上，就可以达到移动、缩放、旋转等效果。</p>
+
+<p>在Windows Runtime中，UIElement定义了三个属性来支持变换：</p>
+
+<ol>
+<li>RenderTransform——位置变换信息</li>
+<li>RenderTransformOrigin——RenderTransform变换的原点信息</li>
+<li>Projection——投影效果(三维效果)</li>
+</ol>
+
+
+<p>这些属性是定义在UIElement上的，可知，所有的Element都可以进行变换，例如：Image、TextBlock和Button。如果在Panel的子类(如Grid)上进行变换，那么这个子类所有的children都会同时被变换。</p>
+
+<h3><a name="t5"></a>变换类型</h3>
+
+<p>在Windows Runtime中，变换类型有如下：</p>
+
+<ol>
+<li>仿射变换——RenderTransform</li>
+<li>非仿射变换——Projection</li>
+</ol>
+
+
+<h4><a name="t6"></a>仿射变换</h4>
+
+<p>仿射变换的继承关系，如下图所示：</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/120.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb18.jpg" width="412" height="677" /></a></p>
+
+<p>从图中我们可以看到，仿射变换有7种类型（粉色部分），平移、缩放、旋转等，在后续的文章中，我会详细介绍如何使用它们。</p>
+
+<p>粉色部分的排列顺序是按照数学公式复杂度排列的，TranslateTransform最简单，TransformGroup最复杂。</p>
+
+<p>这7个类定义了二维仿射变换，对象变换之后，直线依旧是直线，平行关系也不会发生改变。只不过位置、大小、方向发生改变而已。</p>
+
+<p>前面已经说了RenderTransform是UIElement的属性，它的类型是Transform。所以可以把这7种类型赋值给RenderTransform。</p>
+
+<h4><a name="t7"></a>非仿射变换——Projection</h4>
+
+<p>非仿射变换的继承关系，如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/216.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb15.jpg" width="388" height="366" /></a></p>
+
+<p>非仿射变换主要用于三维视觉，在使用的时候，只需要将PlaneProjection或Matrix3DProjection赋值给UIElement的属性Projection即可。</p>
+
+<p>注：在三维空间中，旋转总是基于某个轴（xyz）进行的。</p>
+
+<p>很明显：在这种情况下，对象的平行关系是会改变的。</p>
+
+<p>Projection变换也经常称为模拟3D变换，比如Flip(翻转)。</p>
+
+<p>在后续的文章中，我会对Projection进行详细介绍。</p>
+
+<h3><a name="t8"></a>变换演示</h3>
+
+<p>下面我写了个小示例，来演示一下仿射变换和非仿射变换的效果。</p>
+
+<p>左边是原始效果，中间是以正中心为原点，旋转45度，右边是翻转45度</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.jpg" width="682" height="386" /></a></p>
+
+<p>最后附上代码，方便大家自行演示效果</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" mc:ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="using:BV_Transform_Introduction" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="BV_Transform_Introduction.MainPage"&gt;
+
+    &lt;grid background="Green"&gt;
+        &lt;grid.columndefinitions&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+        &lt;/grid.columndefinitions&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="0" text="原始效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="0" source="1.jpg" /&gt;&lt;/img&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="1" text="旋转效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="1" source="1.jpg" /&gt;
+            &lt;image.rendertransformorigin&gt;0.5 0.5&lt;/image.rendertransformorigin&gt;
+            &lt;image.rendertransform&gt;
+                &lt;rotatetransform angle="45"&gt;&lt;/rotatetransform&gt;
+            &lt;/image.rendertransform&gt;
+        &lt;/img&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="2" text="翻转效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="2" source="1.jpg" /&gt;
+            &lt;image.projection&gt;
+                &lt;planeprojection rotationy="60"&gt;&lt;/planeprojection&gt;
+            &lt;/image.projection&gt;
+        &lt;/img&gt;
+        &lt;img width="549" height="92" margin="352,676,0,0" horizontalalignment="Left" grid.column="1" source="BeyondVincentWin8Logo.png" grid.columnspan="2" verticalalignment="Top" /&gt;
+    &lt;/grid&gt;
+&lt;/page&gt;</pre>
+
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/TransformIntroduction" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1836,120 +1987,6 @@ async void OnLoaded(object sender, RoutedEventArgs arg)
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/71/" itemprop="url">Windows Store App开发[042]修改ProgressBar的颜色</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>如果你想要修改ProgressBar的foreground 颜色，用下面的方法是不行的：</h3>
-
-<p><ProgressBar IsIndeterminate="True" Foreground="Aquamarine" /></p>
-
-<p>要修改ProgressBar的颜色，需要override默认主题资源字典中的如下值：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;resourcedictionary.themedictionaries&gt;
-    &lt;resourcedictionary x:key="Default"&gt;
-        &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
-    &lt;/resourcedictionary&gt;
-&lt;/resourcedictionary.themedictionaries&gt;</pre>
-
-
-<p>可以将这个override添加到App.xaml中，或者创建一个新的资源字典，并合并到App.xaml中：</p>
-
-<p>A、直接添加到App.xaml中，如下代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;application.resources&gt;
-    &lt;resourcedictionary&gt;
-        &lt;resourcedictionary.themedictionaries&gt;
-            &lt;resourcedictionary x:key="Default"&gt;
-                &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
-            &lt;/resourcedictionary&gt;
-        &lt;/resourcedictionary.themedictionaries&gt;
-        &lt;resourcedictionary.mergeddictionaries&gt;
-
-            &lt;!-- 
-                Styles that define common aspects of the platform look and feel
-                Required by Visual Studio project and item templates
-                --&gt;
-            &lt;resourcedictionary source="Common/StandardStyles.xaml"&gt;
-        &lt;/resourcedictionary&gt;&lt;/resourcedictionary.mergeddictionaries&gt;
-
-    &lt;/resourcedictionary&gt;
-&lt;/application.resources&gt;</pre>
-
-
-<p>B、创建了一个CustomStyles.xaml，并将该文件合并到App.xaml中：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="Sample.App"&gt;
-    
-    &lt;application.resources&gt;
-        &lt;resourcedictionary&gt;
-            &lt;resourcedictionary.mergeddictionaries&gt;
-                &lt;resourcedictionary source="Common/StandardStyles.xaml"&gt;
-                &lt;resourcedictionary source="Common/CustomStyles.xaml"&gt;
-            &lt;/resourcedictionary&gt;&lt;/resourcedictionary&gt;&lt;/resourcedictionary.mergeddictionaries&gt;
-        &lt;/resourcedictionary&gt;
-    &lt;/application.resources&gt;
-&lt;/application&gt;</pre>
-
-
-<p>CustomStyles.xaml:</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;resourcedictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
-    &lt;!-- Global Overrides --&gt;
-    &lt;resourcedictionary.themedictionaries&gt;
-        &lt;resourcedictionary x:key="Default"&gt;
-            &lt;x:string x:key="ProgressBarIndeterminateForegroundThemeBrush"&gt;Red&lt;/x:string&gt;
-        &lt;/resourcedictionary&gt;
-    &lt;/resourcedictionary.themedictionaries&gt;
-&lt;/resourcedictionary&gt;</pre>
-
-
-<p>运行效果如下：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/56.png"><img title="5" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb6.png" width="565" height="221" /></a></p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/ChangeProgressBar" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
 </div>
 
 
