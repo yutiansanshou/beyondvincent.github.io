@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[042]修改ProgressBar的颜色 如果你想要修改ProgressBar的foreground 颜色，用下面的方法是不行的： 要修改ProgressBar的颜色， &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[043]MessageDialog的使用 小引 最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,189 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/72/" itemprop="url">Windows Store App开发[043]MessageDialog的使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows Store app中自带的对话框MessageDialog，实际上非常简单。在下一篇文章中，我将介绍如何使用Popup自定义对话框。</p>
+
+<h3><a name="t4"></a>MessageDialog介绍</h3>
+
+<p>MessaDialog类代表了一个对话框，该对话框中最多可以有3个Command。默认情况下有一个关闭命令。当MessageDialog显示出来时，会对屏幕进行灰度处理，并阻止其它操作。</p>
+
+<p>关于对话框的详细资料，可以来参考msdn上的介绍，如下链接：</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog</u></a></p>
+
+<h3><a name="t5"></a>默认MessageDialog的使用</h3>
+
+<p>如下代码，直接构造，然后设置Title即可，然后调用ShowAsync进行显示。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_1(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(\\&quot;你好，这里是Windows Store app学习之旅！\\&quot;);
+    dialog.Title = \\&quot;温馨提示\\&quot;;
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/115.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb13.png" width="682" height="389" /></a></p>
+
+<h3>带Command的MessageDialog</h3>
+
+<p>MessageDialog中有一个Command列表，如下定义：</p>
+
+<p>IList<IUICommand> Commands</p>
+
+<p>我们可以往这个列表中添加自己的Command，注意，最多只能是3个。如下代码：</p>
+
+<p>在下面代码中，Command对应的操作是通过lambda表达式进行的，当然，这里也可以把操作内容单独封装在一个函数里面，此处略。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_2(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, command =&gt;
+    {
+        //在这里做相关操作
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, command =&gt;
+    {
+        //在这里做相关操作
+    }));
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/212.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb13.png" width="682" height="386" /></a></p>
+
+<h3>获取MessageDialog的返回值</h3>
+
+<p>我们可以获取MessageDialog的返回值，以根据返回内容，做相应的操作，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_3(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/314.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb14.png" width="682" height="386" /></a></p>
+
+<h3>设置MessageDialog中Command的index</h3>
+
+<p>MessageDialog中的index有：</p>
+
+<p>CancelCommandIndex：当按Esc键时，会触发该index对应的Command</p>
+
+<p>DefaultCommandIndex：当按Enter键时，会触发该index对应的Command</p>
+
+<p>如下代码：</p>
+
+<p>当按Enter键时，访问DevDiv主页</p>
+
+<p>当按Esc键时，做关闭命令</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_4(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+
+    dialog.DefaultCommandIndex = 0;
+    dialog.CancelCommandIndex = 2;
+
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        //OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 1)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<h3>程序主画面运行效果</h3>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/411.png"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb11.png" width="682" height="386" /></a></p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/MessageDialog" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1301,114 +1484,6 @@
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/62/" itemprop="url">Windows Store App开发[035]如何创建自己的Windows Store账号来提交Apps</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>如果你想要在Windows Store发布或者销售Apps，你需要开一个开发者账号。如果你已经有一个其它Microsoft services账号——如Windows Phone，你同样需要开一个Windows Store开发者账号。</p>
-
-<h3><a name="t2"></a>&#160;&#160;&#160; 注册步骤：</h3>
-
-<p>注意：在注册之前，你需要有一个信用卡。Windows Store需要使用信用卡来开一个开发者账号——即使你有了注册码，你可以看这里：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/jj553414.aspx">保护你的Microsoft账号安全</a>，的信息，这里的安全措施可以帮助你保护你的账号安全。</p>
-
-<h4><a name="t3"></a>1、在下面的链接打开仪表盘（Dashboard）</h4>
-
-<p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/"><u>Windows Dev Center &#8211; Windows Store apps.</u></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.jpg" width="682" height="402" /></a></p>
-
-<h4>2、登录你已有的Microsoft账号，或者注册一个新的Microsoft账号。</h4>
-
-<p>&#160;&#160;&#160; 在这里，想了解Microsoft账号更多的使用情况，请看链接： <a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh868187.aspx"><u>Picking a Microsoft account for the Windows Store</u></a>。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/29.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.jpg" width="682" height="409" /></a></p>
-
-<h4>3、如果你没有相关的Microsoft账号，你可以现在创建一个。</h4>
-
-<p>&#160;&#160;&#160; 注意：如果你使用了已有的Microsoft账号，那么你的Microsoft账号信息会被复制到Windows Store开发者账号中。</p>
-
-<p>&#160;&#160;&#160; 登录之后，会看到如下图中的内容：表示注册步骤有：账号类型->账户信息->协议->价格->付款->购买->谢谢</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/35.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb5.jpg" width="682" height="203" /></a></p>
-
-<p>&#160;</p>
-
-<h4>4、选择国家地区和Windows Store开发者账号类型，然后点击下一步。更多关于如何选择账号类型，请阅读：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh868184.aspx#account_type"><u>Registering for a Windows Store developer account</u></a>.</h4>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/47.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb7.jpg" width="682" height="453" /></a></p>
-
-<h4>5、输入你的Windows Store开发者账户信息。</h4>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/55.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb5.jpg" width="682" height="466" /></a></p>
-
-<p>&#160;</p>
-
-<p>如果你注册的是公司类型，你需要填写审批者的姓名、email地址和电话，然后点击下一步。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/64.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb4.jpg" width="554" height="434" /></a></p>
-
-<h4>6、查看使用条款，并点击接受，然后点击下一步。如果你想在注册之前阅读这些条款，请看这里： <a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh694082.aspx"><u>Windows Store agreements</u></a>.</h4>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/74.jpg"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb4.jpg" width="682" height="559" /></a></p>
-
-<h4>7、输入注册码，然后点击下一步</h4>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/84.jpg"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb4.jpg" width="682" height="380" /></a></p>
-
-<p>&#160;</p>
-
-<h4>8、输入你的付款信息，然后点击下一步</h4>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/93.jpg"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb3.jpg" width="682" height="406" /></a>
-&#160;</p>
-
-<h4>9、确认账号和付款信息是否正确，然后点击购买（Purchase）</h4>
-
-<h4><a name="t12"></a>10、微软将会发送一个确认信息到你填写的开发者电子邮件地址中。</h4>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
 </div>
 
 

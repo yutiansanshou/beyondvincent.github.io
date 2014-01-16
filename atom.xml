@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-16T11:32:08+08:00</updated>
+  <updated>2014-01-16T17:53:51+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我写的第一本书：Windows 8开发实战体验]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/16/for-my-first-book/"/>
+    <updated>2014-01-16T17:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/16/for-my-first-book</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/01/9.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>2013年我写了一本书，书名叫做<a href="http://www.amazon.cn/dp/B00EOF7XKC">Windows 8开发实战体验</a>。在刚开始写该书的时候，我对Windows 8的前景还是看好的，每天经常写到半夜2-3点中。但是等书写完，出版出来的时候，我的心情确高兴不起来，因为此时大家都知道，windows 8不足以与iOS和Android抗衡，好多开发者都不看好它了，自然也就不在这方面发力。</p>
+
+<p>还记得2012年下半年的时候，国内还是有许多开发者投入Windows 8的，不过到现在，基本已经没什么了。不知道Windows 8怎么了。是否值得期待Windows 9呢？</p>
+
+<p>每当大家问起这书的销量时，我在想，Windows 8都这样了，还有人舍得去投资吗？估计对Windows 8的投入，也就是大公司为了各自产品的布局而没有舍弃的了。</p>
+
+<p>如果你希望支持我一下的话，也可以去<a href="http://www.amazon.cn/dp/B00EOF7XKC">亚马逊</a>上买几本哟。</p>
+
+<p>惯例，上几张图片：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/11.png" alt="" /></p>
+
+<p>下面是公司内刊《云电同方人》曾经对我的一个采访函，贴出来，就当纪念吧：</p>
+
+<p>采访人物： 周智勋</p>
+
+<p>采访问题：</p>
+
+<p>1、    为什么会写这本书？写作的主要灵感源于何处？</p>
+
+<p><code>其实本书涉及到的许多内容首先是发布到我博客中的，后来随着文章数量的增加，就有了出版的想法，进而开始跟出版社沟通相关事情。</code></p>
+
+<p>2、    全书从酝酿到出版，总共花费了多久的时间？能否具体谈谈这个过程</p>
+
+<p><code>从跟出版社约谈，到最终出版大约花了半年时间。其中大致经历了大纲制定、初稿编写、初审、二审和终审，以及下厂编册。</code></p>
+
+<p>3、    作为技术性人才，很多人在写作这一方面并非特别擅长，那么在写这本书的过程有没有让你困扰的地方？</p>
+
+<p><code>其实我也不擅长写作，很难做到胸有成竹，一直在想许多名著是如何写成的。后来慢慢的发现，日积月累真是个好词，许多事情都不是一蹴而就的。坚持了不一定成功，但是不坚持，一定不会成功。</code></p>
+
+<p>4、    在这一过程中，有没有特别想要感谢的人？</p>
+
+<p><code>当然要感谢我的家人和同事对我的技术支持和人文关怀</code></p>
+
+<p>5、    这本书的完成对于你个人、团队、公司的意义分别是怎样的？</p>
+
+<p><code>这本书对于我来说就是成长路上的一抹云彩，点缀了我的工作与生活，增加我人生阅历。由于公司和团队的良好氛围，让我能够得到茁壮成长，相信在这良好的土壤下，能够培养出更多、更优秀的人才。</code></p>
+
+<p>6、    平时有没有什么兴趣爱好？你觉得这样的兴趣爱好对于你的工作和生活有什么影响吗？</p>
+
+<p><code>跑步是我近些年养成的一个习惯。我不知道是不是真的喜欢跑步，因为在篮球和跑步面前，我几乎都会首选篮球。不过我享受跑步带给我的变化，在跑步沿途中不仅能欣赏到各种风景，还能让我身体健康。</code></p>
+
+<p>7、    对你影响最大的一本书是什么？</p>
+
+<p><code>谭浩强的《C程序设计》，是它让我踏上了IT这条不归路。</code></p>
+
+<p>8、    能完成这样一本技术专著，可以说在IT业界也取得了一定成就，你有没有什么心得想与他人分享的？</p>
+
+<p><code>成就谈不上，我只是沧海一粟。想跟大家说的一句话就是“坚持就有收获。</code></p>
+
+<p>9、    对于现在很多刚入职或者已入职一段时间的IT人士深觉IT行业枯燥、乏味，你怎么看待？你能理解他们吗？</p>
+
+<p><code>兴趣是最好的老师。当你对某件事情感兴趣，那么就会主动去接触它，了解它。如果觉得IT行业枯燥和乏味，最好的办法就是培养兴趣或者乘早转行。</code></p>
+
+<p>10、 你个人觉得IT行业未来的发展趋势是怎样的？</p>
+
+<p><code>这个话题有点hold不住！仅从个人角度来看，移动技术、智能客厅、物流整合、大数据和人工智能等都很有发展前景。</code></p>
+
+<p>2014年我计划写一本iOS 8方面的书籍，按照惯例，要等到6月份苹果才会对开发者放出iOS 8的SDK，所以上半年主要做一些准备性的任务。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[迟到的Windows 8]]></title>
@@ -5297,100 +5369,6 @@ mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.p
 <p><img src="http://BeyondVincent.github.io/images/2013/09/17.png"></p>
 
 <p>……Sprite Kit教程：初学者 2 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：初学者 1 ]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"/>
-    <updated>2013-09-26T11:45:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1</id>
-    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/09/6.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li><code>Sprite Kit的优点和缺点</code></li>
-<li><code>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</code></li>
-<li><code>Hello, Sprite Kit!</code></li>
-<li>横屏显示</li>
-<li>移动怪兽</li>
-<li>发射炮弹</li>
-<li>碰撞检测: 概述</li>
-<li>碰撞检测: 实现</li>
-<li>收尾</li>
-<li>何去何从?</li>
-</ul>
-
-
-<p>在iOS 7中内置了一个新的Sprite Kit框架，该框架主要用来开发2D游戏。目前已经支持的内容包括：精灵、很酷的特效(例如视频、滤镜和遮罩)，并且还集成了物理库等许多东西。</p>
-
-<p>iOS 7中附带了一个非常棒的Sprite Kit示例工程，名字叫做Adventure。不过这个示例工程稍微有点复杂，不太适合初学者。本文的目的就是做一个关于Sprite Kit使用的初级教程。</p>
-
-<p>通过本文，你可以从头到尾的学习到如何为你的iPhone创建一个简单又有趣的2D游戏。如果你看过我们之前的教程:<a href="http://www.raywenderlich.com/25736/how-to-make-a-simple-iphone-game-with-cocos2d-2-x-tutorial">Simple Cocos2D game教程</a>，你会发现非常的相似。</p>
-
-<p>在开始之前，请确保已经安装了最新版本的Xcode(5.X)，里面支持Sprite Kit以及iOS 7。</p>
-
-<h3><strong> Sprite Kit的优点和缺点</strong></h3>
-
-<p>首先，我想指出在iOS中开发2D游戏Sprite Kit并不是唯一的选择，下面我们先来看看Sprite Kit的一些优点和缺点。</p>
-
-<p>Sprite Kit的优点：</p>
-
-<p> 1、它是内置到iOS中的，因此并不需要下载额外的库或者其它一些外部依赖。并且它是由苹果开发的，所以对于它的支持和更新我们可以放心。</p>
-
-<p> 2、它内置的工具支持纹理和粒子。</p>
-
-<p> 3、它可以让你做一些其它框架很难做到的事情，例如把视频当做精灵一样处理，或者使用很酷的图形效果和遮罩。</p>
-
-<p>Sprite Kit的缺点：</p>
-
-<p> 1、如果使用了Sprite Kit，那么你将被iOS生态圈所绑架，导致你无法很容易对你开发的游戏移植到Android上。</p>
-
-<p> 2、Sprite Kit现在还处于初始阶段，此时提供的功能还没有别的框架丰富，例如Cocos2D。最缺的东西应该是暂不支持写自定义的OpenGL代码。</p>
-
-<h3><strong> Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</strong></h3>
-
-<p>此时，你可能在想“我该选择使用哪个2D框架呢？”</p>
-
-<p>这取决于你的实际情况，下面是我的一些想法：</p>
-
-<p> 1、如果你是一个初学者，并且只关注于iOS，那么就使用内置的Sprite Kit吧，它非常容易学习，并且完全可以把工作做好。</p>
-
-<p> 2、如果需要写自己的OpenGL代码，那么还是使用Cocos2D，或者其它框架吧，目前Sprite Kit并不支持自定义OpenGL代码。</p>
-
-<p> 3、如果要进行跨平台开发，那么选择Cocos2D-X或者Unity。Cocos2D-X非常出色，可以用它来构建2D游戏。Unity则更加的灵活(例如，如果有需要的话，你可以在游戏中添加一些3D效果)。</p>
-
-<p>看到这里，如果你还想要继续了解Sprite Kit的话，请继续往下读吧。</p>
-
-<h3><strong> Hello，Sprite Kit！</strong></h3>
-
-<p>下面我们就开始利用Xcode 5内置的Sprite Kit模板来构建一个简单的Hello World工程吧。</p>
-
-<p>启动Xcode，选择<code>File\New\Project</code>，接着选中<code>iOS\Application\SpriteKit Game</code>模板，然后单击<code>Next</code>：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/7.png"></p>
-
-<p>输入Product Name为<code>SpriteKitSimpleGame</code>，Devices选择iPhone，接着单击<code>Next</code>：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/8.png"></p>
-
-<p>选择工程保存的路径，然后点击<code>Create</code>。然后点击Xcode中的播放按钮来运行工程。稍等片刻，可以看到如下运行画面：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/9.png"></p>
-
-<p>跟Cocos2D类似，Sprite Kit也是按照<code>场景(scenes)</code>来构建的，这相当于游戏中的&#8221;levels&#8221;和&#8221;screens&#8221;。例如，你的游戏中可能会有一个主游戏区的场景，以及一个世界地图的一个场景。</p>
-
-<p>如果你观察一下创建好的工程，会发现SpriteKit Game模板已经创建好了一个默认的场景<code>MyScene</code>。现在打开<code>MyScene.m</code>，里面已经包含了一些代码，其中将一个lable放到屏幕中，并且添加了：当tap屏幕时，会在屏幕上新增一个旋转的飞船。</p>
-
-<p>在本教程中，我们主要在MyScene中写代码。不过在开始写代码之前，需要进行一个小调整——让程序以横屏的方式运行。</p>
-
-<p>……Sprite Kit教程：初学者 1 结束……</p>
 ]]></content>
   </entry>
   
