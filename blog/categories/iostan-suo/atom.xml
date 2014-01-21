@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-16T17:53:51+08:00</updated>
+  <updated>2014-01-21T16:56:10+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,502 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何自定义iOS中的控件]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/20/how-to-build-a-custom-control-in-ios/"/>
+    <updated>2014-01-20T17:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/20/how-to-build-a-custom-control-in-ios</id>
+    <content type="html"><![CDATA[<p><img src="/images/2014/01/18.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自<a href="http://www.thinkandbuild.it/how-to-build-a-custom-control-in-ios/">How to build a custom control in iOS</a>。大家要是有什么问题，可以直接在<a href="https://twitter.com/bitwaker">twitter</a>上联系原作者，当然也可以在最后的评论中回复我。</p>
+
+<p>下面先来看看目录：</p>
+
+<ol>
+<li>子类化UIControl
+
+<ul>
+<li>绘制用户界面
+
+<ul>
+<li>绘制背景</li>
+<li>绘制用户的可操作区域</li>
+<li>绘制手柄</li>
+</ul>
+</li>
+<li>跟踪用户的操作
+
+<ul>
+<li>开始跟踪</li>
+<li>持续跟踪</li>
+<li>结束跟踪</li>
+</ul>
+</li>
+<li>Target-Action模式</li>
+</ul>
+</li>
+<li>如何使用自定义控件</li>
+<li>总结</li>
+<li>代码下载</li>
+</ol>
+
+
+<p>在开发过程中，有时候UIKit的标准控件并不能满足我们的需求，例如你需要一个控件能支持用户方便的选择0-360°之间的一个角度值，此时就需要根据自己的需求自定义控件了。</p>
+
+<p>对于选择角度值的控件可以这样实现：创建一个圆形的滑块，用户通过拖动手柄操作就能选择角度值。实际上这样的控件在别的一些平台中你可能看到过，但是在UIKit中并没有。</p>
+
+<p>本文就实现一个选择角度值的控件来介绍控件的自定义。下面先来看看到底要做成什么样子：</p>
+
+<p><img src="/images/2014/01/12.png" alt="" /></p>
+
+<h3>1. 子类化UIControl</h3>
+
+<p><code>UIControl</code>是UIView的子类，它又是所有UIKit控件的父类(例如UIButton、UISlider和UISwitch等)。</p>
+
+<p>UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来挥之用户界面。</p>
+
+<p>通过UIControl，我们主要管理3个重要的任务：</p>
+
+<ul>
+<li>绘制用户界面</li>
+<li>跟踪用户的操作</li>
+<li>Target-Action模式</li>
+</ul>
+
+
+<p>在本文的圆形滑块中，我们要做如下一些事情：</p>
+
+<p>定制一个用户界面(圆形滑块本身)，通过该界面用户可以通过手柄进行界面交互。用户的交互操作会被转换为控件target对应的action(控件将滑块按钮的frame origin转换为0-360之间的一个值，并用于target/action上)。</p>
+
+<p>建议在学习本文的时候从文章尾部的连接中下载完整的示例工程。</p>
+
+<p>下面我将从上面列出的3个重要任务一一进行分解介绍。</p>
+
+<p>这些步骤都是模块化的，所以如果你对界面的绘制不感兴趣，可以跳过<code>绘制用户界面</code>，直接学习后面的步骤。</p>
+
+<p>打开工程文件中的<code>TBCircluarSlider.m</code>文件。然后开始学习下面的内容。</p>
+
+<h4>1.1 绘制用户界面</h4>
+
+<p>我比较喜欢使用Core Graphics，唯一用到UIKit的就是通过textfield来显示滑块的值。</p>
+
+<p><code>提醒</code>：此处需要用到一些<code>Core Graphics</code>知识，如果你不懂也没多大关系，我会尽量把代码做详细的讲解。</p>
+
+<p>我们先来看看控件的不同组成部分，这样更有利于后面的学习。</p>
+
+<p>首先，是用一个<code>黑色的圆环</code>当做滑块的背景。</p>
+
+<p><img src="/images/2014/01/13.png" alt="" /></p>
+
+<p><code>可操作区域(active area)</code>是一个从蓝色到紫色的梯度渐变效果。</p>
+
+<p><img src="/images/2014/01/14.png" alt="" /></p>
+
+<p>用户通过拖拽下面的这个手柄按钮来选择值：</p>
+
+<p><img src="/images/2014/01/15.png" alt="" /></p>
+
+<p>最后，用于显示选中值的<code>TextField</code>。在下一版中，我计划让用户可以通过键盘输入角度值。</p>
+
+<p><img src="/images/2014/01/16.png" alt="" /></p>
+
+<p>控件界面的绘制主要使用drawRect函数，首选我们需要获取到当前使用的图形上下文，如下代码所示：</p>
+
+<p><code>objc
+CGContextRef ctx = UIGraphicsGetCurrentContext();
+</code></p>
+
+<h5>1.1.1 绘制背景</h5>
+
+<p>背景是360°的，所以只要用CGContextAddArc给图形上下文添加正确的path，并设置正确的stroke即可。</p>
+
+<p>下面的代码可以就可以完成背景的绘制：</p>
+
+<p>```objc
+//Add the arc path
+CGContextAddArc(ctx, self.frame.size.width/2, self.frame.size.height/2, radius, 0, M_PI *2, 0);</p>
+
+<p>//Set the stroke colour
+[[UIColor blackColor]setStroke];</p>
+
+<p>//set Line width and cap
+CGContextSetLineWidth(ctx, TB_BACKGROUND_WIDTH);
+CGContextSetLineCap(ctx, kCGLineCapButt);</p>
+
+<p>//draw it!
+CGContextDrawPath(ctx, kCGPathStroke);
+```</p>
+
+<p><code>CGContextArc</code>函数的参数包括图形上下文，弧度的中心坐标点，以及半径(是一个私有变量)，接着是弧度开始和结束时的角度(在TBCircularSlider.m文件的头部可以看到一些关于数学计算的方法)，最后一个参数标示绘制的方向，0表示逆时针方向。</p>
+
+<p>接下来的3行的代码是用来设置一些信息的，例如颜色和线条宽度等。最后使用<code>CGContextDrawPath</code>方法完成背景的绘制。</p>
+
+<h5>1.1.2 绘制用户的可操作区域</h5>
+
+<p>这部分需要利用一点小技巧才行。此处我们绘制一个线性渐变的掩码图片，下面看看原理：</p>
+
+<p><img src="/images/2014/01/17.png" alt="" /></p>
+
+<p>此处掩码图片的工作原理是可以看到原始渐变矩形框的一个孔。</p>
+
+<p>在这里绘制的弧度有一个阴影，这是创建掩码图时使用了一点模糊的效果。</p>
+
+<p>下面是创建掩码图的相关代码：</p>
+
+<p><code>objc
+UIGraphicsBeginImageContext(CGSizeMake(320,320));
+CGContextRef imageCtx = UIGraphicsGetCurrentContext();
+ 
+CGContextAddArc(imageCtx, self.frame.size.width/2  , self.frame.size.height/2, radius, 0, ToRad(self.angle), 0);
+[[UIColor redColor]set];
+ 
+//Use shadow to create the Blur effect
+CGContextSetShadowWithColor(imageCtx, CGSizeMake(0, 0), self.angle/20, [UIColor blackColor].CGColor);
+ 
+//define the path
+CGContextSetLineWidth(imageCtx, TB_LINE_WIDTH);
+CGContextDrawPath(imageCtx, kCGPathStroke);
+ 
+//save the context content into the image mask
+CGImageRef mask = CGBitmapContextCreateImage(UIGraphicsGetCurrentContext());
+UIGraphicsEndImageContext();
+</code></p>
+
+<p>在上面的代码中首先创建了一个图形上下文，然后设置了一下阴影。通过<code>CGContextSetShadowWithColor</code>方法，我们可以设置如下内容：</p>
+
+<ul>
+<li>上下文</li>
+<li>偏移量(此处不需要)</li>
+<li>模糊值(该值是通过参数控制的：使用当前的角度除以20，当用户与此控件交互时，以此获得一个简单的动画模糊值)</li>
+<li>颜色</li>
+</ul>
+
+
+<p>接着是根据当前的角度绘制一个相应的弧度。</p>
+
+<p>例如，如果当前的角度变量是360°，那么就绘制一个圆弧，如果是90°，就绘制一个弧度为90°的一个弧。最后，利用<code>CGBitmapContextCreateImage</code>方法获取一张图片（刚刚绘制的弧）。这个图片就是我们所需要的掩码图了。</p>
+
+<p>裁剪上下文：</p>
+
+<p>现在我们已经有一个渐变的掩码图了。接着利用函数<code>CGContextClipToMask</code>对上下文进行裁剪——给该函数传入上面刚刚创建好的掩码图。代码如下所示：</p>
+
+<p><code>objc
+CGContextClipToMask(ctx, self.bounds, mask);
+</code></p>
+
+<p>最后我们来绘制渐变效果，代码如下所示：</p>
+
+<p><code>objc
+//Define the colour steps
+CGFloat components[8] = {
+    0.0, 0.0, 1.0, 1.0,     // Start color - Blue
+    1.0, 0.0, 1.0, 1.0 };   // End color - Violet
+ 
+CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
+CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, components, NULL, 2);
+ 
+//Define the gradient direction
+CGPoint startPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect));
+CGPoint endPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect));
+ 
+    //Choose a colour space
+CGColorSpaceRelease(baseSpace), baseSpace = NULL;   
+ 
+//Create and Draw the gradient
+CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
+CGGradientRelease(gradient), gradient = NULL;
+</code></p>
+
+<p>绘制渐变效果需要很多处理，不过我们可以将其分为4部分：</p>
+
+<ul>
+<li>定义颜色的变化范围</li>
+<li>定义渐变的方向</li>
+<li>选择颜色空间</li>
+<li>创建并绘制渐变</li>
+</ul>
+
+
+<p>最终的显示效果(看到渐变矩形框的一部分)要归功于之前创建的掩码图。</p>
+
+<p>另外，为了在背景边框模拟光线反射，我添加了一些灯光效果。</p>
+
+<h5>1.1.3 绘制手柄</h5>
+
+<p>下面我们根据当前的角度值，在的正确位置绘制出手柄。</p>
+
+<p>实际上，在绘制过程中，这一步非常简单，复杂一点的就是计算一下手柄所在的位置。</p>
+
+<p>这里我们需要使用三角函数将一个<code>标量值(scalar number)</code>转换为<code>CGPoint</code>。不要担心有多复杂，只需要使用Sin和Cos函数就可以完成。代码如下所示：</p>
+
+<p><code>objc
+-(CGPoint)pointFromAngle:(int)angleInt{
+     
+    //Define the Circle center
+    CGPoint centerPoint = CGPointMake(self.frame.size.width/2 - TB_LINE_WIDTH/2, self.frame.size.height/2 - TB_LINE_WIDTH/2);
+     
+    //Define The point position on the circumference
+    CGPoint result;
+    result.y = round(centerPoint.y + radius * sin(ToRad(-angleInt))) ;
+    result.x = round(centerPoint.x + radius * cos(ToRad(-angleInt)));
+     
+    return result;
+}
+</code></p>
+
+<p>上面的代码中，指定一个角度值，然后计算出在圆周上面的位置，当然，这里需要圆周的中心点和半径。</p>
+
+<p>使用sin函数在使用sin函数时，需要一个Y坐标值，而cos函数则需要X坐标值。</p>
+
+<p>需要注意的是此处每个函数返回的值都认为半径为1，所以需要将所得结果乘以我们指定的半径大小，并相对于圆周的中心做计算。</p>
+
+<p>希望下面的公式对你的理解有所帮助：</p>
+
+<p><code>objc
+point.y = center.y + (radius * sin(angle));
+point.x = center.x + (radius * cos(angle));
+</code></p>
+
+<p>通过上面的计算，现在我们已经知道手柄的具体位置了，所以，接下来就直接将手柄绘制到指定位置即可，如下代码所示：</p>
+
+<p><code>objc
+-(void) drawTheHandle:(CGContextRef)ctx{
+     
+    CGContextSaveGState(ctx);
+     
+    //I Love shadows
+    CGContextSetShadowWithColor(ctx, CGSizeMake(0, 0), 3, [UIColor blackColor].CGColor);
+     
+    //Get the handle position!
+    CGPoint handleCenter =  [self pointFromAngle: self.angle];
+     
+    //Draw It!
+    [[UIColor colorWithWhite:1.0 alpha:0.7]set];
+    CGContextFillEllipseInRect(ctx, CGRectMake(handleCenter.x, handleCenter.y, TB_LINE_WIDTH, TB_LINE_WIDTH));
+     
+    CGContextRestoreGState(ctx);
+}
+</code></p>
+
+<p>具体操作步骤如下：</p>
+
+<ul>
+<li>保存当前的上下文(当在一个单独的函数中进行绘制任务时，将上下文的状态进行保存是编程的一个好习惯)。</li>
+<li>给手柄设置一些阴影效果</li>
+<li>定义手柄的颜色，然后利用<code>CGContextFillEllipseInRect</code>将其绘制出来。</li>
+</ul>
+
+
+<p>我们在drawRect函数的最后调用上面这个方法：</p>
+
+<p><code>objc
+[self drawTheHandle:ctx];
+</code></p>
+
+<p>至此，我们就完成了绘制部分的任务。</p>
+
+<h4>1.2 跟踪用户的操作</h4>
+
+<p>在UIControl的子类中，我们可以<code>override</code>3个特殊的方法来提供一个自定义的跟踪行为</p>
+
+<h5>1.2.1 开始跟踪</h5>
+
+<p>当在控件的bound内发生了一个触摸事件，首先会调用控件的<code>beginTrackingWithTouch</code>方法。</p>
+
+<p>我们就看看如何<code>override</code>这个方法吧：</p>
+
+<p><code>objc
+-(BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
+    [super beginTrackingWithTouch:touch withEvent:event];
+ 
+    //We need to track continuously
+    return YES;
+}
+</code></p>
+
+<p>该函数返回的BOOl值决定着：当触摸事件是dragged时，是否需要响应。在我们这里的自定义控件中，是需要跟踪用户的dragging，所以返回YES。</p>
+
+<p>上面这个函数有两个参数：touch对象和事件。</p>
+
+<h5>1.2.2 持续跟踪</h5>
+
+<p>在上一个方法中我们指定了这里的自定义控件需要跟踪一个持续的事件，所以当用户进行drag时，会调用一个特殊的方法：<code>continueTrackingWithTouch</code>：</p>
+
+<p><code>objc
+-(BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+</code></p>
+
+<p>该方法返回的BOOL值标示是否继续跟踪touch事件。</p>
+
+<p>通过该方法我们可以根据touch位置对用户的操作进行过滤。例如，我们可以：仅当touch位置与手柄位置相交的时候才激活控件(activate control)。不过在这里我们的控制逻辑并不是这样的，我们希望用户点击任何位置都能对手柄做出相应的位置处理。</p>
+
+<p>本文的该方法负责更新手柄的位置(在后面的一节中会看到我们把该位置信息传递给对应的target上)。</p>
+
+<p>对上面这个方法的override代码如下所示：</p>
+
+<p><code>objc
+-(BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
+    [super continueTrackingWithTouch:touch withEvent:event];
+ 
+    //Get touch location
+    CGPoint lastPoint = [touch locationInView:self];
+ 
+    //Use the location to design the Handle
+    [self movehandle:lastPoint];
+ 
+        //We'll see this function in the next section:
+    [self sendActionsForControlEvents:UIControlEventValueChanged];
+ 
+    return YES;
+}
+</code></p>
+
+<p>上面的代码中，首先利用<code>locationInView</code>获取到touch的位置，然后将该位置传递给<code>moveHandle</code>方法，该方法会将传入的值转换为一个有效的手柄位置(a valid handle position)。</p>
+
+<p>此处“a valid position”的意思是什么呢？</p>
+
+<p>此控件的手柄只能在背景圆弧定义的边界范围内做移动，但是我们不希望强制要求用户必须在很小的圆弧内才可以移动手柄，如果非要这样的话，用户体验会非常的糟糕。</p>
+
+<p><code>moveHandle</code>的任务就是负责把任意的位置值转变为手柄可移动的值，另外，另外，在该函数中，还对指定的滑块角度值做了转换，代码如下所示：</p>
+
+<p><code>objc
+-(void)movehandle:(CGPoint)lastPoint{
+     
+    //Get the center
+    CGPoint centerPoint = CGPointMake(self.frame.size.width/2,
+                                                                            self.frame.size.height/2);
+     
+    //Calculate the direction from the center point to an arbitrary position.
+    float currentAngle = AngleFromNorth(centerPoint,
+                                                                                lastPoint,
+                                                                                NO);
+    int angleInt = floor(currentAngle);
+     
+    //Store the new angle
+    self.angle = 360 - angleInt;
+ 
+    //Update the textfield
+    _textField.text =  [NSString stringWithFormat:@"%d",
+                                                                                                    self.angle];
+     
+    //Redraw
+    [self setNeedsDisplay];
+}
+</code></p>
+
+<p>上面代码中，实际上主要任务都是在<code>AngleFromNorth</code>方法中处理的：根据两个point，就会返回一个连接这两点对应的一个角度关系，<code>AngleFromNorth</code>方法的实现如下所示：</p>
+
+<p><code>objc
+static inline float AngleFromNorth(CGPoint p1, CGPoint p2, BOOL flipped) {
+    CGPoint v = CGPointMake(p2.x-p1.x,p2.y-p1.y);
+    float vmag = sqrt(SQR(v.x) + SQR(v.y)), result = 0;
+    v.x /= vmag;
+    v.y /= vmag;
+    double radians = atan2(v.y,v.x);
+    result = ToDeg(radians);
+    return (result &gt;=0  ? result : result + 360.0);
+}
+</code></p>
+
+<p>提醒：<code>angleFromNorth</code>方法并不是我的原创，我是直接从苹果提供的OSX示例clockControl中拿过来用的。</p>
+
+<p>在上面的代码中，获得了角度值以后，将其存储到<code>angle</code>中，然后更新一下textfield的值。</p>
+
+<p>接着调用的<code>setNeedDisplay</code>是为了确保<code>drawRect</code>被调用，以尽快在界面上做出相应的更新。</p>
+
+<h5>1.2.3 结束跟踪</h5>
+
+<p>当跟踪结束的时候，会调用下面这个方法：</p>
+
+<p><code>objc
+-(void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
+    [super endTrackingWithTouch:touch withEvent:event];
+}
+</code></p>
+
+<p>在本文中，我们并不需要override该方法。如果当用户完成控件的界面操作时，你希望做一些处理，那么该方法会非常有用。</p>
+
+<h4>1.3 Target-Action模式</h4>
+
+<p>至此，圆形滑块控件可以工作了，你可以drag手柄，并能看到textfield中值的改变。</p>
+
+<p>发送action——控件事件</p>
+
+<p>如果希望自己定制的控件与UIControl行为保持一致，那么当控件的值发生变化时，需要进行通知处理：使用<code>sendActionsForControlEvents</code>方法，并制定特定的事件类型，值改变对应的事件一般是<code>UIControlEventValueChanged</code>。</p>
+
+<p>苹果已经预定义了许多事件类型(Xcode中，在UIControlEventValueChanged上<code>cmd + 鼠标单击</code>)。如果你的控件是继承自UITextField，那么你可能会对<code>UIControlEventEdigitingDidBegin</code>感兴趣，如果你要做一个touch Up action，那么可以使用UIControlTouchUpInside。</p>
+
+<p>如果你注意的话，在本文前部分的continueTrackingWithTouch方法里面，我们调用了<code>sendActionsForControlEvents</code>方法：</p>
+
+<p><code>objc
+[self sendActionsForControlEvents:UIControlEventValueChanged];
+</code></p>
+
+<p>这样处理之后，当控件值发生变化时，每一个对象(观察者——注册该事件)都会收到响应的通知。</p>
+
+<h3>2. 如何使用自定义控件</h3>
+
+<p>到这里，我们的控件定制完毕，下面介绍如何在程序中使用自定义的控件。</p>
+
+<p>打开文件<code>TBViewController.m</code>，看看<code>viewDidLoad</code>方法里面的代码：</p>
+
+<p><code>objc
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+     
+    //Create the Circular Slider
+    TBCircularSlider *slider = [[TBCircularSlider alloc]initWithFrame:CGRectMake(0, 60, TB_SLIDER_SIZE, TB_SLIDER_SIZE)];
+     
+    //Define Target-Action behaviour
+    [slider addTarget:self action:@selector(newValue:) forControlEvents:UIControlEventValueChanged];
+     
+    [self.view addSubview:slider];
+}
+</code></p>
+
+<p>在上面的代码中，给view设置了一个背景色，并通过调用<code>initWithFrame</code>方法实例化了一个圆形滑块(自定义的控件)。</p>
+
+<p>注意：UIControl继承自UIView，所以它继承了UIView的所有方法。</p>
+
+<p>接着定义了如何与该控件进行交互：使用<code>addTarget:action:forControlEvent:</code>方法。</p>
+
+<p>该方法只是给控件的特定事件设置一下target-action。如果你还记得的话，上面层介绍过，每当用户移动手柄时，圆形滑块都会发送一个UIControlEventValueChanged事件。所以我们可以通过下面的代码为该事件注册一个action：</p>
+
+<p><code>objc
+[slider addTarget:self action:@selector(newValue:) forControlEvents:UIControlEventValueChanged];
+</code></p>
+
+<p>这样我们就可以创建一个<code>**newValue**</code>方法来处理值发生改变时的一些事情：</p>
+
+<p><code>objc
+-(void)newValue:(TBCircularSlider*)slider{
+    NSLog(@"Slider Value %d",slider.angle);
+}
+</code></p>
+
+<p>结合Target-Action，所以函数会受到action的发送者，此处是slider，通过这个slider，就能直接获取到角度值。</p>
+
+<h3>3. 总结</h3>
+
+<p>根据本文的具体步骤，你可以构建<code>任意你想要的控件</code>。</p>
+
+<p>当然，也有其它一些方法来构建自定控件，不过本文基本上是按照苹果的建议来做的。</p>
+
+<p>点击下图，下载代码</p>
+
+<h3>4. 代码下载</h3>
+
+<p><a href="https://github.com/ariok/TB_CircularSlider"><img src="/images/2013/11/34.jpg" alt="" /></a></p>
+
+<p>本文由破船译自<a href="http://www.thinkandbuild.it/how-to-build-a-custom-control-in-ios/">How to build a custom control in iOS</a>。大家要是有什么问题，可以直接在<a href="https://twitter.com/bitwaker">twitter</a>上联系原作者，当然也可以在下面的评论中回复我。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[给tableview cell添加动画]]></title>
@@ -576,322 +1072,6 @@ iOS提供了如下方法来进行文件的读写和管理</p>
 <p>iOS开发的学习我感觉还是比较容易上手的，由于开发环境的限制，对于初学者来说最大的困难可能在于设备，不过相信想要学习该平台的人来说，初期的投入还是值得的。还记得毕业那会刚参加工作就学习Symbian开发，Symbian虽然有3个大分支：诺基亚支持的S60，索爱的UIQ和DoCoMo的MOAP，它们都由全球的通信巨头掌控着，但是Symbian对于初学者太难以入门了，这无疑将许多开发者挡在大门之外。当时一个HelloWorld例子就足足让我啃上一个月。紧接着二阶段构造、活动对象、调度器等都是让人头晕目眩的东西。其实心里对Symbian一直恋恋不忘，这不又多说了几句，哎！大浪淘沙！</p>
 
 <p>下一篇文章我将介绍第三周和第四周做的事情：我写的第一个iOS Demo。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS探索：iOS程序的Build过程]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/11/21/123-build-process/"/>
-    <updated>2013-11-21T22:18:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/11/21/123-build-process</id>
-    <content type="html"><![CDATA[<p><img src="/images/2013/11/45.png" alt="" /></p>
-
-<!--more-->
-
-
-<p>注1：本文由破船译自<a href="http://www.objc.io/issue-6/build-process.html">The Build Process</a>。</p>
-
-<p>注2：</p>
-
-<p>```
-本文将轻度解密Xcode build日志，还原iOS程序build的过程。
-另外将介绍如何对build过程的控制，进而定制出自己希望的流程，
-例如通过Build phase的定制，给app icon打水印(包括版本号和日期)。</p>
-
-<p>通过对工程文件的解读，为你揭开工程文件(.pbxproj)与
-build settings的关系。这对于解决工程文件的merge冲突非常有帮助。</p>
-
-<p>PS：实际上各开发平台的build过程都比较相似，如果你熟悉了
-某个平台的build过程，那么同样的原理也适用于别的平台。
-可以说换汤不换药，本质是一样的。
-```</p>
-
-<p>下面开始吧：</p>
-
-<p>本文目录如下所示：</p>
-
-<ol>
-<li><a href="#1">解密Build日志</a></li>
-<li><a href="#2">Build过程的控制</a></li>
-<li><a href="#3">工程文件</a></li>
-<li><a href="#4">小结</a></li>
-</ol>
-
-
-<p>当我们进行开发时，如果需要运行程序，只要在Xcode中点击运行按钮(这个按钮看起来有点像在播放音乐)，过一会，我们的程序就会运行在设备或者模拟器上了，看似简单的操作过程，不过在这背后隐藏了许多步骤！当然，有时候也会遇到一些错误。</p>
-
-<p>本文，我将从稍微高一点的角度来解读整个Build过程，并探索一下Build过程与Xcode界面上显示的project setting有多大关系。当然，为了更加深入的了解每一步实际执行的任务，我会适当的引入一些别的文章。</p>
-
-<h3><a id="1"></a>解密Build日志</h3>
-
-<p>为了了解Xcode build过程的内部工作原理，我们首先把突破点放在完整的log文件上。打开<code>Log Navigator</code>，从列表中选择一个Build，Xcode就会通过很漂亮的一种格式将log文件显示出来。如下图所示：</p>
-
-<p><img src="/images/2013/11/41.png" alt="" /></p>
-
-<p>默认情况下，XCode会把大量的log信息隐藏起来，你只需要点击选中某条log，然后点击右边的展开按钮，就能看到该条log的详细信息了。当然，你也可以选中一条或者多条日志，然后通过Cmd+C，就能将相关的所有文本信息拷贝到粘贴板上。另外，还可以通过菜单Editor中的<code>Copy transcript for shown results</code>将所有的log信息复制到粘贴板上。</p>
-
-<p>在我这儿的示例中，将近有10000行log信息(当然，大多数信息是由OpenSSL带来的，并非来自我们的代码)。下面我们就开始吧！</p>
-
-<p>首先，你可能会发现输出的log信息，被工程中对应的target分割开了：</p>
-
-<p><code>objc
-Build target Pods-SSZipArchive
-...
-Build target Makefile-openssl
-...
-Build target Pods-AFNetworking
-...
-Build target crypto
-...
-Build target Pods
-...
-Build target ssl
-...
-Build target objcio
-</code></p>
-
-<p>在我这的工程中有好几个依赖项：如包含在Pods中的AFNetworking 和 SSZipArchive, 已经以子工程形式存在的OpenSSL等。</p>
-
-<p>针对这里的每个target，Xcode都会执行一些列的操作，以将相关的源代码转换为机器可读的二进制(于所选平台相关)。我们来亲密接触一下第一个targetSSZipArchive吧。</p>
-
-<p>在这个target的log输出中，我们可以看到每个任务执行的详细情况。例如，第一个是处理一个预编译头文件(为了增加其可读性，我省略了许多细节)：</p>
-
-<p>```objc
-(1) ProcessPCH /&hellip;/Pods-SSZipArchive-prefix.pch.pch Pods-SSZipArchive-prefix.pch normal armv7 objective-c com.apple.compilers.llvm.clang.1_0.compiler</p>
-
-<pre><code>(2) cd /.../Dev/objcio/Pods
-    setenv LANG en_US.US-ASCII
-    setenv PATH "..."
-(3) /.../Xcode.app/.../clang 
-        (4) -x objective-c-header 
-        (5) -arch armv7 
-        ... configuration and warning flags ...
-        (6) -DDEBUG=1 -DCOCOAPODS=1 
-        ... include paths and more ...
-        (7) -c 
-        (8) /.../Pods-SSZipArchive-prefix.pch 
-        (9) -o /.../Pods-SSZipArchive-prefix.pch.pch
-</code></pre>
-
-<p>```</p>
-
-<p>在build过程中，每个任务都会出现类似上面的这些log信息，我们就通过上面的log信息了解详情吧。</p>
-
-<ol>
-<li>每个log都会以这样的一行来对任务进行描述。</li>
-<li>接着下面带缩进的这3行会被输出。此处，修改了工作路径，并对PANG和PATH环境变量进行设置。</li>
-<li>这里才是真正焕发出魔力的地方。为了处理一个<code>.pch</code>文件，调用了clang，并且附带了大量的选项。这行log信息显示出了所有的调用参数，我们稍微看几个参数吧：</li>
-<li>-x标示符用来指定语言，此时是<code>objective-c-header</code>。</li>
-<li>目标架构指定为<code>armv7</code>。</li>
-<li>标示#defines的内容已经被添加了。</li>
-<li>-c标示符用来告诉clang具体如何运行。-c意味着：运行预处理器、词法分析、类型检查LLVM的生成和优化，以及特定target相关汇编代码的生成阶段，最后，运行这个汇编代码以生成.o目标文件。</li>
-<li>输入文件。</li>
-<li>输出文件。</li>
-</ol>
-
-
-<p>虽然有大量的log信息，不过我不会把每个log信息都做详解。我们的目的是让你了解在build过程中，完整的了解什么工具被调用，以及都使用了什么参数。</p>
-
-<p>针对这个target，虽然只有一个.pch文件，但实际上这里对objective-c-header文件处理了两次。下面来看看log信息告诉我们的详细情况：</p>
-
-<p><code>objc
-ProcessPCH /.../Pods-SSZipArchive-prefix.pch.pch Pods-SSZipArchive-prefix.pch normal armv7 objective-c ...
-ProcessPCH /.../Pods-SSZipArchive-prefix.pch.pch Pods-SSZipArchive-prefix.pch normal armv7s objective-c ...
-</code>
-可以看到，build了两种target：armv7和armv7s，所以clang为每种架构处理了一次这个文件。</p>
-
-<p>紧接着预编译头文件的处理之后，我们可以找到SSZipArchive target相关的其它一些任务：</p>
-
-<p><code>objc
-CompileC ...
-Libtool ...
-CreateUniversalBinary ...
-</code>
-通过名称，我们基本能够知道个大概：<code>CompileC</code>用来编译.m和.c文件，<code>Libtool</code>根据目标文件创建出一个库，而<code>CreateUniversalBinary</code>则将上一阶段产生的两个.a文件(对应着两个不同的架构)合并为一个通用的二进制文件(可以运行在armv7和armv7s上)。</p>
-
-<p>上面这些类似的步骤会出现在工程中所有其它的依赖项中。</p>
-
-<p>当所有的依赖项都准备好了，就可以开始构建我们程序的target了。针对该target输出的log信息包含了之前没有出现过的内容，这些内容非常有价值：</p>
-
-<p><code>objc
-PhaseScriptExecution ...
-DataModelVersionCompile ...
-Ld ...
-GenerateDSYMFile ...
-CopyStringsFile ...
-CpResource ...
-CopyPNGFile ...
-CompileAssetCatalog ...
-ProcessInfoPlistFile ...
-ProcessProductPackaging /.../some-hash.mobileprovision ...
-ProcessProductPackaging objcio/objcio.entitlements ...
-CodeSign ...
-</code></p>
-
-<p>在上面的任务中，可能Ld不能一眼看出是什么意思，此处它是一个linker工具，跟libtool类似。实际上libtool会简单的调用ld和lipo。而ld用来构建可执行文件。更多编译和链接相关的文章可以看看 <a href="http://www.objc.io/issue-6/mach-o-executables.html">Daniel</a> 和 <a href="http://www.objc.io/issue-6/compiler.html">Chris</a>写的。</p>
-
-<p>上面这些步骤，实际上都会调用相关的命令行工具来做实际的工作，这跟之前我们看的步骤ProcessPCH类似。至此，我将不会继续介绍这些log信息了，我将带来大家从另外一个不同的角度来继续探索这些任务：Xcode是如何知道哪些任务需要被执行？</p>
-
-<h3><a id="2"></a>Build过程的控制</h3>
-
-<p>当你选中在Xcode 5中的一个工程时，project editor会在顶部显示出6个tabs：General, Capabilities, Info, Build Settings, Build Phases 以及 Build Rules。如下图所示：</p>
-
-<p><img src="/images/2013/11/42.png" alt="" /></p>
-
-<p>其中最后3项与build过程的相关度最大。</p>
-
-<h4>Build Phases</h4>
-
-<p>Build Phases代表着将代码构建为一个可执行文件的规则。它描述了build过程中必须执行的不同任务。</p>
-
-<p><img src="/images/2013/11/43.png" alt="" /></p>
-
-<p>首先，指定了target的依赖项。这将告诉build系统在当前target可以build之前，必须先build target的依赖项。实际上这并不属于真正的build phase，在这里，Xcode只不过将其与build phase显示到一块罢了。</p>
-
-<p>接着是一个CocoaPods相关的脚本需要在build phase执行——更多CocoaPods相关信息可以查看<a href="http://www.objc.io/issue-6/cocoapods-under-the-hood.html">Michele的文章</a>。</p>
-
-<p>然后在<code>Compile Sources</code>中指定了所有必须进行编译的文件。更多相关内容我们将在build rules和build settings中研究。在<code>Compile Sources</code>中指定的文件将根据这些rule和setting被处理。</p>
-
-<p>当编译结束，下一步就是将所有的内容链接到一块：<code>Link Binary with Libraries</code>。在这里面列出了所有的静态库和动态库，这些库会与上面编译阶段生成的目标文件进行链接。实际上静态库和动态库的处理过程有非常大的区别，相关内容可以参考Daniel的文章 <a href="http://www.objc.io/issue-6/mach-o-executables.html">Mach-O executables</a>。</p>
-
-<p>当链接完成之后，build phase中最后需要处理的就是将静态资源（例如图片和字体）拷贝到app bundle中。需要注意的是，如果图片资源是PNG格式，那么不仅仅对其进行拷贝，还会做一些优化(如果build settings中的PNG优化是打开的)。</p>
-
-<p>虽然静态资源的拷贝是build phase中的最后一步，但这并不代表build过程已经完成了。例如，还没有进行code signing(这并不是build phase考虑的范畴)，code signing属于build步骤中的最后一步<code>Packaging</code>。</p>
-
-<h4>定制Build Phases</h4>
-
-<p>至此，你已经完全可以掌控build phases相关内容(先不考虑默认的设置项)，例如，你可以在build phases中添加运行自定义脚本，就像<a href="http://www.objc.io/issue-6/cocoapods-under-the-hood.html">CocoaPods</a>使用的一样，来做额外的工作。当然也可以添加一些资源的拷贝任务，当你需要将某些确定的资源拷贝到制定的target目录中，这非常有用。</p>
-
-<p>另外你可以通过定制build phase来添加带有水印(包括版本号和commit hash)的app icon。只需要在build phase中添加一个<code>Run Script</code>，然后用下面的命令来获取版本号和commit hash：</p>
-
-<p><code>objc
-version=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "${INFOPLIST_FILE}"`
-commit=`git rev-parse --short HEAD`
-</code></p>
-
-<p>然后可以使用ImageMagick来修改app icon。这里有一个<a href="https://github.com/krzysztofzablocki/IconOverlaying">完整的示例</a>，可以参考。</p>
-
-<p>如果你希望编写的代码比较简洁点，那么可以添加一个<code>Run Script</code>，如果一个源文件超过指定行数，就发出警告。如下代码所示，设置的行数为200。</p>
-
-<p><code>objc
-find "${SRCROOT}" \( -name "*.h" -or -name "*.m" \) -print0 | xargs -0 wc -l | awk '$1 &gt; 200 &amp;&amp; $2 != "total" { print $2 ":1: warning: file more than 200 lines" }'
-</code></p>
-
-<h4>Build Rules</h4>
-
-<p>Build rules指定了不同文件类型该如何编译。一般来说，开发者并不需要修改这里面的内容。如果你需要对特定的文件类型添加处理方法，那么可以在此处天剑一条新的规则。</p>
-
-<p>一条build rule指定了其应用于那种文件类型，该文件类型是如何被处理的，以及输出内容被放置到何处。比方说，我们创建了一条预处理规则，该规则将Objective-C的实现文件当做输入，然后解析文件内部的注释内容，最后再输出一个.m文件，文件中包含了生成的代码。由于我们不能将.m文件既当做输入又当做输出，所以我使用了.mal后缀，定制的build rule如下所示：</p>
-
-<p><img src="/images/2013/11/44.png" alt="" /></p>
-
-<p>上面的规则应用于所有后缀为*.mal的文件，这些文件会被自定义的脚本处理(调用我们的预处理器，并附带上输入和输出参数)。最后，该规则告诉build system在哪里可以找到此规则的输出文件。</p>
-
-<p>由于这里的输出是一个.m文件，那么build使这些.m文件会被编译处理(就如刚开始介绍的那些预处理步骤)。</p>
-
-<p>在脚本中，我使用了少量的变量来指定正确的路径和文件名。在苹果的<a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html#//apple_ref/doc/uid/TP40003931-CH3-SW105">Build Setting Reference.</a>文档中可以找到所有可用的变量。build过程中，要想观察所有已存在的环境变量，你可以添加一个<code>Run Script</code> build phase，并勾选上<code>Show environment variables in build log</code>。</p>
-
-<h4>Build Settings</h4>
-
-<p>至此，我们已经了解到build phases是如何被用来定义build 过程的步骤，以及build rules是如何指定哪些文件类型在编译阶段需要被预处理。在build settings中，我们可以配置每个任务(之前在build log输出中看到的任务)的详细内容。</p>
-
-<p>在这里，你会发现build 过程的每一个阶段，都有许多选项：从编译、链接一直到code signing和packaging。注意，settings被分割为不同的部分，大部分会于build phases有关联，有时候也会指定编译的文件类型。</p>
-
-<p>这些选项基本都有不错的文档介绍，你可以在右边面板中的quick help inspector或者 <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html#//apple_ref/doc/uid/TP40003931-CH3-SW105">Build Setting Reference</a>中查看到。</p>
-
-<h3><a id="3"></a>工程文件</h3>
-
-<p>上面我们介绍的所有内容都被保存在工程文件(.pbxproj)中，除了其它一些工程相关信息(例如file groups)，我们很少会深入该文件内部，除非在代码merge时发生冲突，或许会进去看看。</p>
-
-<p>我建议你用文本编辑器打开一个工程文件，从头到尾的看一遍里面的内容。它的可读性非常高，里面的许多内容一看就知道什么意思了，不会存在太大的问题。通过阅读并完全理解工程文件，这对于合并工程文件的冲突非常有帮助。</p>
-
-<p>首先，我们来看看文件中叫做<code>rootObject</code>的entry。在我的工程中，如下所示：</p>
-
-<p><code>objc
-rootObject = 1793817C17A9421F0078255E /* Project object */;
-</code></p>
-
-<p>根据这个ID(1793817C17A9421F0078255E)，我们可以找到main工程的定义：</p>
-
-<p>```objc
-/<em> Begin PBXProject section </em>/</p>
-
-<pre><code>1793817C17A9421F0078255E /* Project object */ = {
-    isa = PBXProject;
-</code></pre>
-
-<p>&hellip;
-<code>``
-在这部分section中包含了一些keys，顺从这些key，我们可以了解到更多关于这个工程文件的组成。例如，</code>mainGroup<code>指向了root file group。如果你按照这个思路，你可以快速了解到在.pbxproj文件中工程的结构。下面我要来介绍一些与build过程相关的内容。其中</code>target` key指向了build target的定义：</p>
-
-<p>```objc
-targets = (</p>
-
-<pre><code>1793818317A9421F0078255E /* objcio */,
-170E83CE17ABF256006E716E /* objcio Tests */,
-</code></pre>
-
-<p>);
-```</p>
-
-<p>根据第一个id，我们找到一个target的定义：</p>
-
-<p>```objc
-1793818317A9421F0078255E /<em> objcio </em>/ = {</p>
-
-<pre><code>isa = PBXNativeTarget;
-buildConfigurationList = 179381B617A9421F0078255E /* Build configuration list for PBXNativeTarget "objcio" */;
-buildPhases = (
-    F3EB8576A1C24900A8F9CBB6 /* Check Pods Manifest.lock */,
-    1793818017A9421F0078255E /* Sources */,
-    1793818117A9421F0078255E /* Frameworks */,
-    1793818217A9421F0078255E /* Resources */,
-    FF25BB7F4B7D4F87AC7A4265 /* Copy Pods Resources */,
-);
-buildRules = (
-);
-dependencies = (
-    1769BED917CA8239008B6F5D /* PBXTargetDependency */,
-    1769BED717CA8236008B6F5D /* PBXTargetDependency */,
-);
-name = objcio;
-productName = objcio;
-productReference = 1793818417A9421F0078255E /* objcio.app */;
-productType = "com.apple.product-type.application";
-</code></pre>
-
-<p>};
-```</p>
-
-<p>其中<code>buildConfigurationList</code>指向了可用的配置项，一般包括<code>Debug</code>和<code>Release</code>。根据debug对应的id，我们可以找到build setting tab中所有选项存储的位置：</p>
-
-<p>```objc
-179381B717A9421F0078255E /<em> Debug </em>/ = {</p>
-
-<pre><code>isa = XCBuildConfiguration;
-baseConfigurationReference = 05D234D6F5E146E9937E8997 /* Pods.xcconfig */;
-buildSettings = {
-    ALWAYS_SEARCH_USER_PATHS = YES;
-    ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-    CODE_SIGN_ENTITLEMENTS = objcio/objcio.entitlements;
-</code></pre>
-
-<p>&hellip;
-```</p>
-
-<p>而<code>buildPhases</code>属性则简单的列出了在Xcode中定义的所有build phases。这非常容易识别出来(Xcode中的参数使用了它们原本真正的名字，并以C风格进行注释)。</p>
-
-<p><code>buildRules</code>属性是空的：因为在该工程中，我没有自定义build rules。</p>
-
-<p><code>dependencies</code>列出了在Xcode build phase tab中列出的target依赖项。</p>
-
-<p>没那么吓人，不是吗？工程中剩下的内容就留给你去当做练习来了解吧。只需要顺着ID走，即可，一旦你找到了敲门，理解了Xcode中工程设置的不同section，那么对于merge工程文件的冲突时，将变得非常简单。甚至可以在GitHub中就能阅读工程文件，而不用将工程文件clone到本地，并用Xcode打开。</p>
-
-<h3><a id="4"></a>小结</h3>
-
-<p>当今的软件是都用其它复杂的一些软件和资源开发出来的，例如library和build工具等。反过来，这些工具是构建于底层架构的，这犹如剥洋葱一样，一层包着一层。虽然这样一层一层的，给人感觉太复杂，但是你完全可以去深入了解它们，这非常有助于你对软件的深入理解，实际上当你了解之后，这并没有想象中的那么神奇，只不过它是一层一层堆砌起来的，每一层都是基于下一层构建起来的。</p>
-
-<p>在这里，我们只是轻微的探究了一下build过程，当我们点击Xcode中的允许按钮时，并没必要深入了解内部具体发生了什么。只需要了解到build的过程，以及可控的一些操作顺序即可。当然，要想进一步深入了解，可以试着阅读其它一些文章。</p>
 ]]></content>
   </entry>
   

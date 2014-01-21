@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[035]如何创建自己的Windows Store账号来提交Apps 如果你想要在Windows Store发布或者销售Apps，你需要开一个开发者账号。 &hellip;">
+	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍 本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,91 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/63/" itemprop="url">Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中，我将介绍如何在程序中添加SemanticZoom控件，以使我们的程序支持语义缩放。</p>
+
+<p>1、语义缩放(Semantic Zoom)概述</p>
+
+<p>&#160;&#160;&#160; 语义缩放(Semantic Zoom)是一项触控优化技术，用于Windows 8中的Windows Store apps，在一个画面中（如相册、程序列表或地址簿）展示和导航大量的数据或内容集合。</p>
+
+<p>&#160;&#160;&#160; 语义缩放使用两种不同的模式来呈现内容：low-level(zoomed in)模式用于在一个平面中显示所有的结构，而high-level(zoomed out)模式则显示分组中的items，使用户可以快速的导航和浏览内容。</p>
+
+<p>&#160;&#160;&#160; 如下图所示：左边是zoom in模式，右边是zoom out模式</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.png" width="682" height="169" /></a></p>
+
+<p>语义缩放的交互方式有如下几种：</p>
+
+<p>&#160;&#160;&#160; A、捏合与拉伸手势(手指移动距离变远为zoom in，手指距离变近则是zoom out)</p>
+
+<p>&#160;&#160;&#160; B、按下Ctrl键，同时滚动鼠标的滚轮</p>
+
+<p>&#160;&#160;&#160; C、按下Ctrl键，同时按下+或者-。</p>
+
+<p>&#160;&#160;&#160; 语义缩放的应用场景</p>
+
+<p>&#160;&#160;&#160; A、地址薄：通讯录以字母顺序组织(或者其它的)，使用字母来展现数据，用户可以将某个字母“放大”，以看到该字母相关联的联系人。</p>
+
+<p>&#160;&#160;&#160; B、相册：以元数据（如日期）来组织图片，用户可以放大（zoom in）某个具体的日期来显示与那个日期相关的图片集合。</p>
+
+<p>&#160;&#160;&#160; C、产品目录：按照类别组织items。</p>
+
+<p>&#160;&#160;&#160; 语义缩放布局示例：</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Zoom in</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.png" width="682" height="463" /></a></p>
+
+<p>&#160;</p>
+
+<p>注意：语义缩放跟光学缩放(参考<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465307.aspx"><u>Guidelines fore optical zoom and resizing</u></a>)是不同的。虽然它们具有类似的交互方式和基本的行为（基于缩放因子显示更多或者更少的内容），光学缩放是对一个内容区域或者对象（如相片）进行缩放。</p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1420,121 +1505,6 @@ private:
 <p>代码下载：</p>
 
 <p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/ASimpleClassSolution" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/53/" itemprop="url">Windows Store App开发[026]使用NetworkInformation来判断和监听网络状态</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在程序开发中，我们一般都会进行网络交互，那么这时对网络连接的信息判断以及状态的监听，就比较重要了。下面我直接给出代码，通过代码很容易理解如何判断和监听网络状态。 <br/>
-判断网路状态使用如下代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private bool IsConnectedToInternet()
-{
-    bool connected = false;
-
-    ConnectionProfile cp = NetworkInformation.GetInternetConnectionProfile();
-
-    if (cp != null)
-    {
-        NetworkConnectivityLevel cl = cp.GetNetworkConnectivityLevel();
-
-        connected = cl == NetworkConnectivityLevel.InternetAccess;
-    }
-
-    return connected;
-}</pre>
-
-
-<p>NetworkInformation 类属于static类，里面的方法也是static的，所以，这里通过直接访问GetInternetConnectionProfile 方法，获得网络连接信息，然后根据NetworkConnectivityLevel&#160; 来区分网络的链接状态。</p>
-
-<p>NetworkConnectivityLevel&#160; 的定义如下。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// 摘要:
-    //     定义当前可用连接的级别。
-    [Version(100794368)]
-    public enum NetworkConnectivityLevel
-    {
-        // 摘要:
-        //     无连接。
-        None = 0,
-        //
-        // 摘要:
-        //     仅本地网络访问。
-        LocalAccess = 1,
-        //
-        // 摘要:
-        //     受限的 internet 访问。
-        ConstrainedInternetAccess = 2,
-        //
-        // 摘要:
-        //     本地和 internet 访问。
-        InternetAccess = 3,
-    }</pre>
-
-
-<p>监听网络状态的改变，则使用如下代码，并结合上面的代码。通过监听NetworkStatusChanged&#160; 事件即可，当网络状态发生改变时，该事件会被触发</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">NetworkInformation.NetworkStatusChanged += (object sener) =&gt;
-{
-    if (!IsConnectedToInternet())
-    {
-        // 网络不可以访问
-    }
-    else
-    {
-        // 网络可以访问
-    }
-};</pre>
-
-
-<p>这里是一个简单的示例代码：</p>
-
-<p>使用方法：运行启动程序，然后手动改变网络链接状态（如关闭wifi链接等），这时IsConnectedToInternet方法会被调用。</p>
-
-<p>&#160;</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/NetworkInformation" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-04</time></span>
-</div>
-
 
 		
 		

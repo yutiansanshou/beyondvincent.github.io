@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-16T17:53:51+08:00</updated>
+  <updated>2014-01-21T16:56:10+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,654 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何自定义iOS中的控件]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/20/how-to-build-a-custom-control-in-ios/"/>
+    <updated>2014-01-20T17:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/20/how-to-build-a-custom-control-in-ios</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/01/18.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自<a href="http://www.thinkandbuild.it/how-to-build-a-custom-control-in-ios/">How to build a custom control in iOS</a>。大家要是有什么问题，可以直接在<a href="https://twitter.com/bitwaker">twitter</a>上联系原作者，当然也可以在最后的评论中回复我。</p>
+
+<p>下面先来看看目录：</p>
+
+<ol>
+<li>子类化UIControl
+
+<ul>
+<li>绘制用户界面
+
+<ul>
+<li>绘制背景</li>
+<li>绘制用户的可操作区域</li>
+<li>绘制手柄</li>
+</ul>
+</li>
+<li>跟踪用户的操作
+
+<ul>
+<li>开始跟踪</li>
+<li>持续跟踪</li>
+<li>结束跟踪</li>
+</ul>
+</li>
+<li>Target-Action模式</li>
+</ul>
+</li>
+<li>如何使用自定义控件</li>
+<li>总结</li>
+<li>代码下载</li>
+</ol>
+
+
+<p>在开发过程中，有时候UIKit的标准控件并不能满足我们的需求，例如你需要一个控件能支持用户方便的选择0-360°之间的一个角度值，此时就需要根据自己的需求自定义控件了。</p>
+
+<p>对于选择角度值的控件可以这样实现：创建一个圆形的滑块，用户通过拖动手柄操作就能选择角度值。实际上这样的控件在别的一些平台中你可能看到过，但是在UIKit中并没有。</p>
+
+<p>本文就实现一个选择角度值的控件来介绍控件的自定义。下面先来看看到底要做成什么样子：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/12.png" alt="" /></p>
+
+<h3>1. 子类化UIControl</h3>
+
+<p><code>UIControl</code>是UIView的子类，它又是所有UIKit控件的父类(例如UIButton、UISlider和UISwitch等)。</p>
+
+<p>UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来挥之用户界面。</p>
+
+<p>通过UIControl，我们主要管理3个重要的任务：</p>
+
+<ul>
+<li>绘制用户界面</li>
+<li>跟踪用户的操作</li>
+<li>Target-Action模式</li>
+</ul>
+
+
+<p>在本文的圆形滑块中，我们要做如下一些事情：</p>
+
+<p>定制一个用户界面(圆形滑块本身)，通过该界面用户可以通过手柄进行界面交互。用户的交互操作会被转换为控件target对应的action(控件将滑块按钮的frame origin转换为0-360之间的一个值，并用于target/action上)。</p>
+
+<p>建议在学习本文的时候从文章尾部的连接中下载完整的示例工程。</p>
+
+<p>下面我将从上面列出的3个重要任务一一进行分解介绍。</p>
+
+<p>这些步骤都是模块化的，所以如果你对界面的绘制不感兴趣，可以跳过<code>绘制用户界面</code>，直接学习后面的步骤。</p>
+
+<p>打开工程文件中的<code>TBCircluarSlider.m</code>文件。然后开始学习下面的内容。</p>
+
+<h4>1.1 绘制用户界面</h4>
+
+<p>我比较喜欢使用Core Graphics，唯一用到UIKit的就是通过textfield来显示滑块的值。</p>
+
+<p><code>提醒</code>：此处需要用到一些<code>Core Graphics</code>知识，如果你不懂也没多大关系，我会尽量把代码做详细的讲解。</p>
+
+<p>我们先来看看控件的不同组成部分，这样更有利于后面的学习。</p>
+
+<p>首先，是用一个<code>黑色的圆环</code>当做滑块的背景。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/13.png" alt="" /></p>
+
+<p><code>可操作区域(active area)</code>是一个从蓝色到紫色的梯度渐变效果。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/14.png" alt="" /></p>
+
+<p>用户通过拖拽下面的这个手柄按钮来选择值：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/15.png" alt="" /></p>
+
+<p>最后，用于显示选中值的<code>TextField</code>。在下一版中，我计划让用户可以通过键盘输入角度值。</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/16.png" alt="" /></p>
+
+<p>控件界面的绘制主要使用drawRect函数，首选我们需要获取到当前使用的图形上下文，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">CGContextRef</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>1.1.1 绘制背景</h5>
+
+<p>背景是360°的，所以只要用CGContextAddArc给图形上下文添加正确的path，并设置正确的stroke即可。</p>
+
+<p>下面的代码可以就可以完成背景的绘制：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//Add the arc path</span>
+</span><span class='line'><span class="n">CGContextAddArc</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">M_PI</span> <span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Set the stroke colour</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">]</span><span class="n">setStroke</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//set Line width and cap</span>
+</span><span class='line'><span class="n">CGContextSetLineWidth</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">TB_BACKGROUND_WIDTH</span><span class="p">);</span>
+</span><span class='line'><span class="n">CGContextSetLineCap</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">kCGLineCapButt</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//draw it!</span>
+</span><span class='line'><span class="n">CGContextDrawPath</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">kCGPathStroke</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>CGContextArc</code>函数的参数包括图形上下文，弧度的中心坐标点，以及半径(是一个私有变量)，接着是弧度开始和结束时的角度(在TBCircularSlider.m文件的头部可以看到一些关于数学计算的方法)，最后一个参数标示绘制的方向，0表示逆时针方向。</p>
+
+<p>接下来的3行的代码是用来设置一些信息的，例如颜色和线条宽度等。最后使用<code>CGContextDrawPath</code>方法完成背景的绘制。</p>
+
+<h5>1.1.2 绘制用户的可操作区域</h5>
+
+<p>这部分需要利用一点小技巧才行。此处我们绘制一个线性渐变的掩码图片，下面看看原理：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/01/17.png" alt="" /></p>
+
+<p>此处掩码图片的工作原理是可以看到原始渐变矩形框的一个孔。</p>
+
+<p>在这里绘制的弧度有一个阴影，这是创建掩码图时使用了一点模糊的效果。</p>
+
+<p>下面是创建掩码图的相关代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UIGraphicsBeginImageContext</span><span class="p">(</span><span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">320</span><span class="p">,</span><span class="mi">320</span><span class="p">));</span>
+</span><span class='line'><span class="n">CGContextRef</span> <span class="n">imageCtx</span> <span class="o">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">();</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="n">CGContextAddArc</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="err"> </span> <span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ToRad</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIColor</span> <span class="n">redColor</span><span class="p">]</span><span class="n">set</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c1">//Use shadow to create the Blur effect</span>
+</span><span class='line'><span class="n">CGContextSetShadowWithColor</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">);</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c1">//define the path</span>
+</span><span class='line'><span class="n">CGContextSetLineWidth</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">);</span>
+</span><span class='line'><span class="n">CGContextDrawPath</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">kCGPathStroke</span><span class="p">);</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c1">//save the context content into the image mask</span>
+</span><span class='line'><span class="n">CGImageRef</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">CGBitmapContextCreateImage</span><span class="p">(</span><span class="n">UIGraphicsGetCurrentContext</span><span class="p">());</span>
+</span><span class='line'><span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中首先创建了一个图形上下文，然后设置了一下阴影。通过<code>CGContextSetShadowWithColor</code>方法，我们可以设置如下内容：</p>
+
+<ul>
+<li>上下文</li>
+<li>偏移量(此处不需要)</li>
+<li>模糊值(该值是通过参数控制的：使用当前的角度除以20，当用户与此控件交互时，以此获得一个简单的动画模糊值)</li>
+<li>颜色</li>
+</ul>
+
+
+<p>接着是根据当前的角度绘制一个相应的弧度。</p>
+
+<p>例如，如果当前的角度变量是360°，那么就绘制一个圆弧，如果是90°，就绘制一个弧度为90°的一个弧。最后，利用<code>CGBitmapContextCreateImage</code>方法获取一张图片（刚刚绘制的弧）。这个图片就是我们所需要的掩码图了。</p>
+
+<p>裁剪上下文：</p>
+
+<p>现在我们已经有一个渐变的掩码图了。接着利用函数<code>CGContextClipToMask</code>对上下文进行裁剪——给该函数传入上面刚刚创建好的掩码图。代码如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">CGContextClipToMask</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后我们来绘制渐变效果，代码如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//Define the colour steps</span>
+</span><span class='line'><span class="n">CGFloat</span> <span class="n">components</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span><span class="err">    </span> <span class="c1">// Start color - Blue</span>
+</span><span class='line'><span class="err">    </span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">};</span><span class="err">  </span> <span class="c1">// End color - Violet</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="n">CGColorSpaceRef</span> <span class="n">baseSpace</span> <span class="o">=</span> <span class="n">CGColorSpaceCreateDeviceRGB</span><span class="p">();</span>
+</span><span class='line'><span class="n">CGGradientRef</span> <span class="n">gradient</span> <span class="o">=</span> <span class="n">CGGradientCreateWithColorComponents</span><span class="p">(</span><span class="n">baseSpace</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c1">//Define the gradient direction </span>
+</span><span class='line'><span class="n">CGPoint</span> <span class="n">startPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">rect</span><span class="p">),</span> <span class="n">CGRectGetMinY</span><span class="p">(</span><span class="n">rect</span><span class="p">));</span>
+</span><span class='line'><span class="n">CGPoint</span> <span class="n">endPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">rect</span><span class="p">),</span> <span class="n">CGRectGetMaxY</span><span class="p">(</span><span class="n">rect</span><span class="p">));</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Choose a colour space</span>
+</span><span class='line'><span class="n">CGColorSpaceRelease</span><span class="p">(</span><span class="n">baseSpace</span><span class="p">),</span> <span class="n">baseSpace</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span><span class="err">   </span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c1">//Create and Draw the gradient</span>
+</span><span class='line'><span class="n">CGContextDrawLinearGradient</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">startPoint</span><span class="p">,</span> <span class="n">endPoint</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="n">CGGradientRelease</span><span class="p">(</span><span class="n">gradient</span><span class="p">),</span> <span class="n">gradient</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>绘制渐变效果需要很多处理，不过我们可以将其分为4部分：</p>
+
+<ul>
+<li>定义颜色的变化范围</li>
+<li>定义渐变的方向</li>
+<li>选择颜色空间</li>
+<li>创建并绘制渐变</li>
+</ul>
+
+
+<p>最终的显示效果(看到渐变矩形框的一部分)要归功于之前创建的掩码图。</p>
+
+<p>另外，为了在背景边框模拟光线反射，我添加了一些灯光效果。</p>
+
+<h5>1.1.3 绘制手柄</h5>
+
+<p>下面我们根据当前的角度值，在的正确位置绘制出手柄。</p>
+
+<p>实际上，在绘制过程中，这一步非常简单，复杂一点的就是计算一下手柄所在的位置。</p>
+
+<p>这里我们需要使用三角函数将一个<code>标量值(scalar number)</code>转换为<code>CGPoint</code>。不要担心有多复杂，只需要使用Sin和Cos函数就可以完成。代码如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nf">pointFromAngle:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">angleInt</span><span class="p">{</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Define the Circle center</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">centerPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">TB_LINE_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">TB_LINE_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Define The point position on the circumference</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'><span class="err">    </span><span class="n">result</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">round</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">ToRad</span><span class="p">(</span><span class="o">-</span><span class="n">angleInt</span><span class="p">)))</span> <span class="p">;</span>
+</span><span class='line'><span class="err">    </span><span class="n">result</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">round</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">ToRad</span><span class="p">(</span><span class="o">-</span><span class="n">angleInt</span><span class="p">)));</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码中，指定一个角度值，然后计算出在圆周上面的位置，当然，这里需要圆周的中心点和半径。</p>
+
+<p>使用sin函数在使用sin函数时，需要一个Y坐标值，而cos函数则需要X坐标值。</p>
+
+<p>需要注意的是此处每个函数返回的值都认为半径为1，所以需要将所得结果乘以我们指定的半径大小，并相对于圆周的中心做计算。</p>
+
+<p>希望下面的公式对你的理解有所帮助：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">center</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">radius</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span>
+</span><span class='line'><span class="n">point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">center</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">radius</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过上面的计算，现在我们已经知道手柄的具体位置了，所以，接下来就直接将手柄绘制到指定位置即可，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">drawTheHandle:</span><span class="p">(</span><span class="n">CGContextRef</span><span class="p">)</span><span class="nv">ctx</span><span class="p">{</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="n">CGContextSaveGState</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//I Love shadows</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGContextSetShadowWithColor</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">);</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Get the handle position!</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">handleCenter</span> <span class="o">=</span><span class="err"> </span> <span class="p">[</span><span class="n">self</span> <span class="nl">pointFromAngle:</span> <span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="p">];</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Draw It!</span>
+</span><span class='line'><span class="err">    </span><span class="p">[[</span><span class="n">UIColor</span> <span class="nl">colorWithWhite:</span><span class="mf">1.0</span> <span class="nl">alpha:</span><span class="mf">0.7</span><span class="p">]</span><span class="n">set</span><span class="p">];</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGContextFillEllipseInRect</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="n">handleCenter</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">handleCenter</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">));</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="n">CGContextRestoreGState</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>具体操作步骤如下：</p>
+
+<ul>
+<li>保存当前的上下文(当在一个单独的函数中进行绘制任务时，将上下文的状态进行保存是编程的一个好习惯)。</li>
+<li>给手柄设置一些阴影效果</li>
+<li>定义手柄的颜色，然后利用<code>CGContextFillEllipseInRect</code>将其绘制出来。</li>
+</ul>
+
+
+<p>我们在drawRect函数的最后调用上面这个方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">drawTheHandle:</span><span class="n">ctx</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>至此，我们就完成了绘制部分的任务。</p>
+
+<h4>1.2 跟踪用户的操作</h4>
+
+<p>在UIControl的子类中，我们可以<code>override</code>3个特殊的方法来提供一个自定义的跟踪行为</p>
+
+<h5>1.2.1 开始跟踪</h5>
+
+<p>当在控件的bound内发生了一个触摸事件，首先会调用控件的<code>beginTrackingWithTouch</code>方法。</p>
+
+<p>我们就看看如何<code>override</code>这个方法吧：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">beginTrackingWithTouch:</span><span class="p">(</span><span class="n">UITouch</span> <span class="o">*</span><span class="p">)</span><span class="nv">touch</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span><span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">super</span> <span class="nl">beginTrackingWithTouch:</span><span class="n">touch</span> <span class="nl">withEvent:</span><span class="n">event</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//We need to track continuously</span>
+</span><span class='line'><span class="err">    </span><span class="k">return</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该函数返回的BOOl值决定着：当触摸事件是dragged时，是否需要响应。在我们这里的自定义控件中，是需要跟踪用户的dragging，所以返回YES。</p>
+
+<p>上面这个函数有两个参数：touch对象和事件。</p>
+
+<h5>1.2.2 持续跟踪</h5>
+
+<p>在上一个方法中我们指定了这里的自定义控件需要跟踪一个持续的事件，所以当用户进行drag时，会调用一个特殊的方法：<code>continueTrackingWithTouch</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">continueTrackingWithTouch:</span><span class="p">(</span><span class="n">UITouch</span> <span class="o">*</span><span class="p">)</span><span class="nv">touch</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该方法返回的BOOL值标示是否继续跟踪touch事件。</p>
+
+<p>通过该方法我们可以根据touch位置对用户的操作进行过滤。例如，我们可以：仅当touch位置与手柄位置相交的时候才激活控件(activate control)。不过在这里我们的控制逻辑并不是这样的，我们希望用户点击任何位置都能对手柄做出相应的位置处理。</p>
+
+<p>本文的该方法负责更新手柄的位置(在后面的一节中会看到我们把该位置信息传递给对应的target上)。</p>
+
+<p>对上面这个方法的override代码如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">continueTrackingWithTouch:</span><span class="p">(</span><span class="n">UITouch</span> <span class="o">*</span><span class="p">)</span><span class="nv">touch</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span><span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">super</span> <span class="nl">continueTrackingWithTouch:</span><span class="n">touch</span> <span class="nl">withEvent:</span><span class="n">event</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Get touch location</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">lastPoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInView:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Use the location to design the Handle</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">self</span> <span class="nl">movehandle:</span><span class="n">lastPoint</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">        </span><span class="c1">//We&#39;ll see this function in the next section:</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">self</span> <span class="nl">sendActionsForControlEvents:</span><span class="n">UIControlEventValueChanged</span><span class="p">];</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="k">return</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码中，首先利用<code>locationInView</code>获取到touch的位置，然后将该位置传递给<code>moveHandle</code>方法，该方法会将传入的值转换为一个有效的手柄位置(a valid handle position)。</p>
+
+<p>此处“a valid position”的意思是什么呢？</p>
+
+<p>此控件的手柄只能在背景圆弧定义的边界范围内做移动，但是我们不希望强制要求用户必须在很小的圆弧内才可以移动手柄，如果非要这样的话，用户体验会非常的糟糕。</p>
+
+<p><code>moveHandle</code>的任务就是负责把任意的位置值转变为手柄可移动的值，另外，另外，在该函数中，还对指定的滑块角度值做了转换，代码如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">movehandle:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">lastPoint</span><span class="p">{</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Get the center</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">centerPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'><span class="err">                                                                            </span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Calculate the direction from the center point to an arbitrary position.</span>
+</span><span class='line'><span class="err">    </span><span class="kt">float</span> <span class="n">currentAngle</span> <span class="o">=</span> <span class="n">AngleFromNorth</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">,</span>
+</span><span class='line'><span class="err">                                                                                </span><span class="n">lastPoint</span><span class="p">,</span>
+</span><span class='line'><span class="err">                                                                                </span><span class="n">NO</span><span class="p">);</span>
+</span><span class='line'><span class="err">    </span><span class="kt">int</span> <span class="n">angleInt</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">currentAngle</span><span class="p">);</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Store the new angle</span>
+</span><span class='line'><span class="err">    </span><span class="n">self</span><span class="p">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">-</span> <span class="n">angleInt</span><span class="p">;</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Update the textfield </span>
+</span><span class='line'><span class="err">    </span><span class="n">_textField</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span><span class="err"> </span> <span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="err">                                                                                                    </span><span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="p">];</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Redraw</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">self</span> <span class="n">setNeedsDisplay</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面代码中，实际上主要任务都是在<code>AngleFromNorth</code>方法中处理的：根据两个point，就会返回一个连接这两点对应的一个角度关系，<code>AngleFromNorth</code>方法的实现如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="kt">float</span> <span class="nf">AngleFromNorth</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">p1</span><span class="p">,</span> <span class="n">CGPoint</span> <span class="n">p2</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="n">flipped</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="n">CGPoint</span> <span class="n">v</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">p2</span><span class="p">.</span><span class="n">x</span><span class="o">-</span><span class="n">p1</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">p2</span><span class="p">.</span><span class="n">y</span><span class="o">-</span><span class="n">p1</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="err">    </span><span class="kt">float</span> <span class="n">vmag</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">SQR</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">SQR</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">)),</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="err">    </span><span class="n">v</span><span class="p">.</span><span class="n">x</span> <span class="o">/=</span> <span class="n">vmag</span><span class="p">;</span>
+</span><span class='line'><span class="err">    </span><span class="n">v</span><span class="p">.</span><span class="n">y</span> <span class="o">/=</span> <span class="n">vmag</span><span class="p">;</span>
+</span><span class='line'><span class="err">    </span><span class="kt">double</span> <span class="n">radians</span> <span class="o">=</span> <span class="n">atan2</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'><span class="err">    </span><span class="n">result</span> <span class="o">=</span> <span class="n">ToDeg</span><span class="p">(</span><span class="n">radians</span><span class="p">);</span>
+</span><span class='line'><span class="err">    </span><span class="k">return</span> <span class="p">(</span><span class="n">result</span> <span class="o">&gt;=</span><span class="mi">0</span><span class="err"> </span> <span class="o">?</span> <span class="n">result</span> <span class="o">:</span> <span class="n">result</span> <span class="o">+</span> <span class="mf">360.0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>提醒：<code>angleFromNorth</code>方法并不是我的原创，我是直接从苹果提供的OSX示例clockControl中拿过来用的。</p>
+
+<p>在上面的代码中，获得了角度值以后，将其存储到<code>angle</code>中，然后更新一下textfield的值。</p>
+
+<p>接着调用的<code>setNeedDisplay</code>是为了确保<code>drawRect</code>被调用，以尽快在界面上做出相应的更新。</p>
+
+<h5>1.2.3 结束跟踪</h5>
+
+<p>当跟踪结束的时候，会调用下面这个方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">endTrackingWithTouch:</span><span class="p">(</span><span class="n">UITouch</span> <span class="o">*</span><span class="p">)</span><span class="nv">touch</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span><span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">super</span> <span class="nl">endTrackingWithTouch:</span><span class="n">touch</span> <span class="nl">withEvent:</span><span class="n">event</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在本文中，我们并不需要override该方法。如果当用户完成控件的界面操作时，你希望做一些处理，那么该方法会非常有用。</p>
+
+<h4>1.3 Target-Action模式</h4>
+
+<p>至此，圆形滑块控件可以工作了，你可以drag手柄，并能看到textfield中值的改变。</p>
+
+<p>发送action——控件事件</p>
+
+<p>如果希望自己定制的控件与UIControl行为保持一致，那么当控件的值发生变化时，需要进行通知处理：使用<code>sendActionsForControlEvents</code>方法，并制定特定的事件类型，值改变对应的事件一般是<code>UIControlEventValueChanged</code>。</p>
+
+<p>苹果已经预定义了许多事件类型(Xcode中，在UIControlEventValueChanged上<code>cmd + 鼠标单击</code>)。如果你的控件是继承自UITextField，那么你可能会对<code>UIControlEventEdigitingDidBegin</code>感兴趣，如果你要做一个touch Up action，那么可以使用UIControlTouchUpInside。</p>
+
+<p>如果你注意的话，在本文前部分的continueTrackingWithTouch方法里面，我们调用了<code>sendActionsForControlEvents</code>方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">sendActionsForControlEvents:</span><span class="n">UIControlEventValueChanged</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样处理之后，当控件值发生变化时，每一个对象(观察者——注册该事件)都会收到响应的通知。</p>
+
+<h3>2. 如何使用自定义控件</h3>
+
+<p>到这里，我们的控件定制完毕，下面介绍如何在程序中使用自定义的控件。</p>
+
+<p>打开文件<code>TBViewController.m</code>，看看<code>viewDidLoad</code>方法里面的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'><span class="err">    </span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nl">colorWithRed:</span><span class="mf">0.1</span> <span class="nl">green:</span><span class="mf">0.1</span> <span class="nl">blue:</span><span class="mf">0.1</span> <span class="nl">alpha:</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Create the Circular Slider</span>
+</span><span class='line'><span class="err">    </span><span class="n">TBCircularSlider</span> <span class="o">*</span><span class="n">slider</span> <span class="o">=</span> <span class="p">[[</span><span class="n">TBCircularSlider</span> <span class="n">alloc</span><span class="p">]</span><span class="nl">initWithFrame:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="n">TB_SLIDER_SIZE</span><span class="p">,</span> <span class="n">TB_SLIDER_SIZE</span><span class="p">)];</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="c1">//Define Target-Action behaviour</span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">slider</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">newValue:</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventValueChanged</span><span class="p">];</span>
+</span><span class='line'><span class="err">     </span>
+</span><span class='line'><span class="err">    </span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">slider</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中，给view设置了一个背景色，并通过调用<code>initWithFrame</code>方法实例化了一个圆形滑块(自定义的控件)。</p>
+
+<p>注意：UIControl继承自UIView，所以它继承了UIView的所有方法。</p>
+
+<p>接着定义了如何与该控件进行交互：使用<code>addTarget:action:forControlEvent:</code>方法。</p>
+
+<p>该方法只是给控件的特定事件设置一下target-action。如果你还记得的话，上面层介绍过，每当用户移动手柄时，圆形滑块都会发送一个UIControlEventValueChanged事件。所以我们可以通过下面的代码为该事件注册一个action：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">slider</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">newValue:</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventValueChanged</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样我们就可以创建一个<code>**newValue**</code>方法来处理值发生改变时的一些事情：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">newValue:</span><span class="p">(</span><span class="n">TBCircularSlider</span><span class="o">*</span><span class="p">)</span><span class="nv">slider</span><span class="p">{</span>
+</span><span class='line'><span class="err">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Slider Value %d&quot;</span><span class="p">,</span><span class="n">slider</span><span class="p">.</span><span class="n">angle</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结合Target-Action，所以函数会受到action的发送者，此处是slider，通过这个slider，就能直接获取到角度值。</p>
+
+<h3>3. 总结</h3>
+
+<p>根据本文的具体步骤，你可以构建<code>任意你想要的控件</code>。</p>
+
+<p>当然，也有其它一些方法来构建自定控件，不过本文基本上是按照苹果的建议来做的。</p>
+
+<p>点击下图，下载代码</p>
+
+<h3>4. 代码下载</h3>
+
+<p><a href="https://github.com/ariok/TB_CircularSlider"><img src="http://BeyondVincent.github.io/images/2013/11/34.jpg" alt="" /></a></p>
+
+<p>本文由破船译自<a href="http://www.thinkandbuild.it/how-to-build-a-custom-control-in-ios/">How to build a custom control in iOS</a>。大家要是有什么问题，可以直接在<a href="https://twitter.com/bitwaker">twitter</a>上联系原作者，当然也可以在下面的评论中回复我。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我写的第一本书：Windows 8开发实战体验]]></title>
@@ -4830,545 +5478,6 @@ mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.p
 <p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
 
 <p>……Sprite Kit教程：初学者 3 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：初学者 2]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"/>
-    <updated>2013-09-29T00:06:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2</id>
-    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/09/10.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<p>感谢<a href="http://answerhuang.duapp.com/">answer哥</a>对本文翻译问题的提出。(2013-10-14)</p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li>Sprite Kit的优点和缺点</li>
-<li>Sprite Kit vs Cocos2D-iPhone vs Cocos2D-X vs Unity</li>
-<li>Hello, Sprite Kit!</li>
-<li><a href="#hpxs">横屏显示</a></li>
-<li><a href="#ydgs">移动怪兽</a></li>
-<li><a href="#fspd">发射炮弹</a></li>
-<li>碰撞检测: 概述</li>
-<li>碰撞检测: 实现</li>
-<li>收尾</li>
-<li>何去何从?</li>
-</ul>
-
-
-<h3><a id="hpxs"></a>横屏显示</h3>
-
-<p>首先，在Project Navigator中单击SpriteKitSimpleGame工程以打开target设置，选中SpriteKitSimpleGame target。然后在<code>Deployment Info</code>中，不要勾选<code>Portrait</code>，只选中<code>Landscape</code>和<code>Landscape Right</code>，如下所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/11.png"></p>
-
-<p>编译并运行工程，会看到如下运行画面：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/12.png"></p>
-
-<p>下面我们试着添加一个忍者(ninja)。</p>
-
-<p>首先，下载此<a href="http://cdn3.raywenderlich.com/wp-content/uploads/2015/01/SpriteKitSimpleGameResources.zip">工程的资源文件</a>，并将其拖拽到Xcode工程中。确保勾选上<code>“Copy items into destination group’s folder (if needed)”</code>和<code>SpriteKitSimpleGame target</code>。</p>
-
-<p>接着，打开<code>MyScene.m</code>，并用下面的内容替换之：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;MyScene.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// 1</span>
-</span><span class='line'><span class="k">@interface</span> <span class="nc">MyScene</span> <span class="p">()</span>
-</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKSpriteNode</span> <span class="o">*</span> <span class="n">player</span><span class="p">;</span>
-</span><span class='line'><span class="k">@end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@implementation</span> <span class="nc">MyScene</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// 2</span>
-</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Size: %@&quot;</span><span class="p">,</span> <span class="n">NSStringFromCGSize</span><span class="p">(</span><span class="n">size</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// 3</span>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="nl">colorWithRed:</span><span class="mf">1.0</span> <span class="nl">green:</span><span class="mf">1.0</span> <span class="nl">blue:</span><span class="mf">1.0</span> <span class="nl">alpha:</span><span class="mf">1.0</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// 4</span>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">player</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="s">@&quot;player&quot;</span><span class="p">];</span>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们来看看上面的代码。</p>
-
-<ol>
-<li>为了给player(例如忍者)声明一个私有变量，在这里创建了一个私有的interface，之后可以把这个私有变量添加到场景中。</li>
-<li>在这里打印出了场景的size，至于什么原因很快你就会看到了。</li>
-<li>在Sprite Kit中设置一个场景的背景色非常简单——只需要设置<code>backgroundColor</code>属性，在这里将其设置位白色。</li>
-<li>在Sprite Kit场景中添加一个精灵同样非常简单，只需要使用<code>spriteNodeWithImageNamed</code>方法，并把一副图片的名称传递进去就可以创建一个精灵。接着设置一下精灵的位置，然后调用<code>addChild</code>方法将该精灵添加到场景中。在代码中将忍者的位置设置为<code>(100, 100)</code>，该位置是从屏幕的左下角到右上角计算的。</li>
-</ol>
-
-
-<p>编译并运行，看看效果如何…</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/13.png"></p>
-
-<p>呀！屏幕是白色的，并没有看到忍者。这是为什么呢？你可能在想设计之初就是这样的，实际上这里有一个问题。</p>
-
-<p>如果你观察一下控制台输出的内容，会看到如下内容</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">SpriteKitSimpleGame</span><span class="p">[</span><span class="mi">3139</span><span class="o">:</span><span class="mi">907</span><span class="p">]</span> <span class="nl">Size:</span> <span class="p">{</span><span class="mi">320</span><span class="p">,</span> <span class="mi">568</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>scene认为自己的宽度是320，高度则是568——实际上刚好相反!</p>
-
-<p>我们来看看具体发生了什么：定位到<code>ViewController.m</code>的<code>viewDidLoad</code>方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Configure the view.</span>
-</span><span class='line'>    <span class="n">SKView</span> <span class="o">*</span> <span class="n">skView</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">skView</span><span class="p">.</span><span class="n">showsFPS</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">skView</span><span class="p">.</span><span class="n">showsNodeCount</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Create and configure the scene.</span>
-</span><span class='line'>    <span class="n">SKScene</span> <span class="o">*</span> <span class="n">scene</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyScene</span> <span class="nl">sceneWithSize:</span><span class="n">skView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">scene</span><span class="p">.</span><span class="n">scaleMode</span> <span class="o">=</span> <span class="n">SKSceneScaleModeAspectFill</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Present the scene.</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">skView</span> <span class="nl">presentScene:</span><span class="n">scene</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码中利用view的边界size创建了场景。不过请注意，当<code>viewDidLoad</code>被调用的时候，view还没被添加到view层级结构中，因此它还没有响应出布局的改变。所以view的边界可能还不正确，进而在viewDidLoad中并不是开启场景的最佳时机。</p>
-
-<p><code>提醒</code>：要想了解更多相关内容，请看由Rob Mayoff带来的<a href="http://stackoverflow.com/questions/9539676/uiviewcontroller-returns-invalid-frame">最佳解释</a>。</p>
-
-<p>解决方法就是将开启场景代码的过程再靠后一点。用下面的代码替换<code>viewDidLoad</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewWillLayoutSubviews</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewWillLayoutSubviews</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Configure the view.</span>
-</span><span class='line'>    <span class="n">SKView</span> <span class="o">*</span> <span class="n">skView</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skView</span><span class="p">.</span><span class="n">scene</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">skView</span><span class="p">.</span><span class="n">showsFPS</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">skView</span><span class="p">.</span><span class="n">showsNodeCount</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">// Create and configure the scene.</span>
-</span><span class='line'>      <span class="n">SKScene</span> <span class="o">*</span> <span class="n">scene</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyScene</span> <span class="nl">sceneWithSize:</span><span class="n">skView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">];</span>
-</span><span class='line'>      <span class="n">scene</span><span class="p">.</span><span class="n">scaleMode</span> <span class="o">=</span> <span class="n">SKSceneScaleModeAspectFill</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">// Present the scene.</span>
-</span><span class='line'>      <span class="p">[</span><span class="n">skView</span> <span class="nl">presentScene:</span><span class="n">scene</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>编译并运行程序，可以看到，忍者已经显示在屏幕中了！</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/14.png"></p>
-
-<p>如上图所示，可以看到坐标系已经正确了，如果想要把忍者的位置设置为其中间靠左，那么在<code>MyScene.m</code>中用下面的代码来替换设置忍者位置相关的代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><a id="ydgs"></a>移动怪兽</h3>
-
-<p>接下来，我们希望在场景中添加一些怪兽，让忍者进行攻击。为了让游戏更有趣一点，希望怪兽能够移动——否则没有太大的挑战！OK，我们就在屏幕的右边，离屏的方式创建怪兽，并给怪兽设置一个动作：告诉它们往左边移动。</p>
-
-<p>将下面这个方法添加到<code>MyScene.m</code>中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">addMonster</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Create sprite</span>
-</span><span class='line'>    <span class="n">SKSpriteNode</span> <span class="o">*</span> <span class="n">monster</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="s">@&quot;monster&quot;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Determine where to spawn the monster along the Y axis</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">minY</span> <span class="o">=</span> <span class="n">monster</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">maxY</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">monster</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">rangeY</span> <span class="o">=</span> <span class="n">maxY</span> <span class="o">-</span> <span class="n">minY</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">actualY</span> <span class="o">=</span> <span class="p">(</span><span class="n">arc4random</span><span class="p">()</span> <span class="o">%</span> <span class="n">rangeY</span><span class="p">)</span> <span class="o">+</span> <span class="n">minY</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Create the monster slightly off-screen along the right edge,</span>
-</span><span class='line'>    <span class="c1">// and along a random position along the Y axis as calculated above</span>
-</span><span class='line'>    <span class="n">monster</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">+</span> <span class="n">monster</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">actualY</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">monster</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Determine speed of the monster</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">minDuration</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">maxDuration</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">rangeDuration</span> <span class="o">=</span> <span class="n">maxDuration</span> <span class="o">-</span> <span class="n">minDuration</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">actualDuration</span> <span class="o">=</span> <span class="p">(</span><span class="n">arc4random</span><span class="p">()</span> <span class="o">%</span> <span class="n">rangeDuration</span><span class="p">)</span> <span class="o">+</span> <span class="n">minDuration</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Create the actions</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span> <span class="n">actionMove</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveTo:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="o">-</span><span class="n">monster</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">actualY</span><span class="p">)</span> <span class="nl">duration:</span><span class="n">actualDuration</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span> <span class="n">actionMoveDone</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="n">removeFromParent</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">monster</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">actionMove</span><span class="p">,</span> <span class="n">actionMoveDone</span><span class="p">]]];</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在上面，我尽量让代码看起来容易理解。首先是通过一个简单的计算，确定怪兽出现的位置，并将该位置设置给怪兽，然后将其添加到场景中。</p>
-
-<p>接着是添加动作(actions)。跟Cocos2D一样，Sprite Kit同样提供了很多方便的内置动作，例如移动动作、旋转动作、淡入淡出动作、动画动作等。在这里我们只需要在怪兽上使用3中动作即可：</p>
-
-<ul>
-<li><code>moveTo:duration:</code>使用这个动作可以把怪兽从屏幕外边移动到左边。移动过程中，我们可以指定移动持续的时间，上面的代码中，指定为2-4秒之间的一个随机数。</li>
-<li><code>removeFromParent:</code>在Sprite Kit中，可以使用该方法，方便的将某个node从parent中移除，能有效的从场景中删除某个对象。此处，将不再需要显示的怪兽从场景中移除。这个功能非常的重要，否则当有源源不断的怪兽出现在场景中时，会耗尽设备的所有资源。</li>
-<li><code>sequence:</code>sequence动作可以一次性就把一系列动作串联起来按照一定顺序执行。通过该方法我们就能让<code>moveTo:</code>方法先执行，当完成之后，在执行<code>removeFromParent:</code>动作。</li>
-</ul>
-
-
-<p>最后，我们需要做的事情就是调用上面这个方法<code>addMonster</code>，以实际的创建出怪兽！为了更加好玩，下面我们来让怪兽随着时间持续的出现在屏幕中。</p>
-
-<p>在Sprite Kit中，并不能像Cocos2D一样，可以配置每隔X秒就回调一下update方法。同样也不支持将从上次更新到目前为止的时间差传入方法中。(非常令人吃惊！)。</p>
-
-<p>不过，我们可以通过一小段代码来仿造这种行为。首先在<code>MyScene.m</code>的private interface中添加如下属性：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSTimeInterval</span> <span class="n">lastSpawnTimeInterval</span><span class="p">;</span>
-</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSTimeInterval</span> <span class="n">lastUpdateTimeInterval</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过<code>lastSpawnTimeInterval</code>可以记录着最近出现怪兽时的时间，而<code>lastUpdateTimeInterval</code>可以记录着上次更新时的时间。</p>
-
-<p>接着，我们写一个方法，该方法在画面每一帧更新的时候都会被调用。记住，该方法不会被自动调用——需要另外写一个方法来调用它：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">updateWithTimeSinceLastUpdate:</span><span class="p">(</span><span class="n">CFTimeInterval</span><span class="p">)</span><span class="nv">timeSinceLast</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">+=</span> <span class="n">timeSinceLast</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">self</span> <span class="n">addMonster</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码中简单的将上次更新(update调用)的时间追加到<code>self.lastSpawnTimeInterval</code>中。一旦该时间大于1秒，就在场景中新增一个怪兽，并将<code>lastSpawnTimeInterval</code>重置。</p>
-
-<p>最后，添加如下方法来调用上面的方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">update:</span><span class="p">(</span><span class="n">NSTimeInterval</span><span class="p">)</span><span class="nv">currentTime</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">// Handle time delta.</span>
-</span><span class='line'>    <span class="c1">// If we drop below 60fps, we still want everything to move the same distance.</span>
-</span><span class='line'>    <span class="n">CFTimeInterval</span> <span class="n">timeSinceLast</span> <span class="o">=</span> <span class="n">currentTime</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span> <span class="o">=</span> <span class="n">currentTime</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">timeSinceLast</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// more than a second since last update</span>
-</span><span class='line'>        <span class="n">timeSinceLast</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span> <span class="o">=</span> <span class="n">currentTime</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">updateWithTimeSinceLastUpdate:</span><span class="n">timeSinceLast</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sprite Kit在显示每帧时都会调用上面的<code>update:</code>方法。</p>
-
-<p>上面的代码其实是来自苹果提供的Adventure示例中。该方法会传入当前的时间，在其中，会做一些计算，以确定出上一帧更新的时间。注意，在代码中做了一些合理性的检查，以避免从上一帧更新到现在已经过去了大量时间，并且将间隔重置为1/60秒，避免出现奇怪的行为。</p>
-
-<p>现在编译并运行程序，可以看到许多怪兽从左边移动到屏幕右边并消失。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/15.png"></p>
-
-<h3><a id="fspd"></a>发射炮弹</h3>
-
-<p>现在我们开始给忍者添加一些动作，首先从发射炮弹开始！实际上有多种方法来实现炮弹的发射，不过，在这里要实现的方法时当用户tap屏幕时，从忍者的方位到tap的方位发射一颗炮弹。</p>
-
-<p>由于本文是针对初级开发者，所以在这里我使用<code>moveTo:</code>动作来实现，不过这需要做一点点的数学运算——因为<code>moveTo:</code>方法需要指定炮弹的目的地，但是又不能直接使用touch point(因为touch point仅仅代表需要发射的方向)。实际上我们需要让炮弹穿过touch point，直到炮弹在屏幕中消失。</p>
-
-<p>如下图，演示了上面的相关内容：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/16.jpg"></p>
-
-<p>如图所示，我们可以通过origin point到touch point得到一个小的三角形。我们要做的就是根据这个小三角形的比例创建出一个大的三角形——而你知道你想要的一个端点是离开屏幕的地方。</p>
-
-<p>为了做这个计算，如果有一些基本的矢量方法可供调用(例如矢量的加减法)，那么会非常有帮助，但很不幸的时Sprite Kit并没有提供相关方法，所以，我们必须自己实现。</p>
-
-<p>不过很幸运的时这非常容易实现。将下面的方法添加到文件的顶部(implementation之前)：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwAdd</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="n">CGPoint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwSub</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="n">CGPoint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwMult</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="kt">float</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">b</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="kt">float</span> <span class="nf">rwLength</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">sqrtf</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Makes a vector have a length of 1</span>
-</span><span class='line'><span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwNormalize</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kt">float</span> <span class="n">length</span> <span class="o">=</span> <span class="n">rwLength</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">length</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">/</span> <span class="n">length</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面实现了一些标准的矢量函数。如果你看得不是太明白，请看这里关于<a href="http://www.mathsisfun.com/algebra/vectors.html">矢量方法的解释</a>。</p>
-
-<p>接着，在文件中添加一个新的方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesEnded:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 1 - Choose one of the touches to work with</span>
-</span><span class='line'>    <span class="n">UITouch</span> <span class="o">*</span> <span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 2 - Set up initial location of projectile</span>
-</span><span class='line'>    <span class="n">SKSpriteNode</span> <span class="o">*</span> <span class="n">projectile</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="s">@&quot;projectile&quot;</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">projectile</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 3- Determine offset of location to projectile</span>
-</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">rwSub</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">projectile</span><span class="p">.</span><span class="n">position</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 4 - Bail out if you are shooting down or backwards</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">offset</span><span class="p">.</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 5 - OK to add now - we&#39;ve double checked position</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">projectile</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 6 - Get the direction of where to shoot</span>
-</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">rwNormalize</span><span class="p">(</span><span class="n">offset</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 7 - Make it shoot far enough to be guaranteed off screen</span>
-</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">shootAmount</span> <span class="o">=</span> <span class="n">rwMult</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 8 - Add the shoot amount to the current position       </span>
-</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">realDest</span> <span class="o">=</span> <span class="n">rwAdd</span><span class="p">(</span><span class="n">shootAmount</span><span class="p">,</span> <span class="n">projectile</span><span class="p">.</span><span class="n">position</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// 9 - Create the actions</span>
-</span><span class='line'>    <span class="kt">float</span> <span class="n">velocity</span> <span class="o">=</span> <span class="mf">480.0</span><span class="o">/</span><span class="mf">1.0</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">float</span> <span class="n">realMoveDuration</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">velocity</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span> <span class="n">actionMove</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveTo:</span><span class="n">realDest</span> <span class="nl">duration:</span><span class="n">realMoveDuration</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span> <span class="n">actionMoveDone</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="n">removeFromParent</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">projectile</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">actionMove</span><span class="p">,</span> <span class="n">actionMoveDone</span><span class="p">]]];</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码中做了很多事情，我们来详细看看。</p>
-
-<ol>
-<li>SpriteKit为我们做了很棒的一件事情就是它提供了一个UITouch的category，该category中有<code>locationInNode:</code>和<code>previousLocationInNode:</code>方法。这两个方法可以帮助我们定位到在SKNode内部坐标系中touch的坐标位置。这样一来，我们就可以寻得到在场景坐标系中touch的位置。</li>
-<li>然后创建一个炮弹，并将其放置到忍者的地方，以当做其开始位置。注意，现在还没有将其添加到场景中，因为还需要先做一个合理性的检查——该游戏不允许忍者向后发射。</li>
-<li>接着利用touch位置减去炮弹的当前位置，这样就能获得一个从当前位置到touch位置的矢量。</li>
-<li>如果X值小于0，就意味着忍者将要向后发射，由于在这里的游戏中是不允许的(真实中的忍者是不回头的！)，所以就return。</li>
-<li>否则，将可以将炮弹添加到场景中。</li>
-<li>调用方法<code>rwNormalize</code>，将offset转换为一个单位矢量(长度为1)。这样做可以让在相同方向上，根据确定的长度来构建一个矢量更加容易（因为1 * length = length）。</li>
-<li>在单位矢量的方向上乘以1000。为什么是1000呢？因为着肯定足够超过屏幕边缘了 :]</li>
-<li>将上一步中计算得到的位置与炮弹的位置相加，以获得炮弹最终结束的位置。</li>
-<li>最后，参照之前构建怪物时的方法，创建<code>moveTo:</code>和<code>removeFromParent:</code>两个actions。</li>
-</ol>
-
-
-<p>编译并运行程序，现在忍者可以发射炮弹了！</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/09/17.png"></p>
-
-<p>……Sprite Kit教程：初学者 2 结束……</p>
 ]]></content>
   </entry>
   

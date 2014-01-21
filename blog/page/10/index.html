@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 3rd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[015]添加应用设置(SettingsPane) 今天我就带领大家学习一下设置合约(SettingsPane)的使用 另:之前有介绍过搜索合约,大家可以从下面的链接去学习 &hellip;">
+	<meta name="description" content="Jun 3rd, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[016]如何获取设备当前位置 在程序中如何获取设备当前位置 目录： &#160;&#160;&#160; 1、位置能力声明 &#160;&#160;&#160; 2、 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,187 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/03/43/" itemprop="url">Windows Store App开发[016]如何获取设备当前位置</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><strong>在程序中如何获取设备当前位置</strong></p>
+
+<p><strong>目录：</strong></p>
+
+<p><strong>&#160;&#160;&#160; 1、位置能力声明</strong></p>
+
+<p><strong>&#160;&#160;&#160; 2、单次位置访问</strong></p>
+
+<p><strong>&#160;&#160;&#160; 3、持续位置访问</strong></p>
+
+<p><strong><font color="#666666"></font></strong></p>
+
+<hr />
+
+<p><strong>1、位置能力声明</strong></p>
+
+<p>&#160;&#160;&#160; 在程序中添加位置的支持是很容易和直接的事情。首先需要在程序的manifest文件中添加位置功能的声明。声明的作用是让系统知道这个应用程序可能会尝试方位当前的位置。当然，最终程序是否有权限访问当前位置是由用户控制的。可以通过Visual Studio添加这个声明（双击解决方案资源管理器中的Package.appxmanifest文件,单击功能tab,然后在列表中勾上位置复选框）</p>
+
+<p>&#160;&#160;&#160; 下面是在manifest编辑器中声明位置功能之后的样子:</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/12.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb2.jpg" width="632" height="545" /></a></p>
+
+<p>下面的代码片段是当声明了位置功能后，在打开Package.appxmanifest.xml文件中看到的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;capabilities&gt;
+  &lt;devicecapability name="location"&gt;
+&lt;/devicecapability&gt;&lt;/capabilities&gt;</pre>
+
+
+<p>只要在程序中声明了位置能力,那么就可以立马通过编写代码来访问位置数据。位置功能被构建在Windows Runtime APIs中了，可以通过名称空间Windows.Devices.Geolocation来访问，或者可以通过JavaScript使用W3C API提供的相关位置功能。关于使用W3C API 提供的位置功能的更多信息，请看：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh452746.aspx"><u>使用HTML5检测位置（使用JavaScript和HTML开发Metro style Apps）</u></a></p>
+
+<p>&#160;&#160;&#160; 这里有两种基本的方法可以访问位置数据:一次查询,或者当系统检测到位置的改变引发相应的事件流。我们来看看每一种访问模型,之后就可以决定在程序中使用哪种模型更好。</p>
+
+<p>**</p>
+
+<p>**</p>
+
+<p><strong>2、单次位置访问</strong></p>
+
+<p>&#160;&#160;&#160; 如果只是按需访问位置数据,例如在用户所在区域发现用户感兴趣的点,注释与位置信息相关的内容,在地图上显示用户的位置等。只需要少数的几行代码就能搞定了,并且还能够延长电池的寿命。下面来看看相关的代码：</p>
+
+<p>JavaScript:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">var loc = new Windows.Devices.Geolocation.Geolocator();
+loc.positionAccuracy = Windows.Devices.Geolocation.PositionAccuracy.high;
+loc.getGeopositionAsync().done(getPositionHandler, errorHandler);
+
+function getPositionHandler(pos) {
+    var lat = pos.coordinate.latitude;
+    var long = pos.coordinate.longitude;
+    var acc = pos.coordinate.accuracy;
+}
+
+function errorHandler(err) {
+    // handle error
+}</pre>
+
+
+<p><strong>C#:</strong></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">using Windows.Devices.Geolocation;
+
+var loc = new Geolocator();
+
+try
+{
+    loc.DesiredAccuracy = PositionAccuracy.High;
+    Geoposition pos = await loc.GetGeopositionAsync();
+
+    var lat = pos.Coordinate.Latitude;
+    var long = pos.Coordinate.Longitude;
+    var acc = pos.Coordinate.Accuracy;
+}
+catch (System.UnauthorizedAccessException)
+{
+    // handle error
+}</pre>
+
+
+<p>通过上面的代码,我们可以看到获取单次位置信息,需要如下步骤:</p>
+
+<h4>1、创建一个Geolocator对象(位置的根对象)</h4>
+
+<p>2、异步调用一个操作来获取当前的位置,并且如果访问位置被拒绝了会有相关的错误处理</p>
+
+<p>注意:</p>
+
+<p>&#160;&#160;&#160; 如果需要，可以取消GetGeopositionAsync操作。这个例子有相关的演示：<a href="http://code.msdn.microsoft.com/windowsapps/Geolocation-2483de66">Windows Runtime Geolocation SDK 示例</a> ,关于单次位置访问信息,请查看<a href="http://msdn.microsoft.com/en-US/library/windows/apps/br225537">Geolocator.GetGeopositionAsync() | getGeopositionAsync() 方法</a>和Geolocation SDK示例.</p>
+
+<p><strong>3、持续位置访问</strong></p>
+
+<p>&#160;&#160;&#160; 如果你的程序需要持续访问位置数据,例如导航,当用户接近感兴趣的位置时提醒做出提醒,路线记录等.你想要添加一个事件监听器,以便当系统位置服务检测到位置改变时,程序会被通知.下面的代码是如何监听位置的改变:</p>
+
+<p>JavaScript:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">var loc = new Windows.Devices.Geolocation.Geolocator();
+loc.desiredAccuracy = Windows.Devices.Geolocation.PositionAccuracy.high;
+loc.addEventListener(&quot;positionchanged&quot;, onPositionChanged);
+
+function onPositionChanged(e) {
+    var lat = e.position.coordinate.latitude;
+    var long = e.position.coordinate.longitude;
+    var acc = e.position.accuracy;
+}</pre>
+
+
+<p>C#:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">using Windows.Devices.Geolocation;
+
+private Geolocator loc = new Geolocator();
+
+private void StartTracking(object sender, RoutedEventArgs e)
+{
+    loc.DesiredAccuracy = PositionAccuracy.High;
+    loc.PositionChanged += new TypedEventHandler&lt;geolocator, positionchangedeventargs=&quot;\\&quot;\\&quot;&quot;&gt;(OnPositionChanged);
+}
+
+private void OnPositionChanged(Geolocator sender, PositionChangedEventArgs e)
+{
+    Geoposition pos = e.Position;
+
+    var lat = pos.Coordinate.Latitude;
+    var long = pos.Coordinate.Longitude;
+    var acc = pos.Coordinate.Accuracy;
+}</pre>
+
+
+<p>上面给出的代码,本质上与单次访问相同,只不过在单次访问中使用了异步操作,而在这里,我们添加了事件监听器,并传递一个代理以处理事件.现在每当检测到一个位置改变,代理就会被调用,通过该代理方法我们可以获得位置数据.如果你想设置移动事件的敏感度,可以通过设置Geolocator对象的<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.devices.geolocation.geolocator.movementthreshold.aspx">MovementThreshold</a>属性.</p>
+
+<p>&#160;&#160;&#160; 另外,可以通过设置Geolocator对象的<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.devices.geolocation.geolocator.desiredaccuracy.aspx">DesiredAccuracy</a>属性,对位置API进行微调.如果程序不需要达到非常精确的GPS-level(例如天气程序),可以把该属性设置为Default，以通过限制使用GPS设备在确定位置来节省电量.</p>
+
+<p>&#160;&#160;&#160; 更多关于添加位置提醒到程序中,请看<a href="http://code.msdn.microsoft.com/windowsapps/Geolocation-2483de66">Geolocation示例</a>，<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465148.aspx">位置提醒程序开发指南</a>和MSDN上的文档名称空间<a href="http://msdn.microsoft.com/en-us/library/windows/apps/br225603.aspx">Windows.Devices.Geolocation</a>。</p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-03</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2405,117 +2586,6 @@ namespace DevDiv_DataBinding.Pages
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-31</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/02/33/" itemprop="url">Windows Store App开发[006]访问Assets文件夹</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>一般当你开始以XAML形式开发Windows 8 Metro App时，在你的工程里面可能会包含一些文件，例如用于显示的图片，数据和xml文件的读取。如下图，是我以Blank App模版创建的一个程序截图。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/11.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb1.png" width="320" height="285" /></a></p>
-
-<p>&#160;</p>
-
-<p>今天我就来跟大家分享一下，如何访问Assets文件夹以及里面的文件。</p>
-
-<p>Windows.Storage名称空间</p>
-
-<p>我们首先需要认识一下Windows.Store名称空间。</p>
-
-<p>&#160;&#160;&#160; 如果你去阅读微软MSDN上提供的文档<a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.storage%28v=vs.85%29.aspx">Windows.Storage文档</a>，你会发现里面有一个StorageFolder类，通过该类，我们可以操作文件夹和相关的内容。StorageFolder类有一个方法叫做StorageFolder.CreateFileAsync，这个方法会在当前文件夹中异步的创建一个文件。同时，你也会看到，这里有获取文件内容，读取文件属性等方法。</p>
-
-<p>&#160;&#160;&#160; 在这里我会在Assets目录中添加一个XML文件1.xml，然后将其读取出来并显示在TextBox中。</p>
-
-<p>&#160;&#160;&#160; 首先，我们需要获取Assets文件夹安装的路径。可以通过下面的代码获取。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;</pre>
-
-
-<p>然后就是从Assets目录的文件1.xml中读取出数据。</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">string CountriesFile = @&quot;Assets\1.xml&quot;;
-StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-StorageFile file = await InstallationFolder.GetFileAsync(CountriesFile);
-Stream Countries = await file.OpenStreamForReadAsync();</pre>
-
-
-<p>在这里我把文件内容转换为stream，并使用Linq XML从XML中读取数据。</p>
-
-<p>下面我给出完成的代码片段：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">public async void LoadCountriesXML()
-{
-    string CountriesFile = @&quot;Assets\1.xml&quot;;
-    StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-    StorageFile file = await InstallationFolder.GetFileAsync(CountriesFile);
-    Stream Countries = await file.OpenStreamForReadAsync();
-
-    XDocument xDOC = XDocument.Load(Countries);
-
-    testXml.Text = xDOC.ToString();
-}</pre>
-
-
-<p>这里需要特别注意的是async和await两个关键字，这两个是C#中新的关键字，在这里我们只需要知道在调用异步函数的时候需要使用到，后续的学习系列中我会对async和await进行详细的讲解。</p>
-
-<p>下面我们就来看看程序运行的效果</p>
-
-<p>第一个图是1.xml文件中的内容，第二个图是程序运行起来，显示出的xml内容。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/21.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb2.png" width="530" height="385" /></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/32.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb2.png" width="682" height="386" /></a></p>
-
-<p>&#160;</p>
-
-<p>代码下载</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/AccessAssets" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<p>&#160;</p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-31</time></span>
 </div>
 
 

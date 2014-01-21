@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[043]MessageDialog的使用 小引 最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows &hellip;">
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[044]自定义MessageDialog 小引 上一篇文章介绍了Windows Store app中自带的MessageDialog的使用。那个控件使用起来是很方便， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,110 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/73/" itemprop="url">Windows Store App开发[044]自定义MessageDialog</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>小引</h3>
+
+<p>上一篇文章介绍了Windows Store app中自带的MessageDialog的使用。那个控件使用起来是很方便，但有时候我们想要自己风格的MessageDialog，这时候自带的就满足不了我们的需求。那么在这篇文章中，我将介绍如何自定义MessageDialog。</p>
+
+<h3><a name="t4"></a><a name="t4"></a>自定义MessageDialog关键技术点</h3>
+
+<p>1、自定义控件，在该控件可以写我们想要的对话框。</p>
+
+<p>2、使用Popup来显示自定义控件</p>
+
+<h3><a name="t5"></a>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_CustomizeMessageDialog</p>
+
+<p>2、在项目工程上单击右键，选择添加->新建项->选择用户控件->输入名称MyUserControl，然后确定</p>
+
+<p>如下图</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/115.jpg"><img title="1" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb13.jpg" width="561" height="384" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/212.jpg"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.jpg" width="682" height="415" /></a></p>
+
+<p>在MyUserControl.xaml文件中，设计自己的对话框</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/37.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb7.jpg" width="682" height="546" /></a></p>
+
+<p>在MyUserControl.xaml.cs中，添加如下代码.当点击按钮时，把popup隐藏</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/48.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb8.jpg" width="579" height="532" /></a></p>
+
+<p>这样就完成了自定义控件</p>
+
+<p>2、在Main.xaml布局中添加一个Popup控件，先别显示出来，即IsLightDismissEnabled= “False”，等需要的时候在显示出来。这里注册了一个Closed事件，用于处理当对话框关闭时，的事件逻辑。</p>
+
+<p><Popup Name="popup" Closed="popup\_Closed\_1" IsLightDismissEnabled="False"> <br/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160; </Popup></p>
+
+<p>在Main.xaml.cs文件中，添加如下代码，将自定义控件通过Popup显示出来。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/56.jpg"><img title="5" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb6.jpg" width="634" height="399" /></a>
+&#160;</p>
+
+<p>至此，代码完毕</p>
+
+<h3><a name="t6"></a>运行效果</h3>
+
+<p>show按钮</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/65.jpg"><img title="6" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb5.jpg" width="608" height="457" /></a> </p></p>
+
+<p>&#160;</p>
+
+<p>点击show按钮，对话框显示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/75.jpg"><img title="7" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb5.jpg" width="632" height="436" /></a></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/CustomizeMessageDialog" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1399,91 +1503,6 @@
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/63/" itemprop="url">Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中，我将介绍如何在程序中添加SemanticZoom控件，以使我们的程序支持语义缩放。</p>
-
-<p>1、语义缩放(Semantic Zoom)概述</p>
-
-<p>&#160;&#160;&#160; 语义缩放(Semantic Zoom)是一项触控优化技术，用于Windows 8中的Windows Store apps，在一个画面中（如相册、程序列表或地址簿）展示和导航大量的数据或内容集合。</p>
-
-<p>&#160;&#160;&#160; 语义缩放使用两种不同的模式来呈现内容：low-level(zoomed in)模式用于在一个平面中显示所有的结构，而high-level(zoomed out)模式则显示分组中的items，使用户可以快速的导航和浏览内容。</p>
-
-<p>&#160;&#160;&#160; 如下图所示：左边是zoom in模式，右边是zoom out模式</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.png" width="682" height="169" /></a></p>
-
-<p>语义缩放的交互方式有如下几种：</p>
-
-<p>&#160;&#160;&#160; A、捏合与拉伸手势(手指移动距离变远为zoom in，手指距离变近则是zoom out)</p>
-
-<p>&#160;&#160;&#160; B、按下Ctrl键，同时滚动鼠标的滚轮</p>
-
-<p>&#160;&#160;&#160; C、按下Ctrl键，同时按下+或者-。</p>
-
-<p>&#160;&#160;&#160; 语义缩放的应用场景</p>
-
-<p>&#160;&#160;&#160; A、地址薄：通讯录以字母顺序组织(或者其它的)，使用字母来展现数据，用户可以将某个字母“放大”，以看到该字母相关联的联系人。</p>
-
-<p>&#160;&#160;&#160; B、相册：以元数据（如日期）来组织图片，用户可以放大（zoom in）某个具体的日期来显示与那个日期相关的图片集合。</p>
-
-<p>&#160;&#160;&#160; C、产品目录：按照类别组织items。</p>
-
-<p>&#160;&#160;&#160; 语义缩放布局示例：</p>
-
-<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Zoom in</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.png" width="682" height="463" /></a></p>
-
-<p>&#160;</p>
-
-<p>注意：语义缩放跟光学缩放(参考<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465307.aspx"><u>Guidelines fore optical zoom and resizing</u></a>)是不同的。虽然它们具有类似的交互方式和基本的行为（基于缩放因子显示更多或者更少的内容），光学缩放是对一个内容区域或者对象（如相片）进行缩放。</p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
 </div>
 
 
