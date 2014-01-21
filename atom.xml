@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-21T16:56:10+08:00</updated>
+  <updated>2014-01-21T17:45:36+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -68,7 +68,7 @@
 
 <p><code>UIControl</code>是UIView的子类，它又是所有UIKit控件的父类(例如UIButton、UISlider和UISwitch等)。</p>
 
-<p>UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来挥之用户界面。</p>
+<p>UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来绘制用户界面。</p>
 
 <p>通过UIControl，我们主要管理3个重要的任务：</p>
 
