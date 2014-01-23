@@ -43,7 +43,7 @@ published: true
 
 `UIControl`是UIView的子类，它又是所有UIKit控件的父类(例如UIButton、UISlider和UISwitch等)。
 
-UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来挥之用户界面。
+UIControl的主要作用是创建相应的逻辑将action分发到对应的target，另外90%的情况下，它会根据自身的状态(例如Highlighted, Selected和Disabled等)来绘制用户界面。
 
 通过UIControl，我们主要管理3个重要的任务：
 
