@@ -100,7 +100,7 @@
 
 <h3>1. NSNumber</h3>
 
-<p>曾经你是否一致这样来实例化<code>NSNumber</code>：</p>
+<p>曾经你是否一直这样来实例化<code>NSNumber</code>：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSNumber</span> <span class="o">*</span><span class="n">integer</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSNumber</span> <span class="nl">numberWithInt:</span><span class="mi">19</span><span class="p">];</span>
@@ -211,6 +211,13 @@
 <p>在上面NSDictionary实例化过程中，通过Literal，除了可以定义NSNumber和NSArray之外，还可以以可读的方式一一放置key和对应的值。相信这种方法大家都会喜欢。</p>
 
 <p>从上面的介绍，你应该会喜欢上Literal，它确实可以让我们的代码更加容易读懂，并且不容易出错！！！</p>
+
+<p>另外，我们还可以通过下面这样的方式访问数组中key对应的内容：(感谢<a href="http://weibo.com/u/2135198615">@谌启亮</a>在评论中的提醒)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSString</span> <span class="o">*</span><span class="n">firstValue</span> <span class="o">=</span> <span class="n">dicts</span><span class="p">[</span><span class="s">@&quot;first&quot;</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>// 注意：下面这一点内容我摘自<a href="http://clang.llvm.org/docs/ObjectiveCLiterals.html">Objective-C-Literals-Boxed Expressions</a></p>
 

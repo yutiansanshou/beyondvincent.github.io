@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-23T15:18:22+08:00</updated>
+  <updated>2014-01-24T10:32:52+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -41,7 +41,7 @@
 
 <h3>1. NSNumber</h3>
 
-<p>曾经你是否一致这样来实例化<code>NSNumber</code>：</p>
+<p>曾经你是否一直这样来实例化<code>NSNumber</code>：</p>
 
 <p><code>objc
 NSNumber *integer = [NSNumber numberWithInt:19];
@@ -127,6 +127,12 @@ NSDictionary *dicts = @{@"first":@10, @"second":@20, @"third":@30};
 <p>在上面NSDictionary实例化过程中，通过Literal，除了可以定义NSNumber和NSArray之外，还可以以可读的方式一一放置key和对应的值。相信这种方法大家都会喜欢。</p>
 
 <p>从上面的介绍，你应该会喜欢上Literal，它确实可以让我们的代码更加容易读懂，并且不容易出错！！！</p>
+
+<p>另外，我们还可以通过下面这样的方式访问数组中key对应的内容：(感谢<a href="http://weibo.com/u/2135198615">@谌启亮</a>在评论中的提醒)</p>
+
+<p><code>objc
+NSString *firstValue = dicts[@"first"]
+</code></p>
 
 <p>// 注意：下面这一点内容我摘自<a href="http://clang.llvm.org/docs/ObjectiveCLiterals.html">Objective-C-Literals-Boxed Expressions</a></p>
 
