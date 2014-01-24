@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-24T10:32:52+08:00</updated>
+  <updated>2014-01-24T10:39:53+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -128,7 +128,7 @@ NSDictionary *dicts = @{@"first":@10, @"second":@20, @"third":@30};
 
 <p>从上面的介绍，你应该会喜欢上Literal，它确实可以让我们的代码更加容易读懂，并且不容易出错！！！</p>
 
-<p>另外，我们还可以通过下面这样的方式访问数组中key对应的内容：(感谢<a href="http://weibo.com/u/2135198615">@谌启亮</a>在评论中的提醒)</p>
+<p>另外，我们还可以通过下面这样的方式访问字典中key对应的内容：(感谢<a href="http://weibo.com/u/2135198615">@谌启亮</a>在评论中的提醒)</p>
 
 <p><code>objc
 NSString *firstValue = dicts[@"first"]
