@@ -27,7 +27,7 @@ published: true
 
 ###1. NSNumber###
 
-曾经你是否一致这样来实例化`NSNumber`：
+曾经你是否一直这样来实例化`NSNumber`：
 
 ```objc
 NSNumber *integer = [NSNumber numberWithInt:19];
@@ -113,6 +113,12 @@ NSDictionary *dicts = @{@"first":@10, @"second":@20, @"third":@30};
 在上面NSDictionary实例化过程中，通过Literal，除了可以定义NSNumber和NSArray之外，还可以以可读的方式一一放置key和对应的值。相信这种方法大家都会喜欢。
 
 从上面的介绍，你应该会喜欢上Literal，它确实可以让我们的代码更加容易读懂，并且不容易出错！！！
+
+另外，我们还可以通过下面这样的方式访问字典中key对应的内容：(感谢[@谌启亮](http://weibo.com/u/2135198615)在评论中的提醒)
+
+```objc
+NSString *firstValue = dicts[@"first"]
+```
 
 
 
