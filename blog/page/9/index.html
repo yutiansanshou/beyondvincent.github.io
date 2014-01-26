@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 4th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[027]C++/CX Part 1 of [N]: 一个简单的类 注：本文由BeyondVincent(破船)翻译 请看上一篇文章，是关于本次系列的一个介绍： &hellip;">
+	<meta name="description" content="Jun 4th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[028]在Windows 8 Apps中通过C#使用Web 本这篇文章中，我将向大家介绍如何在C#编程语言中，使用web services开发Windows Store &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,135 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/55/" itemprop="url">Windows Store App开发[028]在Windows 8 Apps中通过C#使用Web</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本这篇文章中，我将向大家介绍如何在C#编程语言中，使用web services开发Windows Store apps。</p>
+
+<p>&#160;&#160;&#160; 在Windows Store apps中，访问web service是通过异步进行的，并使用关键字await。在这里，我创建一个简单的XAML+C#程序，来访问一个天气service，该service我是在网上找到的。如下URL：</p>
+
+<p><a href="http://www.webxml.com.cn/WebServices/WeatherWebService.asmx">http://www.webxml.com.cn/WebServices/WeatherWebService.asmx</a></p>
+
+<p>在此，通过输入城市的名称，然后通过访问webservice，就会返回相应城市的天气情况。</p>
+
+<p>下面请跟我一步一步来：</p>
+
+<p>1、首先使用C#模板创建一个Blank app，命名为BV_WebServiceDemo</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/17.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb7.jpg" width="682" height="433" /></a></p>
+
+<p>2、在解决方案中的引用上单击右键，选择添加服务引用</p>
+
+<p>3、在地址栏输入web service URL，然后点击转到，将会去查找这个web service</p>
+
+<p><a href="http://www.webxml.com.cn/WebServices/WeatherWebService.asmx"><u>http://www.webxml.com.cn/WebServices/WeatherWebService.asmx</u></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/25.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb5.jpg" width="639" height="513" /></a></p>
+
+<p>查找成功后，提供名称空间，然后单击确定</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/32.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb2.jpg" width="639" height="513" /></a></p>
+
+<p>4、将会自动为这个天气服务生成一个服务引用。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/44.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb4.jpg" width="682" height="327" /></a></p>
+
+<p>&#160;</p>
+
+<p>5、在MainPage.xaml.cs文件中添加名称空间</p>
+
+<p>using BV_WebServiceDemo.WeatherWebService;</p>
+
+<p>6、下面来设计一下XAML页面（显示天气的详情）</p>
+
+<p>代码比较多，详情请下载后面的附件查阅</p>
+
+<p>在这里，上一个效果图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/52.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb2.jpg" width="682" height="407" /></a>
+7、通过基于task的异步模型，来调用service。</p>
+
+<p>下面是代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void GoButton_Click(object sender, RoutedEventArgs e)
+{
+    ring.IsActive = true;
+    WeatherWebServiceSoapClient proxy = new WeatherWebServiceSoapClient();
+    //string[] result = await proxy.getSupportCityAsync(inputZipCode.Text);
+
+    if (inputZipCode.Text.Length == 0)
+    {
+        inputZipCode.Text = &quot;大理&quot;;
+    }
+    string[] result = await proxy.getWeatherbyCityNameAsync(inputZipCode.Text);
+    if (result.Length &gt; 0)
+    {
+        ring.IsActive = false;
+
+        StringBuilder resultString = new StringBuilder(100);
+        foreach (string temp in result)
+        {
+            resultString.AppendFormat(&quot;{0}\n&quot;, temp);
+        }
+        resultDetails.Text = resultString.ToString();
+    }
+}</pre>
+
+
+<p>8、按F5，调试运行，查看结果</p>
+
+<p>输入城市名称，然后单击查询按钮</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/61.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb1.jpg" width="682" height="435" /></a></p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/WebService" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-04</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1199,67 +1328,6 @@ await udpWriter.StoreAsync();  </pre>
 </strong></p>
 
 <p>在下一篇文章中（真正的第一篇文章），我讲介绍一个简单的C++/CX类并讨论它是如何映射到Windows Runtime ABI。</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-03T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/03/45/" itemprop="url">Windows Store App开发[018]我收藏的一些文章：Windows 8 异步编程</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在MSDN的Visual Studio 2012文档中，有一些关于异步编程的文章，这些文章是文档编写人推荐的，我在这里列出来，供大家参考 <br/>
-<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh780559.aspx"><u>在C++中进行异步编程（Metro style apps）</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh700330.aspx"><u>在JavaScript中进行异步编程（Metro style apps）</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/hh158629.aspx"><u>Stream.WriteAsync方法(Byte[], Int32, Int32)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/hh137813(v=vs.110)"><u>Stream.ReadAsync方法(Byte[], Int32, Int32)(Sytem.IO)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155757(VS.110).aspx"><u>使用异步进行文件访问(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/kztecsys.aspx"><u>异步文件I/O</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155761(v=vs.110)"><u>微调你的异步应用程序(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155756(v=vs.110)"><u>启动多任务并处理他们，并直到多任务完成(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/hh873191(v=vs.110)"><u>控制异步程序的流程(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155759(v=vs.110)"><u>取消Task列表中的一个Task(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155760(v=vs.110)"><u>在一段时间之后取消Tasks(C#和Visual Basic)</u></a> <br/>
-<a href="http://msdn.microsoft.com/en-us/library/jj155758(v=vs.110)"><u>当一个Task完成之后取消剩余的Tasks(C#和Visual Basic)</u></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-03</time></span>
-</div>
-
-
-
 
 		
 		

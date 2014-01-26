@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[037]Windows 8中SemanticZoom控件使用 本文介绍如何使用SemanticZoom控件 1、SemanticZoom控件是什么？ &#160;&#160 &hellip;">
+	<meta name="description" content="Jun 5th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[038]FlipView控件的介绍和使用 1、FlipView控件介绍 FliView控件用来显示集合中的items，用户可以按顺序(往前或往后)的翻转这些item。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,144 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/65/" itemprop="url">Windows Store App开发[038]FlipView控件的介绍和使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>1、FlipView控件介绍</h3>
+
+<p>FliView控件用来显示集合中的items，用户可以按顺序(往前或往后)的翻转这些item。如下图所示。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/110.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb10.png" width="520" height="307" /></a></p>
+
+<p>FlipView的继承关系如下图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/29.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb10.png" width="682" height="454" /></a></p>
+
+<h3>2、FlipView控件的使用</h3>
+
+<h4><a name="t6"></a>0）程序的一个草图设计。</h4>
+
+<p>如下图。3个区域，左上角用来显示图片，右上角显示图片介绍，底部显示图片的缩略，起到浏览进度的作用。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/311.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb11.png" width="682" height="454" /></a></p>
+
+<p>&#160;</p>
+
+<h4>1)简单的类图</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/48.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb8.png" width="668" height="587" /></a>
+&#160;</p>
+
+<h4>2）创建工程</h4>
+
+<p>打开VS->文件->新建->项目->选择BlankApp(XAML)</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/55.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb5.png" width="682" height="363" /></a></p>
+
+<h4>3）数据准备</h4>
+
+<p>在工程中添加一个ImageData.cs文件，里面对item进行了定义（ImageData类），代码如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/63.png"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb3.png" width="642" height="378" /></a></p>
+
+<p>再添加一个MainPageViewModel.cs文件，里面定义很简单，就是一个List数据，用来存储将要在界面显示的数据。代码如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/71.png"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb1.png" width="682" height="442" /></a></p>
+
+<p>注意：里面的数据是为了演示用的，真实的项目中，可能是从数据库、或者网络中获得的。</p>
+
+<h4>4）界面编写</h4>
+
+<p>数据准备好了，下面就是界面的编写，根据上面的草图，我们的代码分布是这样的：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/81.png"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb1.png" width="482" height="333" /></a></p>
+
+<p>详细代码请参看后面给出的代码示例。</p>
+
+<p>在这里要讲解的一个内容是：底部的GridView与FlipView的SelectedIndex是双向绑定的，这样就可以做到选中项的同步。</p>
+
+<h4><a name="t11"></a>5）运行效果图：</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/91.png"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb.png" width="682" height="386" /></a>
+&#160;</p>
+
+<p>可以点击下图的按钮进行图片的翻转</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/10.png"><img title="10" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="10" src="http://beyondvincent.com/wp-content/uploads/2013/06/10_thumb.png" width="191" height="216" /></a></p>
+
+<p>也可以通过底部的列表进行切换</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/112.png"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb1.png" width="376" height="167" /></a></p>
+
+<h3>6、FlipView参考资料</h3>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/windows.ui.xaml.controls.flipview.aspx">FlipView Class</a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/jj150601.aspx"><u>How to add a flip view (Windows Store apps using C#/VB/C++ and XAML)</u></a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh781233.aspx"></a><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh781233.aspx"><u>Quickstart: Adding FlipView controls (Windows Store apps using C#/VB/C++ and XAML)</u></a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh780630.aspx"><u>Guidelines and checklist for FlipView controls (Windows Store apps)</u></a></p>
+
+<p>&#160;</p>
+
+<p><strong>7、代码下载</strong></p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/FlipView" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1236,135 +1374,6 @@ private void Image_ManipulationCompleted_1(object sender, ManipulationCompletedR
 
 <div style="text-align: left">
   <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-04T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/04/55/" itemprop="url">Windows Store App开发[028]在Windows 8 Apps中通过C#使用Web</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>本这篇文章中，我将向大家介绍如何在C#编程语言中，使用web services开发Windows Store apps。</p>
-
-<p>&#160;&#160;&#160; 在Windows Store apps中，访问web service是通过异步进行的，并使用关键字await。在这里，我创建一个简单的XAML+C#程序，来访问一个天气service，该service我是在网上找到的。如下URL：</p>
-
-<p><a href="http://www.webxml.com.cn/WebServices/WeatherWebService.asmx">http://www.webxml.com.cn/WebServices/WeatherWebService.asmx</a></p>
-
-<p>在此，通过输入城市的名称，然后通过访问webservice，就会返回相应城市的天气情况。</p>
-
-<p>下面请跟我一步一步来：</p>
-
-<p>1、首先使用C#模板创建一个Blank app，命名为BV_WebServiceDemo</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/17.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb7.jpg" width="682" height="433" /></a></p>
-
-<p>2、在解决方案中的引用上单击右键，选择添加服务引用</p>
-
-<p>3、在地址栏输入web service URL，然后点击转到，将会去查找这个web service</p>
-
-<p><a href="http://www.webxml.com.cn/WebServices/WeatherWebService.asmx"><u>http://www.webxml.com.cn/WebServices/WeatherWebService.asmx</u></a></p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/25.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb5.jpg" width="639" height="513" /></a></p>
-
-<p>查找成功后，提供名称空间，然后单击确定</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/32.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb2.jpg" width="639" height="513" /></a></p>
-
-<p>4、将会自动为这个天气服务生成一个服务引用。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/44.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb4.jpg" width="682" height="327" /></a></p>
-
-<p>&#160;</p>
-
-<p>5、在MainPage.xaml.cs文件中添加名称空间</p>
-
-<p>using BV_WebServiceDemo.WeatherWebService;</p>
-
-<p>6、下面来设计一下XAML页面（显示天气的详情）</p>
-
-<p>代码比较多，详情请下载后面的附件查阅</p>
-
-<p>在这里，上一个效果图</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/52.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb2.jpg" width="682" height="407" /></a>
-7、通过基于task的异步模型，来调用service。</p>
-
-<p>下面是代码：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">private async void GoButton_Click(object sender, RoutedEventArgs e)
-{
-    ring.IsActive = true;
-    WeatherWebServiceSoapClient proxy = new WeatherWebServiceSoapClient();
-    //string[] result = await proxy.getSupportCityAsync(inputZipCode.Text);
-
-    if (inputZipCode.Text.Length == 0)
-    {
-        inputZipCode.Text = &quot;大理&quot;;
-    }
-    string[] result = await proxy.getWeatherbyCityNameAsync(inputZipCode.Text);
-    if (result.Length &gt; 0)
-    {
-        ring.IsActive = false;
-
-        StringBuilder resultString = new StringBuilder(100);
-        foreach (string temp in result)
-        {
-            resultString.AppendFormat(&quot;{0}\n&quot;, temp);
-        }
-        resultDetails.Text = resultString.ToString();
-    }
-}</pre>
-
-
-<p>8、按F5，调试运行，查看结果</p>
-
-<p>输入城市名称，然后单击查询按钮</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/61.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb1.jpg" width="682" height="435" /></a></p>
-
-<p>代码下载：</p>
-
-<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/WebService" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
-
-<div style="text-align: left">
-  <span style="color: #339966"></span>
-</div>
-
-
-
-
-<div style="text-align: left">
-  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-04</time></span>
 </div>
 
 

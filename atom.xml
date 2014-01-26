@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-01-24T10:39:53+08:00</updated>
+  <updated>2014-01-26T15:39:10+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,162 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[对NSArray中自定义的对象进行排序]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects/"/>
+    <updated>2014-01-26T16:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/01/20.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自<a href="http://ios-blog.co.uk/tutorials/how-to-sort-nsarray-with-custom-objects/">How to sort NSArray with custom objects</a>。</p>
+
+<p>我们开发的每个程序都会使用到一些数据，而这些数据一般被封装在一个自定义的类中。例如一个音乐程序可能会有一个Song类，聊天程序则又一个Friend类，点菜程序会有一个Recipe类等。有时候我们希望在程序中显示的列表数据是按照一定顺序进行排列的，本文我们就来看看在iOS中有哪些方法可以对NSArray中的对象进行排序。下面是目录：</p>
+
+<ul>
+<li>小引</li>
+<li>使用NSComparator进行排序</li>
+<li>使用NSDescriptor进行排序</li>
+<li>使用selector进行排序</li>
+</ul>
+
+
+<h3>小引</h3>
+
+<p>我们将要排序的对象是一个Persion类，如下定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="nc">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">surname</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">NSDate</span> <span class="o">*</span><span class="n">dateOfBirth</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而数组中包含如下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Smith</span> <span class="n">John</span> <span class="mo">03</span><span class="o">/</span><span class="mo">01</span><span class="o">/</span><span class="mi">1984</span>
+</span><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span> <span class="mi">16</span><span class="o">/</span><span class="mo">03</span><span class="o">/</span><span class="mi">1979</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span> <span class="mi">13</span><span class="o">/</span><span class="mi">09</span><span class="o">/</span><span class="mi">1995</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span> <span class="mi">19</span><span class="o">/</span><span class="mo">07</span><span class="o">/</span><span class="mi">1981</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span> <span class="mi">22</span><span class="o">/</span><span class="mo">02</span><span class="o">/</span><span class="mi">1989</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用NSComparator进行排序</h3>
+
+<p>comparator实际上是用一个block对象作比较操作。它的定义如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">typedef</span> <span class="nf">NSComparisonResult</span> <span class="p">(</span><span class="o">^</span><span class="n">NSComparator</span><span class="p">)(</span><span class="kt">id</span> <span class="n">obj1</span><span class="p">,</span> <span class="kt">id</span> <span class="n">obj2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的参数(obj1、obj2)就是我们将要做比较的对象。block返回的结果为NSComparisonResult类型来表示两个对象的顺序。</p>
+
+<p>要对整个数组做排序，则需要使用NSArray的<code>sortArrayUsingComparator:</code>方法，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortedArray</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">persons</span> <span class="nl">sortedArrayUsingComparator:</span><span class="o">^</span><span class="n">NSComparisonResult</span><span class="p">(</span><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span><span class="p">,</span> <span class="n">Person</span> <span class="o">*</span><span class="n">p2</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">p1</span><span class="p">.</span><span class="n">surname</span> <span class="nl">compare:</span><span class="n">p2</span><span class="p">.</span><span class="n">surname</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终排序的结果如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">John</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用NSDescriptor进行排序</h3>
+
+<p>Sort descriptor不仅可以用来对数组进行排序，还能指定element在table view中的排序，以及Core Data中对fetch request返回的数据做排序处理。通过sort descriptor可以很方便的对数组进行多个key的排序。下面来看看如何对我们的数组做surname排序，然后在进行name排序：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSSortDescriptor</span> <span class="o">*</span><span class="n">firstDescriptor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSortDescriptor</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithKey:</span><span class="s">@&quot;surname&quot;</span> <span class="nl">ascending:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSSortDescriptor</span> <span class="o">*</span><span class="n">secondDescriptor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSortDescriptor</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithKey:</span><span class="s">@&quot;name&quot;</span> <span class="nl">ascending:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortDescriptors</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObjects:</span><span class="n">firstDescriptor</span><span class="p">,</span> <span class="n">secondDescriptor</span><span class="p">,</span> <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortedArray</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">persons</span> <span class="nl">sortedArrayUsingDescriptors:</span><span class="n">sortDescriptors</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面代码的排序结果如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">John</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用selector进行排序</h3>
+
+<p>当面，我们也可以定义自己的方法进行两个对象做比较，并将该方法用于数组排序。comparator消息会被发送到数值中的每个对象中，并携带数组中另外的一个对象当做参数。自定义的的方法的返回结果是这样的：如果本身对象小于参数中的对象，就返回<code>NSOrederedAscending</code>，相反，则返回<code>NSOrderedDescending</code>，如果相等，那么返回<code>NSOrderedSame</code>。如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">NSComparisonResult</span><span class="p">)</span><span class="nf">compare:</span><span class="p">(</span><span class="n">Person</span> <span class="o">*</span><span class="p">)</span><span class="nv">otherPerson</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">dateOfBirth</span> <span class="nl">compare:</span><span class="n">otherPerson</span><span class="p">.</span><span class="n">dateOfBirth</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个方法定义在Person类中，用来对person的生日进行排序。</p>
+
+<p>上面所介绍的这些方法都是为了完成相同的事情：对数组做排序处理，你可能在想改选择使用哪个呢？当需要通过多个key进行排序，那么最简单的方法就是使用sort descriptor。如果比较方法很复杂的话，建议在使用外面自己的selector。Block是再iOS 4之后引入的一个强大功能，用block作比较，可以不必使用任何的变量就能完成一个简单的比较方法，当然，你也可以定义一个复杂的block，来替换selector。</p>
+
+<p>最后，其实这里并没有标准答案，你可以跟着自己的感觉走:]</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Objective-C中的Literals]]></title>
@@ -4937,271 +5093,6 @@ mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.p
 <p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
 
 <p>……Sprite Kit教程：动画和纹理图集 2 结束……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：动画和纹理图集 1]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1/"/>
-    <updated>2013-10-16T12:40:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1</id>
-    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/10/2.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li><a href="#cjgc">创建一个工程</a></li>
-<li><a href="#wltj">纹理图集和熊</a></li>
-<li><a href="#jddh">一个简单的动画</a></li>
-<li>改变动画运动的方向</li>
-<li>在屏幕上让熊移动</li>
-<li>何去何从?</li>
-</ul>
-
-
-<p>从本文，可以学习到如何使用iOS 7中的Sprite Kit框架创建一个简单的动画：在屏幕上行走的熊。</p>
-
-<p>另外还可以学习到如何使用纹理图集来制作动画效果，如何在触摸事件发生时让熊移动，以及改变熊运动的方向。</p>
-
-<p>学习本文之前，最好先看看下面的文章：
-<a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
-
-<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<p>下面我们就开始吧。</p>
-
-<h3><a id="cjgc"></a>创建一个工程</h3>
-
-<p>我们先创建好一个工程架子——选择<code>File\New Project…</code>，在<code>iOS Application</code>中选择<code>Sprite Kit Game</code>，如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/4.png"></p>
-
-<p>选择<code>Next</code>，并将工程命名为<code>AnimatedBear</code>，把Class Prefix中的内容清除掉，并将Devices选择为<code>iPad</code>，如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/5.png"></p>
-
-<p>接着选择<code>Next</code>，将工程保存到磁盘中。</p>
-
-<p>现在编译并运行程序的话，当点击屏幕时，可以看到在屏幕中有一个自动旋转的飞船。如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/6.png"></p>
-
-<p>这样工程架子就准备好了，下面我们去寻找一些熊的动画资源——从这里下载即可：<a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/08/BearImages.zip">BearImages Art</a>。如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/7.jpg" alt="熊的示例图片" /></p>
-
-<p>上面下载到的图片有所需要的最大分辨率——iPad retina显示(2X)和non-retina版本(1x)。这些文件的命名方式为bear1..n@2x~ipad和bear1..n~ipad.png。</p>
-
-<p>在这里，构建一个动画，你可以只需要将这些图片直接添加到Sprite Kit工程中即可。不过，还有另外一种更加方便的方法来构建动画——使用纹理图集。</p>
-
-<h3><a id="wltj"></a>纹理图集和熊</h3>
-
-<p>如果之前你没使用过纹理图集，那你可以把它想象为一副很大的图片，其中包括动画中需要使用到的各种图片。这个图集可以看做是一个文件，它指定了每个sprite的边界范围，当在代码中需要使用时，可以将这些sprite取出来。</p>
-
-<p>使用纹理图集是因为Sprite Kit和图形引擎会对其做相应的优化处理。<code>后面这段话暂时不知道什么意思:</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>If you use sprites within a texture atlas properly, rather than making one OpenGL ES draw call per sprite it just makes one per texture atlas sheet.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>简而言之——使用纹理图集会非常的快，特别是有大量sprite的时候！</p>
-
-<p>Xcode会自动的生成这个纹理图集文件，并指定好每个sprite的边界范围，这样当在代码中需要用到某个sprite的时候，可以方便取出来。这一切都会自动处理，开发者不用亲力为之。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>注意：当纹理图集有问题时(例如错误的图片等)，那么建议clean一下工程(Product\Clean)——这样可以强制让纹理图集重新构建。</span></code></pre></td></tr></table></div></figure>
-
-
-<p>为纹理图集创建一个文件夹，并将图片文件放置到该文件夹中，然后在文件夹名称尾部添加<code>.atlas</code>。这样Xcode就能识别出.atlas扩展名，进而自动的将图片合并为一个纹理图集。</p>
-
-<p>之前下载的图片资源中有一个名为<code>BearImages.atlas</code>的文件夹，里面包含了各种分辨率的图片(是其它两个文件夹中的图片合集)。</p>
-
-<p>将名为<code>BearImages.atlas</code>的文件夹拖拽到程序中，如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/8.png" alt="" /></p>
-
-<p>当释放鼠标时，会看到如下图片中的对话框：是关于如何添加到工程中的。确保选中这三项：<code>Copy items into destination group’s folder</code>, <code>Create groups for any added folder</code>, 和 <code>the AnimatedBear</code>，然后点击<code>Finish</code>：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/9.png" alt="" /></p>
-
-<p>在Xcode中展开这个文件夹<code>BearImages.atlas</code>，会看到如下内容：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/10.png" alt="" /></p>
-
-<p>下面，是时候让熊动起来了！</p>
-
-<h3><a id="jddh"></a>一个简单的动画</h3>
-
-<p>这里我们先把熊显示在屏幕中间，并开启永久循环动画。</p>
-
-<p>此处主要都是在<code>MyScene.m</code>中写代码。打开这个文件，并用下面的代码替换之：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;AVFoundation/AVFoundation.h&gt;</span>
-</span><span class='line'><span class="cp">#import &quot;MyScene.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@implementation</span> <span class="nc">MyScene</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">_bear</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">NSArray</span> <span class="o">*</span><span class="n">_bearWalkingFrames</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nl">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="n">size</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>        <span class="cm">/* Setup your scene here */</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="n">blackColor</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// TODO...</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">update:</span><span class="p">(</span><span class="n">CFTimeInterval</span><span class="p">)</span><span class="n">currentTime</span> <span class="p">{</span>
-</span><span class='line'>    <span class="cm">/* Called before each frame is rendered */</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码很简单，只是定义了几个稍后会用到的变量。编译并运行一下，确保没有错误——会看到屏幕是黑色的。</p>
-
-<p>接下来要让熊动起来，有5步需要处理，我们就来看看吧。</p>
-
-<p>记得将下面的代码添加到<code>initWithSize</code>方法的<code>TODO</code>位置。</p>
-
-<p><code>1) 构建一个用于保存行走帧(walking frame)</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSMutableArray</span> <span class="o">*</span><span class="n">walkFrames</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>2) 加载纹理图集</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="n">bearAnimatedAtlas</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTextureAtlas</span> <span class="nl">atlasNamed:</span><span class="s">@&quot;BearImages&quot;</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码会从程序bundle的数据区中创建一个图集。Sprite Kit会根据设备的寻找对应分辨率的图片文件，在iPad retina上会使用BearImages@2x~ipad.png。</p>
-
-<p><code>3) 构建帧列表</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">int</span> <span class="n">numImages</span> <span class="o">=</span> <span class="n">bearAnimatedAtlas</span><span class="p">.</span><span class="n">textureNames</span><span class="p">.</span><span class="n">count</span><span class="p">;</span>
-</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">numImages</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">NSString</span> <span class="o">*</span><span class="n">textureName</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;bear%d&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">SKTexture</span> <span class="o">*</span><span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="n">bearAnimatedAtlas</span> <span class="nl">textureNamed:</span><span class="n">textureName</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">walkFrames</span> <span class="nl">addObject:</span><span class="n">temp</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">_bearWalkingFrames</span> <span class="o">=</span> <span class="n">walkFrames</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码根据图片名称从图集中循环获取到一个帧列表(这些图片的命名为bear1.png->bear8.png)，注意到<code>numImages</code>这个变量了吗？它为啥要除以2呢？</p>
-
-<p>这是因为：纹理图集包含了所有分辨率的图片文件(non-retina和retina)。共有16个文件，每种分辨率有8个文件。要想加载某种分辨率的图片，就需要除以2。这样通过名称和计数器，就能获取到正确的分辨率图片。</p>
-
-<p><code>4) 创建sprite，并将其位置设置为屏幕中间，然后将其添加到场景中</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">SKTexture</span> <span class="o">*</span><span class="n">temp</span> <span class="o">=</span> <span class="n">_bearWalkingFrames</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'><span class="n">_bear</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="n">temp</span><span class="p">];</span>
-</span><span class='line'><span class="n">_bear</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span> <span class="n">CGRectGetMidY</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">));</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">_bear</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="n">walkingBear</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>利用帧列表的第一帧构建一个sprite，然后将其放置到屏幕正中间。最后调用walkingBear方法，让熊开始走动。</p>
-
-<p><code>5) 在initWithSize方法后面添加一个新的方法walkingBear</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">walkingBear</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="c1">//This is our general runAction method to make our bear walk.</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">_bear</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">repeatActionForever:</span>
-</span><span class='line'>                      <span class="p">[</span><span class="n">SKAction</span> <span class="nl">animateWithTextures:</span><span class="n">_bearWalkingFrames</span>
-</span><span class='line'>                                       <span class="nl">timePerFrame:</span><span class="mf">0.1f</span>
-</span><span class='line'>                                             <span class="nl">resize:</span><span class="n">NO</span>
-</span><span class='line'>                                            <span class="nl">restore:</span><span class="n">YES</span><span class="p">]]</span> <span class="nl">withKey:</span><span class="s">@&quot;walkingInPlaceBear&quot;</span><span class="p">];</span>
-</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的这个action会以0.1秒的间隔开始播放各帧。如果你的代码再次调用这个方法使动画重新开始的话，<code>walkingInPlaceBear</code>这个key会强制移除动画。这对于确保动画不相互干扰非常重要。<code>withKey</code>参数还提供了一个钟方法对动画进行检查，来判断其是否通过名称运行的。</p>
-
-<p>这个action是永久重复的，内部的actionan <code>imateWithTextures</code>会按顺序动画播放帧列表中的图片。</p>
-
-<p><code>完工!</code></p>
-
-<p>现在编译并运行程序，一切正常的话，会在屏幕中看到一个会动的熊，如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/11.png" alt="" /></p>
-
-<p>……Sprite Kit教程：动画和纹理图集 1 结束……</p>
 ]]></content>
   </entry>
   
