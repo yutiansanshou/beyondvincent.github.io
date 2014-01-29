@@ -1,9 +1,0 @@
-<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nf">convertPoint:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">point</span>
-<span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">UI_USER_INTERFACE_IDIOM</span><span class="p">()</span> <span class="o">==</span> <span class="n">UIUserInterfaceIdiomPad</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">32</span> <span class="o">+</span> <span class="n">point</span><span class="p">.</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">point</span><span class="p">.</span><span class="n">y</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">point</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
