@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="k">if</span> <span class="p">(</span><span class="n">moveDifference</span><span class="p">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">multiplierForDirection</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span> <span class="o">=</span> <span class="n">fabs</span><span class="p">(</span><span class="n">_bear</span><span class="p">.</span><span class="n">xScale</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplierForDirection</span><span class="p">;</span>
+</pre></div>

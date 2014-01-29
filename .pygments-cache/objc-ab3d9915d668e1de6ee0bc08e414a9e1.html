@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">openDB</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sqlite3_open</span><span class="p">([[</span><span class="n">self</span> <span class="n">filePath</span><span class="p">]</span> <span class="n">UTF8String</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">db</span><span class="p">)</span> <span class="o">!=</span> <span class="n">SQLITE_OK</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">sqlite3_close</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+                <span class="n">NSAssert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">@&quot;Database failed to open.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

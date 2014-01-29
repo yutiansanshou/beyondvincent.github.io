@@ -1,0 +1,292 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[052]变换(Transform)(1)简介 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[052]变换(Transform)(1)简介 小引 在程序的开发过程中，变换是一个常用的操作，比如图片的缩放、旋转、移动等，都涉及到变换。在接下来的几篇文章中，我将对变换进行详细的介绍，欢迎你的阅读。 变换简介 变换在数学上的定义是这样的： &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/81/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[052]变换(Transform)(1)简介</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>小引</h3>
+
+<p>在程序的开发过程中，变换是一个常用的操作，比如图片的缩放、旋转、移动等，都涉及到变换。在接下来的几篇文章中，我将对变换进行详细的介绍，欢迎你的阅读。</p>
+
+<h3><a name="t4"></a>变换简介</h3>
+
+<p>变换在数学上的定义是这样的：</p>
+
+<p>非空集合A到自身的一个映射f：A→A称为集合A的变换。</p>
+
+<p>变换是基于一个数学公式：从一个Point到新的一个Point。如果将某个对象所有的Point都应用到这个公式上，就可以达到移动、缩放、旋转等效果。</p>
+
+<p>在Windows Runtime中，UIElement定义了三个属性来支持变换：</p>
+
+<ol>
+<li>RenderTransform——位置变换信息</li>
+<li>RenderTransformOrigin——RenderTransform变换的原点信息</li>
+<li>Projection——投影效果(三维效果)</li>
+</ol>
+
+
+<p>这些属性是定义在UIElement上的，可知，所有的Element都可以进行变换，例如：Image、TextBlock和Button。如果在Panel的子类(如Grid)上进行变换，那么这个子类所有的children都会同时被变换。</p>
+
+<h3><a name="t5"></a>变换类型</h3>
+
+<p>在Windows Runtime中，变换类型有如下：</p>
+
+<ol>
+<li>仿射变换——RenderTransform</li>
+<li>非仿射变换——Projection</li>
+</ol>
+
+
+<h4><a name="t6"></a>仿射变换</h4>
+
+<p>仿射变换的继承关系，如下图所示：</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/120.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb18.jpg" width="412" height="677" /></a></p>
+
+<p>从图中我们可以看到，仿射变换有7种类型（粉色部分），平移、缩放、旋转等，在后续的文章中，我会详细介绍如何使用它们。</p>
+
+<p>粉色部分的排列顺序是按照数学公式复杂度排列的，TranslateTransform最简单，TransformGroup最复杂。</p>
+
+<p>这7个类定义了二维仿射变换，对象变换之后，直线依旧是直线，平行关系也不会发生改变。只不过位置、大小、方向发生改变而已。</p>
+
+<p>前面已经说了RenderTransform是UIElement的属性，它的类型是Transform。所以可以把这7种类型赋值给RenderTransform。</p>
+
+<h4><a name="t7"></a>非仿射变换——Projection</h4>
+
+<p>非仿射变换的继承关系，如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/216.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb15.jpg" width="388" height="366" /></a></p>
+
+<p>非仿射变换主要用于三维视觉，在使用的时候，只需要将PlaneProjection或Matrix3DProjection赋值给UIElement的属性Projection即可。</p>
+
+<p>注：在三维空间中，旋转总是基于某个轴（xyz）进行的。</p>
+
+<p>很明显：在这种情况下，对象的平行关系是会改变的。</p>
+
+<p>Projection变换也经常称为模拟3D变换，比如Flip(翻转)。</p>
+
+<p>在后续的文章中，我会对Projection进行详细介绍。</p>
+
+<h3><a name="t8"></a>变换演示</h3>
+
+<p>下面我写了个小示例，来演示一下仿射变换和非仿射变换的效果。</p>
+
+<p>左边是原始效果，中间是以正中心为原点，旋转45度，右边是翻转45度</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.jpg" width="682" height="386" /></a></p>
+
+<p>最后附上代码，方便大家自行演示效果</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" mc:ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="using:BV_Transform_Introduction" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="BV_Transform_Introduction.MainPage"&gt;
+
+    &lt;grid background="Green"&gt;
+        &lt;grid.columndefinitions&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+        &lt;/grid.columndefinitions&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="0" text="原始效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="0" source="1.jpg" /&gt;&lt;/img&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="1" text="旋转效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="1" source="1.jpg" /&gt;
+            &lt;image.rendertransformorigin&gt;0.5 0.5&lt;/image.rendertransformorigin&gt;
+            &lt;image.rendertransform&gt;
+                &lt;rotatetransform angle="45"&gt;&lt;/rotatetransform&gt;
+            &lt;/image.rendertransform&gt;
+        &lt;/img&gt;
+        &lt;textblock margin="128,76,127,632" fontsize="50" horizontalalignment="Center" grid.row="0" grid.column="2" text="翻转效果"&gt;&lt;/textblock&gt;
+        &lt;img grid.row="0" grid.column="2" source="1.jpg" /&gt;
+            &lt;image.projection&gt;
+                &lt;planeprojection rotationy="60"&gt;&lt;/planeprojection&gt;
+            &lt;/image.projection&gt;
+        &lt;/img&gt;
+        &lt;img width="549" height="92" margin="352,676,0,0" horizontalalignment="Left" grid.column="1" source="BeyondVincentWin8Logo.png" grid.columnspan="2" verticalalignment="Top" /&gt;
+    &lt;/grid&gt;
+&lt;/page&gt;</pre>
+
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/TransformIntroduction" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

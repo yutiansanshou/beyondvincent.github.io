@@ -1,0 +1,18 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">updateBlur</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">_blurFilter</span> <span class="o">==</span> <span class="nb">nil</span><span class="p">){</span>
+        <span class="n">_blurFilter</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GPUImageiOSBlurFilter</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+        <span class="n">_blurFilter</span><span class="p">.</span><span class="n">blurRadiusInPixels</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+    <span class="p">}</span>
+ 
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">superview</span> <span class="n">convertViewToImage</span><span class="p">];</span>
+ 
+    <span class="n">GPUImagePicture</span> <span class="o">*</span><span class="n">picture</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GPUImagePicture</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage:</span><span class="n">image</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">picture</span> <span class="nl">addTarget:</span><span class="n">_blurFilter</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">_blurFilter</span> <span class="nl">addTarget:</span><span class="n">_blurView</span><span class="p">];</span>
+ 
+    <span class="p">[</span><span class="n">picture</span> <span class="nl">processImageWithCompletionHandler:</span><span class="o">^</span><span class="p">{</span>
+        <span class="p">[</span><span class="n">_blurFilter</span> <span class="n">removeAllTargets</span><span class="p">];</span>
+    <span class="p">}];</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">drawTheHandle:</span><span class="p">(</span><span class="n">CGContextRef</span><span class="p">)</span><span class="nv">ctx</span><span class="p">{</span>
+<span class="err">     </span>
+<span class="err">    </span><span class="n">CGContextSaveGState</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<span class="err">     </span>
+<span class="err">    </span><span class="c1">//I Love shadows</span>
+<span class="err">    </span><span class="n">CGContextSetShadowWithColor</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">);</span>
+<span class="err">     </span>
+<span class="err">    </span><span class="c1">//Get the handle position!</span>
+<span class="err">    </span><span class="n">CGPoint</span> <span class="n">handleCenter</span> <span class="o">=</span><span class="err"> </span> <span class="p">[</span><span class="n">self</span> <span class="nl">pointFromAngle:</span> <span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="p">];</span>
+<span class="err">     </span>
+<span class="err">    </span><span class="c1">//Draw It!</span>
+<span class="err">    </span><span class="p">[[</span><span class="n">UIColor</span> <span class="nl">colorWithWhite:</span><span class="mf">1.0</span> <span class="nl">alpha:</span><span class="mf">0.7</span><span class="p">]</span><span class="n">set</span><span class="p">];</span>
+<span class="err">    </span><span class="n">CGContextFillEllipseInRect</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="n">handleCenter</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">handleCenter</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">));</span>
+<span class="err">     </span>
+<span class="err">    </span><span class="n">CGContextRestoreGState</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

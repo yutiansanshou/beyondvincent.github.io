@@ -1,0 +1,222 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Framed: 一个UIView的Category - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Framed: 一个UIView的Category 当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。 如果要在代码中创建如下一个界面布局，你会怎么做呢？ 下面是一种方法： CGFloat offset = 20.0f &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/05/08/19/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Framed: 一个UIView的Category</h1>
+	<div class="entry-content" itemprop="articleBody"><p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg"><img class="alignnone size-full wp-image-545" alt="UIView_Easing_Frame" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg" width="1200" height="620" /></a></p>
+
+<h1><strong><span style="color: #339966;">当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。</span></strong></h1>
+
+<p>如果要在代码中创建如下一个界面布局，你会怎么做呢？</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png"><img class="alignnone size-full wp-image-546" alt="UIViewCategory2" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png" width="744" height="396" /></a></p>
+
+<p>下面是一种方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+CGRect blueViewFrame = self.blueView.frame;
+blueViewFrame.origin.x = self.whiteView.frame.origin.x + offset;
+blueViewFrame.origin.y = self.whiteView.frame.origin.y + offset;
+self.blueView.frame = blueViewFrame;
+
+CGRect greyViewFrame = self.greyView.frame;
+greyViewFrame.origin.x = self.whiteView.frame.origin.x + self.whiteView.frame.size.width - self.greyView.frame.size.width - offset;
+greyViewFrame.origin.y = self.whiteView.frame.origin.y + self.whiteView.frame.size.height - self.greyView.frame.size.height - offset;
+self.greyView.frame = greyViewFrame;</pre>
+
+
+<p>上面的方法可以达到目的，但看起来非常的笨拙；要弄清楚如何设置frame需要一定的计算，这样的代码可读性不高。</p>
+
+<p>下面是一种非常简单的方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
+
+self.blueView.deFrameLeft = self.whiteView.deFrameLeft + offset;
+self.blueView.deFrameTop = self.whiteView.deFrameTop + offset;
+
+self.greyView.deFrameRight = self.whiteView.deFrameRight - offset;
+self.greyView.deFrameBottom = self.whiteView.deFrameBottom - offset;</pre>
+
+
+<p>如上所示，对界面布局的设置更加方便，并且还减少了不少代码。</p>
+
+<p>上面的方法是定义了UIView的一个category，并暴露出一些设置frame的属性。这些属性对UIView的frame属性进行了简单的封装，每个属性都定义了getter和setter方法。通过这些属性，使用很少的几行代码就可以更加方便的设置UIView（以及UIView的子类）的frame。</p>
+
+<p>上面代码涉及到的category可以到这里下载：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://gist.github.com/BeyondVincent/5540827" target="_blank"><span style="color: #339966; text-decoration: underline;">UIView+DEFrameAdditions</span></a></span></span>。将两个代码文件添加到你的工程中，就可以使用啦。</p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/05/a-uiview-category/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

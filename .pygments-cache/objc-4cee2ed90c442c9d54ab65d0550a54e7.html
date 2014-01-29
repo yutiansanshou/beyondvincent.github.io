@@ -1,0 +1,15 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">show</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="n">addToParentViewController</span><span class="p">];</span>
+ 
+    <span class="p">[</span><span class="n">self</span> <span class="n">updateBlur</span><span class="p">];</span>
+ 
+    <span class="n">CGRect</span> <span class="n">deviceSize</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">].</span><span class="n">bounds</span><span class="p">;</span>
+ 
+    <span class="p">[</span><span class="n">UIView</span> <span class="nl">animateWithDuration:</span><span class="mf">0.25f</span> <span class="nl">animations:</span><span class="o">^</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+        <span class="n">_blurView</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="n">deviceSize</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">,</span> <span class="n">MENUSIZE</span><span class="p">);</span>
+        <span class="n">_backgroundView</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="n">_backgroundView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">MENUSIZE</span><span class="p">);</span>
+        <span class="n">_blurView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">contentsRect</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">,</span> <span class="n">MENUSIZE</span> <span class="o">/</span> <span class="mf">320.0f</span><span class="p">);</span> <span class="c1">// Add this line!</span>
+    <span class="p">}];</span>
+<span class="p">}</span>
+</pre></div>

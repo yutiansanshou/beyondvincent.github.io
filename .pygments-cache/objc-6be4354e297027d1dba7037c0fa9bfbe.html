@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">updateWithTimeSinceLastUpdate:</span><span class="p">(</span><span class="n">CFTimeInterval</span><span class="p">)</span><span class="nv">timeSinceLast</span> <span class="p">{</span>
+ 
+    <span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">+=</span> <span class="n">timeSinceLast</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">lastSpawnTimeInterval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">[</span><span class="n">self</span> <span class="n">addMonster</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

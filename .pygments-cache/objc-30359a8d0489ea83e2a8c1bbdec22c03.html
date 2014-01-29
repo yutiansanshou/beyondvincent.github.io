@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="k">if</span> <span class="p">([[[</span><span class="n">UIDevice</span> <span class="n">currentDevice</span><span class="p">]</span> <span class="n">systemVersion</span><span class="p">]</span> <span class="nl">compare:</span><span class="s">@&quot;7.0&quot;</span> <span class="nl">options:</span><span class="n">NSNumericSearch</span><span class="p">]</span> <span class="o">!=</span> <span class="n">NSOrderedAscending</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">barStyle</span> <span class="o">=</span> <span class="n">UIBarStyleDefault</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">barStyle</span> <span class="o">=</span> <span class="n">UIBarStyleBlack</span><span class="p">;</span><span class="c1">//or UIBarStyleBlackTranslucent</span>
+<span class="p">}</span>
+</pre></div>

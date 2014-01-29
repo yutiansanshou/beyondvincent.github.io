@@ -1,0 +1,324 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[043]MessageDialog的使用 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[043]MessageDialog的使用 小引 最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows Store app中自带的对话框MessageDialog，实际上非常简单。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/72/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[043]MessageDialog的使用</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>小引</h3>
+
+<p>最近有开发者问起Windows Store app中对话框如何使用，以及如何自定义对话框。在这篇文章中，我介绍Windows Store app中自带的对话框MessageDialog，实际上非常简单。在下一篇文章中，我将介绍如何使用Popup自定义对话框。</p>
+
+<h3><a name="t4"></a>MessageDialog介绍</h3>
+
+<p>MessaDialog类代表了一个对话框，该对话框中最多可以有3个Command。默认情况下有一个关闭命令。当MessageDialog显示出来时，会对屏幕进行灰度处理，并阻止其它操作。</p>
+
+<p>关于对话框的详细资料，可以来参考msdn上的介绍，如下链接：</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog"><u>http://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.popups.messagedialog</u></a></p>
+
+<h3><a name="t5"></a>默认MessageDialog的使用</h3>
+
+<p>如下代码，直接构造，然后设置Title即可，然后调用ShowAsync进行显示。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_1(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(\\&quot;你好，这里是Windows Store app学习之旅！\\&quot;);
+    dialog.Title = \\&quot;温馨提示\\&quot;;
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/115.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb13.png" width="682" height="389" /></a></p>
+
+<h3>带Command的MessageDialog</h3>
+
+<p>MessageDialog中有一个Command列表，如下定义：</p>
+
+<p>IList<IUICommand> Commands</p>
+
+<p>我们可以往这个列表中添加自己的Command，注意，最多只能是3个。如下代码：</p>
+
+<p>在下面代码中，Command对应的操作是通过lambda表达式进行的，当然，这里也可以把操作内容单独封装在一个函数里面，此处略。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_2(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, command =&gt;
+    {
+        //在这里做相关操作
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, command =&gt;
+    {
+        //在这里做相关操作
+    }));
+    await dialog.ShowAsync();
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/212.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb13.png" width="682" height="386" /></a></p>
+
+<h3>获取MessageDialog的返回值</h3>
+
+<p>我们可以获取MessageDialog的返回值，以根据返回内容，做相应的操作，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_3(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 0)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/314.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb14.png" width="682" height="386" /></a></p>
+
+<h3>设置MessageDialog中Command的index</h3>
+
+<p>MessageDialog中的index有：</p>
+
+<p>CancelCommandIndex：当按Esc键时，会触发该index对应的Command</p>
+
+<p>DefaultCommandIndex：当按Enter键时，会触发该index对应的Command</p>
+
+<p>如下代码：</p>
+
+<p>当按Enter键时，访问DevDiv主页</p>
+
+<p>当按Esc键时，做关闭命令</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void Button_Click_4(object sender, RoutedEventArgs e)
+{
+    MessageDialog dialog = new MessageDialog(&quot;你好，欢迎访问移动技术开发社区：DevDiv.com&quot;);
+    dialog.Title = &quot;温馨提示&quot;;
+    dialog.Commands.Add(new UICommand(&quot;DevDiv主页&quot;, null, 0));
+    dialog.Commands.Add(new UICommand(&quot;DevDiv论坛&quot;, null, 1));
+    dialog.Commands.Add(new UICommand(&quot;关闭&quot;, null, 2));
+
+    dialog.DefaultCommandIndex = 0;
+    dialog.CancelCommandIndex = 2;
+
+    var command = await dialog.ShowAsync();
+    if (Convert.ToInt32(command.Id) == 0)
+    {
+        //OpenDevDiv(&quot;http://www.DevDiv.com&quot;);
+    }
+    else if (Convert.ToInt32(command.Id) == 1)
+    {
+        OpenDevDiv(&quot;http://www.devdiv.com/forum.php&quot;);
+    }
+    else
+    {
+        // do nothing
+    }
+}</pre>
+
+
+<h3>程序主画面运行效果</h3>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/411.png"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb11.png" width="682" height="386" /></a></p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/MessageDialog" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

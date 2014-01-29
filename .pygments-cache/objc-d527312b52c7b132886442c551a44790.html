@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="n">UIGraphicsBeginImageContext</span><span class="p">(</span><span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">320</span><span class="p">,</span><span class="mi">320</span><span class="p">));</span>
+<span class="n">CGContextRef</span> <span class="n">imageCtx</span> <span class="o">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">();</span>
+<span class="err"> </span>
+<span class="n">CGContextAddArc</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="err"> </span> <span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ToRad</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">[[</span><span class="n">UIColor</span> <span class="n">redColor</span><span class="p">]</span><span class="n">set</span><span class="p">];</span>
+<span class="err"> </span>
+<span class="c1">//Use shadow to create the Blur effect</span>
+<span class="n">CGContextSetShadowWithColor</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">self</span><span class="p">.</span><span class="n">angle</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">);</span>
+<span class="err"> </span>
+<span class="c1">//define the path</span>
+<span class="n">CGContextSetLineWidth</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">TB_LINE_WIDTH</span><span class="p">);</span>
+<span class="n">CGContextDrawPath</span><span class="p">(</span><span class="n">imageCtx</span><span class="p">,</span> <span class="n">kCGPathStroke</span><span class="p">);</span>
+<span class="err"> </span>
+<span class="c1">//save the context content into the image mask</span>
+<span class="n">CGImageRef</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">CGBitmapContextCreateImage</span><span class="p">(</span><span class="n">UIGraphicsGetCurrentContext</span><span class="p">());</span>
+<span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+</pre></div>

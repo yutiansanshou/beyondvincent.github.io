@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="n">self</span><span class="p">.</span><span class="n">monstersDestroyed</span><span class="o">++</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">monstersDestroyed</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">SKTransition</span> <span class="o">*</span><span class="n">reveal</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTransition</span> <span class="nl">flipHorizontalWithDuration:</span><span class="mf">0.5</span><span class="p">];</span>
+    <span class="n">SKScene</span> <span class="o">*</span> <span class="n">gameOverScene</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GameOverScene</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithSize:</span><span class="n">self</span><span class="p">.</span><span class="n">size</span> <span class="nl">won:</span><span class="n">YES</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">presentScene:</span><span class="n">gameOverScene</span> <span class="nl">transition:</span> <span class="n">reveal</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>

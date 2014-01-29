@@ -1,0 +1,1118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS | 破船之家]]></title>
+  <link href="http://BeyondVincent.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://BeyondVincent.github.io/"/>
+  <updated>2014-01-29T17:24:00+08:00</updated>
+  <id>http://BeyondVincent.github.io/</id>
+  <author>
+    <name><![CDATA[破船(BeyondVincent)]]></name>
+    <email><![CDATA[beyondvincent@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 7 教程：定制iOS 7中的导航栏和状态栏]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7/"/>
+    <updated>2013-11-03T22:55:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/11/03/120-customize-navigation-status-bar-ios-7</id>
+    <content type="html"><![CDATA[<p><img src="/images/2013/11/7.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>注：本文译自<a href="http://www.appcoda.com/customize-navigation-status-bar-ios-7/"><code>Customizing Navigation Bar and Status Bar in iOS 7</code></a></p>
+
+<p>近期，跟大多数开发者一样，我也正忙于对程序进行升级以适配iOS 7。最新的iOS 7外观上有大量的改动。从开发者的角度来看，导航栏和状态栏就发生了明显的变化。状态栏现在是半透明的了，这也就意味着导航栏会显示在状态栏后面。有些情况下，导航栏的背景图片可以延伸显示到状态栏后面。</p>
+
+<p>之前我曾经写过一篇关于<a href="http://www.appcoda.com/customize-navigation-bar-back-butto/">如何定制导航栏</a>的文章。不过现在是时候对其进行更新了。下面就是本文将要介绍的内容：</p>
+
+<ul>
+<li><a href="#0">iOS 7中默认的导航栏</a></li>
+<li><a href="#1">设置导航栏的背景颜色</a></li>
+<li><a href="#2">在导航栏中使用背景图片</a></li>
+<li><a href="#3">定制返回按钮的颜色</a></li>
+<li><a href="#4">修改导航栏标题的字体</a></li>
+<li><a href="#44">修改导航栏标题为图片</a></li>
+<li><a href="#5">添加多个按钮</a></li>
+<li><a href="#6">修改状态栏的风格</a></li>
+<li><a href="#7">隐藏状态栏</a></li>
+<li><a href="#8">总结</a></li>
+</ul>
+
+
+<p><img src="/images/2013/11/9.jpg" alt="" /></p>
+
+<p>本文提供的代码需要用Xcode 5来执行。如果你还在使用老版本的Xcode，那么在运行示例之前请将Xcode升级到Xcode 5。</p>
+
+<h3><a id="0"></a>iOS 7中默认的导航栏</h3>
+
+<p>在开始定制之前，我们先来看看iOS 7中默认导航栏的外观。通过Xcode用<code>Single View Controller</code>模板创建一个工程。然后将view controller嵌入到一个navigation controller中。如果你不想从头开始，那么也可以在这里下载到这个<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程</a>。</p>
+
+<p>Xcode 5包含有iOS 6和iOS 7模拟器，我们可以在这两个不同的模拟器版本中运行示例程序，进行对比，如下图所示：</p>
+
+<p><img src="/images/2013/11/10.jpg" alt="" /></p>
+
+<p>如上图所示，在iOS 7中的导航栏默认情况下跟状态栏是交织在一起的，并且它的颜色也被修改为亮灰色。</p>
+
+<h3><a id="1"></a>设置导航栏的背景颜色</h3>
+
+<p>在iOS 7中，不再使用tintColor属性来设置导航栏的颜色，而是使用barTintColor属性来修改背景色。我们可以在<code>AppDelegate.m</code>文件中的方法<code>didFinishLaunchingWithOptions:</code>里面添加如下代码来修改颜色：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:[UIColor yellowColor]];
+</code></p>
+
+<p>效果如下图所示：</p>
+
+<p><img src="/images/2013/11/11.jpg" alt="" /></p>
+
+<p>一般情况，我们都会使用自己的颜色，下面这个宏用来设置RGB颜色非常方便：</p>
+
+<p>```objc</p>
+
+<h1>define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) >> 16))/255.0 green:((float)((rgbValue &amp; 0xFF00) >> 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</h1>
+
+<p>```</p>
+
+<p>将上面这个宏放到<code>AppDelegate.m</code>文件中，然后通过这个宏来创建一个UIColor对象(根据指定的RGB)。如下示例：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x067AB5)];
+</code></p>
+
+<p>默认情况下，导航栏的translucent属性为YES。另外，系统还会对所有的导航栏做模糊处理，这样可以让iOS 7中导航栏的颜色更加饱和。如下图，是translucent值为NO和YES的对比效果：</p>
+
+<p><img src="/images/2013/11/12.jpg" alt="" /></p>
+
+<p>要想禁用translucent属性，可以在Storyboard中选中导航栏，然后在Attribute Inspectors中，取消translucent的勾选。</p>
+
+<h3><a id="2"></a>在导航栏中使用背景图片</h3>
+
+<p>如果希望在导航栏中使用一个图片当做背景，那么你需要提供一个稍微高一点的图片(这样可以延伸到导航栏背后)。导航栏的高度从44 points(88 pixels)变为了64 points(128 pixels)。</p>
+
+<p>我们依然可以使用<code>setBackgroundImage:</code>方法为导航栏设置自定义图片。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bg.png"] forBarMetrics:UIBarMetricsDefault];
+</code></p>
+
+<p>示例工程中提供了两个背景图片：nav_bg.png 和 nav_bg_ios7.png。运行一下试试看吧，如下效果：</p>
+
+<p><img src="/images/2013/11/13.jpg" alt="" /></p>
+
+<h3><a id="3"></a>定制返回按钮的颜</h3>
+
+<p>在iOS 7中，所有的按钮都是无边框的。其中返回按钮会有一个V型箭头，以及上一个屏幕中的标题(如果上一屏幕的标题是空，那么就显示"返回")。要想给返回按钮着色，可以使用tintColor属性。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+</code></p>
+
+<p>除了返回按钮，tintColor属性会影响到所有按钮标题和图片。</p>
+
+<p><img src="/images/2013/11/14.jpg" alt="" /></p>
+
+<p>如果想要用自己的图片替换V型，可以设置图片的<code>backIndicatorImage</code>和<code>backIndicatorTransitionMaskImage</code>。如下代码所示：</p>
+
+<p><code>objc
+[[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
+[[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
+</code></p>
+
+<p>图片的颜色是由tintColor属性控制的。</p>
+
+<p><img src="/images/2013/11/15.jpg" alt="" /></p>
+
+<h3><a id="4"></a>修改导航栏标题的字体</h3>
+
+<p>跟iOS 6一样，我们可以使用导航栏的<code>titleTextAttributes</code>属性来定制导航栏的文字风格。在text attributes字典中使用如下一些key，可以指定字体、文字颜色、文字阴影色以及文字阴影偏移量：</p>
+
+<ul>
+<li>UITextAttributeFont – 字体key</li>
+<li>UITextAttributeTextColor – 文字颜色key</li>
+<li>UITextAttributeTextShadowColor – 文字阴影色key</li>
+<li>UITextAttributeTextShadowOffset – 文字阴影偏移量key</li>
+</ul>
+
+
+<p>如下代码所示，对导航栏的标题风格做了修改：</p>
+
+<p>```objc
+NSShadow *shadow = [[NSShadow alloc] init];</p>
+
+<pre><code>shadow.shadowColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8];
+shadow.shadowOffset = CGSizeMake(0, 1);
+[[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor colorWithRed:245.0/255.0 green:245.0/255.0 blue:245.0/255.0 alpha:1.0], NSForegroundColorAttributeName,
+                                                       shadow, NSShadowAttributeName,
+                                                       [UIFont fontWithName:@"HelveticaNeue-CondensedBlack" size:21.0], NSFontAttributeName, nil]];
+</code></pre>
+
+<p>```</p>
+
+<p>运行效果如下图所示：</p>
+
+<p><img src="/images/2013/11/16.jpg" alt="" /></p>
+
+<h3><a id="44"></a>修改导航栏标题为图片</h3>
+
+<p>如果要想将导航栏标题修改为一个图片或者logo，那么只需要使用下面这行代码即可：</p>
+
+<p><code>objc
+self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appcoda-logo.png"]];
+</code></p>
+
+<p>上面的代码简单的修改了titleView属性，将一个图片赋值给它。
+注意：这不是iOS 7中的新功能，之前的iOS版本就可以已经有了。</p>
+
+<p>具体效果如下图所示：</p>
+
+<p><img src="/images/2013/11/17.jpg" alt="" /></p>
+
+<h3><a id="5"></a>添加多个按钮</h3>
+
+<p>同样，这个技巧也不是iOS 7的，开发者经常会在导航栏中添加多个按钮，所以我决定在这里进行介绍。我们可以在导航栏左边或者右边添加多个按钮。例如，我们希望在导航栏右边添加一个照相机和分享按钮，那只需要使用下面的代码即可：</p>
+
+<p>```objc</p>
+
+<pre><code>UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:nil];
+UIBarButtonItem *cameraItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:nil];
+
+NSArray *actionButtonItems = @[shareItem, cameraItem];
+self.navigationItem.rightBarButtonItems = actionButtonItems;
+</code></pre>
+
+<p>```</p>
+
+<p>如下效果：</p>
+
+<p><img src="/images/2013/11/18.jpg" alt="" /></p>
+
+<h3><a id="6"></a>修改状态栏的风格</h3>
+
+<p>在老版本的iOS中，状态栏永远都是白色风格。而在iOS 7中，我们可以修改每个view controller中状态栏的外观。通过UIStatusBarStyle常量可以指定状态栏的内容是暗色或亮色。默认情况下，状态栏的显示是暗色。也就是说，状态栏上的时间、电池指示器和Wi-Fi信号显示为暗色。如果导航栏中使用暗色为背景，那么看起来的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/19.jpg" alt="" /></p>
+
+<p>如上图这种情况下，我们可能希望将导航栏的风格修改为亮色。这里有两个方法可以实现。在iOS 7中，我们可以在每个view controller中overriding<code>preferredStatusBarStyle:</code>方法，如下所示：</p>
+
+<p>```objc
+&ndash;(UIStatusBarStyle)preferredStatusBarStyle
+{</p>
+
+<pre><code>return UIStatusBarStyleLightContent; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面代码的效果如下图所示：</p>
+
+<p><img src="/images/2013/11/20.jpg" alt="" /></p>
+
+<p>在iOS 7中，通过上面的方法来修改状态栏风格非常的棒。另外，我们也可以使用UIApplication的statusBarStyle方法来设置状态栏，不过，首先需要停止使用<code>View controller-based status bar appearance</code>。在project target的Info tab中，插入一个新的key，名字为<code>View controller-based status bar appearance</code>，并将其值设置为NO。</p>
+
+<p><img src="/images/2013/11/21.jpg" alt="" /></p>
+
+<p>然后就可以使用下面的代码来设置状态栏风格了：</p>
+
+<p><code>objc
+[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+</code></p>
+
+<h3><a id="7"></a>隐藏状态栏</h3>
+
+<p>有时候我们需要隐藏状态栏，那么此时我们在view controller中override方法prefersStatusBarHidden:即可，如下代码所示：</p>
+
+<p>```objc
+&ndash; (BOOL)prefersStatusBarHidden
+{</p>
+
+<pre><code>return YES;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3><a id="8"></a>总结</h3>
+
+<p>iOS 7给开发者提供了一些新的自由度来定制导航栏和状态栏的外观。希望上面的这些技巧能对你有用。</p>
+
+<p>这里可以下载到<a href="https://dl.dropboxusercontent.com/u/2857188/NavigationBarDemo.zip">示例工程源码</a>。只需要取消相关代码注释即可进行测试。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mac和iOS开发资源汇总—更新于2013-10-14]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/18/106/"/>
+    <updated>2013-07-18T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/18/106</id>
+    <content type="html"><![CDATA[<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/1U55JG9-0.jpg"><img class="alignnone size-full wp-image-1661" alt="1U55JG9-0" src="http://beyondvincent.com/wp-content/uploads/2013/07/1U55JG9-0.jpg" width="590" height="578" /></a></p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>本文主要汇集一些苹果开发的资源，会经常更新，建议大家把这篇文章单独收藏(在浏览器中按<strong><span style="color: #339966;">command+D</span></strong>)。</p>
+
+<!--more-->
+
+
+<p>今天(2013年10月14日)收录了answer哥(黄爱武)的博客，欢迎大家围观！
+今天(2013年7月19日)收录了许多中文网站和博客。大家一定要去感受一下哦。</p>
+
+<p>如果大家有知道不错的站点，可以告诉我。</p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><strong><span style="color: #339966;">1、苹果官方文档</span></strong><br/>
+<strong><span style="color: #339966;"> 2、邮件列表</span></strong><br/>
+<strong><span style="color: #339966;"> 3、论坛</span></strong><br/>
+<strong><span style="color: #339966;"> 4、网站</span></strong><br/>
+<strong><span style="color: #339966;"> 5、博客</span></strong><br/>
+<strong><span style="color: #339966;"> 6、大会</span></strong><br/>
+<strong><span style="color: #339966;"> 7、播客和录像</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1、苹果官方文档</span></strong></h2>
+
+<p>构建iOS程序：下面的这篇文章介绍了 iOS 程序开发的过程：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/#referencelibrary/GettingStarted/RoadMapiOS/chapters/RM_YourFirstApp_iOS/Articles/01_CreatingProject.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Start Developing iOS Apps Today</span></a></span></span></strong></p>
+
+<p>构建Mac OS X程序：下面这篇文章介绍了Mac OS X开发的过程：<br/>
+<span style="color: #339966;"><strong><span style="text-decoration: underline;"><span style="text-decoration: underline;"><a href="https://developer.apple.com/library/mac/#referencelibrary/GettingStarted/RoadMapOSX/chapters/01_Introduction.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Start Developing Mac Apps Today</span></a></span></span></strong></span></p>
+
+<p>Objective-C：下面的这个链接是苹果官方介绍Objective-C的文档：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Programming with Objective-C</span></a></span></span></strong></p>
+
+<p>Xcode：下面这个链接是苹果官方介绍Xcode用户指南。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/mac/#documentation/ToolsLanguages/Conceptual/Xcode_User_Guide/000-About_Xcode/about.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Xcode User Guide</span></a></span></span></strong></p>
+
+<h2></h2>
+
+<h2><strong><span style="color: #339966;">2、邮件列表</span></strong></h2>
+
+<p>Cocoa-dev：由苹果负责运维，最初内容是与Mac OS X 中的Cocoa相关，目前在这个list上的许多开发者可以帮助你解决 iOS 相关问题（提问的时候最好先搜索一下，之前是否有人提问过相关问题）。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://lists.apple.com/mailman/listinfo/cocoa-dev" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://lists.apple.com/mailman/listinfo/cocoa-dev">https://lists.apple.com/mailman/listinfo/cocoa-dev</a></span></a></span></span></strong></p>
+
+<p>Xcode-user：由苹果负责运维，该邮件列表是跟Xcode相关：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://lists.apple.com/mailman/listinfo/xcode-users" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://lists.apple.com/mailman/listinfo/xcode-users%C2%A0">https://lists.apple.com/mailman/listinfo/xcode-users%C2%A0</a></span></a></span></span></strong></p>
+
+<p>Quartz-dev： 有苹果负责运维，该邮件列表主要是讨论Quartz 2D和Core Graphics相关技术：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://lists.apple.com/mailman/listinfo/quartz-dev" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://lists.apple.com/mailman/listinfo/quartz-dev">http://lists.apple.com/mailman/listinfo/quartz-dev</a></span></a></span></span></strong></p>
+
+<p>iPhone SDK开发：这是第三方的一个邮件列表，主要讨论 iOS 开发。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://groups.google.com/group/iphonesdkdevelopment" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://groups.google.com/group/iphonesdkdevelopment">http://groups.google.com/group/iphonesdkdevelopment</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">3、论坛</span></strong></h2>
+
+<p><strong><span style="color: #ff0000;">英文</span></strong></p>
+
+<p>Learn Cocoa Forum：该论坛是书籍Learn cocoa on the Mac and Beginning iOS Development的官方论坛。活跃度非常不错，有初学者，也有经验丰富的开发者。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://forum.learncocoa.org/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://forum.learncocoa.org/">http://forum.learncocoa.org/</a></span></a></span></span></strong></p>
+
+<p>Cocoa Cafe：这是法国的一个论坛(主要是法语)<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cocoacafe.fr" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cocoacafe.fr">http://www.cocoacafe.fr</a></span></a></span></span></strong></p>
+
+<p>Apple Developer Forums：这是苹果官方的开发者社区，主要讨论 iOS 和Mac软件开发。许多 iOS 开发初学者和有经验的人(包括苹果的工程师和步道师)，都经常为这个论坛做着贡献。在这里是预发布版的SDK(在NDA限制下)是唯一可以合法讨论的地方。要访问该论坛，需要注册一个Apple ID。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://devforums.apple.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://devforums.apple.com/">http://devforums.apple.com/</a></span></a></span></span></strong></p>
+
+<p>Apple Discussions，Developer Forums：这是苹果的社区论坛(针对Mac和iOS软件开发者)：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://discussions.apple.com/community/developer_forums?categoryID=164" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://discussions.apple.com/community/developer_forums?categoryID=164">https://discussions.apple.com/community/developer_forums?categoryID=164</a></span></a></span></span></strong></p>
+
+<p>Apple Discussions，iPhone：这是讨论iPhone的苹果社区论坛<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://discussions.apple.com/community/iphone?categoryID=201" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://discussions.apple.com/community/iphone?categoryID=201%C2%A0">https://discussions.apple.com/community/iphone?categoryID=201%C2%A0</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color: #ff0000;">中文</span></strong></p>
+
+<p>CocoaChina：CocoaChina创立于2008年3月，是一个苹果产品和 iOS 开发的中文社区网站，主要为苹果产品开发者提供资讯、信息及服务。<br/>
+<span style="text-decoration: underline; color: #339966;"><strong><span style="text-decoration: underline;"><a href="http://www.cocoachina.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cocoachina.com/">http://www.cocoachina.com/</a></span></a> </span></strong></span></p>
+
+<p>DevDiv：国内早期比较流行的一个移动开发者社区之一，涉猎 iOS、Android和Windows Phone等各移动平台开发。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.devdiv.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.devdiv.com/">http://www.devdiv.com/</a></span></a></span></span></strong></p>
+
+<p>泰然网：成立于2011年9月，由泰然翻译团队，泰然技术团队，泰然管理团队组成。翻译了大量国外优秀文章，同时也有许多经典原创。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.ityran.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.ityran.com/">http://www.ityran.com/</a></span></a></span></span></strong></p>
+
+<p>Cocos2d-x：Cocos2d-x 是一个开源的支持多平台的 2D 手机游戏引擎。国内难得的一个优秀开源项目。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.cocos2d-x.org/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cocos2d-x.org/">http://www.cocos2d-x.org/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">4、网站</span></strong></h2>
+
+<p><span style="color: #ff0000;"><b>英文</b></span></p>
+
+<p>github：当下最牛叉的开源代码库和版本控制系统。<br/>
+<span style="color: #339966;"><strong><span style="text-decoration: underline;"><span style="text-decoration: underline;"><a href="https://github.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://github.com/">https://github.com/</a></span></a></span></span></strong></span></p>
+
+<p>Stack Overflow：这是针对程序员的社区问答网站。许多有经验的iOS程序员会常驻这里回答问题：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/">http://stackoverflow.com/</a></span></a></span></span></strong></p>
+
+<p>除了访问Stack Overflow主站以外，还可以使用标签来浏览iOS开发的相关主题：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/objective-c" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/objective-c">http://stackoverflow.com/questions/tagged/objective-c</a></span></a></span></span></strong><br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/iphone" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/iphone">http://stackoverflow.com/questions/tagged/iphone</a></span></a></span></span></strong><br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/xcode" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/xcode">http://stackoverflow.com/questions/tagged/xcode</a></span></a></span></span></strong><br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/ios" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stackoverflow.com/questions/tagged/ios">http://stackoverflow.com/questions/tagged/ios</a></span></a></span></span></strong></p>
+
+<p>maniacdev：该站点是由软件开发者Johann Dowa维护。内容主要包括：iOS 程序开发库、控件、教程、示例和工具。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://maniacdev.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://maniacdev.com/">http://maniacdev.com/</a></span></a></span></span></strong></p>
+
+<p>Cocoa Controls：在这个站点可以找到许多免费并开源的GUI组件(包括iOS和Mac OS)。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cocoacontrols.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://cocoacontrols.com">http://cocoacontrols.com</a></span></a></span></span></strong></p>
+
+<p>NSHipster： 这个站点介绍Objective-C和Cocoa的相关内容。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://nshipster.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://nshipster.com">http://nshipster.com</a></span></a></span></span></strong></p>
+
+<p>iOS Fonts：详细列出了iOS中可用的字体。可以选择不同 iOS 版本支持的字体。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iosfonts.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iosfonts.com/">http://iosfonts.com/</a></span></a></span></span></strong></p>
+
+<p>Cocoa Dev Central：从2001年以来，该站点就是Mac OS X编程中最流行的站点之一。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cocoadevcentral.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://cocoadevcentral.com/">http://cocoadevcentral.com/</a></span></a></span></span></strong></p>
+
+<p>cocoanetics： 网站负责人号称天生就是写Objective-C的，里面的文章更新频率也比较快，好多内容(例如Core data)的介绍都比较深入，值得关注。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.cocoanetics.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cocoanetics.com/">http://www.cocoanetics.com/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color: #ff0000;">中文</span></strong></p>
+
+<p>iOS Feed：该站点由许小帅负责维护，许小帅目前任职于腾讯。iOS Feed汇集了许多优秀的iOS开发文章，经常会有新的更新。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iosfeed.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iosfeed.com/">http://iosfeed.com/</a></span></a></span></span></strong></p>
+
+<p>Code4App：code4app是一个移动平台的代码库，目前收集了iOS平台几百个代码，并且配有效果图和演示视频。<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://code4app.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://code4app.com/">http://code4app.com/</a></span></a></strong></span></span></p>
+
+<p>UI4APP：收集了许多iOS应用的截图，并进行分类浏览，方便美工设计找素材、找灵感。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://ui4app.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://ui4app.com/">http://ui4app.com/</a></span></a></span></span></strong></p>
+
+<p>苹果核：该站点由多人一起维护，其中一名是来自天猫的高嘉峻。苹果核主要探讨开发ios开发，介绍mac os应用，谈论apple产品发展，关注apple相关的一切。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://pingguohe.net/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://pingguohe.net/">http://pingguohe.net/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">5、博客</span></strong></h2>
+
+<p><strong><span style="color: #ff0000;">英文</span></strong></p>
+
+<p>Matt Gemmell的博客：Matt对Objective-C 开发拥有丰富的经验和观点，这些观点非常值得我们去关注<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.mattgemmell.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.mattgemmell.com/">http://www.mattgemmell.com/</a></span></a></span></span></strong></p>
+
+<p>Cocoa is my Girlfriend：这是有Marcus Zarra带领的一批博客，主要集中在iOS和Cocoa开发的问题上。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cimgf.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://cimgf.com">http://cimgf.com</a></span></a></span></span></strong></p>
+
+<p>Ray Wenderlich的博客：实际上Ray站点发展到现在，已经非常的庞大，感觉有点不想博客了，不过还是将其列在博客范围内。对于iOS开发者这个站点提供了非常好的资源，涉及的主题也非常广泛。虽然许多内容是针对游戏开发者的，但是在这个站你总能发现感兴趣的东西。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.raywenderlich.com">http://www.raywenderlich.com</a></span></a></span></span></strong></p>
+
+<p>Wolf Rentzsch的博客：Wolf是一个有丰富经验的Cocoa独立开发者，也是C4独立开发者大会(现在已经解散)的创始人。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://rentzsch.tumblr.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://rentzsch.tumblr.com/">http://rentzsch.tumblr.com/</a></span></a></span></span></strong></p>
+
+<p>iDevblogaDay：这是一个有多个作者贡献的博客，阅读这里的内容，会从不同的开发者者身上发现新的见解。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://idevblogaday.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://idevblogaday.com/">http://idevblogaday.com/</a></span></a></span></span></strong></p>
+
+<p>Wil Shipley的博客：在这个星球上，Wil是一个拥有丰富Objective-C开发经验的程序员。他博客中的<strong><em><span style="color: #339966;">Pimp My Code</span></em></strong>系列文章是每一个Objective-C程序都应该阅读的。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://blog.wilshipley.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.wilshipley.com/">http://blog.wilshipley.com/</a></span></a></span></span></strong></p>
+
+<p>Jeff lamarche的博客：Jeff是MartianCraft的创始人，也是Beginning iOS Development系列书籍的作者之一。Jeff是一个非常博学的开发者。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iphonedevelopment.blogspot.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iphonedevelopment.blogspot.com/">http://iphonedevelopment.blogspot.com/</a></span></a></span></span></strong></p>
+
+<p>Mike Ash的博客：博客中Mike收集了一些iOS相关的Q&amp;A。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.mikeash.com/pyblog/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.mikeash.com/pyblog/">http://www.mikeash.com/pyblog/</a></span></a></span></span></strong></p>
+
+<p>Joe Conway的博客：Jeo在Big Nerd Ranch带了很长时间，他的博客里面有许多有用的iOS/Cocoa代码和提示。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://stablekernel.com/blog/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://stablekernel.com/blog/">http://stablekernel.com/blog/</a></span></a></span></span></strong></p>
+
+<p>objc.io：深度介绍iOS开发中的最佳实践经验和高级技术。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/">http://www.objc.io/</a></span></a></span></span></strong></p>
+
+<p>iOS Developer Tips：2008年John Muchow就开始写这个博客了。这是第一批关于iPhone开发的博客。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iosdevelopertips.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iosdevelopertips.com/">http://iosdevelopertips.com/</a></span></a></span></span></strong></p>
+
+<p>Gregory Hill的博客：里面有许多关于本地化处理的文章。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://blog.appliedis.com/author/gregory-hill/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.appliedis.com/author/gregory-hill/">http://blog.appliedis.com/author/gregory-hill/</a></span></a></span></span></strong></p>
+
+<p>iOS Dev Weekly：这是一些简讯集合的博客，由Dave Verwer负责，订阅之后，每周都会有更新，非常棒。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iosdevweekly.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iosdevweekly.com/">http://iosdevweekly.com/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color: #ff0000;">中文</span></strong></p>
+
+<p>王巍的博客：王巍目前在日本横滨任职于有趣法人。工作内容主要进行Unity3D开发，8小时之外经常进行iOS/Mac开发。他的陈列柜中已有多款应用，其中番茄工作法工具非常棒。<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://onevcat.com" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://onevcat.com">http://onevcat.com</a></span></a></strong></span></span></p>
+
+<p>池建强的博客： 池建强，70后程序员，Blogger。98年毕业，先后就职于洪恩软件、RocketSofeware和用友软件工程公司（后更名为瑞友科技），现任瑞友科技IT应用研究院副院长。该博客最初每天发送一条Mac技巧，不过目前已经形成了一种技术和人文结合的风格，时而随笔，时而技术。<br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://macshuo.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://macshuo.com/">http://macshuo.com/</a></span></a></strong></span></span></p>
+
+<p>唐巧的博客： 唐巧是前网易有道员工，现在在粉笔网创业中，负责iOS端的开发。博客中的每篇文章都堪称精华，近期分析了支付宝客户端的插件机制，值得细细品读。<br/>
+<span style="color: #339966;"><strong><span style="text-decoration: underline;"><a href="http://blog.devtang.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.devtang.com/">http://blog.devtang.com/</a></span></a></span></strong></span></p>
+
+<p>许小帅的博客：许小帅目前任职于腾讯，他还是iOS Feed站点的负责人。博客中对支付宝钱包插件分析的文章，引起了支付宝开发团队的反思，大家可以去感受一下。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://imallen.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://imallen.com/">http://imallen.com/</a></span></a></span></span></strong></p>
+
+<p>蓝晨钰的博客：晨钰目前就读于中山大学。是一名90后iOS开发者。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://gracelancy.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://gracelancy.com/">http://gracelancy.com/</a></span></a></span></span></strong></p>
+
+<p>萧宸宇的博客：萧宸宇目前任职于Sumi Interactive。他出生于西南一个边陲小镇，梦想着能走出家乡，看看祖国的大好河山。他拥有丰富的 iOS 开发经验，在他的博客中发表了许多 iOS 开发的文章。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://iiiyu.com/ " target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://iiiyu.com/%C2%A0">http://iiiyu.com/%C2%A0</a></span></a></span></span></strong></p>
+
+<p>陶丰平的博客：陶丰平目前任职于花瓣网，喜欢技术，喜欢音乐。他在软件开发领域有丰富的开发经验。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.taofengping.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.taofengping.com/">http://www.taofengping.com/</a></span></a></span></span></strong></p>
+
+<p>乔学士的博客：乔学士目前任职于创业公司拓词，他正在为成为“代码手工艺人”而努力，目前主要进行 iOS 开发。最近他做得非常精彩的一件事就是汇总了WWDC 2013 视频英文字幕下载，大家可以前往他的博客感受一下。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://joeyio.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://joeyio.com/">http://joeyio.com/</a></span></a></span></span></strong></p>
+
+<p>破船的博客：破船在移动领域摸爬滚打多年，经历了Symbian、Windows Mobile、Windows Phone和 iOS 等的洗礼。他希望能充分利用业余时间，努力做一名伪步道师。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/">http://beyondvincent.com/</a></span></a></span></span></strong></p>
+
+<p>陈咏聪的博客：陈咏聪现任职于百度，从事 iOS 相关开发。他热爱Web事业，关注设计、产品、开发。沉迷代码，无法自拔。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://vinqon.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://vinqon.com/">http://vinqon.com/</a></span></a></span></span></strong></p>
+
+<p>骆仕恺的博客：骆仕恺目前任职于爱折客 / 爱美味。他主要从事 iOS 和Java开发。拥有丰富的 iOS 开发经验。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://luosky.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://luosky.com/">http://luosky.com/</a></span></a></span></span></strong></p>
+
+<p>耿健桓的博客：耿健桓目前在清华大学攻读硕士，之前他是著名站点知乎的 iOS 技术主管。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://dlog.dismory.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://dlog.dismory.com/">http://dlog.dismory.com/</a></span></a></span></span></strong></p>
+
+<p>李择一的博客：李择一目前任职于百度，他在移动开发领域积累了丰富的经验，特别是 iOS 开发。最近他在博客中发表关于OC中block的追究非常有深度，大家一定要去感受一下。<br/>
+<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://cnblogs.com/biosli" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://cnblogs.com/biosli">http://cnblogs.com/biosli</a></span></a></span></strong></span></p>
+
+<p>王轲的博客：王轲是一名 iOS 独立开发者，也是IndieBros Studio创始人。在博客中有几篇关于 iOS 性能优化的文章，值得大家去看看。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.iwangke.me/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.iwangke.me/">http://www.iwangke.me/</a></span></a></span></span></strong></p>
+
+<p>杨宇建的博客： 杨宇建目前任职于载信软件。在他的博客中有许多 iOS 开发的文章，都是干货。<br/>
+<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.cnblogs.com/easonoutlook/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.cnblogs.com/easonoutlook/">http://www.cnblogs.com/easonoutlook/</a></span></a></span></strong></span></p>
+
+<p>连栩的博客： 连栩目前工作在加拿大温哥华，运营着自己的公司 Beyondcow，他是一名 OSX、iOS 程序员同时也是用户体验，交互界面设计师。在开发的软件 Miao 是一款全功能 Mac 微博客户端。他的博客中有许多Cocoa开发的文章，值得大家去品读。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://lianxu.me/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://lianxu.me/">http://lianxu.me/</a></span></a></span></span></strong></p>
+
+<p>高嘉峻的博客：高嘉峻目前任职于天猫。是一名资深80后，号称会写代码的猪。最近他的博客中出现了两篇关于iOS中单元测试的文章，非常棒。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://jiajun.org/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://jiajun.org/">http://jiajun.org/</a></span></a></span></span></strong></p>
+
+<p>webfrogs的博客：目前在北京当一枚程序猿，有幸成为80后的尾巴。目前行走在iOS开发的道路上，用博客记载一路上的所见所闻所想。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://webfrogs.me/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://webfrogs.me/">http://webfrogs.me/</a></span></a></span></span></strong></p>
+
+<p>余书懿的博客：目前任职于豆豆。他喜欢苹果,痴情技术! 专注于移动互联网,做出好产品改变世界^^!<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://blog.csdn.net/ysy441088327/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.csdn.net/ysy441088327/">http://blog.csdn.net/ysy441088327/</a></span></a></span></span></strong></p>
+
+<p>黄爱武的博客：黄爱武，90后程序猿，初来乍到，就职于上海，负责iOS端开发，Python爱好者，愿积累一点一滴，供志同道合者分享交流。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://answerhuang.duapp.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://answerhuang.duapp.com/">http://answerhuang.duapp.com/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">6、大会</span></strong></h2>
+
+<p>WWDC：苹果开发者大会是一年一度的盛会，苹果通常会在这里发布新的东西，并且会提供许多开发资源，值得关注。<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/wwdc/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/wwdc/">https://developer.apple.com/wwdc/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">7、播客和录像</span><span style="color: #339966;"><br /> </span></strong></h2>
+
+<p>Core intuition：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.coreint.org/podcast.xml" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.coreint.org/podcast.xml">http://www.coreint.org/podcast.xml</a></span></a></span></span></strong></p>
+
+<p>调试<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://feeds.feedburner.com/debugshow" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://feeds.feedburner.com/debugshow">http://feeds.feedburner.com/debugshow</a></span></a></span></span></strong></p>
+
+<p>Edge Cases<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.edgecasesshow.com/rss.xml" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://www.edgecasesshow.com/rss.xml">http://www.edgecasesshow.com/rss.xml</a></span></a></span></span></strong></p>
+
+<p>发展前景<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developingperspective.com/feed/podcast/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://developingperspective.com/feed/podcast/">http://developingperspective.com/feed/podcast/</a></span></a></span></span></strong></p>
+
+<p>iDeveloper博客：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://feeds.feedburner.com/IdeveloperLive" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://feeds.feedburner.com/IdeveloperLive">http://feeds.feedburner.com/IdeveloperLive</a></span></a></span></span></strong></p>
+
+<p>Software Indie：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://softwareindie.com/feed/podcast" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://softwareindie.com/feed/podcast">http://softwareindie.com/feed/podcast</a></span></a></span></span></strong></p>
+
+<p>NSScreenCast：<br/>
+<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://nsscreencast.com/" target="_blank"><span style="color: #339966; text-decoration: underline;"><a href="http://nsscreencast.com/">http://nsscreencast.com/</a></span></a></span></span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p><strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.davemark.com/?p=1829" target="_blank"><span style="color: #339966; text-decoration: underline;">Resources for Mac and iOS Developers</span></a></span></span></strong></p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-18</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(2)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/17/105/"/>
+    <updated>2013-07-17T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/17/105</id>
+    <content type="html"><![CDATA[<p>本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">破船</span></strong></a></span>译自<span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span></strong>介绍了OC中并发编程的相关API，本文我们接着来看看并发编程中面临的一些挑战。</p>
+
+<!--more-->
+
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
+<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
+<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
+<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
+<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
+<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
+<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
+<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
+<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
+<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
+<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
+<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
+<strong><span style="color: #339966;"> 4、小结</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1和</span></strong><strong><span style="color: #339966;">2两部分内容请看</span></strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=1638" target="_blank"><span style="color: #339966; text-decoration: underline;">上一篇文章</span></a></span></span>。****</h2>
+
+<h2><span style="color: #339966;"><strong>3、并发编程中面临的挑战</strong></span></h2>
+
+<p>使用并发编程会带来许多陷进。尽管开发者做得足够到位了，还是难以观察并行执行中相互作用的多任务的不同状态。问题往往发生在一些不确定性（不可预见性）的地方，在调试相关并发代码时会感觉到很无助。</p>
+
+<p>关于并发编程的不可预见性有一个非常典型的例子：在1995年，NASA(美国宇航局)发送了火星探测器，但是当探测器成功着陆的时候，任务嘎然而止，火星探测器莫名其妙的不停重启——在计算机领域内，遇到的这中现象被定为为优先级反转，也就是说低优先级的线程一直阻塞着高优先级的线程。稍后我们会看到更多相关介绍。通过该示例，可以告诉我们即使拥有丰富的资源和大量优秀工程师，但是也会遭遇使用并发编程带来的陷阱。</p>
+
+<h3><span style="color: #339966;">3.1、资源共享</span></h3>
+
+<p>并发编程中许多问题的根源就是在多线程中访问共享资源。资源可以是一个属性、一个对象，通用的内存、网络设备和文件等等。在多线程中任意共享的资源都有一个潜在的冲突，开发者必须防止相关冲突的发生。</p>
+
+<p>为了演示冲突问题，我们来看一个关于资源的简单示例：利用一个整型值作为计数器。在程序运行过程中，有两个并行线程A和B，这两个线程都尝试着同时增加计数器的值。问题来了，通过C或OC写的代码(增加计数器的值)不仅仅是一条指令，而是包括好多指令——要想增加计数器的值，需要从内存中读取出当前值，然后再增加计数器的值，最后还需要就爱那个这个增加的值写回内存中。</p>
+
+<p>我们可以试着想一下，如果两个线程同时做上面涉及到的操作，会发生什么问题。例如，线程A和B都从内存中读取出了计数器的值，假设为17，然后线程A将计数器的值加1，并将结果18写回到内存中。同时，线程B也将计数器的值加1，并将结果18写回到内存中。实际上，此时计数器的值已经被破坏掉了——因为计数器的值17被加1了两次，应该为19，但是内存中的值为18。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png"><img class="alignnone size-full wp-image-1651" alt="race-condition@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/race-condition@2x.png" width="1148" height="638" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>这个问题成为资源竞争，或者叫做<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Race_conditions#Software" target="_blank"><span style="color: #339966; text-decoration: underline;">race condition</span></a></span></span></strong>，在多线程里面访问一个共享的资源，如果没有一种机制来确保线程A结束访问一个共享资源之前，线程B就开始访问该共享资源，那么资源竞争的问题总是会发生。试想一下，如果如果程序在内存中访问的资源不是一个简单的整型，而是一个复杂的数据结构，可能会发生这样的现象：当第一个线程正在读写这个数据结构时，第二个线程也来读这个数据结构，那么获取到的数据可能是新旧参半。为了防止出现这样的问题，在多线程访问共享资源时，需要一种互斥的机制。</p>
+
+<p>在实际的开发中，情况甚至要比上面介绍的复杂，因为现代CPU为了对代码运行达到最优化，对改变从内存中读写数据的顺序（乱序执行）。</p>
+
+<h3><span style="color: #339966;"> 3.2、互斥</span></h3>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Mutex" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥</span></a></span></strong></span>访问的意思就是同一时刻，只允许一个线程访问某个资源。为了保证这一点，每个希望访问共享资源的线程，首先需要获得一个共享资源的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Lock_%28computer_science%29" target="_blank"><span style="color: #339966; text-decoration: underline;">互斥锁</span></a></span></span></strong>，一旦某个线程对资源完成了读写操作，就释放掉这个互斥锁，这样别的线程就有机会访问该共享资源了。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png"><img class="alignnone size-full wp-image-1652" alt="locking@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/locking@2x.png" width="1248" height="766" /></a></p>
+
+<p>除了确保互斥锁的访问，还需要解决代码无序执行所带来的问题。如果不能确保CPU访问内存的顺序跟编程时的代码指令一样，那么仅仅依靠互斥锁的访问是不够的。为了解决由CPU的优化策略引起的代码无序执行，需要引入内存屏障(<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Memory_barrier" target="_blank"><span style="color: #339966; text-decoration: underline;">memory barrier</span></a></span></span></strong>)。通过设置内存屏障，来确保无序执行时能够正确跨越设置的屏障。</p>
+
+<p>当然，互斥锁的实现是需要自由的竞争条件。这实际上是非常重要的一个保证，并且需要在现代CPU上使用特殊的指令。更多关于原子操作(atomic operation)，请阅读Daniel写的文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术</span></a></span></span></strong>。</p>
+
+<p>从语言层面来说，在Objective-C中将属性以atomic的形式来声明，就能支持互斥锁了。实际上，默认情况下，属性是atomic的。将一个属性声明为atomic表示每次访问该属性都会进行加锁和解锁操作。虽然最把稳的做法就是将所有的属性都声明为atomic，但是这也会付出一定的代价。</p>
+
+<p>获取资源上的锁会引发一定的性能代价。获取和释放锁需要自由的竞争条件(race-condition free)，这在多核系统中是很重要的。另外，在获取锁的时候，线程有时候需要等待——因为其它的线程已经获得了资源的锁。这种情况下，线程会进入休眠状态，当其它线程释放掉相关资源的锁时，休眠的线程会得到通知。其实所有这些相关操作都是非常昂贵且复杂的。</p>
+
+<p>这有一些不同类型的锁。当没有竞争时，有些锁是很廉价的(cheap)，但是在竞争情况下，性能就会打折扣。同等条件下，另外一些锁则比较昂贵(expensive)，但是在竞争情况下，会表现更好(锁的竞争是这样产生的：当一个或者多个线程尝试获取一个已经被别的线程获取了的锁)。</p>
+
+<p>在这里有一个东西需要进行权衡：获取和释放锁所带来的开销。开发者需要确保代码中有获取锁和释放锁的语句。同时，如果获取锁之后，要执行一大段代码，这将带来风险：其它线程可能因为资源的竞争而无法工作（需要释放掉相关的锁才行）。</p>
+
+<p>我们经常能看到并行运行的代码，但实际上由于共享资源中配置了相关的锁，所以有时候只有一个线程是出于激活状态的。要想预测一下代码在多核上的调度情况，有时候也显得很重要。我们可以使用Instrument的CPU strategy view来检查是否有效的利用了CPU的可用核数，进而得出更好的想法，以此来优化代码。</p>
+
+<h3><span style="color: #339966;"> 3.3、死锁</span></h3>
+
+<p>互斥解决了资源竞争的问题，但同时这也引入了一个新的问题：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Deadlock" target="_blank"><span style="color: #339966; text-decoration: underline;">死锁</span></a></span></span></strong>。当多个线程在相互等待着对方的结束时，就会发生死锁，这是程序可能会被卡住。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png"><img class="alignnone size-full wp-image-1653" alt="dead-lock@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/dead-lock@2x.png" width="906" height="717" /></a></p>
+
+<p>看看下面的代码——交换两个变量的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void swap(A, B)
+{
+    lock(lockA);
+    lock(lockB);
+    int a = A;
+    int b = B;
+    A = b;
+    B = a;
+    unlock(lockB);
+    unlock(lockA);
+}</pre>
+
+
+<p>大多数时候，这能够正常运行。但是当两个线程同时调用上面这个方法呢——使用两个相反的值：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">swap(X, Y); // thread 1
+swap(Y, X); // thread 2</pre>
+
+
+<p>此时程序可能会由于死锁而被终止。线程1获得了X的一个锁，线程2获得了Y的一个锁。 接着它们会同时等待另外一把锁，但是永远都不会获得。</p>
+
+<p>记住：在线程之间共享更多的资源，会使用更多的锁，同时也会增加死锁的概率。这也是为什么我们需要尽量减少线程间资源共享，并确保共享的资源尽量简单的原因之一。建议阅读以下<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发编程API</span></a></span></span></strong>中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#async" target="_blank"><span style="color: #339966; text-decoration: underline;">doing things asynchronously</span></a></span></span></strong>。</p>
+
+<p>&nbsp;</p>
+
+<h3><span style="color: #339966;">3.4、饥饿</span></h3>
+
+<p>当你认为已经足够了解并发编程面临的陷阱 时，拐角处又出现了新的问题。锁定的共享资源会引起读写问题。大多数情况下，限制资源一次只能有一个线程进行访问，这是非常浪费的，比如一个读取锁只允许读，而不对资源进行写操作，这种情况下，同时可能会有另外一个线程等着着获取一个写锁。</p>
+
+<p>为了解决这个问题，更好的方法不是简单使用读/写锁，例如给定一个<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock" target="_blank"><span style="color: #339966; text-decoration: underline;">writer preference</span></a></span></span></strong>，或者使用<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Read-copy-update" target="_blank"><span style="color: #339966; text-decoration: underline;">read-copy-update</span></a></span></span></strong>算法。Daniel在<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html#multiple-readers-single-writer" target="_blank"><span style="color: #339966; text-decoration: underline;">底层并发技术文章</span></a></span></span></strong>中有相关介绍。</p>
+
+<h3><span style="color: #339966;"> 3.5、优先级反转</span></h3>
+
+<p>本节开头介绍了美国宇航局发射的火星探测器在火星上遇到的并发问题。现在我们就来看看为什么那个火星探测器会失败，以及为什么有时候我们的程序也会遇到相同的问题——该死的优先级反转。</p>
+
+<p>优先级反转是指程序在运行时低优先级的任务阻塞了高优先级的任务，有效的反转了任务的优先级。由于GCD提供了后台运行队列(拥有不同的优先级)，包括I/O队列，所以通过GCD我们可以很好的来了解一下优先级反转的可能性。</p>
+
+<p>高优先级和低优先级的任务之间在共享一个资源时，就可能发生优先级反转。当低优先级的任务获得了共享资源的锁时，该任务应该迅速完成，并释放掉锁，然后让高优先级的任务在没有明显的延时下继续执行。然而当低优先级阻塞着高优先级期间(低优先级获得的时间又比较少)，如果有一个中优先级的任务(该任务不需要那个共享资源)，那么可能会抢占低优先级任务，而被执行——因为此时高优先级任务是被阻塞的，所以中优先级任务是目前所有可运行任务中优先级最高的。此时，中优先级任务就会阻塞着低优先级任务，导致低优先级任务不能释放掉锁，也就会引起高优先级任务一直在等待锁的释放。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png"><img class="alignnone size-full wp-image-1654" alt="priority-inversion@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/priority-inversion@2x.png" width="1018" height="700" /></a></p>
+
+<p>在我们的实际代码中，可能不会像火星探测器那样，遇到优先级反转时，不同的重启。</p>
+
+<p>解决这个问题的方法，通常就是不要使用不同的优先级——将高优先级的代码和低优先级的代码修改为相同的优先级。当使用GCD时，总是使用默认的优先级队列。如果使用不同的优先级，就可能会引发事故。</p>
+
+<p>虽然有些文章上说，在不同的队列中使用不同的优先级，这听起来不错，但是这回增加并发编程的复杂度和不可预见性。如果编程中，在高优先级任务中突然没有理由的卡住了，可能你会想起本文，以及称为优先级反转的问题，甚至还会想起美国宇航局的工程师也遇到这样的问题。</p>
+
+<h2><span style="color: #339966;">4、小结</span></h2>
+
+<p>希望通过本文你能够了解到并发编程带来的复杂性和相关问题。并发编程中，看起来，无论是多么简单的API，由此产生的问题会变得非常的难以观测，并且要想调试这类问题，往往都是比较困难的。</p>
+
+<p>另外，并发实际上是一个非常棒的功能——它充分利用了现代多核CPU的强大计算能力。在开发中，关键的一点就是尽量让并发模型简单，这样可以限制锁的数量。</p>
+
+<p>我们建议采纳的安全模式是这样的：从主线程中提取出使用到的数据，并利用一个操作队列在后台处理相关的数据，然后将后台处理的结果反馈到主队列中。使用这种方式，开发者不需要自己负责任何的锁，这也就减少了犯错误的概率。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-17</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OC中并发编程的相关API和面临的挑战(1)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/16/104/"/>
+    <updated>2013-07-16T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/16/104</id>
+    <content type="html"><![CDATA[<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" target="_blank"><span style="color: #339966; text-decoration: underline;">objc</span></a></span></strong></span>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p><a href="http://www.objc.io/">http://www.objc.io/</a> 站点主要以杂志的形式，深入挖掘在OC中的最佳编程实践和高级技术，每个月探讨一个主题，每个主题都会有几篇相关的文章出炉，2013年7月份的主题是并发编程，今天晚上我就挑选其中的第2篇文章(<a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html"><code>Concurrent Programming: APIs and Challenges</code></a>)进行翻译，与大家分享一下主要内容。由于内容比较多，我将分两部分翻译(API和难点)完成，翻译中，如有错误，还请指正。</p>
+
+<!--more-->
+
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><span style="color: #339966;"><b>1、介绍</b></span><br/>
+<strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong><br/>
+<strong><span style="color: #339966;">    2.1、Threads</span></strong><br/>
+<strong><span style="color: #339966;">    2.2、Grand Central Dispatch</span></strong><br/>
+<strong><span style="color: #339966;">    2.3、Operation Queues</span></strong><br/>
+<strong><span style="color: #339966;">    2.4、Run Loops</span></strong><br/>
+<strong><span style="color: #339966;"> 3、并发编程中面临的挑战</span></strong><br/>
+<strong><span style="color: #339966;">    3.1、资源共享</span></strong><br/>
+<strong><span style="color: #339966;">    3.2、互斥</span></strong><br/>
+<strong><span style="color: #339966;">    3.3、死锁</span></strong><br/>
+<strong><span style="color: #339966;">    3.4、饥饿</span></strong><br/>
+<strong><span style="color: #339966;">    3.5、优先级反转</span></strong><br/>
+<strong><span style="color: #339966;"> 4、小结</span></strong></p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">1、介绍</span></strong></h2>
+
+<p><span style="text-decoration: underline;"><strong><span style="color: #339966; text-decoration: underline;"> <a href="http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29"><span style="color: #339966; text-decoration: underline;">并发</span></a></span></strong></span>的意思就是同时运行多个任务，这些任务可以在单核CPU上以<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Preemption_%28computing%29"><span style="color: #339966; text-decoration: underline;">分时(时间共享)</span></a></span></span></strong>的形式同时运行，或者在多核CPU上以真正的并行来运行多任务。</p>
+
+<p>OS X和iOS提供了几种不同的API来支持并发编程。每种API都具有不同的功能和一些限制，一般是根据不同的任务使用不同的API。这些API在系统中处于不同的地方。并发编程对于开发者来说非常的强大，但是作为开发者需要担负很大的责任，来把任务处理好。</p>
+
+<p>实际上，并发编程是一个很有挑战的主题，它有许多错综复杂的问题和陷阱，当开发者在使用类似<strong><span style="color: #339966;">GCD</span></strong>或<strong><span style="color: #339966;">NSOperationQueue</span></strong> API时，很容易遗忘这些问题和陷阱。本文首先介绍一下OS X和iOS中不同的并发编程API，然后深入了解并发编程中开发者需要面临的一些挑战。</p>
+
+<h2><strong><span style="color: #339966;">2、OS X和iOS中的并发编程</span></strong></h2>
+
+<p>在移动和桌面操作系统中，苹果提供了相同的并发编程API。 本文会介绍<strong><span style="color: #339966;">pthread</span></strong>和<strong><span style="color: #339966;">NSThread</span></strong>、<strong><span style="color: #339966;">Grand Central Dispatch(GCD)</span></strong>、<strong><span style="color: #339966;">NSOperationQueue</span></strong>，以及<strong><span style="color: #339966;">NSRunLoop</span></strong>。NSRunLoop列在其中，有点奇怪，因为它并没有被用来实现真正的并发，不过NSRunLoop与并发编程有莫大的关系，值得我们去了解。</p>
+
+<p>由于高层API是基于底层API构建的，所以首先将从底层的API开始介绍，然后逐步介绍高层API，不过在具体编程中，选择API的顺序刚好相反：因为大多数情况下，选择高层的API不仅可以完成底层API能完成的任务，而且能够让并发模型变得简单。</p>
+
+<p>如果你对这里给出的建议(API的选择)上有所顾虑，那么你可以看看本文的相关内容：<strong><span style="color: #339966;">并发编程面临的挑战</span></strong>，以及Peter Steinberger写的关于<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://www.objc.io/issue-2/thread-safe-class-design.html" target="_blank"><span style="color: #339966; text-decoration: underline;">线程安全</span></a></span></span></strong>的文章。</p>
+
+<h3><strong><span style="color: #339966;">2.1、Threads</span></strong></h3>
+
+<p>线程(thread)是组成进程的子单元，操作系统的调度器可以对线程进行单独的调度。实际上，所有的并发编程API都是构建于线程之上的——包括GCD和操作队列(operation queues)。</p>
+
+<p>多线程可以在单核CPU上同时运行(可以理解为同一时间)——操作系统将时间片分配给每一个线程，这样就能够让用户感觉到有多个任务在同时进行。如果CPU是多核的，那么线程就可以真正的以并发方式被执行，所以完成某项操作，需要的总时间更少。</p>
+
+<p>开发者可以通过Instrument中的<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html" target="_blank"><span style="color: #339966; text-decoration: underline;">CPU strategy view</span></a></span></span></strong>来观察代码被执行时在多核CPU中的调度情况。</p>
+
+<p>需要重点关注的一件事：开发者无法控制代码在什么地方以及什么时候被调度，以及无法控制代码执行多长时间后将被暂停，以便轮到执行别的任务。线程调度是非常强大的一种技术，但是也非常复杂(稍后会看到)。</p>
+
+<p>先把线程调度的复杂情况放一边，开发者可以使用<strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://en.wikipedia.org/wiki/POSIX_Threads" target="_blank"><span style="color: #339966; text-decoration: underline;">POSIX线程</span></a></span></span></strong>API，或者Objective-C中提供的对该API的封装——<strong><span style="color: #339966;">NSThread</span></strong>，来创建自己的线程。下面这个小示例是利用<strong><span style="color: #339966;">pthread</span></strong>来查找在一百万个数字中的最小值和最大值。其中并发执行了4个线程。从该示例复杂的代码中，可以看出为什么我们不希望直接使用pthread。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">struct threadInfo {
+    uint32_t * inputValues;
+    size_t count;
+};
+
+struct threadResult {
+    uint32_t min;
+    uint32_t max;
+};
+
+void * findMinAndMax(void *arg)
+{
+    struct threadInfo const * const info = (struct threadInfo *) arg;
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i &lt; info&gt;count; ++i) {
+        uint32_t v = info&gt;inputValues[i];
+        min = MIN(min, v);
+        max = MAX(max, v);
+    }
+    free(arg);
+    struct threadResult * const result = (struct threadResult *) malloc(sizeof(*result));
+    result&gt;min = min;
+    result&gt;max = max;
+    return result;
+}
+
+int main(int argc, const char * argv[])
+{
+    size_t const count = 1000000;
+    uint32_t inputValues[count];
+
+    // Fill input values with random numbers:
+    for (size_t i = 0; i &lt; count; ++i) {
+        inputValues[i] = arc4random();
+    }
+
+    // Spawn 4 threads to find the minimum and maximum:
+    size_t const threadCount = 4;
+    pthread_t tid[threadCount];
+    for (size_t i = 0; i &lt; threadCount; ++i) {         struct threadInfo * const info = (struct threadInfo *) malloc(sizeof(*info));         size_t offset = (count / threadCount) * i;         info&gt;inputValues = inputValues + offset;
+        info&gt;count = MIN(count - offset, count / threadCount);
+        int err = pthread_create(tid + i, NULL, &findMinAndMax, info);
+        NSCAssert(err == 0, @"pthread_create() failed: %d", err);
+    }
+    // Wait for the threads to exit:
+    struct threadResult * results[threadCount];
+    for (size_t i = 0; i &lt; threadCount; ++i) {
+        int err = pthread_join(tid[i], (void **) &(results[i]));
+        NSCAssert(err == 0, @"pthread_join() failed: %d", err);
+    }
+    // Find the min and max:
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i &lt; threadCount; ++i) {         min = MIN(min, results[i]&gt;min);
+        max = MAX(max, results[i]&gt;max);
+        free(results[i]);
+        results[i] = NULL;
+    }
+
+    NSLog(@"min = %u", min);
+    NSLog(@"max = %u", max);
+    return 0;
+}</pre>
+
+
+<p><strong><span style="color: #339966;">NSThread</span></strong>是Objective-C对<strong><span style="color: #339966;">pthread</span></strong>的一个封装。通过封装，在Cocoa环境中，可以让代码看起来更加亲切。例如，开发者可以利用NSThread的一个子类来定义一个线程，在这个子类的中封装了需要运行的代码。针对上面的那个例子，我们可以定义一个这样的NSThread子类：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface FindMinMaxThread : NSThread
+@property (nonatomic) NSUInteger min;
+@property (nonatomic) NSUInteger max;
+- (instancetype)initWithNumbers:(NSArray *)numbers;
+@end
+
+@implementation FindMinMaxThread {
+    NSArray *_numbers;
+}
+
+- (instancetype)initWithNumbers:(NSArray *)numbers 
+{
+    self = [super init];
+    if (self) {
+        _numbers = numbers;
+    }
+    return self;
+}
+
+- (void)main
+{
+    NSUInteger min;
+    NSUInteger max;
+    // process the data
+    self.min = min;
+    self.max = max;
+}
+@end</pre>
+
+
+<p>要想启动一个新的线程，需要创建一个线程对象，然后调用它的<strong><span style="color: #339966;">start</span></strong>方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSSet *threads = [NSMutableSet set];
+NSUInteger numberCount = self.numbers.count;
+NSUInteger threadCount = 4;
+for (NSUInteger i = 0; i &lt; threadCount; i++) {
+    NSUInteger offset = (count / threadCount) * i;
+    NSUInteger count = MIN(numberCount - offset, numberCount / threadCount);
+    NSRange range = NSMakeRange(offset, count);
+    NSArray *subset = [self.numbers subarrayWithRange:range];
+    FindMinMaxThread *thread = [[FindMinMaxThread alloc] initWithNumbers:subset];
+    [threads addObject:thread];
+    [thread start];
+}</pre>
+
+
+<p>现在，当4个线程结束的时候，我们检测到线程的isFinished属性。不过最好还是远离上面的代码吧——最主要的原因是，在编程中，直接使用线程（无论是pthread，还是NSThread）都是难以接受的。</p>
+
+<p>使用线程会引发的一个问题就是：在开发者自己的代码，或者系统内部的框架代码中，被激活的线程数量很有可能会成倍的增加——这对于一个大型工程来说，是很常见的。例如，在8核CPU中，你创建了8个线程，然后在这些线程中调用了框架代码，这些代码也创建了同样的线程(其实它并不知道你已经创建好线程了)，这样会很快产生成千上万个线程，最终导致你的程序被终止执行——线程实际上并不是免费的咖啡，每个线程的创建都会消耗一些内容，以及相关的内核资源。</p>
+
+<p>下面，我将介绍两个基于队列的并发编程API：GCD和operation queue。它们通过集中管理一个线程池(被没一个任务协同使用)，来解决上面遇到的问题。</p>
+
+<p><strong style="font-size: 1.17em;"><span style="color: #339966;">2.2、Grand Central Dispatch</span></strong></p>
+
+<p>为了让开发者更加容易的使用设备上的多核CPU，苹果在OS X和iOS 4中引入了Grand Central Dispatch(GCD)。在下一篇文章中会更加详细的介绍GCD：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">low-level concurrency APIs</span></a></span></span></strong>。</p>
+
+<p>通过GCD，开发者不用再直接跟线程打交道了，只需要向队列中添加block代码即可，GCD在后端管理着一个线程池。GCD不仅决定着哪个线程(block)将被执行，它还根据可用的系统资源对线程池中的线程进行管理——这样可以不通过开发者来集中管理线程，缓解大量线程的创建，做到了让开发者远离线程的管理。</p>
+
+<p>默认情况下，GCD公开有5个不同的队列：运行在主线程中的main queue，3个不同优先级的后台队列，以及一个优先级更低的后台队列(用于I/O)。另外，开发者可以创建自定义队列：串行或者并行队列。自定义队列非常强大，在自定义队列中被调度的所有block都将被放入到系统的线程池的一个全局队列中。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png"><img class="alignnone size-full wp-image-1639" alt="gcd-queues@2x" src="http://beyondvincent.com/wp-content/uploads/2013/07/gcd-queues@2x.png" width="1256" height="726" /></a></p>
+
+<p>这里队列中，可以使用不同优先级，这听起来可能非常简单，不过，强烈建议，在大多数情况下使用默认的优先级就可以了。在队列中调度具有不同优先级的任务时，如果这些任务需要访问一些共享的资源，可能会迅速引起不可预料到的行为，这样可能会引起程序的突然停止——运行时，低优先级的任务阻塞了高优先级任务。更多相关内容，在本文的<strong><span style="color: #339966;">优先级反转</span></strong>中会有介绍。</p>
+
+<p>虽然GCD是稍微偏底层的一个API，但是使用起来非常的简单。不过这也容易使开发者忘记并发编程中的许多注意事项和陷阱。读者可以阅读本文后面的：并发编程中面临的挑战，这样可以注意到一些潜在的问题。本期的另外一篇文章：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/low-level-concurrency-apis.html" target="_blank"><span style="color: #339966; text-decoration: underline;">Low-level Concurrency API</span></a></span></span></strong>，给出了更加深入的解释，以及一些有价值的提示。</p>
+
+<h3><strong><span style="color: #339966;"> 2.3、Operation Queues</span></strong></h3>
+
+<p>操作队列(operation queue)是基于GCD封装的一个队列模型。GCD提供了更加底层的控制，而操作队列在GCD之上实现了一些方便的功能，这些功能对于开发者来说会更好、更安全。</p>
+
+<p>类NSOperationQueue有两个不同类型的队列：主队列和自定义队列。主队列运行在主线程之上，而自定义队列在后台执行。任何情况下，在这两种队列中运行的任务，都是由NSOperation组成。</p>
+
+<p>定义自己的操作有两种方式：重写main或者start方法，前一种方法非常简单，但是灵活性不如后一种。对于重写main方法来说，开发者不需要管理一些状态属性(例如isExecuting和isFinished)——当main返回的时候，就可以假定操作结束。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
+    - (void)main
+    {
+        // do your work here ...
+    } 
+@end</pre>
+
+
+<p>如果你希望拥有更多的控制权，以及在一个操作中可以执行异步任务，那么就重写start方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@implementation YourOperation
+    - (void)start
+    {
+        self.isExecuting = YES;
+        self.isFinished = NO;
+        // start your work, which calls finished once it&#039;s done ...
+    }
+
+    - (void)finished
+    {
+        self.isExecuting = NO;
+        self.isFinished = YES;
+    }
+@end</pre>
+
+
+<p>注意：这种情况下，需要开发者手动管理操作的状态。 为了让操作队列能够捕获到操作的改变，需要将状态属性以KVO的方式实现。并确保状态改变的时候发送了KVO消息。</p>
+
+<p>为了满足操作队列提供的取消功能，还应该检查isCancelled属性，以判断是否继续运行。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)main
+{
+    while (notDone && !self.isCancelled) {
+        // do your processing
+    }
+}</pre>
+
+
+<p>当开发者定义好操作类之后，就可以很容易的将一个操作添加到队列中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+YourOperation *operation = [[YourOperation alloc] init];
+[queue  addOperation:operation];</pre>
+
+
+<p>另外，开发者也可以将block添加到队列中。这非常的方便，例如，你希望在主队列中调度一个一次性任务：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    // do something...
+}];</pre>
+
+
+<p>如果重写operation的description方法，可以很容易的标示出在某个队列中当前被调度的所有operation。</p>
+
+<p>除了提供基本的调度操作或block外，操作队列还提供了一些正确使用GCD的功能。例如，可以通过maxConcurrentOperationCount属性来控制一个队列中可以有多少个操作参与并发执行，以及将队列设置为一个串行队列。</p>
+
+<p>另外还有一个方便的功能就是根据队列中operation的优先级对其进行排序，这不同于GCD的队列优先级，它只会影响到一个队列中所有被调度的operation的执行顺序。如果你需要进一步控制operation的执行顺序(除了使用5个标准的优先级)，还可以在operation之间指定依赖，如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[intermediateOperation addDependency:operation1];
+[intermediateOperation addDependency:operation2];
+[finishedOperation addDependency:intermediateOperation];</pre>
+
+
+<p>上面的代码可以确保operation1和operation在intermediateOperation之前执行，也就是说，在finishOperation之前被执行。对于需要明确的执行顺序时，操作依赖是非常强大的一个机制。 它可以让你创建一些操作组，并确保这些操作组在所依赖的操作之前被执行，或者在并发队列中以串行的方式执行operation。</p>
+
+<p>从本质上来看，操作队列的性能比GCD要低，不过，大多数情况下，可以忽略不计，所以操作队列是并发编程的首选API。</p>
+
+<h3><strong><span style="color: #339966;"> 2.4、Run Loops</span></strong></h3>
+
+<p>实际上，Run loop并不是一项并发机制(例如GCD或操作队列)，因为它并不能并行执行任务。不过在主dispatch/operation队列中，run loop直接配合着任务的执行，它提供了让代码异步执行的一种机制。</p>
+
+<p>Run loop比起操作队列或者GCD来说，更加容易使用，因为通过run loop，开发者不必处理并发中的复杂情况，就能异步的执行任务。</p>
+
+<p>一个run loop总是绑定到某个特定的线程中。main run loop是与主线程相关的，在每一个Cocoa和CocoaTouch程序中，这个main run loop起到核心作用——它负责处理UI时间、计时器，以及其它内核相关事件。无论什么时候使用计时器、NSURLConnection或者调用performSelector:withObject:afterDelay:，run loop都将在后台发挥重要作用——异步任务的执行。</p>
+
+<p>无论什么时候，依赖于run loop使用一个方法，都需要记住一点：run loop可以运行在不同的模式中，每种模式都定义了一组事件，供run loop做出响应——这其实是非常聪明的一种做法：在main run loop中临时处理某些任务。</p>
+
+<p>在iOS中非常典型的一个示例就是滚动，在进行滚动时，run loop并不是运行在默认模式中的，因此，run loop此时并不会做出别的响应，例如，滚动之前在调度一个计时器。一旦滚动停止了，run loop会回到默认模式，并执行添加到队列中的相关事件。如果在滚动时，希望计时器能被触发，需要将其在NSRunLoopCommonModes模式下添加到run loop中。</p>
+
+<p>其实，一般情况下都没有必要去配置使用非主线的其他线程的runloop，若有繁重的工作不想卡在主线程还有很多别的方法可以使用。相关内容，Chris写了一篇文章，可以去看看：<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.objc.io/issue-2/common-background-practices.html" target="_blank"><span style="color: #339966; text-decoration: underline;">common background practices</span></a></span></span></strong>。</p>
+
+<p>如果你真需要在别的线程中添加一个run loop，那么不要忘记在run loop中至少添加一个input source。如果run loop中没有input source，那么每次运行这个run loop，都会立即退出。</p>
+
+<p>关于并发编程中面临的挑战，会在下一篇文章中出现。</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>翻译●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-16</time></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS7新特征汇总[07]Xcode 5中非常期待的6个功能]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/07/15/103/"/>
+    <updated>2013-07-15T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/07/15/103</id>
+    <content type="html"><![CDATA[<p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-2.jpg"><img class="alignnone size-full wp-image-1595" alt="QQ20130715-2" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-2.jpg" width="1069" height="598" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">小引：</span></strong></h2>
+
+<p>自从北京时间2013年06月11日苹果发布Xcode 5 Developer Preview 1，到现在(2013年7约15日)已经过去一个月，苹果也放出了Xcode 5 Developer Preview 3，速度还是蛮快的，希望体验的同学也可以去苹果官网下载。</p>
+
+<p>今晚看了一下WWDC2013的session：<strong><span style="color: #ff0000;">What’s New in Xcode 5</span></strong>。那就来说说Xcode 5里面一些值得期待的东西吧。由于Xcode中的新东西比较多，我这里挑选了6个非常好的新东西，供大家了解，如果需要了解更多内容，请移步到上面说的session中。</p>
+
+<p>另：在看视频过程中，要特别感谢<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://joeyio.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">乔学士先生</span></a></span></span></strong>汇总的<span style="text-decoration: underline;"><strong><span style="color: #339966;"><a href="https://github.com/qiaoxueshi/WWDC_2013_Video_Subtitle" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC2013英文字幕</span></a></span></strong></span>。大家可以想象一下，本来英语就不好的拉，要是没有字幕，要想看懂老外讲的内容，那该痛上加痛哈。</p>
+
+<!--more-->
+
+
+<h2><strong><span style="color: #339966;">目录</span></strong></h2>
+
+<p><strong><span style="color: #339966;">0、介绍</span></strong><br/>
+<strong><span style="color: #339966;"> 1、Toolbar减小30%</span></strong><br/>
+<strong><span style="color: #339966;"> 2、源码控制</span></strong><br/>
+<strong><span style="color: #339966;"> 3、自动配置</span></strong><br/>
+<strong><span style="color: #339966;"> 4、代码文档能力</span></strong><br/>
+<strong><span style="color: #339966;"> 5、Datatip</span></strong><br/>
+<strong><span style="color: #339966;"> 6、Debug 仪表</span></strong><br/>
+<strong><span style="color: #339966;">7、破船有话要说</span></strong></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">正文</span></strong></h3>
+
+<h2><strong><span style="color: #339966;">0、介绍</span></strong></h2>
+
+<p>该session(What&#8217;s New in Xcode 5)介绍了Xcode 5里面为开发者带来的许多新内容，使用过Xcode的同学可能都已经知道，Xcode就是一个完整的开发工具包，可以用来开发在Mac、iPhone和iPad上面的运行的软件。Xcode提供了Instrument 分析工具、iOS模拟器以及操作系统(iOSOS X)相关的一些框架等。</p>
+
+<p>下面就来看看这些值得期待的东西吧。</p>
+
+<h3><strong><span style="color: #339966;">1、Toolbar减小30%</span></strong></h3>
+
+<p>如下图所示，这样做的目的主要就是让Xcode能够尽可能多的显示与编码相关的内容，让开发者专心写代码。从图中也可以看出，Xcode 5与iOS 7的设计理念有相通之处——扁平化。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-1.jpg"><img class="alignnone size-full wp-image-1594" alt="QQ20130715-1" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-1.jpg" width="1213" height="698" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>如下图所示，我们可以看看Toolbar在Xcode 4和Xcode 5中的对比(左边为Xcode 4，右边为Xcode 5)</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-3.jpg"><img class="alignnone size-full wp-image-1596" alt="QQ20130715-3" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-3.jpg" width="729" height="383" /></a></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">2、源码控制</span></strong></h3>
+
+<p>在Xcode 5中，可以从一个已有的工程中check out代码，然后进行开发。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-5.jpg"><img class="alignnone size-full wp-image-1598" alt="QQ20130715-5" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-5.jpg" width="1123" height="603" /></a></p>
+
+<p>可以方便的浏览和选择Rep。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-6.jpg"><img class="alignnone size-full wp-image-1599" alt="QQ20130715-6" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-6.jpg" width="934" height="558" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>在菜单中，有一个Source Control，可以方便的对代码进行Commit、Push、Pull、选择分支、创建分支等操作。如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-7.jpg"><img class="alignnone size-full wp-image-1601" alt="QQ20130715-7" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-7.jpg" width="1220" height="507" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>另外，还可以方便的查找到某行代码是谁修改的，如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-8.jpg"><img class="alignnone size-full wp-image-1602" alt="QQ20130715-8" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-8.jpg" width="687" height="275" /></a></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">3、自动配置</span></strong></h3>
+
+<p>只需要在Xcode账号中输入Apple ID，Xcode就能够帮助开发者完成一些配置项(iCloud、Game Center、Passbook和Maps等)，作为开发者只需要简单的打开或者关闭相关功能即可，Xcode会自动的发送provisioning profile、创建entitlement、更新Info.plist文件、甚至是链接到所需要的框架——所有这些繁琐的事情都不再需要开发者亲自操作了。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-9.jpg"><img class="alignnone size-full wp-image-1603" alt="QQ20130715-9" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-9.jpg" width="979" height="710" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-10.jpg"><img class="alignnone size-full wp-image-1604" alt="QQ20130715-10" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-10.jpg" width="1105" height="553" /></a></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">4、代码文档能力</span></strong></h3>
+
+<p>从现在开始，Xcode可以从api中提取出文档注释了。相信这是好多开发者都期望有的功能。如下图所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-11.jpg"><img class="alignnone size-full wp-image-1605" alt="QQ20130715-11" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-11.jpg" width="1054" height="469" /></a></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">5、Datatip</span></strong></h3>
+
+<p>在利用Xcode调试代码的时候，通过Datatip可以可以非常方便的查看变量的值。</p>
+
+<p>Datatip可以显示出来自LLDB的概要信息，以及打印出某个变量的描述信息(不用再跑到consle中输入PO啦)，如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-13.jpg"><img class="alignnone size-full wp-image-1607" alt="QQ20130715-13" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-13.jpg" width="1093" height="593" /></a></p>
+
+<p>当然，图文信息也可以方便的显示出来，如下所示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-14.jpg"><img class="alignnone size-full wp-image-1608" alt="QQ20130715-14" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-14.jpg" width="1018" height="565" /></a></p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-15.jpg"><img class="alignnone size-full wp-image-1609" alt="QQ20130715-15" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-15.jpg" width="1112" height="648" /></a></p>
+
+<p>&nbsp;</p>
+
+<h3><strong><span style="color: #339966;">6、Debug 仪表</span></strong></h3>
+
+<p>通过Debug仪表可以显示出程序运行时，CPU、内存等实际发生的事情，这样可以非常容易的查出并修正潜在的bug。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-16.jpg"><img class="alignnone size-full wp-image-1610" alt="QQ20130715-16" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-16.jpg" width="876" height="657" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-17.jpg"><img class="alignnone size-full wp-image-1611" alt="QQ20130715-17" src="http://beyondvincent.com/wp-content/uploads/2013/07/QQ20130715-17.jpg" width="997" height="668" /></a></p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color: #339966;">7、破船有话要说</span></strong></p>
+
+<p>还记得使用Xcode 3版本开发iOS程序的时候，感觉这个工具不好使用，当时的IB和Xcode还是分开的，打开个xib文件，IB也要启动半天，更别说界面与代码的整体开发效率了。现如今看到苹果对Xcode做了很多改进，使用越来越方便，开发效率也大大提升，这对大多数开发者来说，绝对是福利！！！</p>
+
+<p>本文由<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></strong></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-07-15</time></p>
+]]></content>
+  </entry>
+  
+</feed>

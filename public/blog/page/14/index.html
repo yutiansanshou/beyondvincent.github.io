@@ -1,0 +1,1845 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Apr 11th, 2013 raywenderlich翻译 25个增强iOS应用程序性能的提示和技巧 — 高级篇 _____________
+本文由破船译自：raywenderlich
+转载请注明出处：BeyondVincent的博客
+_____________ 在开发iOS应用程序时， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/page/14/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-11T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 11<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/11/6/" itemprop="url">25个增强iOS应用程序性能的提示和技巧 — 高级篇</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180"><span style="color: #339966; text-decoration: underline;">初级</span></a></span></span>、<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=258"><span style="color: #339966; text-decoration: underline;">中级</span></a></span></span>和高级：</p>
+
+<p><span style="color: #008000;"><strong> </strong></span></p>
+
+<p><span style="color: #008000;"><strong>高级</strong></span><br/>
+当且仅当下面这些技巧能够解决问题的时候，才使用它们：</p>
+
+<ol start="22">
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#launchtime"><span style="color: #008000; text-decoration: underline;">加速启动时间</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#autoreleasepool"><span style="color: #008000; text-decoration: underline;">使用Autorelease Pool</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#cacheimages"><span style="color: #008000; text-decoration: underline;">缓存图片 — 或者不缓存</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#avoidformatters"><span style="color: #008000; text-decoration: underline;">尽量避免Date格式化</span></a></span>
+  </li>
+</ol>
+
+
+<h2></h2>
+
+<h2><span style="color: #339966;">高级性能提升</span></h2>
+
+<p>寻找一些高明的方法，让自己变为一个全代码忍者？下面这些高级的性能优化技巧可以在适当的时候让程序尽可能的高效运行！</p>
+
+<p><em id="__mceDel"> <a name="launchtime"></a><br /> <span style="color: #008000;">22) 加速启动时间</span></em></p>
+
+<p>能快速的启动程序非常重要，特别是在用户第一次启动程序时。第一映像对程序来说非常重要！</p>
+
+<p>让程序尽量快速启动的方法就是尽量以异步方式执行任务，例如网络请求，数据访问或解析。</p>
+
+<p>另外，避免使用臃肿的XIBs，因为XIB的加载是在主线程中进行的。但是记住storyboard没有这样的问题——所以如果可以的话就使用storyboard吧！</p>
+
+<p><em><span style="color: #999999;"><strong><span style="color: #ff0000;">注意</span></strong>：在利用Xcode进行调试时，watchdog不会运行，所在设备中测试程序启动性能时，不要将设备连接到Xcode。</span></em></p>
+
+<p><em id="__mceDel"> <a name="autoreleasepool"></a><br /> <span style="color: #008000;">23) 使用Autorelease Pool</span></em></p>
+
+<p>NSAutoreleasePool负责释放一个代码块中的自动释放对象。一般都是由UIKit来创建的。不过有些情况下需要手动创建NSAutoreleasePool。</p>
+
+<p>例如，如果在代码中创建了大量的临时对象，你将注意到内存使用量在增加，直到这些对象被释放。问题是只有当UIKit耗尽了 autorelease pool，这些对象才会被释放，也就是说当不再需要这些对象之后，这些对象还在内存中占据着资源。</p>
+
+<p>不过这个问题完全可以避免：在@autoreleasepool代码块中创建临时对象，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSArray *urls = &lt;# An array of file URLs #&gt;;
+for (NSURL *url in urls) {
+    @autoreleasepool {
+        NSError *error;
+        NSString *fileContents = [NSString stringWithContentsOfURL:url
+                                         encoding:NSUTF8StringEncoding error:&amp;error];
+        /* Process the string, creating and autoreleasing more objects. */
+    }
+}</pre>
+
+
+<p>当每次迭代完之后，都会释放所有的autorelease对象。</p>
+
+<p>关于NSAutoreleasePool的更多内容可以阅读苹果的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmAutoreleasePools.html" target="_blank"><span style="color: #339966; text-decoration: underline;">官方文档</span></a></span></span>。</p>
+
+<p><em id="__mceDel"><br /> <a name="cacheimages"></a><br /> <span style="color: #008000;">24) 缓存图片 — 或者不缓存</span></em></p>
+
+<p>iOS中从程序bundle中加载UIImage一般有两种方法。第一种比较常见：<strong><span style="color: #339966;">imageNamed</span></strong>。第二种方法很少使用：<strong><span style="color: #339966;"><em>imageWithContentsOfFile</em></span></strong></p>
+
+<p>为什么有两种方法完成同样的事情呢？</p>
+
+<p><strong><span style="color: #339966;">imageNamed</span></strong>的优点在于可以缓存已经加载的图片。<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/uikit/reference/UIImage_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果的文档</span></a></span></span>中有如下说法：</p>
+
+<p><em><span style="color: #999999;">This method looks in the system caches for an image object with the specified name and returns that object if it exists. If a matching image object is not already in the cache, this method loads the image data from the specified file, caches it, and then returns the resulting object.</span></em></p>
+
+<p><em><span style="color: #999999;"> 这种方法会在系统缓存中根据指定的名字寻找图片，如果找到了就返回。如果没有在缓存中找到图片，该方法会从指定的文件中加载图片数据，并将其缓存起来，然后再把结果返回。</span></em></p>
+
+<p>而<strong><span style="color: #339966;">imageWithContentsOfFile</span></strong>方法只是简单的加载图片，并不会将图片缓存起来。</p>
+
+<p>这两个方法的使用方法如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIImage *img = [UIImage imageNamed:@"myImage"]; // caching
+// or
+UIImage *img = [UIImage imageWithContentsOfFile:@"myImage"]; // no caching</pre>
+
+
+<p>那么该如何选择呢？</p>
+
+<p>如果加载一张很大的图片，并且只使用一次，那么就不需要缓存这个图片。这种情况<strong><span style="color: #339966;">imageWithContentsOfFile</span></strong>比较合适——系统不会浪费内存来缓存图片。</p>
+
+<p>然而，如果在程序中经常需要重用的图片，那么最好是选择<strong><span style="color: #339966;">imageNamed</span></strong>方法。这种方法可以节省出每次都从磁盘加载图片的时间。</p>
+
+<p><a name="avoidformatters"></a><br/>
+<span style="color: #008000;">25) 尽量避免Date格式化</span></p>
+
+<p>如果有许多日期需要使用NSDateFormatter，那么需要小心对待了。如之前（<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/04/11/25%e4%b8%aa%e5%a2%9e%e5%bc%baios%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e6%80%a7%e8%83%bd%e7%9a%84%e6%8f%90%e7%a4%ba%e5%92%8c%e6%8a%80%e5%b7%a7-%e4%b8%ad%e7%ba%a7%e7%af%87/#reuseobjects" target="_blank"><span style="color: #339966; text-decoration: underline;">重用花销很大的对象</span></a></span></span>）所提到的，无论什么时候，都应该尽量重用NSDateFormatters。</p>
+
+<p>然而，如果你需要更快的速度，那么应该使用C来直接解析日期，而不是NSDateFormatter。Sam Soffes写了一篇文章，其中提供了一些解析ISO-8601格式日期字符的串代码。你只需要简单的调整一下其中的代码就可以满足自己特殊的需求了。</p>
+
+<p>这听起来不错把——不过你相信这还有更好的一个办法吗？</p>
+
+<p>如果你自己能控制处理日期的格式，那么可以选择 <span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Unix_time" target="_blank"><span style="color: #339966; text-decoration: underline;">Unix timestamps</span></a></span></span>。Unix timestamps是一个简单的整数，代表了从新纪元时间（epoch）开始到现在已经过了多少秒，通常这个新纪元参考时间是00:00:00 UTC on 1 January 1970。</p>
+
+<p>你可以很容易的见这个时间戳转换为NSDate，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (NSDate*)dateFromUnixTimestamp:(NSTimeInterval)timestamp {
+    return [NSDate dateWithTimeIntervalSince1970:timestamp];
+}</pre>
+
+
+<p>上面这个方法比C函数还要快！</p>
+
+<p>注意：许多网络APIs返回的时间戳都是毫秒，因此需要注意的是在将这个时间戳传递给dateFromUnixTimestamp之前需要除以1000。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;">何去何从？</span></h2>
+
+<p>强烈建议对程序性能优化感兴趣的读者看看下面列出来的WWDC视频。在看视频之前，你需要注册一个Apple ID（只需要注册以此，就可以观看所有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/videos/wwdc/2012/" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC2012</span></a></span></span>的视频）：</p>
+
+<ul>
+<li><h1>406: Adopting Automatic Reference Counting</h1></li>
+<li><h1>238: iOS App Performance: Graphics and Animations</h1></li>
+<li><h1>242: iOS App Performance: Memory</h1></li>
+<li><h1>235: iOS App Performance: Responsiveness</h1></li>
+<li><h1>409: Learning Instruments</h1></li>
+<li><h1>706: Networking Best Practices</h1></li>
+<li><h1>514: OpenGL ES Tools and Techniques</h1></li>
+<li><h1>506: Optimizing 2D Graphics and Animation Performance</h1></li>
+<li><h1>601: Optimizing Web Content in UIWebViews and Websites on iOS</h1></li>
+<li><h1>225: Up and Running: Making a Great Impression with Every Launch</h1></li>
+</ul>
+
+
+<p>下面这些视频来自<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/videos/wwdc/2011/" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC 2011</span></a> </span></span>，也非常有用：</p>
+
+<ul>
+<li><h1>308: Blocks and Grand Central Dispatch in Practice</h1></li>
+<li><h1>323: Introducing Automatic Reference Counting</h1></li>
+<li><h1>312: iOS Performance and Power Optimization with Instruments</h1></li>
+<li><h1>105: Polishing Your App: Tips and tricks to improve the responsiveness and performance</h1></li>
+<li><h1>121: Understanding UIKit Rendering</h1></li>
+</ul>
+
+
+<p>这里还有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/videos/ios/" target="_blank"><span style="color: #339966; text-decoration: underline;">更多相关视频</span></a></span></span>，大多数来自iOS 5技术讲座：</p>
+
+<ul>
+<li>Your iOS App Performance Hitlist</li>
+<li>Optimizing App Performance with Instruments</li>
+<li>Understanding iOS View Compositing</li>
+</ul>
+
+
+<p>基于 “Your iOS App Performance Hitlist” 视频，Ole Begemann写了<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://oleb.net/blog/2011/11/ios5-tech-talk-michael-jurewitz-on-performance-measurement/" target="_blank"><span style="color: #339966; text-decoration: underline;">一篇文章</span></a>。</span></span></p>
+
+<p>苹果还提供了一篇非常好的文章：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/PerformanceTuning/PerformanceTuning.html" target="_blank"><span style="color: #339966; text-decoration: underline;">性能优化</span></a></span></span>。其中提供的技巧和提示对程序性能提升很有帮助。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 初级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=258" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 中级篇</span></a></span></span><a href="http://beyondvincent.com/?p=263" target="_blank"><br /> </a></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-11T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 11<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/11/5/" itemprop="url">25个增强iOS应用程序性能的提示和技巧 — 中级篇</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/?p=180"><span style="color: #339966; text-decoration: underline;">初级</span></a></span>、中级和<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=263"><span style="color: #339966; text-decoration: underline;">高级</span></a></span></span>：</p>
+
+<p><span style="color: #008000;"><strong>中级</strong></span></p>
+
+<p>在性能优化时，当你碰到一些复杂的问题，应该注意和使用如下技巧：</p>
+
+<ol start="9">
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#lazyviews"><span style="color: #008000; text-decoration: underline;">重用和延迟加载View</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#cache"><span style="color: #008000; text-decoration: underline;">缓存、缓存、缓存</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#drawing"><span style="color: #008000; text-decoration: underline;">考虑绘制</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#memwarnings"><span style="color: #008000; text-decoration: underline;">处理内存警告</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#reuseobjects"><span style="color: #008000; text-decoration: underline;">重用花销很大的对象</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#spritesheets"><span style="color: #008000; text-decoration: underline;">使用Sprite Sheets</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#avoidreprocess"><span style="color: #008000; text-decoration: underline;">避免重新处理数据</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#chooserightformat"><span style="color: #008000; text-decoration: underline;">选择正确的数据格式</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#bgimages"><span style="color: #008000; text-decoration: underline;">设置适当的背景图片</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><span style="text-decoration: underline;"><a href="#reduceweb"><span style="color: #008000; text-decoration: underline;">降低Web内容的影响</span></a></span></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#shadowpath"><span style="color: #008000; text-decoration: underline;">设置阴影路径</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#tableviews"><span style="color: #008000; text-decoration: underline;">优化TableView</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#datastorage"><span style="color: #008000; text-decoration: underline;">选择正确的数据存储方式</span></a></span>
+  </li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;">中级性能提升</span></h2>
+
+<p>现在，在进行代码优化时，你已经能够完成一些初级性能优化了。但是下面还有另外一些优化方案，虽然可能不太明显（取决于程序的架构和相关代码），但是，如果能够正确的利用好这些方案，那么它们对性能的优化将非常明显！</p>
+
+<p><a name="lazyviews"></a><br/>
+<span style="color: #008000;">9) 重用和延迟加载View</span></p>
+
+<p>程序界面中包含更多的view，意味着界面在显示的时候，需要进行更多的绘制任务；也就意味着需要消耗更多的CPU和内存资源。特别是在一个UIScrollView里面加入了许多view。</p>
+
+<p>这种情况的管理技巧可以参考UITableView和UICollectionView的行为：不要一次性创建所有的subview，而是在需要的时候在创建view，并且当view使用完毕时候将它们添加到重用队列中。</p>
+
+<p>这样就可以仅在UIScrollView滚动的时候才配置view，以此可以避免分配创建view的带来的成本——这可能是非常耗资源的。</p>
+
+<p>现在有这样的一个问题：在程序中需要显示的view在什么时机创建（比如说，当用户点击某个按钮，需要显示某个view）。这里有两种可选方法：</p>
+
+<ol>
+<li>在屏幕第一次加载以及隐藏的时候，创建view；然后在需要的时候，再把view显示出来。</li>
+<li>直到需要显示view的时候，才创建并显示view。</li>
+</ol>
+
+
+<p>每种方法都有各自的优点和确定。</p>
+
+<p>使用第一种方法，需要消耗更多的内容，因为创建出来的view一直占据着内存，直到view被release掉。不过，使用这种方法，当用户点击按钮时，程序会很快的显示出view，因为只需要修改一下view的可见性即可。</p>
+
+<p>而使用第二种方法则产生相反的效果；当需要的时候猜创建view，这会消耗更少的内存；不过，当用户点击按钮的时候，不会立即显示出view。</p>
+
+<p><a name="cache"></a><br/>
+<span style="color: #008000;">10) 缓存、缓存、缓存</span></p>
+
+<p>在开发程序时，一个重要的规则就是“缓存重要的内容”——这些内容一般不会改变，并且访问的频率比较高。</p>
+
+<p>可以缓存写什么内容呢？比如远程服务器的响应内容，图片，甚至是计算结果，比如UITableView的行高。</p>
+
+<p>NSURLConnection根据HTTP头的处理过程，已经把一些资源缓存到磁盘和内存中了。你甚至可以手动创建一个NSURLRequest ，让其只加载缓存的值。</p>
+
+<p>下面的代码片段一般用在为图片创建一个NSURLRequest：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (NSMutableURLRequest *)imageRequestWithURL:(NSURL *)url {
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+
+    request.cachePolicy = NSURLRequestReturnCacheDataElseLoad; // this will make sure the request always returns the cached image
+    request.HTTPShouldHandleCookies = NO;
+    request.HTTPShouldUsePipelining = YES;
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+
+    return request;
+}</pre>
+
+
+<p>注意：你可以使用NSURLConnection抓取一个URL请求，但是同样可以使用AFNetworking来抓取，这种方法不用修改所有网络相关的代码——这是一个技巧！:]</p>
+
+<p>如果你要直到更多关于HTTP 缓存, NSURLCache, NSURLConnection 以及相关的内容, 那么看一下NSHipster中的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://nshipster.com/nsurlcache/" target="_blank"><span style="color: #339966; text-decoration: underline;">the NSURLCache entry</span></a></span></span>。</p>
+
+<p>如果你需要缓存的内容没涉及到HTTP请求，那么使用NSCache。</p>
+
+<p>NSCache的外观和行为与NSDictionary类似, 但是，当系统需要回收内存时，NSCache会自动的里面存储的内容。Mattt Thompson 在NSHipster上写了<span style="color: #339966;"><a href="http://nshipster.com/nscache/"><span style="color: #339966;">一篇关于NSCache非常不错的文章</span></a></span>。</p>
+
+<p>如果还想知道关于HTTP缓存更多的内容，那么建议阅读一下Google的这篇文章：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developers.google.com/speed/docs/best-practices/caching" target="_blank"><span style="color: #339966; text-decoration: underline;">best-practices document on HTTP caching</span></a></span></span>。</p>
+
+<ul>
+<li><a name="drawing"></a><br/>
+<span style="color: #008000;">11) 考虑绘制</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2010/09/CoreGraphics101.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2010/09/CoreGraphics101.jpg" width="250" height="195" /></a><p class="wp-caption-text">
+    考虑绘制
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在iOS中制作漂亮的按钮有多种方法。可以使用全尺寸图片，可缩放图片，或者使用CALayer, CoreGraphics， 甚至是OpenGL来手动测量和绘制按钮。</p>
+
+<p>当然，这些方法的复杂程度也不同，并且性能也有所区别。这里有一篇相关文章值得阅读一下：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://robots.thoughtbot.com/post/36591648724/designing-for-ios-graphics-performance" target="_blank"><span style="color: #339966; text-decoration: underline;">关于iOS中图形的性能</span></a></span></span>。其中Andy Matuschak（曾经是苹果的UIKit小组的组员）对这篇文章的评论中，对于不同的方法及其性能权衡有非常好的一个见解。</p>
+
+<p>简单来说，使用预渲染图片技术是最快的，因为iOS中不用等到在屏幕上显示的时候才创建图形和对形状进行绘制（图片已经创建好了!）。这样带来的问题是需要把所有的图片都放到程序bundle中，从而增加了程序的大小。因此使用可伸缩图片在这里将排上用场了：可以移除“浪费”空间的图片——iOS可以重复利用。并且针对不同的元素（例如按钮）不需要创建不同的图片。</p>
+
+<p>不过，使用图片的话会失去代码对图片的控制能力，进而针对不同的程序，就需要重复的生成每一个需要的图片，并反复的放到每个程序中。这个处理过程一般会比较慢。另外一点就是如果你需要一个动画，或者许多图片都要进行轻微的调整（比如多个颜色的覆盖），那么需要在程序中加入许多图片，进而增加了程序bundle的大小。</p>
+
+<p>总的来说，你需要考虑一下什么才是最重要的：绘制性能还是程序大小。一般来说都重要，所以在同一个工程中，应该两种都应考虑。</p>
+
+<p><em id="__mceDel"> <a name="memwarnings"></a><br /> <span style="color: #008000;">12) 处理内存警告</span></em></p>
+
+<p>当系统内存偏低时，iOS会通知所有在运行的程序。<a href="http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/PerformanceTuning/PerformanceTuning.html" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></span></a>中介绍了如何处理低内存警告：</p>
+
+<p><em><span style="color: #999999;">If your app receives this warning, it must free up as much memory as possible. The best way to do this is to remove strong references to caches, image objects, and other data objects that can be recreated later.</span></em></p>
+
+<p><em><span style="color: #999999;">如果程序收到了低内存警告，在程序中必须尽量释放内存。最佳方法就是移除强引用的涉及到的缓存，图片对象，以及其它可以在之后使用时还可以重新创建的数据对象。</span></em></p>
+
+<p>UIKit中提供了如下几种方法来接收低内存（low-memory）警告：</p>
+
+<ul>
+<li>实现app delegate中的applicationDidReceiveMemoryWarning: 方法。</li>
+<li>在UIViewController子类中重写(Override)didReceiveMemoryWarning方法。</li>
+<li>在通知中心里面注册UIApplicationDidReceiveMemoryWarningNotificatio通知。</li>
+</ul>
+
+
+<p>在收到以上任意的警告时，需要立即释放任何不需要的内存。</p>
+
+<p>例如，UIViewController的默认情况是清除掉当前不可见的view；在UIViewController的子类中，可以清除一些额外的数据。程序中不没有显示在当前屏幕中的图片也可以release掉。</p>
+
+<p>当收到低内存警告时，尽量释放内存是非常重要的。否则，运行中的程序有可能会被系统杀掉。</p>
+
+<p>不过，在清除内存时要注意一下：确保被清除的对象之后还可以被创建出来。另外，在开发程序的时候，请使用iOS模拟器中的模拟内存警告功能对程序进行测试！</p>
+
+<p><em id="__mceDel"> <a name="reuseobjects"></a><br /> <span style="color: #008000;">13) 重用花销很大的对象<a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/34659787-250x250.jpg"><img class="alignright" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/34659787-250x250.jpg" width="250" height="250" /></a></span></em></p>
+
+<p>有些对象的初始化非常慢——比如NSDateFormatter和NSCalendar。不过有时候可以避免使用这些对象，例如在解析JSON/XML中的日期时。</p>
+
+<p>当使用这些对象时，为了避免性能上的瓶颈，可以尝试尽量重用这些对象——在类中添加一个属性或者创建一个静态变量。</p>
+
+<p>注意，如果使用静态变量的话，对象会在程序运行的时候一直存在，就像单例一样。</p>
+
+<p>下面的代码演示创建一个延迟加载的日期格式属性。第一次调用属性的时候，会创建一个新的日期格式。之后再调用的话，会返回已经创建好的实例对象：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// in your .h or inside a class extension
+@property (nonatomic, strong) NSDateFormatter *formatter;
+
+// inside the implementation (.m)
+// When you need, just use self.formatter
+- (NSDateFormatter *)formatter {
+    if (! _formatter) {
+        _formatter = [[NSDateFormatter alloc] init];
+        _formatter.dateFormat = @"EEE MMM dd HH:mm:ss Z yyyy"; // twitter date format
+    }
+    return _formatter;
+}</pre>
+
+
+<p>另外，还需要记住的是在设置NSDateFormatter的日期格式时，同样跟创建新的一个NSDateFormatter实例对象时一样慢！因此，在程序中如果需要频繁的处理日期格式，那么对NSDateFormatter进行重用是非常好的。</p>
+
+<ul>
+<li><a name="spritesheets"></a><br/>
+<span style="color: #008000;">14) 使用Sprite Sheets</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn2.raywenderlich.com/wp-content/uploads/2010/11/TexturePackerSmall.jpg"><img alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2010/11/TexturePackerSmall.jpg" width="250" height="264" /></a><p class="wp-caption-text">
+    使用sprite sheets
+  </p>
+</div>
+
+
+<p>你是一个游戏开发者吗？是的话那么sprite sheets是最佳选择之一。使用Sprite sheets跟常用的绘制方法比起来，绘制更快，并且消耗更少的内存。</p>
+
+<p>下面是两个非常不错的sprite sheets教程：</p>
+
+<ol>
+<li><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/32045/how-to-use-animations-and-sprite-sheets-in-cocos2d-2-x" target="_blank"><span style="color: #339966; text-decoration: underline;">如何在Cocos2D中使用动画和Sprite Sheets</span></a></span></span><a href="http://www.raywenderlich.com/32045/how-to-use-animations-and-sprite-sheets-in-cocos2d-2-x" target="_blank"><br /> </a></li>
+<li><a href="http://www.raywenderlich.com/2361/how-to-create-and-optimize-sprite-sheets-in-cocos2d-with-texture-packer-and-pixel-formats" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">如何在Cocos2D中使用纹理包（Texture Packer）和像素格式来创建并优化Sprite Sheets</span></span></a><a href="http://www.raywenderlich.com/2361/how-to-create-and-optimize-sprite-sheets-in-cocos2d-with-texture-packer-and-pixel-formats" target="_blank"><br /> </a></li>
+</ol>
+
+
+<p>第二个教程详细的介绍了像素格式——在游戏中可以衡量性能的影响。</p>
+
+<p>如果你还不熟悉sprite sheets，那么可以看看这里的介绍：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://www.youtube.com/watch?v=crrFUYabm6E" target="_blank"><span style="color: #339966; text-decoration: underline;">SpriteSheets – 视频, Part 1</span></a></span></span>and <span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://www.youtube.com/watch?v=_KyUqyS5MLA" target="_blank"><span style="color: #339966; text-decoration: underline;">Part 2</span></a>.</span></span> 这两个视频的作者是Andreas Löw, 他是纹理包(Texture Packer)的创建者, 纹理包是创建sprite sheets的重要工具。</p>
+
+<p>除了使用sprite sheets外，这里还介绍了一些用于游戏开发中的技巧，例如，如果你有很多sprite（比如射击类游戏中），那么可以重用sprite，而不用每次都创建sprite。</p>
+
+<p><em id="__mceDel"> <a name="avoidreprocess"></a><br /> <span style="color: #008000;">15) 避免重新处理数据</span></em></p>
+
+<p>许多程序都需要从远程服务器中获取数据，以满足程序的需求。这些数据一般是JSON或XML格式。在请求和接收数据时，使用相同的数据结构非常重要。</p>
+
+<p>为什么呢？在内存中把数据转换为适合程序的数据格式是需要付出额外代价的。</p>
+
+<p>例如，如果你需要在table view中显示一些数据，那么请求和接收的数据格式最好是数组格式的，这样可以避免一些中间操作——将数据转换为适合程序使用的数据结构。</p>
+
+<p>类似的，如果程序是根据键来访问具体的值，那么最好请求和接收一个键/值对字典。</p>
+
+<p>在第一时间获得的数据就是所需要格式的，可以避免将数据转换为适合程序的数据格式带来的额外代价。</p>
+
+<ul>
+<li><a name="chooserightformat"></a><br/>
+<span style="color: #008000;">16) 选择正确的数据格式</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2011/10/iOS_feast_JSON.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2011/10/iOS_feast_JSON.jpg" width="250" height="250" /></a><p class="wp-caption-text">
+    选择正确的数据格式
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>将数据从程序传到网络服务器中有多种方法，其中使用的数据格式基本都是JSON和XML。你需要做的就是在程序中选择正确的数据格式。</p>
+
+<p>JSON的解析速度非常快，并且要比XML小得多，也就意味着只需要传输更少数据。并且在iOS5之后，已经有<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://www.raywenderlich.com/5492/working-with-json-in-ios-5" target="_blank"><span style="text-decoration: underline; color: #339966;">内置的JSON反序列化</span></a>API</span></span>了，所以使用JSON是很容易的。</p>
+
+<p>不过XML也有它自己的优势：如果使用SAX方法来解析XML，那么可以边读XML边解析，并不用等到全部的XML获取到了才开始解析，这与JSON是不同的。当处理大量数据时，这种方法可以提升性能并减少内存的消耗。</p>
+
+<p><em id="__mceDel"> <a name="bgimages"></a><br /> <span style="color: #008000;">17) 设置适当的背景图片</span></em></p>
+
+<p>在iOS编码中，跟别的许多东西类似，这里也有两种方法来给view设置一个背景图片：</p>
+
+<ol>
+<li>可以使用UIColor的colorWithPatternImge方法来创建一个颜色，并将这个颜色设置为view的背景颜色。</li>
+<li>可以给view添加一个UIImageView子视图。</li>
+</ol>
+
+
+<p>如果你有一个全尺寸的背景图片，那么应该使用UIImageView，因为UIColor的colorWithPatternImge方法是用来创建小图片的——该图片会被重复使用。此时使用UIImageView会节省很多内存。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// You could also achieve the same result in Interface Builder
+UIImageView *backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
+[self.view addSubview:backgroundView];</pre>
+
+
+<p>不过，如果你计划用小图片当做背景，那么应该使用UIColor的colorWithPatternImge方法。这种情况下绘制速度会很快，并且不会消耗大量的内存。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]];</pre>
+
+
+<p><em id="__mceDel"> <a name="reduceweb"></a><br /> <span style="color: #008000;">18) 降低Web内容的影响</span></em></p>
+
+<p>UIWebView非常有用。用它可以很容易的显示web内容，甚至可以构建UIKit空间难以显示的内容。</p>
+
+<p>不过，你可以能已经注意到程序中使用的UIWebView组建没有苹果的Safari程序快。这是因为<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank"><span style="color: #339966; text-decoration: underline;">JIT编译</span></a></span></span>限制了WebKit的Nitro引擎的使用。</p>
+
+<p>因此为了获得更加的性能，需要调整一下HTML的大小。首先就是尽量的摆脱JavaScript，并避免使用大的矿建，例如jQuery。有时候使用原始的JavaScript要比别的框架快。</p>
+
+<p>另外，尽量的异步加载JavaScript文件——特别是不直接影响到页面行为时，例如分析脚本。</p>
+
+<p>最后——让使用到的图片，跟实际需要的一样大小。如之前提到的，尽量使用sprite sheets，以此节省内存和提升速度。</p>
+
+<p>更多相关信息，可以看一下： <span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://developer.apple.com/videos/wwdc/2012/"><span style="color: #339966; text-decoration: underline;">WWDC 2012 session #601 – 在iOS中优化UIWebView和网站中的Web内容。</span></a></span></span></p>
+
+<p><em id="__mceDel"> <a name="shadowpath"></a><br /> <span style="color: #008000;">19) 设置阴影路径</span></em></p>
+
+<p>如果需要在view活layer中添加一个阴影，该如何处理呢？</p>
+
+<p>大多数开发者首先将QuartzCore框架添加到工程中，然后添加如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;QuartzCore/QuartzCore.h&gt;
+
+// Somewhere later ...
+UIView *view = [[UIView alloc] init];
+
+// Setup the shadow ...
+view.layer.shadowOffset = CGSizeMake(-1.0f, 1.0f);
+view.layer.shadowRadius = 5.0f;
+view.layer.shadowOpacity = 0.6;</pre>
+
+
+<p>看起来非常容易，不是吗？</p>
+
+<p>然而不幸的是上面这种方法有一个问题。Core Animation在渲染阴影效果之前，必须通过做一个离屏(offscreen)才能确定view的形状，而这个离屏操作非常耗费资源。</p>
+
+<p>下面有一种方法可以更容易的让系统进行阴影渲染：设置阴影路径！</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">view.layer.shadowPath = [[UIBezierPath bezierPathWithRect:view.bounds] CGPath];</pre>
+
+
+<p>通过设置阴影路径，iOS就不用总是再计算该如何绘制阴影了。只需要使用你预先计算好的路径即可。有一点不好的是，根据view的格式，自己可能很难计算出路径。另外一个问题就是当view的frame改变时，必须每次都更新一下阴影路径。</p>
+
+<p>如果你想了解更多相关信息，Mark Pospesel写了一篇很棒的文章：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://markpospesel.wordpress.com/2012/04/03/on-the-importance-of-setting-shadowpath/" target="_blank"><span style="color: #339966; text-decoration: underline;">shadowPath</span></a></span></span>。</p>
+
+<p><em id="__mceDel"> <a name="tableviews"></a><br /> <span style="color: #008000;">20) 优化TableView</span></em></p>
+
+<p>Table views需要快速的滚动——如果不能的话，用户会感觉到停顿。</p>
+
+<p>为了让table view平滑的滚动，确保遵循了如下建议：</p>
+
+<ul>
+<li>设置正确的reuseIdentifer以重用cell。</li>
+<li>尽量将view设置为不透明，包括cell本身。</li>
+<li>避免渐变，图像缩放以及离屏绘制。</li>
+<li>如果row的高度不相同，那么将其缓存下来。</li>
+<li>如果cell显示的内容来此网络，那么确保这些内容是通过异步来获取的。</li>
+<li>使用shadowPath来设置阴影。</li>
+<li>减少subview的数量。</li>
+<li>在cellForRowAtIndexPath:中尽量做更少的操作。如果需要做一些处理，那么最好做过一次之后，就将结果缓存起来。</li>
+<li>使用适当的数据结构来保存需要的信息。不同的结构会带来不同的操作代价。</li>
+<li><p>使用rowHeight, sectionFooterHeight 和 sectionHeaderHeight 来设置一个恒定 高度，而不要从delegate中获取。</p></li>
+<li><p><a name="datastorage"></a><br/>
+<span style="color: #008000;">21) 选择正确的数据存储方式</span>*</p></li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 313px">
+  <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2010/04/FailedBanksModel.jpg"><img alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2010/04/FailedBanksModel.jpg" width="303" height="136" /></a><p class="wp-caption-text">
+    选择正确的数据存储方式
+  </p>
+</div>
+
+
+<p><em id="__mceDel"><span style="color: #008000;"><br /> </span></em></p>
+
+<p>当需要存储和读取大量的数据时，该如何选择存储方式呢？</p>
+
+<p>有如下选择：</p>
+
+<ul>
+<li>使用<em>NSUserDefaults进行存储</em></li>
+<li>保存为XML，JSON或Plist格式的文件</li>
+<li>利用NSCoding进行归档</li>
+<li>存储到一个本地数据库，例如SQLite。</li>
+<li>使用<em>Core Data</em>.</li>
+</ul>
+
+
+<p>使用<em>NSUserDefaults</em>有什么问题呢? 虽然NSUserDefaults很好并且容易，不过只只针对于存储小量数据（比如你的级别，或者声音是开或关）。如果要存储大量的数据，最好选择别的存储方式。</p>
+
+<p>大量数据保存为结构化的文件也可能会带来问题。一般，在解析这些结构数据之前，需要将内容全部加载到内存中，这是很消耗资源的。虽然可以使用SAX来处理XML文件，但是这有点复杂。另外，加载到内存中的所有对象，不一定全部都需要用到。</p>
+
+<p>那么使用NSCoding来保存大量数据怎么样呢？因为它同样是对文件进行读写，因此依然存在上面说的问题。</p>
+
+<p>要保存大量的数据，最好使用SQLite或Core Data。通过SQLite或Core Data可以进行具体的查询——只需要获取并加载需要的数据对象——避免对数据进行不合理的搜索。在性能方面，SQLite和Core Data差不大。</p>
+
+<p>SQLite和Core Data最大的区别实际上就是用法上。Core Data代表一个对象模型，而SQLite只是一个DBMS。一般，苹果建议使用Core Data，不过如果你有特殊的原因不能使用Core Data的话，可以使用低级别的SQLite。</p>
+
+<p>在程序中，如果选择使用SQLite，这里有个方便的库<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/ccgus/fmdb" target="_blank"><span style="color: #339966; text-decoration: underline;">FMDB</span></a></span></span> ：可以利用该库操作SQLite数据库，而不用深入使用SQLite C API。</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 初级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=263" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 高级篇</span></a></span></span></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/06/4/" itemprop="url">25个增强iOS应用程序性能的提示和技巧 — 初级篇</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：初级、<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=258"><span style="color: #339966; text-decoration: underline;">中级</span></a></span></span>和<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=263"><span style="color: #339966; text-decoration: underline;">高级</span></a></span></span>：</p>
+
+<p><span style="color: #008000;"><strong>初级</strong></span></p>
+
+<p>在开发过程中，下面这些初级技巧需要时刻注意：</p>
+
+<ol>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#arc"><span style="color: #008000; text-decoration: underline;">使用ARC进行内存管理</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#reuse"><span style="color: #008000; text-decoration: underline;">在适当的情况下使用reuseIdentifier</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#opaque"><span style="color: #008000; text-decoration: underline;">尽可能将View设置为不透明（Opaque）</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#smallxibs"><span style="color: #008000; text-decoration: underline;">避免臃肿的XIBs</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#mainthread"><span style="color: #008000; text-decoration: underline;">不要阻塞主线程</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#imageviews"><span style="color: #008000; text-decoration: underline;">让图片的大小跟UIImageView一样</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#collection"><span style="color: #008000; text-decoration: underline;">选择正确的集合</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#gzip"><span style="color: #008000; text-decoration: underline;">使用GZIP压缩</span></a></span></li>
+</ol>
+
+
+<p><span style="color: #008000;"><strong> </strong></span></p>
+
+<h2><span style="color: #008000;">初级性能提升</span></h2>
+
+<p>本部分内容介绍几本的程序性能提升技巧。其实所有级别的开发者都能从中获益。</p>
+
+<p><a name="arc"></a><br/>
+<span style="color: #008000;">1) 使用ARC进行内存管理</span></p>
+
+<p>ARC是在iOS 5中发布的，它解决了最常见的内存泄露问题——也是开发者最容易健忘的。</p>
+
+<p>ARC的全称是“Automatic Reference Counting”——自动引用计数，它会自动的在代码中做retain/release工作，开发者不用再手动处理。</p>
+
+<p>下面是创建一个View通用的一些代码块：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *view = [[UIView alloc] init];
+// ...
+[self.view addSubview:view];
+[view release];</pre>
+
+
+<p>在上面代码结束的地方很容易会忘记调用release。不过当使用ARC时，ARC会在后台自动的帮你调用release。</p>
+
+<p>ARC除了能避免内存泄露外，还有助于程序性能的提升：当程序中的对象不再需要的时候，ARC会自动销毁对象。所以，你应该在工程中使用ARC。</p>
+
+<p>下面是一些学习ARC很棒的一些资源：</p>
+
+<ul>
+<li><span style="text-decoration: underline; color: #339966;"><a href="https://developer.apple.com/library/ios/#releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span></li>
+<li>Matthijs Hollemans的<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.raywenderlich.com/5677/beginning-arc-in-ios-5-part-1"><span style="color: #008000; text-decoration: underline;">初级ARC</span></a></span></span></li>
+<li>Tony Dahbura的<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.raywenderlich.com/23854/arc-and-cocos2d-v2-x"><span style="color: #008000; text-decoration: underline;">如何在Cocos2D 2.X工程中使用ARC</span></a></span></span></li>
+<li>如果你仍然不确定ARC带来的好处，那么看一些这篇文章：<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.learn-cocos2d.com/2012/06/mythbusting-8-reasons-arc/"><span style="color: #008000; text-decoration: underline;">8个关于ARC的神话</span></a></span></span>——这能够让你相信你应该在工程中使用ARC！</li>
+</ul>
+
+
+<p>值得注意的是，ARC并不能避免所有的内存泄露。使用ARC之后，工程中可能还会有内存泄露，不过引起这些内存泄露的主要原因是：block，retain循环，对CoreFoundation对象（通常是C结构）管理不善，以及真的是代码没写好。</p>
+
+<p>这里有一篇文章是介绍<span style="text-decoration: underline; color: #008000;"><a href="http://conradstoll.com/blog/2013/1/19/blocks-operations-and-retain-cycles.html"><span style="color: #008000; text-decoration: underline;">哪些问题是ARC不能解决的</span></a></span> — 以及如何处理这些问题。</p>
+
+<p><a name="reuse"></a><br/>
+<span style="color: #008000;">2) 在适当的情况下使用reuseIdentifier</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/ReuseIdentifier.png" target="_blank"><img class=" " alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/ReuseIdentifier.png" width="250" height="225" /></a><p class="wp-caption-text">
+    在适当的情况使用reuseIdentifier
+  </p>
+</div>
+
+
+<p>在iOS程序开发中一个普遍性的错误就是没有正确的为UITableViewCells、UICollectionViewCells和UITableViewHeaderFooterViews设置reuseIdentifier。</p>
+
+<p>为了获得最佳性能，当在tableView:cellForRowAtIndexPath:方法中返回cell时，table view的数据源一般会重用UITableViewCell对象。table view维护着UITableViewCell对象的一个队列或者列表，这些数据源已经被标记为重用了。</p>
+
+<p>如果没有使用reuseIdentifier会发生什么？</p>
+
+<p>如果你在程序中没有使用reuseIdentifier，table view每次显示一个row时，都会配置一个全新的cell。这其实是一个非常消耗资源的操作，并且会影响程序中table view滚动的效率。</p>
+
+<p>自iOS 6以来，你可能还希望header和footer views，以及UICollectionView的cell和supplementary views。</p>
+
+<p>为了使用reuseIdentifiers，在table view请求一个新的cell时，在数据源中调用下面的方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">static NSString *CellIdentifier = @"Cell";
+UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];</pre>
+
+
+<p>如果table view维护的UITableViewCell队列或列表中有可用的cell，则从队列从移除一个已经存在的cell，如果没有的话，就从之前注册的nib文件或类中创建一个新的cell。如果没有可以重用的cell，并且没有注册nib文件或类，tableview的dequeueReusableCellWithIdentifier:方法会返回一个nil。</p>
+
+<p><a name="opaque"></a><br/>
+<span style="color: #008000;">3) 尽可能将View设置为不透明（Opaque）</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Opaque.png"><img alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Opaque.png" width="250" height="207" /></a><p class="wp-caption-text">
+    尽量将view设置为Opaque
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>如果view是不透明的，那么应该将其opaque属性设置为YES。</p>
+
+<p>为什么要这样做呢？这样设置可以让系统以最优的方式来绘制view。opaque属性可以在Interface Builder或代码中设置。</p>
+
+<p><span style="text-decoration: underline; color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIView_Class/UIView/UIView.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span>对opaque属性有如下解释：</p>
+
+<p><span style="color: #808080;"><em>This property provides a hint to the drawing system as to how it should treat the view. If set to YES, the drawing system treats the view as fully opaque, which allows the drawing system to optimize some drawing operations and improve performance. If set to NO, the drawing system composites the view normally with other content. The default value of this property is YES.</em></span></p>
+
+<p><span style="color: #808080;"><em>（opaque属性提示绘制系统如何处理view。如果opaque设置为YES，绘图系统会将view看为完全不透明，这样绘图系统就可以优化一些绘制操作以提升性能。如果设置为NO，那么绘图系统结合其它内容来处理view。默认情况下，这个属性是YES。）</em></span></p>
+
+<p>&nbsp;</p>
+
+<p>如果屏幕是静止的，那么这个opaque属性的设置与否不是一个大问题。但是，如果view是嵌入到scroll view中的，或者是复杂动画的一部分，不将设置这个属性的话肯定会影响程序的性能！</p>
+
+<p>可以通过模拟器的Debug\Color Blended Layers选项来查看哪些view没有设置为不透明。为了程序的性能，尽可能的将view设置为不透明！</p>
+
+<p>&nbsp;</p>
+
+<p><a name="smallxibs"></a><br/>
+<span style="color: #008000;">4) 避免臃肿的XIBs</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/FatXIB.png"><img alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/FatXIB.png" width="250" height="187" /></a><p class="wp-caption-text">
+    避免臃肿的XIBs
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在iOS 5中开始使用Storyboards，并且将替代XIBs。不过在有些情况下XIBs仍然有用。如果你的程序需要运行在装有iOS 5之前版本的设备上，或者要自定义可重用的view，那么是避免不了要使用XIBs的。</p>
+
+<p>如果必须要使用XIBs的话，尽量让XIBs文件简单。并且每个view controller对于一个XIB文件，如果可以的话，把一个view controller的view不同的层次单独分到一个XIBs文件中。</p>
+
+<p>注意：当把一个XIB文件加载到内存时，XIB文件中的所有内容都将被加载到内存中，包括图片。如果有一个view还不立即使用的话，就会造成内存的浪费。而这在storyboard中是不会发生的，因为storyboard还在需要的时候才实例化一个view controller。</p>
+
+<p>当加载XIB时，所有涉及到的图片都将被缓存，并且如果是开发的程序是针对OS X的话，声音文件也会被加载。<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span></span>这样说：</p>
+
+<p><span style="color: #999999;"><em>When you load a nib file that contains references to image or sound resources, the nib-loading code reads the actual image or sound file into memory and and caches it. In OS X, image and sound resources are stored in named caches so that you can access them later if needed. In iOS, only image resources are stored in named caches. To access images, you use the imageNamed: method of NSImage or UIImage, depending on your platform.</em></span></p>
+
+<p><span style="color: #999999;"><em>（当加载一个nib文件时，也会将nib文件涉及到的图片或声音资源加载到内存中，nib-loading代码会将实际的图片或声音文件读取到内存中，并一直缓存着。在OS X中，图片和声音资源都存储在命名缓存中，这样之后如果需要的话，可以对其进行访问。在iOS中，只有图片资源被存储到命名缓存中。要访问图片的话，使用<em>NSImage或UIImage（根据不同的系统）的imageNamed:方法即可。</em>）</em></span></p>
+
+<p>显然，在使用storyboard时也会发生类似的缓存操作；不过我没有找到相关内容的任何资料。如果你知道的话，可以告诉我哦！</p>
+
+<p>想要学习storyboard的更多知识吗？可以看看Matthijs Hollemans写的iOS 5中：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/5138/beginning-storyboards-in-ios-5-part-1"><span style="color: #339966; text-decoration: underline;">初级Storyboard Part 1</span></a></span></span>和<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/5191/beginning-storyboards-in-ios-5-part-2"><span style="text-decoration: underline; color: #339966;">Part2</span></a></span>。<br/>
+<a name="mainthread"></a><br/>
+<span style="color: #008000;">5) 不要阻塞主线程</span></p>
+
+<div class="wp-caption alignright" style="width: 240px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/RainbowWheel.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/RainbowWheel.jpg" width="230" height="230" /></a><p class="wp-caption-text">
+    不要阻塞主线程
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>永远都不要在主线程做繁重的任务。因为UIKit的任务都在主线程中进行，例如绘制、触摸管理和输入响应。</p>
+
+<p>在主线程做所有任务的风险是：如果你的代码阻塞了主线程，那么程序将出现反应迟钝。这回招致用户在App Store上对程序的差评！</p>
+
+<p>在执行I/O操作中，大多数情况下都会祖塞主线程，这些操作需要从读写外部资源，例如磁盘或者网络。</p>
+
+<p>关于网络操作可以使用NSURLConnection的如下方法，以异步的方式来执行：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)sendAsynchronousRequest:(NSURLRequest *)request queue:(NSOperationQueue *)queue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler</pre>
+
+
+<p>或者使用第三方框架，例如<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/30445/afnetworking-crash-course"><span style="color: #339966; text-decoration: underline;">AFNetworking</span></a></span>。</p>
+
+<p>如果你需要做一些其它类型开销很大的操作（例如执行一个时间密集型的计算或者对磁盘进行读写），那么就使用GCD（Grand Central Dispatch），或NSOperations 和 NSOperationQueues。</p>
+
+<p>下面的代码是使用GCD的一个模板：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // switch to a background thread and perform your expensive operation
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // switch back to the main thread to update your UI
+
+    });
+});</pre>
+
+
+<p>如上代码，为什么在第一个<strong>dispatch_async</strong>里面还嵌套了一个dispatch_async呢？这是因为关于UIKit相关的代码需要在主线程里面执行。</p>
+
+<p>对<strong>NSOperation</strong>和<strong>GCD</strong>感到好奇吗？可以看看Ray Wenderlich中的教程：<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/4295/multithreading-and-grand-central-dispatch-on-ios-for-beginners-tutorial"><span style="color: #339966; text-decoration: underline;">iOS中多线程和GCD—初级</span></a></span>，以及Soheil Azarpour的<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/19788/how-to-use-nsoperations-and-nsoperationqueues"><span style="color: #339966; text-decoration: underline;">如何使用NSOperations和NSOperationQueues教程</span></a></span>。</p>
+
+<p>&nbsp;</p>
+
+<p><a name="imageviews"></a><br/>
+<span style="color: #008000;">6) 让图片的大小跟UIImageView一样</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/ImageViews.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/ImageViews.png" width="250" height="192" /></a><p class="wp-caption-text">
+    确保图片和UIImageView大小一致
+  </p>
+</div>
+
+
+<p>如果需要将程序bundle中的图片显示到UIImageView中，请确保图片和UIImageView的大小是一样的。因为图片的缩放非常耗费资源，特别是将UIImageView嵌入到UIScrollView中。</p>
+
+<p>如果是从远程服务中下载图片，有时候你控制不了图片的尺寸，或者在下载之前无法在服务器上进行图片的缩放。这种情况，当图片下载完之后，你可以手动进行图片的缩放——做好是在后台线程中！——然后再在UIImageView中使用缩放过的图片。</p>
+
+<p>&nbsp;</p>
+
+<p><a name="collection"></a><br/>
+<span style="color: #008000;">7) 选择正确的集合</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/Collections.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/Collections.png" width="250" height="211" /></a><p class="wp-caption-text">
+    选择正确的集合
+  </p>
+</div>
+
+
+<p>学习使用最适合的类或对象是编写高效代码的基础。特别是在处理集合数据时，尤为重要。</p>
+
+<p>苹果的官网上有一篇文章：<span style="text-decoration: underline; color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/cocoa/conceptual/collections/Collections.html"><span style="color: #339966; text-decoration: underline;">集合编程主题(Collections Programming Topics)</span></a></span>——详细的介绍了在集合数据中可以使用的类，以及什么情况下使用哪个类。在使用集合时，每个开发者都应该阅读一下这个文档。</p>
+
+<p>太长，不想阅读(TLDR)？下面是常见集合类型的一个简介：</p>
+
+<ul>
+<li><span style="color: #339966;"><strong>数组<span style="color: #000000;">：</span></strong><span style="color: #000000;">是一个</span></span>值按顺序排列的一个列表。根据索引可以快速查找，不过根据值进行查找就比较慢，另外插入和删除也比较慢。</li>
+<li><span style="color: #339966;"><strong>字典</strong>:</span>  存储键/值对。根据键可以快速查找。</li>
+<li><span style="color: #339966;"><strong>Sets</strong></span>:  是一个值无序排列的列表，根据值可以快速查找，另外插入和删除也比较快。</li>
+</ul>
+
+
+<p><a name="gzip"></a><br/>
+<span style="color: #008000;">8) 使用GZIP压缩</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/03/Gnu_gzip_logo.png"><img alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/03/Gnu_gzip_logo.png" width="250" height="166" /></a><p class="wp-caption-text">
+    使用GZIP压缩
+  </p>
+</div>
+
+
+<p>越来越多的程序依赖于外部数据，这些数据一般来自远程服务器或者其它的外部APIs。有时候你需要开发一个程序来下载一些数据，这些数据可以是XML，JSON，HTML或者其它一些文本格式。</p>
+
+<p>问题是在移动设备上的网络是不确定的。用户的设备可能在EDGE网络一分钟，然后接着又在3G网络中。不管在什么情况下，都不要让用户等待。</p>
+
+<p>有一个可以优化的选择：使用GZIP对网络传输中的数据进行压缩，这样可以减小文件的大小，并加快下载的速度。压缩对于文本数据特别有用，因为文本具有很高的压缩比。</p>
+
+<p>iOS中，如果使用NSURLConnection，那么默认情况下已经支持GZIP压缩了，并且基于NSURLConnection的框架页支持GZIP压缩，如<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/30445/afnetworking-crash-course" target="_blank"><span style="color: #339966; text-decoration: underline;">AFNetworking</span></a></span></span>。甚至有些云服务提供商已经提供发送经压缩过的响应内容，例如 <span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developers.google.com/appengine/" target="_blank"><span style="color: #339966; text-decoration: underline;">Google App Engine</span></a></span></span>。</p>
+
+<p>这里有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/"><span style="color: #339966; text-decoration: underline;">一篇关于GZIP压缩很好的文章</span></a></span></span>，介绍了如何在Apache活IIS服务器中开启支持GZIP压缩。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=258" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 中级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=263" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 高级篇</span></a></span></span><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;"><br /> </span></a></span></span></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-03T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 3<span>rd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/03/3/" itemprop="url">iOS中如何利用GDataXML对XML文档进行读写</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><img class="alignright" style="margin: 12px 0px 12px 24px;" title="Let's read and write this!" alt="Let's read and write this!" src="http://cdn3.raywenderlich.com/wp-content/uploads/2010/03/XMLDocument.jpg" width="250" height="122" /></p>
+
+<p>在上一篇文章：<a href="http://beyondvincent.com/?p=62">在iOS工程中如何选择最佳的XML解析器</a>中，Saliom建议我写一篇文章介绍一下如何使用XML解析器来读写XML文档，并根据XML文档创建自己的对象，以及执行XPath查询。</p>
+
+<p>本文我就告诉你该如何去做！我将创建一个工程，来读取XML示例文档中的内容（包含RPG玩家列表），并基于该XML文档构建我们自己的对象。接着我将在成员列表中添加一个新的玩家，然后再将其保存回磁盘中。</p>
+
+<p>这里我使用的是GDataXML — Google解析XML的一个库。之所选择GDataXML是因为它针对DOM解析的执行效率不错，并且支持XML文档的读写，也很容易集成到工程中。当然，如果你使用别的DOM解析器，大多数操作都是一样的，只不过API的调用有轻微的不同。</p>
+
+<p>特别感谢Saliom建议我写这篇文章！</p>
+
+<h2>我的XML文档</h2>
+
+<p>下图是我在本文中使用到的XML文档示例：</p>
+
+<p><a href="http://www.raywenderlich.com/725/how-to-read-and-write-xml-documents-with-gdataxml/screenshot1-4" rel="attachment wp-att-727"><img title="Screenshot of our XML document" alt="Screenshot of our XML document" src="http://cdn1.raywenderlich.com/wp-content/uploads/2010/03/Screenshot13.jpg" width="217" height="305" /></a></p>
+
+<p>之前我提到过，上面的这个列表代表了一个RPG游戏中玩家。这里我尽量让XML数据简洁，当然，我还添加了一些有趣的数据。</p>
+
+<p>OK，下面我们就开始在工程中对该XML文档内容进行读写吧！</p>
+
+<h2>集成GDataXML</h2>
+
+<p>按照下面的步骤，就可以把GDataXML集成到新的工程中：</p>
+
+<ul>
+<li>选择Project\New Project, 然后选择View-based Application, 将工程命名为XMLTest。</li>
+<li>下载<a href="http://code.google.com/p/gdata-objectivec-client/downloads/list">gdata-objective-c client library</a>。</li>
+<li>解压下载的文件，定位到Source\XMLSupport, 然后将GDataXMLNode.h 和 GDataXMLNode.m两个文件拖入工程中。</li>
+<li>在XCode中, 点击Project\Build Settings 并确保 “All”选中。</li>
+<li>找到Search Paths\Header Search Paths并添加/usr/include/libxml2。</li>
+<li>然后，找到Linking\Other Linker Flags并添加-lxml2到列表中。</li>
+<li>在 XMLTestAppDelegate.h的顶部添加如下代码，可以测试上面的步骤是否正确：</li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "GDataXMLNode.h"</pre>
+
+
+<p>如果程序能够编译并运行，说明GDataXML集成成功了！</p>
+
+<h2>创建模型类</h2>
+
+<p>下一步，我们创建一组模型类来代表XML文档中的玩家。</p>
+
+<p>首先创建一个Player类。点击File\New File, 选择Cocoa Touch\Objective-C class, 点击Next之后，选择Subclass of NSObject, 然后在点击Next，将文件命名为Player。</p>
+
+<p>然后用下面的代码替换Player.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+typedef enum {
+    RPGClassFighter,
+    RPGClassRogue,
+    RPGClassWizard
+} RPGClass;
+
+@interface Player : NSObject {
+    NSString *_name;
+    int _level;
+    RPGClass _rpgClass;
+}
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) int level;
+@property (nonatomic, assign) RPGClass rpgClass;
+
+- (id)initWithName:(NSString *)name level:(int)level rpgClass:(RPGClass)rpgClass;
+
+@end</pre>
+
+
+<p>接着用下面的代码替换Player.m文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "Player.h"
+
+@implementation Player
+@synthesize name = _name;
+@synthesize level = _level;
+@synthesize rpgClass = _rpgClass;
+
+- (id)initWithName:(NSString *)name level:(int)level rpgClass:(RPGClass)rpgClass {Class:(RPGClass)rpgClass {
+
+    if ((self = [super init])) {
+        self.name = name;
+        self.level = level;
+        self.rpgClass = rpgClass;
+    }    
+    return self;
+
+}
+
+- (void) dealloc {
+    self.name = nil;    
+    [super dealloc];
+}
+
+@end</pre>
+
+
+<p>上面所涉及到的都是Objective-C, 现在没有真正的涉及到XML。为了完整性，这里我将其全部列出来。<br/>
+按照上面创建一个NSObject子类的步骤，在创建一个名为Party的类。然后用下面的代码替换Party.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+@interface Party : NSObject {
+NSMutableArray *_players;
+}
+
+@property (nonatomic, retain) NSMutableArray *players;
+
+@end
+And Party.m with the following:
+#import "Party.h"
+
+@implementation Party
+@synthesize players = _players;
+
+- (id)init {
+
+if ((self = [super init])) {
+self.players = [[[NSMutableArray alloc] init] autorelease];
+}
+return self;
+
+}
+
+- (void) dealloc {
+self.players = nil;
+[super dealloc];
+}
+
+@end</pre>
+
+
+<p>下面我们开始解析XML文件，并创建基于XML文件内容的实例对象。</p>
+
+<h2>使用GDataXML解析XML</h2>
+
+<p>下面我们使用GDataXML来读取XML文档内容，并在内存中创建一棵DOM树。</p>
+
+<p>首先，下载<a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/Party.xml">Party.xml</a>文件，并将其添加到工程中。</p>
+
+<p>接着，创建一个新的类，里面包含了所有相关解析的代码。在工程中添加一个名为PartyParser的新类，该类继承自NSObject</p>
+
+<p>用下面的代码替换PartyParser.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+@class Party;
+
+@interface PartyParser : NSObject {
+
+}
+
++ (Party *)loadParty;
+
+@end</pre>
+
+
+<p>然后用下面的代码替换PartyParser.m文件：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "PartyParser.h"
+#import "Party.h"
+#import "GDataXMLNode.h"
+#import "Player.h"
+
+@implementation PartyParser
+
++ (NSString *)dataFilePath:(BOOL)forSave {
+    return [[NSBundle mainBundle] pathForResource:@"Party" ofType:@"xml"];
+}
+
++ (Party *)loadParty {
+
+    NSString *filePath = [self dataFilePath:FALSE];
+    NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:filePath];
+    NSError *error;
+    GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData 
+        options:0 error:&amp;error];
+    if (doc == nil) { return nil; }
+
+    NSLog(@"%@", doc.rootElement);
+
+    [doc release];
+    [xmlData release];
+    return nil;
+
+}</pre>
+
+
+<p>@end</p>
+
+<p>上面的代码中，我首先创建了一个静态方法dataFilePath，该方法返回添加到工程中（成为程序bundle的一部分）Party.xml文件的路径。注意，该方法有一个boolean参数值，表示我们对该路径中的文件进行读或写—现在还不使用，稍后会用到。</p>
+
+<p>接着，我创建了另外一个静态方法loadParty。该方法会使用NSMutableData的initWithContentsOfFile方法将粗盘中文件的内容以字节的形式加载到内存中，然后将数据传递给GDataXML解析器(通过GDataXMLDocument的initWithData方法)。</p>
+
+<p>如果GDataXML在解析文件过程中遇到了错误（比如缺少结束标记），那么会返回nil和一个NSError对象，该对象有相关错误信息。本文中，如果发生了错误，我只返回一个nil。</p>
+
+<p>在上面的代码中，如果解析成功，我将把XML文档的root元素打印出来。</p>
+
+<p>下面，我们就来使用上面这个方法吧。将XMLTestAppDelegate.h文件按照如下修改：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "XMLTestAppDelegate.h"
+#import "XMLTestViewController.h"
+#import "PartyParser.h"
+#import "Party.h"
+#import "Player.h"
+
+@implementation XMLTestAppDelegate
+
+@synthesize window;
+@synthesize viewController;
+@synthesize party = _party;
+
+- (void)applicationDidFinishLaunching:(UIApplication *)application {    
+
+    self.party = [PartyParser loadParty];    
+
+    // Override point for customization after app launch    
+    [window addSubview:viewController.view];
+    [window makeKeyAndVisible];
+}
+
+- (void)dealloc {
+    self.party = nil;
+    [viewController release];
+    [window release];
+    [super dealloc];
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，我只是import了几个文件，并在applicationDidFinishLaunching方法中调用之前定义的静态方法以加载party，另外在dealloc方法中做了一些清除任务。</p>
+
+<p>现在编译并运行程序，通过Run\Console，并滚到Console窗口底部，将看到类似如下的一些信息：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 11:31:21.467 XMLTest[1568:207] GDataXMLElement 0x3b02530: 
+{type:1 name:Party xml:"Butch
+1Fighter
+Shadow2Rogue
+Crak3
+Wizard"}</pre>
+
+
+<h2>将XML转换为模型对象</h2>
+
+<p>从上面的介绍中，我们可以看到解析器已经开始起作用了，下面我们继续解析整棵DOM树，并创建出我们的模型对象。</p>
+
+<p>将loadParty方法中从NSLog语句开始处，用下面的代码进行替换：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">Party *party = [[[Party alloc] init] autorelease];
+NSArray *partyMembers = [doc.rootElement elementsForName:@"Player"];
+for (GDataXMLElement *partyMember in partyMembers) {
+
+    // Let&#039;s fill these in!
+    NSString *name;
+    int level;
+    RPGClass rpgClass;
+
+    // Name
+    NSArray *names = [partyMember elementsForName:@"Name"];
+    if (names.count &gt; 0) {
+        GDataXMLElement *firstName = (GDataXMLElement *) [names objectAtIndex:0];
+        name = firstName.stringValue;
+    } else continue;
+
+    // Level
+    NSArray *levels = [partyMember elementsForName:@"Level"];
+    if (levels.count &gt; 0) {
+        GDataXMLElement *firstLevel = (GDataXMLElement *) [levels objectAtIndex:0];
+        level = firstLevel.stringValue.intValue;
+    } else continue;
+
+    // Class
+    NSArray *classes = [partyMember elementsForName:@"Class"];
+    if (classes.count &gt; 0) {
+        GDataXMLElement *firstClass = (GDataXMLElement *) [classes objectAtIndex:0];
+        if ([firstClass.stringValue caseInsensitiveCompare:@"Fighter"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassFighter;
+        } else if ([firstClass.stringValue caseInsensitiveCompare:@"Rogue"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassRogue;
+        } else if ([firstClass.stringValue caseInsensitiveCompare:@"Wizard"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassWizard;
+        } else {
+            continue;
+        }            
+    } else continue;
+
+    Player *player = [[[Player alloc] initWithName:name level:level 
+            rpgClass:rpgClass] autorelease];
+    [party.players addObject:player];
+
+}
+
+[doc release];
+[xmlData release];
+return party;</pre>
+
+
+<p>在上面的代码中，我在root节点上使用GDataXMLElement的elementsForName方法来获取“Party”节点下所有名称为“Player”的节点。</p>
+
+<p>然后，在每个“Player”节点下，我都会去查找“Name节点素。上面的代码中只处理一个名字，所以，如果有多于一个以上的名字，那么我只会去第一个。</p>
+
+<p>同样，针对“Level”和“Class”节点，也做相同的处理，只不过我会把level从字符串转换为一个整型，class转换为枚举。</p>
+
+<p>操作过程中，如果失败了，那么只是忽略掉Player。如果，一切正确的话，那么我将根据从XML中读取出来的数据创建一个Player对象，并将其添加到Party中，最后将Party返回！</p>
+
+<p>下面，我们就来看看上面的方法是否正确。将下面的代码添加到XMLTestAppDelegate.m文件中applicationDidFinishLaunching方法里面的loadParty调用后面：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">if (_party != nil) {
+    for (Player *player in _party.players) {
+        NSLog(@"%@", player.name);
+    }
+}</pre>
+
+
+<p>编译并运行程序，如果一切正常的话，可以在控制台看到如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 12:33:04.301 XMLTest[2531:207] Butch
+2010-03-17 12:33:04.303 XMLTest[2531:207] Shadow
+2010-03-17 12:33:04.304 XMLTest[2531:207] Crak</pre>
+
+
+<h2>使用XPath进行查询</h2>
+
+<p>XPath是一种简单的语法，可以用来查询XML文档中的内容。掌握XPath的最佳方法就是通过一些示例。</p>
+
+<p>例如，下面的XPath表达式是用来查询XML文档中所有的Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player</pre>
+
+
+<p>而下面的表达式则是查询出XML文档中第一个Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player[1]</pre>
+
+
+<p>最后，下面这个表达式则是查询出名字为Shadow的Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player[Name="Shadow"]</pre>
+
+
+<p>下面我们稍微的修改一下loadParty方法，来看看如何使用XPath。替换一下加载party的代码，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//NSArray *partyMembers = [doc.rootElement elementsForName:@"Player"];
+NSArray *partyMembers = [doc nodesForXPath:@"//Party/Player" error:nil];</pre>
+
+
+<p>如果现在运行程序，会看到跟之前一样的结果。其实这并不是XPath的一个优点，因为在这里我们是要读取出XML文档中所有内容，并在内存中构造一个数据模型。</p>
+
+<p>不过，你可以想象一下，如果这里有一个大的，很复杂的XML文档，我们希望迅速的找到指定的节点，但是并不是通过查找A的子节点，然后是B的子节点，直到找到指定节点，那么此时，XPath将非常有用。</p>
+
+<p>如果你对XPath感兴趣的话，可以从<a href="http://www.w3schools.com/XPath/xpath_intro.asp">W2Schools的教程</a>里学到更多相关内容。同样，这里我还发现一个<a href="http://www.whitebeam.org/library/guide/TechNotes/xpathtestbed.rhtm">在线测试XPath表达式的一个网站</a>，非常方便。</p>
+
+<h2>保存回XML</h2>
+
+<p>到现在为止，我们只完成了一半的任务：从XML文档中读取出数据。如果我们想要添加新的player，并将新的文档保存回磁盘中，该如何操作呢？</p>
+
+<p>首先，我们需要做的事情是确定一下将XML文档保存到哪里。之前，我们已经从程序的bundle中加载XML文档了，不过，那是只读的。不过，我们可以将其保存到程序的document目录中。下面就来试试吧。</p>
+
+<p>修改一下PartyParser.m文件中的dataFilePath方法，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (NSString *)dataFilePath:(BOOL)forSave {
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
+        NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *documentsPath = [documentsDirectory
+        stringByAppendingPathComponent:@"Party.xml"];
+    if (forSave || 
+        [[NSFileManager defaultManager] fileExistsAtPath:documentsPath]) {
+        return documentsPath;
+    } else {
+        return [[NSBundle mainBundle] pathForResource:@"Party" ofType:@"xml"];
+    }
+
+}</pre>
+
+
+<p>注意，在加载XML时，如果document目录中存在XML文件，那么就从document中加载，否则就从程序的bundle中加载。</p>
+
+<p>下面，我来写一个方法：根据我们的数据模型来构造一个XML文档，并将其保存到磁盘中。如下代码，将新方法添加到PartyParser.m文件中:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)saveParty:(Party *)party {
+
+    GDataXMLElement * partyElement = [GDataXMLNode elementWithName:@"Party"];
+
+    for(Player *player in party.players) {
+
+        GDataXMLElement * playerElement = 
+            [GDataXMLNode elementWithName:@"Player"];
+        GDataXMLElement * nameElement = 
+            [GDataXMLNode elementWithName:@"Name" stringValue:player.name];
+        GDataXMLElement * levelElement = 
+            [GDataXMLNode elementWithName:@"Level" stringValue:
+                [NSString stringWithFormat:@"%d", player.level]];
+        NSString *classString;
+        if (player.rpgClass == RPGClassFighter) {
+            classString = @"Fighter";
+        } else if (player.rpgClass == RPGClassRogue) {
+            classString = @"Rogue";
+        } else if (player.rpgClass == RPGClassWizard) {
+            classString = @"Wizard";
+        }        
+        GDataXMLElement * classElement = 
+            [GDataXMLNode elementWithName:@"Class" stringValue:classString];
+
+        [playerElement addChild:nameElement];
+        [playerElement addChild:levelElement];
+        [playerElement addChild:classElement];
+        [partyElement addChild:playerElement];
+    }
+
+    GDataXMLDocument *document = [[[GDataXMLDocument alloc] 
+            initWithRootElement:partyElement] autorelease];
+    NSData *xmlData = document.XMLData;
+
+    NSString *filePath = [self dataFilePath:TRUE];
+    NSLog(@"Saving xml data to %@...", filePath);
+    [xmlData writeToFile:filePath atomically:YES];
+
+}</pre>
+
+
+<p>如上代码所示，使用GDataXML来构造XML文档非常的简单和直接。通过elementWithName:或elementWithName:stringValue方法就可以创建节点，并通过addChild就能把这些节点关联起来，然后根据指定的根节点就可以创建一个GDataXMLDocument。最后，获得相关的NSData，并将其保存到磁盘中。</p>
+
+<p>下面，在PartyParser.h文件中声明这个新方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)saveParty:(Party *)party;</pre>
+
+
+<p>然后在applicationDidFinishLaunching中做一下判断：party != nil，并在列表中添加一个新的玩家：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[_party.players addObject:[[[Player alloc] initWithName:@"Waldo" level:1 
+    rpgClass:RPGClassRogue] autorelease]];</pre>
+
+
+<p>最后applicationWillTerminate方法中将更新的玩家列表保存起来：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)applicationWillTerminate:(UIApplication *)application {
+    [PartyParser saveParty:_party];   
+}</pre>
+
+
+<p>编译并运行程序，程序加载完毕之后，退出程序。程序将会打印出XML文件保存的位置。如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 13:34:14.447 XMLTest[3118:207] Saving xml data to 
+/Users/rwenderlich/Library/Application Support/iPhone Simulator/User/
+Applications/BF246A72-7E20-47CF-93FF-AA2CEF50A6B0/Documents/Party.xml..</pre>
+
+
+<p>接着通过Finder找到对应的文件夹，并打开XML文件，如果一切正常的话，在XML文件中已经新增了一个玩家：</p>
+
+<p><img src="http://cdn4.raywenderlich.com/wp-content/uploads/2010/03/Screenshot24.jpg" alt="Screenshot of our Modified XML" /></p>
+
+<p>然后在运行一次程序，并打开控制台窗口，你将看到Waldo玩家！:]</p>
+
+<h2>总结</h2>
+
+<p>这里是本文的<a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/XMLTest.zip">示例代码</a>。注意，该程序不会在GUI中显示任何内容（这并不重要）——只是在控制台显示一些内容。</p>
+
+<p>另外 — 在工程中使用XML之前，应该花点时间考虑一下，为什么要在工程中使用XML，这是最佳选择吗。在这里的示例中，如果我们只是加载和保存一些数据，使用XML可能是大材小用了，使用别的一些序列化格式可能会更好：例如plist，NSCoding或者Core Data。</p>
+
+<p>不过，在多个程序中都使用相同的数据，那么XML是个不错的选择。如果我们用Mac程序生成了一个列表数据，而我们希望iPhone程序能够对该列表进行读写，那么XML将非常有用。这也是为什么XML是数据交换的标准格式（非常容易协同利用）。</p>
+
+<p>至此，在写程序的时候，你计划使用XML了吗？</p>
+
+<p align="right">
+  本文由破船译自：<a href="http://www.raywenderlich.com/725/how-to-read-and-write-xml-documents-with-gdataxml">raywenderlich</a>
+</p>
+
+
+<hr />
+
+<p align="right">
+  <span style="color: #a5a5a5;">2008 大连 星海湾</span>
+</p>
+
+
+
+
+<div class="wlWriterEditableSmartContent" id="scid:8747F07C-CDE8-481f-B0DF-C6CFD074BF67:301dcbd3-4cc4-40f0-b1eb-4b1bf95ca910" style="float: none; margin: 0px; display: inline; padding: 0px;">
+  <a title="2008 大连 星海湾" href="http://beyondvincent.com/wp-content/uploads/2013/04/psu-8x6.jpg" rel="thumbnail"><img alt="" src="http://beyondvincent.com/wp-content/uploads/2013/04/psu1.png" width="642" height="560" border="0" /></a>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-02T00:00:00+08:00" data-updated="true" itemprop="datePublished">Apr 2<span>nd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/raywenderlichfan-yi/'>raywenderlich翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/04/02/2/" itemprop="url">在iOS工程中如何选择最佳的XML解析器</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>&nbsp;</p>
+
+<p><span style="font-family: 微软雅黑;">在iOS开发中解析XML有多种选择。iOS就自带了两个不同的库可供选择，并且还有许多受欢迎的第三方库可用，例如TBXML, TouchXML, KissXML, TinyXML, 和 GDataXML. 面对如此多的XML解析器，开发者如何选择呢？</span></p>
+
+<p><span style="font-family: 微软雅黑;">最近我一直在考虑这些解析器，最终，对苹果提供的XMLPerformance实例进行了一下扩展，让其能够使用上面提到的各个库，以了解它们的工作情况，并对比它们之间的性能。在此，我就分享一下我的收获，希望对你有所帮助。</span></p>
+
+<p><span style="font-family: 微软雅黑;">本文中，我将对上述iOS中比较流行的库的功能和性能进行详细的比较，并介绍在解析XML时，如何在这些解析器中做出选择，我也会给出一个示例工程来演示如何使用上面提到的每个库来读取XML数据。</span></p>
+
+<p><a href="http://www.raywenderlich.com/553/how-to-chose-the-best-xml-parser-for-your-iphone-project/xmlparserlist" rel="attachment wp-att-554"><span style="font-family: 微软雅黑;"><img class="aligncenter" style="float: none; margin: 12px auto; display: block;" title="XMLPerformance Test App Extended To Compare 3rd Party Libraries" alt="XMLPerformance Test App Extended For 3rd Party Libraries" src="http://cdn4.raywenderlich.com/wp-content/uploads/2010/02/XMLParserList.jpg" width="250" height="375" /></span></a></p>
+
+<p align="center">
+  <span style="font-family: 微软雅黑;">对XMLPerformance 程序进行了扩展以对第三方库进行比较</span>
+</p>
+
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;"><strong>SAX vs. DOM</strong></span></h1>
+
+<p><span style="font-family: 微软雅黑;">在开始之前，我先来介绍一下XML解析器之间的重要区别: 是SAX还是DOM解析器。</span></p>
+
+<ul>
+<li><span style="font-family: 微软雅黑;"><span style="color: #008040;"><strong>SAX解析器</strong></span>是在解析XML树的过程中，你的代码会收到相关解析的通知，你负责跟踪解析的状态，并跟踪你希望构造的任意对象。</span></li>
+<li><span style="font-family: 微软雅黑;"><strong><span style="color: #008040;">DOM解析器</span></strong>则是读取整个xml document，并在内存中构建一份相关数据，你可以在内存中查找不同的elements。并且可以使用XPath来查询指定的内容。</span></li>
+</ul>
+
+
+<p><span style="font-family: 微软雅黑;">下面，就来讨论一下各个库吧！</span></p>
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;"><strong>iOS中最受欢迎的XML解析器</strong></span></h1>
+
+<p><span style="font-family: 微软雅黑;">根据我的调查，下面是iOS中比较受欢迎的一些XML解析器，每个解析器我都做了简短的介绍：</span></p>
+
+<ul>
+<li><a href="http://developer.apple.com/iphone/library/documentation/Cocoa/Reference/Foundation/Classes/NSXMLParser_Class/Reference/Reference.html"><span style="font-family: 微软雅黑;">NSXMLParser</span></a><span style="font-family: 微软雅黑;"> 是iOS SDK默认包含的一个SAX解析器。它是用Objective-C写的，使用起来非常简单，不过针对DOM则没那么简单了。 </span></li>
+<li><a href="http://xmlsoft.org/"><span style="font-family: 微软雅黑;">libxml2</span></a><span style="font-family: 微软雅黑;"> 是一个开源的库，iOS SDK中也默认包含了该库。由于它是基于C的API，所以在使用上要比NSXML复杂一点。该库支持DOM 和SAX 两种解析处理。libxml2 对SAX 的处理非常出色，它有一个独特的功能，就是可以边读数据边解析。例如，你可以从网络中读取一个很大的XML文档，在数据下载的过程中，你可以将读取到的数据显示给用户，而不用等到数据全部下载完毕。 </span></li>
+<li><a href="http://www.tbxml.co.uk/"><span style="font-family: 微软雅黑;">TBXML</span></a><span style="font-family: 微软雅黑;"> 是一个轻量级的DOM XML解析器，它的目标是消耗最少的资源，以最快的速度来解析XML。为了节约时间，该库不做验证处理，不支持XPath，并且是只读的——也就是通过解析器，你只能读取XML，不能对XML进行修改。 </span></li>
+<li><a href="https://github.com/TouchCode/TouchXML"><span style="font-family: 微软雅黑;">TouchXML</span></a><span style="font-family: 微软雅黑;"> 是一个NSXML风格的DOM XML解析器。跟TBXML一样，该解析器也是只读的，不过该解析器是支持XPath的 </span></li>
+<li><a href="http://code.google.com/p/kissxml"><span style="font-family: 微软雅黑;">KissXML</span></a><span style="font-family: 微软雅黑;"> 是另外一个NSSXML风格的DOM XML解析器，实际上该解析器是基于TouchXML的。他与TouchXML最大的不同点就是KissXML 支持XML的编辑和写操作。  </span></li>
+<li><a href="http://www.grinninglizard.com/tinyxml/"><span style="font-family: 微软雅黑;">TinyXML</span></a><span style="font-family: 微软雅黑;"> 是一个小型的基于C的DOM XML解析器，它只有4个c文件和2个头文件。该解析器支持XML的读写操作，但是本身不支持XPath功能。不过，可以通过TinyXpath库让其支持XPath。 </span></li>
+<li><a href="http://code.google.com/p/gdata-objectivec-client/source/browse/trunk/Source/XMLSupport/"><span style="font-family: 微软雅黑;">GDataXML</span></a><span style="font-family: 微软雅黑;"> 同样是另外一个NSSXML风格的DOM XML解析器， 是Google开发的Objective-C客户端库的一部分。该解析器由一个M文件和一个头文件组成，它支持XML文档的读写，以及XPath查询。</span></li>
+</ul>
+
+
+<p><span style="font-family: 微软雅黑;">下面我们开始比较这些库！</span></p>
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;">XML解析器性能比较程序</span></h1>
+
+<p><a href="http://www.raywenderlich.com/553/how-to-chose-the-best-xml-parser-for-your-iphone-project/xmlparserstats"><span style="font-family: 微软雅黑;"><img style="float: none; margin-left: auto; display: block; margin-right: auto;" title="XML Parser Stats Display in Test App" alt="XML Parser Stats Display in Test App" src="http://cdn5.raywenderlich.com/wp-content/uploads/2010/02/XMLParserStats.jpg" width="320" height="480" /></span></a></p>
+
+<p><span style="font-family: 微软雅黑;">苹果提供的示例程序XMLPerformance是对NSXML和libxml2 APIs解析一个约900KB的XML文档(包含iTunes中top 300首歌曲信息)所花时间的比较。</span></p>
+
+<p><span style="font-family: 微软雅黑;">示例程序允许我们选择一种解析方法对XML文档进行解析，程序会统计下载文件所花费的时间，以及解析数据库中文件的时间。你可以到统计画面查看每种解析方法平均下载和解析的时间。</span></p>
+
+<p><span style="font-family: 微软雅黑;">我就在想，通过该程序来测试不同APIs的性能是一个好主意。因此我对该示例程序进行了扩展，以能够测试上面提到的所有解析器。如果想要在你的设备中试验一下效果，你可以通过下面的链接下载最新的工程。该工程同样展示了如何使用上面提到的每一个解析器！</span></p>
+
+<p><a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/XMLPerformance.zip"><span style="font-family: 微软雅黑;">下载最新的XMLPerformance工程</span></a></p>
+
+<p><span style="font-family: 微软雅黑;">工程说明：如果解析器中支持XPath，我将单独的用XPath进行查找。因为在实际的编码过程中，我认为XPath代表着解析器的一种使用方法。当然，XPath一般要比手动查找XML树慢得多。所以，也把XPath测试纳入各解析器的对比中。</span></p>
+
+<p><span style="font-family: 微软雅黑;">因此，无论如何 — 我将在这里对提供的示例代码在我的设备上的执行性能进行讨论，不过，你在使用解析器时，可能根据具体的情况，随时都会修改相关的代码。</span></p>
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;">XML解析器性能比较</span></h1>
+
+<p><span style="font-family: 微软雅黑;">下面这个图表是各个解析器在我的设备中(iPhone 3Gs)解析XML文档的速度。</span></p>
+
+<p><a href="http://www.raywenderlich.com/553/how-to-chose-the-best-xml-parser-for-your-iphone-project/xmlparserspeed"><span style="font-family: 微软雅黑;"><img title="Parsing Time By Parser" alt="Parsing Time By Parser" src="http://cdn4.raywenderlich.com/wp-content/uploads/2010/02/XMLParserSpeed.jpg" width="617" height="270" /></span></a></p>
+
+<p><span style="font-family: 微软雅黑;">如上图所示，NSXMLParser是最慢的。而TBXML是最快的，因为TBXML针对只读，做了解析上时间消耗的优化。</span></p>
+
+<p><span style="font-family: 微软雅黑;">另我感到很惊讶的是TBXML和其它一些DOM解析器的性能要比libxml2′s SAX解析器快，原本我以为libxml2′s SAX解析器应该是最快的。对此，我没有深入研究，不过我猜测libxml2′s SAX解析器慢的原因可能是在SAX解析中，需要频繁的进行字符串比较。</span></p>
+
+<p><span style="font-family: 微软雅黑;">当然，我们不能因为看到上面这个图就对libxml2′s SAX解析器感到失望。记住，libxml2′s SAX解析器是这里提到的所有解析器中唯一一个边读边解析的库 — 因此解析器在数据还没有下载完的时候，就可以开始解析了。</span></p>
+
+<p><span style="font-family: 微软雅黑;">下面这个图显示的是各个解析器内存使用的峰值情况(这些数据是在运行各种解析器时，从Object Allocations tool获取到的)：</span></p>
+
+<p><a href="http://www.raywenderlich.com/553/how-to-chose-the-best-xml-parser-for-your-iphone-project/xmlparsermemoryusage"><span style="font-family: 微软雅黑;"><img title="Memory Usage By Parser" alt="Memory Usage By Parser" src="http://cdn3.raywenderlich.com/wp-content/uploads/2010/02/XMLParserMemoryUsage.jpg" width="614" height="283" /></span></a></p>
+
+<p><span style="font-family: 微软雅黑;">从上图，我们可以看出DOM类型的解析器要比SAX类型解析器消耗更多内存（TBXML除外—效率确实不错）。当处理很大的文档时，这是需要特别考虑的。在iOS中程序可以使用的内容是有限制的。</span></p>
+
+<p><span style="font-family: 微软雅黑;">上图，我们可以看出libxml2′s SAX解析器在考虑内存使用方面，是最佳的选择。</span></p>
+
+<p><span style="font-family: 微软雅黑;">最后，我用一个图表来做总结：不同解析器之间的区别。</span></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/04/image.png"><span style="font-family: 微软雅黑;"><img style="background-image: none; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border: 0px;" title="image" alt="image" src="http://beyondvincent.com/wp-content/uploads/2013/04/image_thumb.png" width="625" height="113" border="0" /></span></a></p>
+
+<p><span style="font-family: 微软雅黑;">* =结合TinyXPath</span></p>
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;">选择哪个呢？</span></h1>
+
+<p><span style="font-family: 微软雅黑;">选择使用哪个XML解析器实际上是取决于你要解析的内容。</span></p>
+
+<ul>
+<li><span style="font-family: 微软雅黑;">如果你只是用来读取小型的XML文档（而小型XML数据对性能影响不大）。可能你还希望能够支持XPath，并在Objective-C中容易使用。那么我建议你选择使用TouchXML, KissXML, 或GDataXML都可以。 </span></li>
+<li><span style="font-family: 微软雅黑;">如果你希望能够对小型XML数据进行读写（小型XML数据对性能影响不大），并且易于使用。并且支持XPath，利用Objective-C实现的。那么我建议你使用KissXML 或GDataXML。</span></li>
+<li><span style="font-family: 微软雅黑;">如果你想要读取非常大的XML文档（此时性能是一个非常关键的问题）。那么根据具体情况，你应该考虑使用libxml2 SAX, TBXML或libxml DOM。</span></li>
+</ul>
+
+
+<p><span style="font-family: 微软雅黑;">我没有提到的呢？</span></p>
+
+<ul>
+<li><span style="font-family: 微软雅黑;"><em>NSXML：</em>如果你在处理一些小型的XML文档，而你不希望在工程中引入第三方库，那么NSXML是个正常的选择。 </span></li>
+<li><span style="font-family: 微软雅黑;"><em>TinyXML：</em>针对中等大小的尺寸，这也是一个不错的选择，特别是如果你熟悉C和相关API，那么将之前的代码移至到iOS中非常容易。</span></li>
+</ul>
+
+
+<h1><span style="color: #008040; font-family: 微软雅黑; font-size: large;">何去何从？</span></h1>
+
+<p><span style="font-family: 微软雅黑;">如果你想要看看GDataXML是如何使用的，可以看看我写的这篇文章：<a href="http://beyondvincent.com/?p=106">iOS中如何利用GDataXML对XML文档进行读写</a></span><span style="font-family: 微软雅黑;">。</span></p>
+
+<p><span style="font-family: 微软雅黑;">如果你有什么疑问，可以联系我！</span></p>
+
+<p align="right">
+  <span style="font-family: 微软雅黑;">本文由破船译自：</span><a href="http://www.raywenderlich.com/553/how-to-chose-the-best-xml-parser-for-your-iphone-project"><span style="font-family: 微软雅黑;">raywenderlich</span></a>
+</p>
+
+
+<hr />
+
+<p align="right">
+  <span style="color: #a5a5a5;">下图是曾经在东软小黑屋的一个集体照，有好多值得怀念的朋友，谨以此文怀念一下！</span>
+</p>
+
+
+
+
+<div class="wlWriterEditableSmartContent" id="scid:8747F07C-CDE8-481f-B0DF-C6CFD074BF67:ce5b09b1-a1aa-461b-9a7e-f61c53d9305e" style="float: none; margin: 0px; display: inline; padding: 0px;">
+  <a title="纪念曾经东软小黑屋:]" href="http://beyondvincent.com/wp-content/uploads/2013/04/psb-8x6.jpg" rel="thumbnail"><img alt="" src="http://beyondvincent.com/wp-content/uploads/2013/04/psb.png" width="642" height="561" border="0" /></a>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-31T00:00:00+08:00" data-updated="true" itemprop="datePublished">Mar 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/qi-ta/'>其它</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/03/31/1/" itemprop="url">新家</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>&nbsp;</p>
+
+<p><span style="font-family: 微软雅黑;">小引：一直都有搭建个人站点的想法，最近几个月一直在搭建移动开发社区和个人博客之间徘徊，从目前的移动开发社区来看，主要有DevDiv(综合性移动开发社区)，CocoaChina(专注于苹果开发)，eoe(android开发很有人气)，当然，还有其它一些社区，基本上都创办了多年，在移动开发方面人气和用户兼得。由于创办社区需要投入大量的时间，而这恰恰是我不能保证的，我不能把8小时之外的所有时间都放在站点维护上，还有需要把时间分到生活当中。因此，我还是觉得创建自己的一个博客为妙，一来，可以与大家分享交流一下，二则记录一下自己的生活点滴，仅此而已。</span></p>
+
+<p><span style="font-family: 微软雅黑;">既然决定创建一个个人博客，那接下来就是个人博客的搭建了。之前有用过百度，新浪，csdn等提供的博客，由于缺乏个性化的一些元素，所以此次，我选择使用自己的域名+虚拟主机+wordpress，当然这样的选择，对于之后的数据备份就需要自己进行了。</span></p>
+
+<p><span style="font-family: 微软雅黑;">刚好乘着今天是周末下午，那就来完成博客的搭建吧。如下步骤：</span></p>
+
+<ol>
+<li><span style="font-family: 微软雅黑;">首先，是域名的注册。考虑到在国内注册域名需要进行备案，否则没有备案的站点可能不会做DNS解析，所以，我选择在国外注册域名：</span><a href="https://www.godaddy.com/"><span style="font-family: 微软雅黑;">godaddy</span></a><span style="font-family: 微软雅黑;">(世界第一大域名注册商)，选择在这里注册的另外一个原因是它可以用支付宝支付，这对国内的用户非常方便，否则还需要使用开通国际支付功能的信用卡。我注册了BeyondVincent.com域名。缴费一年9.99美元(约合60元人民币)。第一次注册的话估计20分钟就可以搞定。 </span></li>
+<li><span style="font-family: 微软雅黑;">其次就是虚拟主机的购买。虚拟主机我选择的是</span><a href="http://hellohostnet.com/index.html"><span style="font-family: 微软雅黑;">hellohostnet</span></a><span style="font-family: 微软雅黑;">。选择它的原因有两个，1）服务器在美国；2）可以用支付宝支付。我选择的套餐是<span style="color: #4bacc6;"><strong>新手套餐 #3</strong></span><span style="color: #000000;">（149一年）<span style="color: #000000;">。</span>第一次注册20分钟也就可以搞定了。</span> </span></li>
+<li><span style="color: #000000;"><span style="font-family: 微软雅黑;">接下来就是去</span><a href="http://cn.wordpress.org/"><span style="font-family: 微软雅黑;">WordPress</span></a><span style="font-family: 微软雅黑;">下载最新的WP，然后按照压缩文件中的说明，结合在虚拟主机中创建的数据库，来配置WP，然后将WP上传到虚拟主机上，再接着根据wp中的说明，在浏览器中进行相关的配置即可。</span></span></li>
+<li><span style="color: #000000; font-family: 微软雅黑;">最后一步，域名与虚拟主机中的IP进行绑定。这一步需要在godaddy中进行设置。由于域名的解析更新需要一段时间，不会设置好之后，立马生效。</span></li>
+</ol>
+
+
+<p><span style="color: #000000; font-family: 微软雅黑;">至此，我的新家基本上就搭建好了。接下来就慢慢的建设美好家园喽:]</span></p>
+
+<p><span style="font-family: 微软雅黑;"> </span></p>
+
+<div class="wlWriterEditableSmartContent" id="scid:8747F07C-CDE8-481f-B0DF-C6CFD074BF67:5970431c-57f9-4f1e-84d8-0c0507c14ed1" style="float: none; margin-left: auto; display: block; width: 472px; margin-right: auto; padding: 0px;">
+  <a title="玉龙雪山顶" href="http://beyondvincent.com/wp-content/uploads/2013/03/20130329085-8x6.jpg" rel="thumbnail"><img alt="" src="http://beyondvincent.com/wp-content/uploads/2013/03/20130329085.png" width="472" height="400" border="0" /></a>
+</div>
+
+
+
+
+<p align="center">
+  <span style="color: #a5a5a5; font-family: 微软雅黑;">图片拍摄于2013年03月30日玉龙雪山:]</span>
+</p>
+
+
+<p>&nbsp;</p>
+
+		
+		
+	</div>
+
+</article>
+
+</div>
+<nav id="pagenavi">
+    
+        <a href="/blog/page/13/" class="prev">Prev</a>
+    
+    
+    <div class="center"><a href="/blog/archives">所有文章</a></div>
+    
+    <script type="text/javascript">
+var duoshuoQuery = {short_name:"beyondvincent"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+</nav>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

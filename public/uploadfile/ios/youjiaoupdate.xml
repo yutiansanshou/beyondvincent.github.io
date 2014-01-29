@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VersionUpdateQueryRep>
+	<result>
+	  <VersionInfo>
+		<VersionNumber>0.0.1</VersionNumber>
+		<forcedUpdate>NO</forcedUpdate>
+		<newFeature><![CDATA[
+1、版本发布
+			]]></newFeature>
+			<APPURL><![CDATA[itms-services://?action=download-manifest&url=http://www.55youjiao.com/uploadfile/ios/YouJiao.plist]]></APPURL>
+	  </VersionInfo>
+	</result>
+</VersionUpdateQueryRep>

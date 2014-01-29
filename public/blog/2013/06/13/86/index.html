@@ -1,0 +1,246 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>iOS7新特征汇总[03]新特征介绍3 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="iOS7新特征汇总[03]新特征介绍3 提醒：这里是新特征汇总博文链接：iOS7新特征汇总 小引 上一篇文章（iOS7新特征汇总[02]新特征介绍2）中，笔者介绍了在iOS7中关于游戏、地图和AirDrop相关内容。本文将继续介绍iOS7中的新特征：程序间的音频（inter-App Audio &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/13/86/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS7新特征汇总[03]新特征介绍3</h1>
+	<div class="entry-content" itemprop="articleBody"><p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>上一篇文章（<a href="http://beyondvincent.com/?p=1306" target="_blank"><strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总[02]新特征介绍2</span></span></span></strong></a>）中，笔者介绍了在iOS7中关于游戏、地图和AirDrop相关内容。本文将继续介绍iOS7中的新特征：程序间的音频（inter-App Audio）、点对点的连接、新增的Framework。</p>
+
+<h2><strong><span style="color: #339966;">程序间的音频（inter-App Audio）</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/InterAppAudio2013.png"><img class="alignnone size-full wp-image-1325" alt="InterAppAudio2013" src="http://beyondvincent.com/wp-content/uploads/2013/06/InterAppAudio2013.png" width="853" height="480" /></a></p>
+
+<p><span style="color: #339966;">Audio Unit framework (AudioUnit.framework)</span>现在支持程序间的音频了——可以在同一台设备上不同的两个程序之间发送MIDI命令和音频流。例如，通过该功能，你可以使用一个程序来录制音乐，然后将录制的音乐音乐发送到另外一个能对音乐进行处理的程序中。</p>
+
+<p>为了公开（vend）你程序中的音频数据，需要发布一个<span style="color: #339966;">AURemoteIO</span>实例来充当音频组件——对其它进程是可见的。在iOS7里面，要在另外一个程序中使用程序间的音频功能，请使用音频组件发现接口。【翻译自苹果官网中的如下内容，还不是太理解具体意思，如果大家知道的话，可以告诉我，谢谢！】</p>
+
+<blockquote><p><em>To vend your app’s audio data, publish a AURemoteIO instance as an audio component that is visible to other processes. to use audio features from another app, use the audio component discovery interface in iOS 7.</em></p></blockquote>
+
+<p>更多相关内容请看：Audio Toolbox Framework Reference</p>
+
+<h2><strong><span style="color: #339966;">点对点的连接</span></strong></h2>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/apple-wwdc-2013-3a.jpg"><img class="alignnone size-full wp-image-1326" alt="apple-wwdc-2013-3a" src="http://beyondvincent.com/wp-content/uploads/2013/06/apple-wwdc-2013-3a.jpg" width="680" height="400" /></a></p>
+
+<p>通过<span style="color: #339966;">Multipeer Connectivity framework (MultipeerConnectivity.framework)</span>可以查找附近的设备，并直接与这些设备进行通讯——不需要通过互联网。该Framework具有这样的特点：很容易的创建多点（multipeer）会话、支持稳定、可靠和实时的数据传输。可以看出，通过该Framework，你的程序可以与附近的设备进行通讯，并做到数据的无缝交换。</p>
+
+<p>该Framework提供了两种方式来查找并管理网络服务：编程方式和基于UI选项。可以使用<span style="color: #339966;">MCNearbyServiceBrowser</span>类以编程的方式查找并管理设备。另外，我们可以将<span style="color: #339966;">MCPeerPickerViewController</span>集成到程序中——用来显示用户可以选择的设备列表。</p>
+
+<p>更多相关信息，请阅读：Multipeer Connectivity Framework Reference</p>
+
+<h2><strong><span style="color: #339966;">新增的Framework</span></strong></h2>
+
+<p>在iOS7中，新增了如下一些Framework：</p>
+
+<ol>
+<li>Game Controller framework(<span style="color: #339966;">GameController.framework</span>)：提供了与游戏相关的硬件通讯接口。</li>
+<li>Sprite Kit framework(<span style="color: #339966;">SpriteKit.framework</span>)：提供了基于精灵（sprite-based）的动画和图形渲染。</li>
+<li>Multipeer Connectivity framework(<span style="color: #339966;">MultipeerConnectivity.framework</span>)：提供设备间点对点通讯的功能。</li>
+<li>JavaScript Core framework (<span style="color: #339966;">JavaScriptCore.framework</span>)：提供了用Objective-C封装的大量标准JavaScript对象。通过该framework可以对JavaScript代码进行评估（evaluate），以及解析JSON。</li>
+<li>Media Accessibility framework (<span style="color: #339966;">MediaAccessibility.framework</span>)：管理媒体文件中字幕（closed-caption）内容的显示。通过该Framework与settings的结合，可以让用户开启字幕的显示。</li>
+<li>Safari Services framework (<span style="color: #339966;">SafariServices.framework</span>)：通过该framework，可以通过编程的方式将URL添加到用户的Safari阅读列表中。</li>
+</ol>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130612-20.png"><img class="alignnone size-full wp-image-1327" alt="QQ20130612-20" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130612-20.png" width="970" height="499" /></a></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
+
+<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
+
+<p>来自唐巧的一个微信公众账号：<span style="color: #339966;">iosDevTips</span>——基本每天都会有关于iOS开发的精彩内容分享。<br/>
+来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
+
+<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
+
+<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
+新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
+微信公众账号：<strong>破船之家</strong><br/>
+<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-13</time>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

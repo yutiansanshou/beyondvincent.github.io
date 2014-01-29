@@ -1,0 +1,37 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">handlePanFrom:</span><span class="p">(</span><span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="p">)</span><span class="nv">recognizer</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateBegan</span><span class="p">)</span> <span class="p">{</span>
+ 
+        <span class="n">CGPoint</span> <span class="n">touchLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">locationInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+ 
+        <span class="n">touchLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertPointFromView:</span><span class="n">touchLocation</span><span class="p">];</span>
+ 
+        <span class="p">[</span><span class="n">self</span> <span class="nl">selectNodeForTouch:</span><span class="n">touchLocation</span><span class="p">];</span>
+ 
+ 
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateChanged</span><span class="p">)</span> <span class="p">{</span>
+ 
+        <span class="n">CGPoint</span> <span class="n">translation</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">translationInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+        <span class="n">translation</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">translation</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">translation</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nl">panForTranslation:</span><span class="n">translation</span><span class="p">];</span>
+        <span class="p">[</span><span class="n">recognizer</span> <span class="nl">setTranslation:</span><span class="n">CGPointZero</span> <span class="nl">inView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+ 
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">recognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateEnded</span><span class="p">)</span> <span class="p">{</span>
+ 
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="n">_selectedNode</span> <span class="n">name</span><span class="p">]</span> <span class="nl">isEqualToString:</span><span class="n">kAnimalNodeName</span><span class="p">])</span> <span class="p">{</span>
+            <span class="kt">float</span> <span class="n">scrollDuration</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">;</span>
+            <span class="n">CGPoint</span> <span class="n">velocity</span> <span class="o">=</span> <span class="p">[</span><span class="n">recognizer</span> <span class="nl">velocityInView:</span><span class="n">recognizer</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+            <span class="n">CGPoint</span> <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">position</span><span class="p">];</span>
+            <span class="n">CGPoint</span> <span class="n">p</span> <span class="o">=</span> <span class="n">mult</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span> <span class="n">scrollDuration</span><span class="p">);</span>
+ 
+            <span class="n">CGPoint</span> <span class="n">newPos</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+            <span class="n">newPos</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">boundLayerPos:</span><span class="n">newPos</span><span class="p">];</span>
+            <span class="p">[</span><span class="n">_selectedNode</span> <span class="n">removeAllActions</span><span class="p">];</span>
+ 
+            <span class="n">SKAction</span> <span class="o">*</span><span class="n">moveTo</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveTo:</span><span class="n">newPos</span> <span class="nl">duration:</span><span class="n">scrollDuration</span><span class="p">];</span>
+            <span class="p">[</span><span class="n">moveTo</span> <span class="nl">setTimingMode:</span><span class="n">SKActionTimingEaseOut</span><span class="p">];</span>
+            <span class="p">[</span><span class="n">_selectedNode</span> <span class="nl">runAction:</span><span class="n">moveTo</span><span class="p">];</span>
+        <span class="p">}</span>
+ 
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

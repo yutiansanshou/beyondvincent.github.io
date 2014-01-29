@@ -1,0 +1,284 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[045]Await和Async - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[045]Await和Async 注1：本文译自Programming Windows, 6th Edition Charpter 7 Await and Async &#160;&#160;&#160; 注2：本文内容是关于Await和Async的一个简介 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/74/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[045]Await和Async</h1>
+	<div class="entry-content" itemprop="articleBody"><p>注1：本文译自Programming Windows, 6th Edition Charpter 7 Await and Async</p>
+
+<p>&#160;&#160;&#160; 注2：本文内容是关于Await和Async的一个简介，关于详细内容，我会在后续文章中进行介绍</p>
+
+<p>&#160;&#160;&#160; 注3：通过本文的阅读，你可以知道如何在Windows 8中进行简单的异步调用，以及一些注意事项。</p>
+
+<p>&#160;&#160;&#160; C# 5.0的关键字await允许我们对异步的操作就如同正常方法的调用一样。SimplePad2程序除了在应用程序栏中的按钮处理打开和保存外，跟SimplePad1一样。下面是Save按钮的Click事件处理代码：</p>
+
+<p>工程：SimplePad2 | 文件：MainPage.xaml.cs(节选)</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void OnSaveAsAppBarButtonClick(object sender, RoutedEventArgs args)
+{
+    FileSavePicker picker = new FileSavePicker();
+    picker.DefaultFileExtension = &quot;.txt&quot;;
+    picker.FileTypeChoices.Add(&quot;Text&quot;, new List&lt;string&gt; { &quot;.txt&quot; });
+
+    // Asynchronous call!
+    StorageFile storageFile = await picker.PickSaveFileAsync();
+
+    if (storageFile == null)
+        return;
+
+    // Asynchronous call!
+    await FileIO.WriteTextAsync(storageFile, txtbox.Text);
+}&lt;/string&gt;</pre>
+
+
+<p>注意两个await前面的注释。PickSaveFileAsync实际上是返回一个IAsyncOperation，一般你需要给它设置一个完成处理的函数，然后在这个完成处理回调中调用GetResults以获取StorageFile对象。await操作看似绕过了所有复杂的东西，而是直接简单的返回 StorageFile。这究竟是怎么回事呢？</p>
+
+<p>&#160;&#160;&#160; 这看起来很神奇，但是许多杂乱的实现细节已经隐藏起来了。C#编译器生成回调(callback)，并且调用GetResults。但是await操作同样将该方法转入一个状态机。（But what the await operator also does is turn the method in which it’s used into a state machine.）OnSaveAsAppBarButtonClick方法开始执行很正常，直到PickSaveFileAsync被调用以及await第一次出现。</p>
+
+<p>&#160;&#160;&#160; 虽然名为await，但是await并不等待操作完成。相反，Click处理函数在这里退出了。控制权回到Windows。其它的代码，可以在程序用户界面线程继续执行，同时也可以对进行文件选取(file-picker)。当文件选取器消失了，即用户对文件选取的结果已经出来了，那么UI线程就准备执行一些代码——继续执行Click处理函数：赋值storageFile变量，然后继续往下执行，直到下一个await操作。就像这样，可以一直往下执行许多await操作（如果有），直到函数完成。</p>
+
+<p>&#160;&#160;&#160; 在Click处理函数中的最后一行代码调用了静态方法FileIO.WriteTextAsync。严格来将，这里的await操作符可以不需要，因为在这里并不需要这个方法的执行结果。File.WriteTextAsync方法不返回任何内容，并且在Click处理函数中，并没有其它代码依赖于此的。因此在这种ing狂下，await操作符可以移除，程序代码如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">FileIO.WriteTextAsync(storageFile, txtbox.Text);  </pre>
+
+
+<p>你会收到一条来自编译器的警告消息，但是这没问题。await操作符只在下面两种情况比较关键：你需要从异步方法中获得一个返回值，再者就是在程序逻辑上继续执行之前，异步方法必须完成则需要使用await操作符。</p>
+
+<p>&#160;&#160;&#160; 下面是Open按钮的Click事件处理函数，使用了静态方法FileIO.ReadTextAsync：</p>
+
+<p>工程：SimplePad2 | 文件：MainPage.xaml.cs(节选)</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">async void OnOpenAppBarButtonClick(object sender, RoutedEventArgs args)
+{
+    FileOpenPicker picker = new FileOpenPicker();
+    picker.FileTypeFilter.Add(&quot;.txt&quot;);
+
+    // Asynchronous call!
+    StorageFile storageFile = await picker.PickSingleFileAsync();
+
+    if (storageFile == null)
+        return;
+
+    // Asynchronous call!
+    txtbox.Text = await FileIO.ReadTextAsync(storageFile);
+}</pre>
+
+
+<p>在await出现之前，C#中异步操作的调用总是有悖于语言的必要组织结构。await操作符带来了必要组织结构，并将异步调用转换为一系列普通方法的调用。而且在Click处理函数中的所有事情都是在UI线程中进行的，因此必用考虑用户界面对象的访问。虽然await的使用，更加简单，但是你要记住的是如果一个函数中出现了await，那么实际上在后端是将该函数分片处理的。</p>
+
+<p>&#160;&#160;&#160; 这里有一些await的使用条款。await不能出现在异常处理的catch或finally语句中。而它可以出现在try语句中，这也是捕获异步函数发生错误的方法。同关键字，样还提供了取消操作，以及一些异步函数的进度通知。这些具体细节我将在后面的异步操作章节中介绍。</p>
+
+<p>&#160;&#160;&#160; 如果函数中出现了await操作符，那么该函数必须用async标识，但是async并不做其它更多的事情。在早期的C#版本中，await并不是一个关键字，所以程序员可以将这个单词(await)用作变量名或属性名，或者其它任何内容。C#5.0中添加了await关键字将改变这一现状，不过使用async标识来限制函数中的await。async不会改变函数的签名——上面的方法任然是Click的处理方法。但是async(以及await)不能被用在入口点，如Main或者类的构造函数中。</p>
+
+<p>&#160;&#160;&#160; 如果你需要在初始化一个FrameworkElement子类时调用异步方法，那么请在Loaded事件处理函数中进行，并将处理函数标记为async：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public MainPage()
+{
+    this.InitializeComponent();
+    ...
+    Loaded += OnLoaded;
+}
+async void OnLoaded(object sender, RoutedEventArgs arg)
+{
+    ...
+}</pre>
+
+
+<p>或者，如果你喜欢的话，可以按照下面的代码，将Loaded处理函数定义为一个异步函数：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public MainPage()
+{
+    this.InitializeComponent();
+
+    ...
+
+    Loaded += async (sender, args) =&gt;
+    {
+        ...
+    };
+}</pre>
+
+
+<p>看到参数列表前的async了吗？</p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/SimplePad2" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

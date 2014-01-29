@@ -1,0 +1,18 @@
+<div class="highlight"><pre><span class="c1">// Comment out the call to start the bear walking</span>
+<span class="c1">//[self walkingBear];</span>
+ 
+<span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesEnded:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> 
+<span class="p">{</span>
+    <span class="c1">//Stuff from below!</span>
+<span class="p">}</span>
+ 
+<span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> 
+<span class="p">{</span>    
+<span class="p">}</span>
+ 
+<span class="c1">//add this method</span>
+<span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">bearMoveEnded</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">_bear</span> <span class="n">removeAllActions</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>

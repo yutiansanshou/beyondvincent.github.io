@@ -1,0 +1,11 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">walkingBear</span>
+<span class="p">{</span>
+    <span class="c1">//This is our general runAction method to make our bear walk.</span>
+    <span class="p">[</span><span class="n">_bear</span> <span class="nl">runAction:</span><span class="p">[</span><span class="n">SKAction</span> <span class="nl">repeatActionForever:</span>
+                      <span class="p">[</span><span class="n">SKAction</span> <span class="nl">animateWithTextures:</span><span class="n">_bearWalkingFrames</span>
+                                       <span class="nl">timePerFrame:</span><span class="mf">0.1f</span>
+                                             <span class="nl">resize:</span><span class="n">NO</span>
+                                            <span class="nl">restore:</span><span class="n">YES</span><span class="p">]]</span> <span class="nl">withKey:</span><span class="s">@&quot;walkingInPlaceBear&quot;</span><span class="p">];</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

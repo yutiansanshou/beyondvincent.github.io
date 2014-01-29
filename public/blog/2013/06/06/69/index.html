@@ -1,0 +1,339 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[040]使用默认程序打开文件 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[040]使用默认程序打开文件 小引 在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接，这时候我们就需要用到Windows.System.Launcher。今天我就通过代码示例， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/69/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[040]使用默认程序打开文件</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>小引</h3>
+
+<p>在Windows 8中，有时候，我们电脑中的文件，需要启动别的程序来打开，或者有时候我们需要通过浏览器打开某个链接，这时候我们就需要用到Windows.System.Launcher。今天我就通过代码示例，来介绍如何打开文件或者链接。</p>
+
+<p>本文参考了：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-SG/library/hh779671"></a><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher"><u>http://msdn.microsoft.com/zh-cn/library/windows/apps/windows.system.launcher</u></a></p>
+
+<h3><a name="t4"></a>打开文件</h3>
+
+<h4><a name="t5"></a>通过默认程序打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DefaultLaunch(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\[DevDiv翻译]Metro Revealed_ Building Windows 8 apps with XAML and C#中文翻译合集_2012_09_03.pdf&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Launch the retrieved file
+        var success = await Windows.System.Launcher.LaunchFileAsync(file);
+
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.png" width="682" height="403" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb11.png" width="682" height="386" /></a></p>
+
+<h4>通过程序列表打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void DisplayApplicationPicker(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\7.jpg&quot;;
+
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the option to show the picker
+        var options = new Windows.System.LauncherOptions();
+        options.DisplayApplicationPicker = true;
+
+        // Launch the retrieved file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/312.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb12.png" width="682" height="527" /></a></p>
+
+<h4>去商店搜索对应的程序来打开文件</h4>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void RecommendedApp(object sender, RoutedEventArgs e)
+{
+    // Path to the file in the app package to launch
+    string imageFile = @&quot;data\1.BeyondVincent&quot;;
+
+    // Get the image file from the package&#039;s image directory
+    var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(imageFile);
+
+    if (file != null)
+    {
+        // Set the recommended app
+        var options = new Windows.System.LauncherOptions();
+
+        // 设置为应用商店中要推荐的应用的程序包系列名称
+        options.PreferredApplicationPackageFamilyName = &quot;BeyondVincent格式文件程序&quot;;
+
+        // 设置为该应用的名称
+        options.PreferredApplicationDisplayName = &quot;BV_Launcher&quot;;
+
+
+        // Launch the retrieved file pass in the recommended app 
+        // in case the user has no apps installed to handle the file
+        bool success = await Windows.System.Launcher.LaunchFileAsync(file, options);
+        if (success)
+        {
+            // File launched
+        }
+        else
+        {
+            // File launch failed
+        }
+    }
+    else
+    {
+        // Could not find file
+    }
+}</pre>
+
+
+<p>运行效果</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.png" width="682" height="354" /></a></p>
+
+<h3>打开链接</h3>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private async void OpenDevDiv(object sender, RoutedEventArgs e)
+{
+    // The URI to launch
+    string uriToLaunch = @&quot;http://www.DevDiv.com&quot;;
+
+    // Create a Uri object from a URI string 
+    var uri = new Uri(uriToLaunch);
+
+    // Launch the URI
+    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+
+    if (success)
+    {
+        // URI launched
+    }
+    else
+    {
+        // URI launch failed
+    }
+}</pre>
+
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Launcher" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-06</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

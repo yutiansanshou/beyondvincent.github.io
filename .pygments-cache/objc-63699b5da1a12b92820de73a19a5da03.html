@@ -1,0 +1,10 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="n">UIImage</span> <span class="o">*</span><span class="p">)</span><span class="nf">convertViewToImage</span>
+<span class="p">{</span>
+    <span class="n">UIGraphicsBeginImageContext</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nl">drawViewHierarchyInRect:</span><span class="n">self</span><span class="p">.</span><span class="n">bounds</span> <span class="nl">afterScreenUpdates:</span><span class="n">YES</span><span class="p">];</span>
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="n">UIGraphicsGetImageFromCurrentImageContext</span><span class="p">();</span>
+    <span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+ 
+    <span class="k">return</span> <span class="n">image</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

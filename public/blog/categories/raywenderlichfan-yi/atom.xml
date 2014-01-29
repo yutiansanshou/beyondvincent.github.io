@@ -1,0 +1,1515 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: raywenderlich翻译 | 破船之家]]></title>
+  <link href="http://BeyondVincent.github.io/blog/categories/raywenderlichfan-yi/atom.xml" rel="self"/>
+  <link href="http://BeyondVincent.github.io/"/>
+  <updated>2014-01-29T17:24:00+08:00</updated>
+  <id>http://BeyondVincent.github.io/</id>
+  <author>
+    <name><![CDATA[破船(BeyondVincent)]]></name>
+    <email><![CDATA[beyondvincent@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中如何创建一个滑出式导航面板(2)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/17/8/"/>
+    <updated>2013-04-17T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/17/8</id>
+    <content type="html"><![CDATA[<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>接着上一篇<a href="http://beyondvincent.com/2013/04/16/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF1/" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(1)</span></span></a></p>
+
+<h2><strong><span style="color: #339966;">现在靠向右边</span></strong></h2>
+
+<p>在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，将下面的import语句添加到文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "RightPanelViewController.h"</pre>
+
+
+<p>然后添加下面的常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define RIGHT_PANEL_TAG 3</pre>
+
+
+<p>接着在@interface里面添加如下属性，这样就容易获取到right view和它的当前状态：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) RightPanelViewController *rightPanelViewController;
+@property (nonatomic, assign) BOOL showingRightPanel;</pre>
+
+
+<p>然后是找到<strong><span style="color: #339966;">getRightView</span></strong>方法，并移除里面已有的代码，然后添加下面的代码进去：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
+if (_rightPanelViewController == nil)
+{
+    // this is where you define the view for the right panel
+    self.rightPanelViewController = [[RightPanelViewController alloc] initWithNibName:@"RightPanelViewController" bundle:nil];
+    self.rightPanelViewController.view.tag = RIGHT_PANEL_TAG;
+    self.rightPanelViewController.delegate = _centerViewController;
+
+    [self.view addSubview:self.rightPanelViewController.view];
+
+    [self addChildViewController:self.rightPanelViewController];
+    [_rightPanelViewController didMoveToParentViewController:self];
+
+    _rightPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+}
+
+self.showingRightPanel = YES;
+
+// set up view shadows
+[self showCenterViewWithShadow:YES withOffset:2];
+
+UIView *view = self.rightPanelViewController.view;
+return view;</pre>
+
+
+<p>上面的代码是拷贝getLeftView的，只不过其中的类和属性不同而已。如果对上面的代码有任何疑问，可以回头看看之前的解释。</p>
+
+<p>跟之前的一样，在xib文件中已经连接好了相关的IBAction和IBOutlet。下面是CenterViewController.xib文件的一个截图，显示出了puppies按钮的连接关系：</p>
+
+<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/xcodeRightButtonSetup.png" width="700" height="626" /></a></p>
+
+<p>如上图所示，跟kitties按钮类似，puppies按钮连接到的IBOutlet是rightButton，IBAction是btnMovePanelLeft:。这个按钮控制着center panel的滑动以显示出右边的panel。</p>
+
+<p>下面我们就来让panel移动起来吧。</p>
+
+<p>打开<strong><span style="color: #339966;">CenterController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">btnMovePanelLeft:</span></strong>中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;    
+switch (button.tag) {
+    case 0: {
+        [_delegate movePanelToOriginalPosition];
+        break;
+    }
+
+    case 1: {
+        [_delegate movePanelLeft];
+        break;
+    }
+
+    default:
+        break;
+}</pre>
+
+
+<p>同样，上面的代码与btnMovePanelRight:方法的实现没有什么不同。可以看到delegate的调用方法几乎是一样的。</p>
+
+<p>因为之前已经实现了movePanelToOriginalPostion方法，所以剩下的任务只需要添加movePanelLeft 方法，并修改一下resetMainView以处理right panel即可。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;"><strong>将右边显示出来</strong></span></h2>
+
+<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并将下面的代码添加到<strong><span style="color: #339966;">movePanelLeft:</span></strong>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getRightView];
+[self.view sendSubviewToBack:childView];
+
+[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(-self.view.frame.size.width + PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        _centerViewController.rightButton.tag = 0;
+                    }
+                }];</pre>
+
+
+<p>上面的代码与movePanelRight方法中的基本相同，这里就不再做过多的解释。</p>
+
+<p>接着找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并用下面的代码替换已有的内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// remove left and right views, and reset variables, if needed
+if (_leftPanelViewController != nil)
+{
+    [self.leftPanelViewController.view removeFromSuperview];
+    self.leftPanelViewController = nil;
+
+    _centerViewController.leftButton.tag = 1;
+    self.showingLeftPanel = NO;
+}
+
+if (_rightPanelViewController != nil)
+{
+    [self.rightPanelViewController.view removeFromSuperview];
+    self.rightPanelViewController = nil;
+
+    _centerViewController.rightButton.tag = 1;
+    self.showingRightPanel = NO;
+}
+
+// remove view shadows
+[self showCenterViewWithShadow:NO withOffset:0];</pre>
+
+
+<p>上面代码中唯一修改的地方是增加了一个if语句代码块：if(_rightPanelViewController != nil)。该语句判断一下right panel view是否存在，这跟之前检查left panel view一样，并且对_rightPanelViewController做相同的处理！</p>
+
+<p>现在编译并运行程序，点击puppies按钮，将看到如下画面：</p>
+
+<p><a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
+
+<p>看起来不错吧？</p>
+
+<p>在下面一节中，将介绍如何添加手势功能。</p>
+
+<h2><strong><span style="color: #339966;">来回移动你的手指</span></strong></h2>
+
+<p>在程序中添加手势处理非常简单，不要以为太复杂，很容易就能实现的！</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/grooveinthehandsc-480x177.png" width="480" height="177" /></a></p>
+
+<p>还是在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，找到<strong><span style="color: #339966;">setupView</span></strong>方法，并在方法的尾部添加如下一行代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[self setupGestures];</pre>
+
+
+<p>接着，需要让MainViewController遵循UIGestureRecognizerDelegate协议——将UIGestureRecognizerDelegate添加到文件顶部的@interface中，添加后的代码如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()&lt;UIGestureRecognizerDelegate, CenterViewControllerDelegate&gt;</pre>
+
+
+<p>最后，找到<span style="color: #339966;"><strong>setupGestures</strong></span>方法，并将下面的代码块添加进去：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(movePanel:)];
+[panRecognizer setMinimumNumberOfTouches:1];
+[panRecognizer setMaximumNumberOfTouches:1];
+[panRecognizer setDelegate:self];
+
+[_centerViewController.view addGestureRecognizer:panRecognizer];</pre>
+
+
+<p>上面的代码定义了一个UIPanGestureRecognizer，并将movePanel:方法赋值给它，当有检测到手势时，就会调用这个方法。（稍后需要实现movePanel:方法。）</p>
+
+<p>接着，配置一下panRecognizer：将触摸的最大数目和最小数目设置为1，另外还设置了一下delegate。最后，将刚刚创建好的panRecognizer添加到_centerViewController.view中。</p>
+
+<p><strong>注意</strong>：更多关于UIGestureRecognizer类的信息, 请参考<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/uikit/reference/UIGestureRecognizer_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果官方文档</span></a></span></span>。</p>
+
+<p>接着，再做一件事情就可以用手势进行滑动了。</p>
+
+<h2><strong><span style="color: #339966;">现在就来移动View吧</span></strong></h2>
+
+<p>当识别到手势之后会调用movePanel:方法。所以，本文最后一个任务就是来实现一下这个方法。</p>
+
+<p>movePanel:方法使用到两个属性：showPanel 和 preVelocity。在<strong><span style="color: #339966;">MainViewController.m</span></strong>文件的@interface中添加上这两个属性：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, assign) BOOL showPanel;
+@property (nonatomic, assign) CGPoint preVelocity;</pre>
+
+
+<p>找到<em>movePanel:</em> 并将下面这段代码添加进去（很多哦！）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[[[(UITapGestureRecognizer*)sender view] layer] removeAllAnimations];
+
+CGPoint translatedPoint = [(UIPanGestureRecognizer*)sender translationInView:self.view];
+CGPoint velocity = [(UIPanGestureRecognizer*)sender velocityInView:[sender view]];
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateBegan) {
+        UIView *childView = nil;
+
+        if(velocity.x &gt; 0) {
+            if (!_showingRightPanel) {
+                childView = [self getLeftView];
+            }
+        } else {
+            if (!_showingLeftPanel) {
+                childView = [self getRightView];
+            }
+
+        }
+        // Make sure the view you&#039;re working with is front and center.
+        [self.view sendSubviewToBack:childView];
+        [[sender view] bringSubviewToFront:[(UIPanGestureRecognizer*)sender view]];
+}
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
+
+        if(velocity.x &gt; 0) {
+            // NSLog(@"gesture went right");
+        } else {
+            // NSLog(@"gesture went left");
+        }
+
+        if (!_showPanel) {
+            [self movePanelToOriginalPosition];
+        } else {
+            if (_showingLeftPanel) {
+                [self movePanelRight];
+            }  else if (_showingRightPanel) {
+                [self movePanelLeft];
+            }
+        }
+}
+
+if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateChanged) {
+        if(velocity.x &gt; 0) {
+            // NSLog(@"gesture went right");
+        } else {
+            // NSLog(@"gesture went left");
+        }
+
+        // Are you more than halfway? If so, show the panel when done dragging by setting this value to YES (1).
+        _showPanel = abs([sender view].center.x - _centerViewController.view.frame.size.width/2) &gt; _centerViewController.view.frame.size.width/2;
+
+        // Allow dragging only in x-coordinates by only updating the x-coordinate with translation position.
+        [sender view].center = CGPointMake([sender view].center.x + translatedPoint.x, [sender view].center.y);
+        [(UIPanGestureRecognizer*)sender setTranslation:CGPointMake(0,0) inView:self.view];
+
+        // If you needed to check for a change in direction, you could use this code to do so.
+        if(velocity.x*_preVelocity.x + velocity.y*_preVelocity.y &gt; 0) {
+            // NSLog(@"same direction");
+        } else {
+            // NSLog(@"opposite direction");
+        }
+
+        _preVelocity = velocity;
+}</pre>
+
+
+<p>上面代码中的注视已经有对功能做了不错的解释。下面是一些需要明白的关键信息：</p>
+
+<ul>
+<li>需要处理3个状态：UIGestureRecognizerStateBegan, UIGestureRecognizerStateEnded和 UIGestureRecognizerStateChanged。</li>
+<li>translationInView：返回某个位置在指定view的坐标系中的point，并将这个point赋值给translatedPoint变量, 该变量用来设置view的位置。</li>
+<li>velocityInView: 返回每秒钟手势的移动速率。该变量有助于确定方向的改变。</li>
+</ul>
+
+
+<p>你可以移动center，left和right view，并结合上面提到的3个状态，就可以确定手势的位置和速率/方向。</p>
+
+<p>例如，如果手势方向是向右的，那么就显示出left panel。如果方向是向左，则显示出right panel。通过查看代码和相关的注释，就可以知道每一种状态都发生了什么。</p>
+
+<p>再次编译并运行程序。现在应该可以把center panel滑动到左边或者右边了，并显示出center panel下面的panel。</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a> <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/02/simRightReveal-333x500.png" width="333" height="500" /></a></p>
+
+<h2><strong><span style="color: #339966;">何去何从</span></strong></h2>
+
+<p>如果你完全按照本文介绍的方法来操作，那么恭喜你，你已经成为一名滑出式导航面板忍者了！</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/feel-like-a-ninja.jpg" width="300" height="247" /></a></p>
+
+<p>希望本文对你有用！这里是本文涉及到的完整示例工程：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://cdn5.raywenderlich.com/downloads/SlideOutNavigationFinal.zip"><span style="color: #339966; text-decoration: underline;">completed project file</span></a></span></span>。</p>
+
+<p>之前我提到过，如果你更喜欢已经定义好了的库，而不是DIY，那么请看<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a>.</span></span> 看看这里的<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/John-Lluch/SWRevealViewController#usage" target="_blank"><span style="color: #339966; text-decoration: underline;">开发者相关介绍</span></a></span></span>，很容易就能使用它了。</p>
+
+<p style="text-align: right;">
+  <span style="color: #c0c0c0;">全文完毕！ 破船翻译于2013.04.17</span>
+</p>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS中如何创建一个滑出式导航面板(1)]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/16/8/"/>
+    <updated>2013-04-16T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/16/8</id>
+    <content type="html"><![CDATA[<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文由破船译自：<a href="http://www.raywenderlich.com/32054/how-to-create-a-slide-out-navigation-like-facebook-and-path" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com/" target="_blank">BeyondVincent的博客</a><br/>
+_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
+
+<p>本文将介绍如何创建类似Facebook和Path iOS程序中的滑出式导航面板。</p>
+
+<div class="wp-caption alignright" style="width: 223px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/02/fbMidSlide-213x320.png" width="213" height="320" /></a><p class="wp-caption-text">
+    向右滑动
+  </p>
+</div>
+
+
+<p>滑出式设计模式可以让开发者在程序中添加常用的导航功能，而又不会浪费屏幕上宝贵的空间。用户可以在任意时间滑出导航面板，并且还可以看到当前屏幕上显示的内容。</p>
+
+<p>现在，互联网上已经有一些库已经内置滑出式设计模式，比如John-Lluch开发的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a title="SWRevealViewController" href="https://github.com/John-Lluch/SWRevealViewController" target="_blank"><span style="color: #339966; text-decoration: underline;">SWRevealViewController</span></a></span></span>。如果你在寻找更加快捷和简单的方法，那么使用SWRevealViewController库可能是一个很不错的方法。</p>
+
+<p>不过，如果你是一名DIY类型的程序员(像我)，那么你可能希望自己理解这功能是如何实现的。</p>
+
+<p>在本文中，你会看到该功能的实现并不复杂。通过少即是多的方法，并忽略掉复杂大的且不是必须的代码，就可以轻松的在程序中集成滑出式导航面板技术。</p>
+
+<p>下面，就开始学习如何做滑出式导航面板——附带手势滑出的功能！</p>
+
+<h2><strong><span style="color: #339966;">开始</span></strong></h2>
+
+<p>那么这里创建的滑出式导航面板的功能具体是什么呢？</p>
+
+<p>iOS设计师和开发者Ken Yarmosh的解释比较恰当：“滑出式导航面板拥有一个面板，这个面板从主画面的左边或者右边滑出来，然后在面板中显示一个垂直的、独立的滚动视图（Scroll view），把该视图当作程序的主导航。”</p>
+
+<p><em>注意:</em> Ken在这里的文章中详细的解释了滑出式导航面板的设计模式，并介绍了该模式带来的好处：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://kenyarmosh.com/ios-pattern-slide-out-navigation/" target="_blank"><span style="color: #339966; text-decoration: underline;">新的iOS设计模式:滑出式导航面板</span></a></span></span>。</p>
+
+<p>首先下载本文的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://cdn2.raywenderlich.com/downloads/SlideOutNavigationStarter.zip" target="_blank"><span style="color: #339966; text-decoration: underline;">启动工程</span></a></span></span>。这是一个ZIP文件，只需要将其保存到本地，并解压一下就可以得到工程。</p>
+
+<p>接着在Xcode中打开这个工程，并看看工程的组织结构：</p>
+
+<p>工程被分为3个主要的文件夹：</p>
+
+<ul>
+<li><strong><span style="color: #339966;"><em>Assets</em></span></strong>: 包含所有的图片文件和其它非代码资源（例如attribution文件）。</li>
+<li><strong><span style="color: #339966;"><em>Views</em></span></strong>: 包含本文涉及到的所有xib文件。</li>
+<li><strong><span style="color: #339966;"><em>Classes</em></span></strong>: 包含Objective-C代码文件</li>
+</ul>
+
+
+<p><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/projectLayout.png" width="262" height="737" /></p>
+
+<p>不要担心Assets中有许多文件，其实你并不需要修改这些内容，所有需要用到的资源文件都添加进来了。</p>
+
+<p>在Views文件夹中有4个主要的view controller。下面是相关简介：</p>
+
+<ul>
+<li><strong><span style="color: #339966;">MainViewController</span></strong>: 这是主要的一个画面！这个文件需要添加到你自己的工程中（需要一些小的改动）。</li>
+<li><strong><span style="color: #339966;">CenterViewController</span></strong>: 这是正中间的面板。该view controller可以替换为你自己的view controller（记住按钮的action也实现了）</li>
+<li><strong><span style="color: #339966;">LeftPanelViewController</span></strong>: 左边的面板。该view controller可以替换为你自己的view controller。</li>
+<li><strong><span style="color: #339966;">RightPanelViewController</span></strong>: 右边的面板。该view controller可以替换为你自己的view controller</li>
+</ul>
+
+
+<p>现在打开<strong><span style="color: #339966;">AppDelegate.m</span></strong>文件。虽然你不需要对这个文件做任何改变，但是你应该知道MainViewContorller是左，中和右view controller的容器。这个controller的初始化在19行代码中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.viewController = [[MainViewController alloc] initWithNibName:@"MainViewController" bundle:nil];</pre>
+
+
+<p>现在，你已经对工程的结构熟悉了， 下面我们就正在的开始啦——从正中间的面板开始。</p>
+
+<h2><span style="color: #339966;"><strong>找到中心</strong></span></h2>
+
+<p>本小节中，我将在MainViewConroller中放置一个CenterViewController，将CenterViewController当做MainViewConroller的子view controller。</p>
+
+<p><span style="color: #999999;"><strong>注意</strong>：本小节会用到iOS 5中的新增的一个概念：View Controller Containment。如果你还不熟悉这个概念，可以看看<a href="http://www.raywenderlich.com/store-beta/ios-5-and-ios-6-by-tutorials-bundle" target="_blank"><span style="text-decoration: underline; color: #999999;"><span style="color: #339966; text-decoration: underline;">iOS 5 by Tutorials</span></span></a>中的第22章“UIViewController Containment”。</span></p>
+
+<p>打开MainViewController.m文件，并将下面的import语句添加到文件的顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "CenterViewController.h"</pre>
+
+
+<p>接着，添加一个常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define CENTER_TAG 1</pre>
+
+
+<p>接着在@interface中添加下面这个属性，以方便控制center view。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) CenterViewController *centerViewController;</pre>
+
+
+<p>找到setupView并在里面添加如下代码块：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.centerViewController = [[CenterViewController alloc] initWithNibName:@"CenterViewController" bundle:nil];
+self.centerViewController.view.tag = CENTER_TAG;
+self.centerViewController.delegate = self;
+
+[self.view addSubview:self.centerViewController.view];
+[self addChildViewController:_centerViewController];
+
+[_centerViewController didMoveToParentViewController:self];</pre>
+
+
+<p>上面的代码分配了一个新的CenterViewController并将其赋值给centerViewController属性。然后将这个view controller view的tag设置为CENTER_TAG。</p>
+
+<p>接着将delegate设置为MainViewController。也就意味着你需要对MainViewController进行修改，以遵循CenterViewControllerDelegate协议——只需要将文件顶部@interface代码行替换为如下即可：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@interface MainViewController ()</pre>
+
+
+<p>最后，在setupView方法的代码中，使用addSubview:方法将centerViewController的view添加到MainViewController的view中，另外还调用了addChildViewContoller:将_centerViewController添加为MainViewController的子view controller。最后调用了didMoveToParentViewController:方法。</p>
+
+<p>现在就编译并运行程序的话，可以看到类似如下的画面：</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simMainScreen-333x500.png" width="333" height="500" /></a></p>
+
+<p>在画面顶部的按钮可以让你切换到小猫（kitties）和小狗（puppies）。有什么更好的理由需要在这里创建一个滑出式的导航面板呢？在这里要想看到不同的小动物，那就开始滑动吧。首先从左边开始！</p>
+
+<h2><span style="color: #339966;"><strong> 靠向左边</strong></span></h2>
+
+<p>现在已经添加好了center panel，不过要添加left view controller需要一些不同的操作。</p>
+
+<p>回到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件中，并将下面的import语句添加到文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "LeftPanelViewController.h"</pre>
+
+
+<p>然后再定义一个常量：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define LEFT_PANEL_TAG 2</pre>
+
+
+<p>接着在@interface中添加一些属性，这跟center view类似：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, strong) LeftPanelViewController *leftPanelViewController;
+@property (nonatomic, assign) BOOL showingLeftPanel;</pre>
+
+
+<p>现在找到<strong><span style="color: #339966;">getLeftView</span></strong>方法，删除掉已有的代码并添加如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// init view if it doesn&#039;t already exist
+if (_leftPanelViewController == nil)    
+{
+    // this is where you define the view for the left panel
+    self.leftPanelViewController = [[LeftPanelViewController alloc] initWithNibName:@"LeftPanelViewController" bundle:nil];
+    self.leftPanelViewController.view.tag = LEFT_PANEL_TAG;
+    self.leftPanelViewController.delegate = _centerViewController;
+
+    [self.view addSubview:self.leftPanelViewController.view];
+
+    [self addChildViewController:_leftPanelViewController];
+    [_leftPanelViewController didMoveToParentViewController:self];
+
+    _leftPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+}
+
+self.showingLeftPanel = YES;
+
+// set up view shadows
+[self showCenterViewWithShadow:YES withOffset:-2];
+
+UIView *view = self.leftPanelViewController.view;
+return view;</pre>
+
+
+<p>上面的代码首先检查一下看看leftPanelViewController属性是否为nil，如果是nil的话，就分配并初始化一个LeftPanelViewController给leftPanelViewController属性。</p>
+
+<p>接着是赋值一个tag和delegate——用于图片的选择，以及将新创建的view添加到main view中。</p>
+
+<p>然后将showingLeftPanel属性设置为YES，并添加了一些视觉上的处理，在下一节中将介绍相关内容。</p>
+
+<p>最后将view返回给调用者。为什么要这样操作——在后面小节中你将看到为什么。</p>
+
+<p><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow.png"><img class="alignnone" alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/showmenow-480x177.png" width="480" height="177" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>下面，我们来处理一下阴影。</p>
+
+<h2><strong><span style="color: #339966;">不要忘记阴影效果</span></strong></h2>
+
+<p>在上面刚刚添加的代码中，你已经看到调用了showCenterViewWithShow:withOffset:方法。该方法使用QuartzCore框架创建并添加一个阴影效果。</p>
+
+<p>为了访问该框架的提供的许多精彩功能，将下面的import语句添加到<strong><span style="color: #339966;">MainViewController.m</span></strong>文件顶部：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;QuartzCore/QuartzCore.h&gt;</pre>
+
+
+<p>同样，在文件顶部定义一个常量，代表圆角。这样，如果你想要修改圆角的话，只需要在一个地方修改即可。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define CORNER_RADIUS 4</pre>
+
+
+<p>现在找到<strong><span style="color: #339966;">showCenterViewWithShadow:withOffset: </span></strong>方法，并将下面的代码块添加进去:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">if (value)
+{        
+    [_centerViewController.view.layer setCornerRadius:CORNER_RADIUS];
+    [_centerViewController.view.layer setShadowColor:[UIColor blackColor].CGColor];
+    [_centerViewController.view.layer setShadowOpacity:0.8];
+    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
+
+}
+else
+{
+    [_centerViewController.view.layer setCornerRadius:0.0f];
+    [_centerViewController.view.layer setShadowOffset:CGSizeMake(offset, offset)];
+}</pre>
+
+
+<p>上面的代码中，如果传递过进来的value是非零，就会给center view设置一个圆角和一个阴影。否则就将圆角设置为非圆形。</p>
+
+<p>如果现在运行程序的话，还看不到效果，因为上面的代码还没有用到。</p>
+
+<p><a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png"><img class="alignnone" alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Morewaiting-480x177.png" width="480" height="177" /></a></p>
+
+<p>&nbsp;</p>
+
+<h2><strong><span style="color: #339966;">现在回到左边</span></strong></h2>
+
+<p>现在已经获得了滑动导航面板所需的一些材料了，接着继续完成left view controller。一旦完成之后，右边如何移动你也会清楚了。</p>
+
+<p>本文中，为了将注意力几种在重要的地方，我已经把IB文件中涉及到的IBAction和IBOutlet连接好了。不过，为了实现你自己的DIY滑出式导航面板，你需要知道这些IB中的按钮是如何配置的。</p>
+
+<p>看看下面这个张关于截图<strong><span style="color: #339966;">CenterViewController.xib</span></strong>文件的截图，注意其中的连接：</p>
+
+<p><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/xcodeLeftButtonSetup-sm.png" width="700" height="626" /></p>
+
+<p>如上图中的kitties按钮，已经连接到一个名为leftButton的IBOutlet上了，并且这个按钮的Touch Up Inside事件连接到了一个名为btnMovePanelRight:的IBAction上。这个按钮控制着center panel的滑动，以显示出左边的panel。</p>
+
+<p>btnMovePanelRight:现在还是空的，下面我们就来看看如何实现：</p>
+
+<p>打开<strong><span style="color: #339966;">CenterViewController.m</span></strong>文件，并将下面的代码块添加到<strong><span style="color: #339966;">btnMovePanelRight:</span></strong>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIButton *button = sender;
+switch (button.tag) {
+    case 0: {
+        [_delegate movePanelToOriginalPosition];
+        break;
+    }
+
+    case 1: {
+        [_delegate movePanelRight];
+        break;
+    }
+
+    default:
+        break;
+}</pre>
+
+
+<p>上面的代码使用了一个switch语句，通过判断leftButton的tag属性来确定center panel是需要移动到右边，还是需要将其移动到原来的正中间位置。这里的leftButton是通过sender参数传递过来的。button的tag设置为0表示center panel已经移动到右边了，如果设置为1的话，表示center panel已经在原来的正中间位置。</p>
+
+<p>如果你看一下CenterViewController.xib文件，会看到我已经将leftButton的tag默认值设置为1。</p>
+
+<p>看到上面的代码中调用了delegate方法吗？如果你还记得的话，之前在配置CenterViewController示例时，已经将它的delegate设置为MainViewController。因此这里的调用就涉及到了MainViewController中的相关方法。</p>
+
+<p>在实现这些delegate方法之前，首先看看<strong><span style="color: #339966;">CenterViewController.h</span></strong>文件中协议CenterViewControllerDelegate的定义：</p>
+
+<p>如下图所示，协议中定义了两个optional协议方法，以及一个required协议方法，分别是：movePanelLeft, movePanelRight 和 movePanelToOriginalPosition。</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/xcodeCenterViewControllerHeader.png" width="700" height="625" /></a></p>
+
+<p>因为CenterViewController的delegate是MainViewController，所以我们在MainViewController中添加这些delegate方法。</p>
+
+<p>打开<strong><span style="color: #339966;">MainViewController.m</span></strong>文件，并添加如下两个常量定义：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#define SLIDE_TIMING .25
+#define PANEL_WIDTH 60</pre>
+
+
+<p>接着找到<strong><span style="color: #339966;">movePanelRight</span></strong>方法，并将如下代码块添加到里面：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *childView = [self getLeftView];
+[self.view sendSubviewToBack:childView];
+
+[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(self.view.frame.size.width - PANEL_WIDTH, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        _centerViewController.leftButton.tag = 0;
+                    }
+                }];</pre>
+
+
+<p><strong>注意</strong>：这个方法是由CenterViewController中的btnMovePanelRight:调用的。更多如何实现delegate相关的信息，请参考：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果开发者文档</span></a></span></span>。</p>
+
+<p>上面的代码就是奇迹发生的地方！:]</p>
+
+<p>首先调用getLeftView方法，该方法返回一个view，然后将view推到背后，接着是进入动画处理过程：使用一个animateWithDuration:animations:completion: 块。在动画中使用到的SLIDE_TIMING和PANEL_WIDTH值可以随意调整。其中SLIDE_TIMING是控制动画的速度，而PANEL_WIDTH是控制动画过后，center view留在屏幕中的宽度。</p>
+
+<p>另外，记住海的把leftButton的tag属性设置为0。如果你还记得的话，这个tag属性用来跟踪记录center view的当前位置。</p>
+
+<p>现在编译并运行一下程序，看看效果如何。</p>
+
+<p>当程序启动后，点击kitties按钮，center panel应该会滑动到右边，并显示出left panel。此时，屏幕上显示的效果如下图所示：</p>
+
+<p><a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png"><img class="alignnone" alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/simLeftReveal-333x500.png" width="333" height="500" /></a></p>
+
+<p>注意观察center view左边缘的圆角和阴影——这两个效果是执行showCenterViewWithShadow:withOffset:（之前添加的方法）方法得到的结果。</p>
+
+<p>再点击一下kitties按钮——什么事情都没有发生。这是因为还没有实现movePanelToOriginalPosition方法。</p>
+
+<p>回到<span style="color: #339966;"><strong>MainViewController.m</strong></span>文件，并将下面的代码块添加到<span style="color: #339966;"><strong>movePanelToOriginalPosition</strong></span>方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[UIView animateWithDuration:SLIDE_TIMING delay:0 options:UIViewAnimationOptionBeginFromCurrentState
+                animations:^{
+                    _centerViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+                }
+                completion:^(BOOL finished) {
+                    if (finished) {
+
+                        [self resetMainView];
+                    }
+                }];</pre>
+
+
+<p>同样，在上面的代码中使用了一个animateWithDuration:animations:completion: 块来处理动画。不过这次是将center view的位置以动画的方式设置为最初的位置。</p>
+
+<p>当动画完成的时候，调用了resetMainView方法。目前该方法还没有具体的实现。在该方法中需要重置一下view，下面我们来实现一下吧！</p>
+
+<p>找到<strong><span style="color: #339966;">resetMainView</span></strong>方法，并将下面的代码添加到方法中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// remove left view and reset variables, if needed
+if (_leftPanelViewController != nil)
+{
+    [self.leftPanelViewController.view removeFromSuperview];
+    self.leftPanelViewController = nil;
+
+    _centerViewController.leftButton.tag = 1;
+    self.showingLeftPanel = NO;
+}
+
+// remove view shadows
+[self showCenterViewWithShadow:NO withOffset:0];</pre>
+
+
+<p>上的代码将left panel从view中移除，并将kitties按钮重置为1（表示center view目前是在最初的位置），另外还移除了center view的圆角和阴影效果。</p>
+
+<p>编译并运行程序，当点击kitties按钮后，再次点击kitties按钮，center view会回到最初的位置，如下图所示：</p>
+
+<p><a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png"><img class="alignnone" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/simLeftSlideBack-333x500.png" width="333" height="500" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>下面，在右边添加相关的功能——小狗！——请阅读<span style="text-decoration: underline;"><a href="http://beyondvincent.com/2013/04/17/ios%E4%B8%AD%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%BB%91%E5%87%BA%E5%BC%8F%E5%AF%BC%E8%88%AA%E9%9D%A2%E6%9D%BF2/" target="_blank"><strong><span style="color: #339966; text-decoration: underline;">如何创建一个滑出式导航面板(2)</span></strong></a></span></p>
+
+<h2><span style="font-size: 13px;"> </span></h2>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[25个增强iOS应用程序性能的提示和技巧 — 高级篇]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/11/6/"/>
+    <updated>2013-04-11T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/11/6</id>
+    <content type="html"><![CDATA[<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180"><span style="color: #339966; text-decoration: underline;">初级</span></a></span></span>、<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=258"><span style="color: #339966; text-decoration: underline;">中级</span></a></span></span>和高级：</p>
+
+<p><span style="color: #008000;"><strong> </strong></span></p>
+
+<p><span style="color: #008000;"><strong>高级</strong></span><br/>
+当且仅当下面这些技巧能够解决问题的时候，才使用它们：</p>
+
+<ol start="22">
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#launchtime"><span style="color: #008000; text-decoration: underline;">加速启动时间</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#autoreleasepool"><span style="color: #008000; text-decoration: underline;">使用Autorelease Pool</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#cacheimages"><span style="color: #008000; text-decoration: underline;">缓存图片 — 或者不缓存</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#avoidformatters"><span style="color: #008000; text-decoration: underline;">尽量避免Date格式化</span></a></span>
+  </li>
+</ol>
+
+
+<h2></h2>
+
+<h2><span style="color: #339966;">高级性能提升</span></h2>
+
+<p>寻找一些高明的方法，让自己变为一个全代码忍者？下面这些高级的性能优化技巧可以在适当的时候让程序尽可能的高效运行！</p>
+
+<p><em id="__mceDel"> <a name="launchtime"></a><br /> <span style="color: #008000;">22) 加速启动时间</span></em></p>
+
+<p>能快速的启动程序非常重要，特别是在用户第一次启动程序时。第一映像对程序来说非常重要！</p>
+
+<p>让程序尽量快速启动的方法就是尽量以异步方式执行任务，例如网络请求，数据访问或解析。</p>
+
+<p>另外，避免使用臃肿的XIBs，因为XIB的加载是在主线程中进行的。但是记住storyboard没有这样的问题——所以如果可以的话就使用storyboard吧！</p>
+
+<p><em><span style="color: #999999;"><strong><span style="color: #ff0000;">注意</span></strong>：在利用Xcode进行调试时，watchdog不会运行，所在设备中测试程序启动性能时，不要将设备连接到Xcode。</span></em></p>
+
+<p><em id="__mceDel"> <a name="autoreleasepool"></a><br /> <span style="color: #008000;">23) 使用Autorelease Pool</span></em></p>
+
+<p>NSAutoreleasePool负责释放一个代码块中的自动释放对象。一般都是由UIKit来创建的。不过有些情况下需要手动创建NSAutoreleasePool。</p>
+
+<p>例如，如果在代码中创建了大量的临时对象，你将注意到内存使用量在增加，直到这些对象被释放。问题是只有当UIKit耗尽了 autorelease pool，这些对象才会被释放，也就是说当不再需要这些对象之后，这些对象还在内存中占据着资源。</p>
+
+<p>不过这个问题完全可以避免：在@autoreleasepool代码块中创建临时对象，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">NSArray *urls = &lt;# An array of file URLs #&gt;;
+for (NSURL *url in urls) {
+    @autoreleasepool {
+        NSError *error;
+        NSString *fileContents = [NSString stringWithContentsOfURL:url
+                                         encoding:NSUTF8StringEncoding error:&amp;error];
+        /* Process the string, creating and autoreleasing more objects. */
+    }
+}</pre>
+
+
+<p>当每次迭代完之后，都会释放所有的autorelease对象。</p>
+
+<p>关于NSAutoreleasePool的更多内容可以阅读苹果的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmAutoreleasePools.html" target="_blank"><span style="color: #339966; text-decoration: underline;">官方文档</span></a></span></span>。</p>
+
+<p><em id="__mceDel"><br /> <a name="cacheimages"></a><br /> <span style="color: #008000;">24) 缓存图片 — 或者不缓存</span></em></p>
+
+<p>iOS中从程序bundle中加载UIImage一般有两种方法。第一种比较常见：<strong><span style="color: #339966;">imageNamed</span></strong>。第二种方法很少使用：<strong><span style="color: #339966;"><em>imageWithContentsOfFile</em></span></strong></p>
+
+<p>为什么有两种方法完成同样的事情呢？</p>
+
+<p><strong><span style="color: #339966;">imageNamed</span></strong>的优点在于可以缓存已经加载的图片。<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://developer.apple.com/library/ios/#documentation/uikit/reference/UIImage_Class/Reference/Reference.html" target="_blank"><span style="color: #339966; text-decoration: underline;">苹果的文档</span></a></span></span>中有如下说法：</p>
+
+<p><em><span style="color: #999999;">This method looks in the system caches for an image object with the specified name and returns that object if it exists. If a matching image object is not already in the cache, this method loads the image data from the specified file, caches it, and then returns the resulting object.</span></em></p>
+
+<p><em><span style="color: #999999;"> 这种方法会在系统缓存中根据指定的名字寻找图片，如果找到了就返回。如果没有在缓存中找到图片，该方法会从指定的文件中加载图片数据，并将其缓存起来，然后再把结果返回。</span></em></p>
+
+<p>而<strong><span style="color: #339966;">imageWithContentsOfFile</span></strong>方法只是简单的加载图片，并不会将图片缓存起来。</p>
+
+<p>这两个方法的使用方法如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIImage *img = [UIImage imageNamed:@"myImage"]; // caching
+// or
+UIImage *img = [UIImage imageWithContentsOfFile:@"myImage"]; // no caching</pre>
+
+
+<p>那么该如何选择呢？</p>
+
+<p>如果加载一张很大的图片，并且只使用一次，那么就不需要缓存这个图片。这种情况<strong><span style="color: #339966;">imageWithContentsOfFile</span></strong>比较合适——系统不会浪费内存来缓存图片。</p>
+
+<p>然而，如果在程序中经常需要重用的图片，那么最好是选择<strong><span style="color: #339966;">imageNamed</span></strong>方法。这种方法可以节省出每次都从磁盘加载图片的时间。</p>
+
+<p><a name="avoidformatters"></a><br/>
+<span style="color: #008000;">25) 尽量避免Date格式化</span></p>
+
+<p>如果有许多日期需要使用NSDateFormatter，那么需要小心对待了。如之前（<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/2013/04/11/25%e4%b8%aa%e5%a2%9e%e5%bc%baios%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e6%80%a7%e8%83%bd%e7%9a%84%e6%8f%90%e7%a4%ba%e5%92%8c%e6%8a%80%e5%b7%a7-%e4%b8%ad%e7%ba%a7%e7%af%87/#reuseobjects" target="_blank"><span style="color: #339966; text-decoration: underline;">重用花销很大的对象</span></a></span></span>）所提到的，无论什么时候，都应该尽量重用NSDateFormatters。</p>
+
+<p>然而，如果你需要更快的速度，那么应该使用C来直接解析日期，而不是NSDateFormatter。Sam Soffes写了一篇文章，其中提供了一些解析ISO-8601格式日期字符的串代码。你只需要简单的调整一下其中的代码就可以满足自己特殊的需求了。</p>
+
+<p>这听起来不错把——不过你相信这还有更好的一个办法吗？</p>
+
+<p>如果你自己能控制处理日期的格式，那么可以选择 <span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Unix_time" target="_blank"><span style="color: #339966; text-decoration: underline;">Unix timestamps</span></a></span></span>。Unix timestamps是一个简单的整数，代表了从新纪元时间（epoch）开始到现在已经过了多少秒，通常这个新纪元参考时间是00:00:00 UTC on 1 January 1970。</p>
+
+<p>你可以很容易的见这个时间戳转换为NSDate，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (NSDate*)dateFromUnixTimestamp:(NSTimeInterval)timestamp {
+    return [NSDate dateWithTimeIntervalSince1970:timestamp];
+}</pre>
+
+
+<p>上面这个方法比C函数还要快！</p>
+
+<p>注意：许多网络APIs返回的时间戳都是毫秒，因此需要注意的是在将这个时间戳传递给dateFromUnixTimestamp之前需要除以1000。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;">何去何从？</span></h2>
+
+<p>强烈建议对程序性能优化感兴趣的读者看看下面列出来的WWDC视频。在看视频之前，你需要注册一个Apple ID（只需要注册以此，就可以观看所有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/videos/wwdc/2012/" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC2012</span></a></span></span>的视频）：</p>
+
+<ul>
+<li><h1>406: Adopting Automatic Reference Counting</h1></li>
+<li><h1>238: iOS App Performance: Graphics and Animations</h1></li>
+<li><h1>242: iOS App Performance: Memory</h1></li>
+<li><h1>235: iOS App Performance: Responsiveness</h1></li>
+<li><h1>409: Learning Instruments</h1></li>
+<li><h1>706: Networking Best Practices</h1></li>
+<li><h1>514: OpenGL ES Tools and Techniques</h1></li>
+<li><h1>506: Optimizing 2D Graphics and Animation Performance</h1></li>
+<li><h1>601: Optimizing Web Content in UIWebViews and Websites on iOS</h1></li>
+<li><h1>225: Up and Running: Making a Great Impression with Every Launch</h1></li>
+</ul>
+
+
+<p>下面这些视频来自<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developer.apple.com/videos/wwdc/2011/" target="_blank"><span style="color: #339966; text-decoration: underline;">WWDC 2011</span></a> </span></span>，也非常有用：</p>
+
+<ul>
+<li><h1>308: Blocks and Grand Central Dispatch in Practice</h1></li>
+<li><h1>323: Introducing Automatic Reference Counting</h1></li>
+<li><h1>312: iOS Performance and Power Optimization with Instruments</h1></li>
+<li><h1>105: Polishing Your App: Tips and tricks to improve the responsiveness and performance</h1></li>
+<li><h1>121: Understanding UIKit Rendering</h1></li>
+</ul>
+
+
+<p>这里还有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/videos/ios/" target="_blank"><span style="color: #339966; text-decoration: underline;">更多相关视频</span></a></span></span>，大多数来自iOS 5技术讲座：</p>
+
+<ul>
+<li>Your iOS App Performance Hitlist</li>
+<li>Optimizing App Performance with Instruments</li>
+<li>Understanding iOS View Compositing</li>
+</ul>
+
+
+<p>基于 “Your iOS App Performance Hitlist” 视频，Ole Begemann写了<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://oleb.net/blog/2011/11/ios5-tech-talk-michael-jurewitz-on-performance-measurement/" target="_blank"><span style="color: #339966; text-decoration: underline;">一篇文章</span></a>。</span></span></p>
+
+<p>苹果还提供了一篇非常好的文章：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/PerformanceTuning/PerformanceTuning.html" target="_blank"><span style="color: #339966; text-decoration: underline;">性能优化</span></a></span></span>。其中提供的技巧和提示对程序性能提升很有帮助。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 初级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=258" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 中级篇</span></a></span></span><a href="http://beyondvincent.com/?p=263" target="_blank"><br /> </a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[25个增强iOS应用程序性能的提示和技巧 — 中级篇]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/11/5/"/>
+    <updated>2013-04-11T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/11/5</id>
+    <content type="html"><![CDATA[<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：<span style="text-decoration: underline; color: #339966;"><a href="http://beyondvincent.com/?p=180"><span style="color: #339966; text-decoration: underline;">初级</span></a></span>、中级和<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=263"><span style="color: #339966; text-decoration: underline;">高级</span></a></span></span>：</p>
+
+<p><span style="color: #008000;"><strong>中级</strong></span></p>
+
+<p>在性能优化时，当你碰到一些复杂的问题，应该注意和使用如下技巧：</p>
+
+<ol start="9">
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#lazyviews"><span style="color: #008000; text-decoration: underline;">重用和延迟加载View</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#cache"><span style="color: #008000; text-decoration: underline;">缓存、缓存、缓存</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#drawing"><span style="color: #008000; text-decoration: underline;">考虑绘制</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#memwarnings"><span style="color: #008000; text-decoration: underline;">处理内存警告</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#reuseobjects"><span style="color: #008000; text-decoration: underline;">重用花销很大的对象</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#spritesheets"><span style="color: #008000; text-decoration: underline;">使用Sprite Sheets</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#avoidreprocess"><span style="color: #008000; text-decoration: underline;">避免重新处理数据</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#chooserightformat"><span style="color: #008000; text-decoration: underline;">选择正确的数据格式</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#bgimages"><span style="color: #008000; text-decoration: underline;">设置适当的背景图片</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><span style="text-decoration: underline;"><a href="#reduceweb"><span style="color: #008000; text-decoration: underline;">降低Web内容的影响</span></a></span></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#shadowpath"><span style="color: #008000; text-decoration: underline;">设置阴影路径</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#tableviews"><span style="color: #008000; text-decoration: underline;">优化TableView</span></a></span>
+  </li>
+  <li>
+    <span style="text-decoration: underline; color: #008000;"><a href="#datastorage"><span style="color: #008000; text-decoration: underline;">选择正确的数据存储方式</span></a></span>
+  </li>
+</ol>
+
+
+<p>&nbsp;</p>
+
+<h2><span style="color: #339966;">中级性能提升</span></h2>
+
+<p>现在，在进行代码优化时，你已经能够完成一些初级性能优化了。但是下面还有另外一些优化方案，虽然可能不太明显（取决于程序的架构和相关代码），但是，如果能够正确的利用好这些方案，那么它们对性能的优化将非常明显！</p>
+
+<p><a name="lazyviews"></a><br/>
+<span style="color: #008000;">9) 重用和延迟加载View</span></p>
+
+<p>程序界面中包含更多的view，意味着界面在显示的时候，需要进行更多的绘制任务；也就意味着需要消耗更多的CPU和内存资源。特别是在一个UIScrollView里面加入了许多view。</p>
+
+<p>这种情况的管理技巧可以参考UITableView和UICollectionView的行为：不要一次性创建所有的subview，而是在需要的时候在创建view，并且当view使用完毕时候将它们添加到重用队列中。</p>
+
+<p>这样就可以仅在UIScrollView滚动的时候才配置view，以此可以避免分配创建view的带来的成本——这可能是非常耗资源的。</p>
+
+<p>现在有这样的一个问题：在程序中需要显示的view在什么时机创建（比如说，当用户点击某个按钮，需要显示某个view）。这里有两种可选方法：</p>
+
+<ol>
+<li>在屏幕第一次加载以及隐藏的时候，创建view；然后在需要的时候，再把view显示出来。</li>
+<li>直到需要显示view的时候，才创建并显示view。</li>
+</ol>
+
+
+<p>每种方法都有各自的优点和确定。</p>
+
+<p>使用第一种方法，需要消耗更多的内容，因为创建出来的view一直占据着内存，直到view被release掉。不过，使用这种方法，当用户点击按钮时，程序会很快的显示出view，因为只需要修改一下view的可见性即可。</p>
+
+<p>而使用第二种方法则产生相反的效果；当需要的时候猜创建view，这会消耗更少的内存；不过，当用户点击按钮的时候，不会立即显示出view。</p>
+
+<p><a name="cache"></a><br/>
+<span style="color: #008000;">10) 缓存、缓存、缓存</span></p>
+
+<p>在开发程序时，一个重要的规则就是“缓存重要的内容”——这些内容一般不会改变，并且访问的频率比较高。</p>
+
+<p>可以缓存写什么内容呢？比如远程服务器的响应内容，图片，甚至是计算结果，比如UITableView的行高。</p>
+
+<p>NSURLConnection根据HTTP头的处理过程，已经把一些资源缓存到磁盘和内存中了。你甚至可以手动创建一个NSURLRequest ，让其只加载缓存的值。</p>
+
+<p>下面的代码片段一般用在为图片创建一个NSURLRequest：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (NSMutableURLRequest *)imageRequestWithURL:(NSURL *)url {
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+
+    request.cachePolicy = NSURLRequestReturnCacheDataElseLoad; // this will make sure the request always returns the cached image
+    request.HTTPShouldHandleCookies = NO;
+    request.HTTPShouldUsePipelining = YES;
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+
+    return request;
+}</pre>
+
+
+<p>注意：你可以使用NSURLConnection抓取一个URL请求，但是同样可以使用AFNetworking来抓取，这种方法不用修改所有网络相关的代码——这是一个技巧！:]</p>
+
+<p>如果你要直到更多关于HTTP 缓存, NSURLCache, NSURLConnection 以及相关的内容, 那么看一下NSHipster中的<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://nshipster.com/nsurlcache/" target="_blank"><span style="color: #339966; text-decoration: underline;">the NSURLCache entry</span></a></span></span>。</p>
+
+<p>如果你需要缓存的内容没涉及到HTTP请求，那么使用NSCache。</p>
+
+<p>NSCache的外观和行为与NSDictionary类似, 但是，当系统需要回收内存时，NSCache会自动的里面存储的内容。Mattt Thompson 在NSHipster上写了<span style="color: #339966;"><a href="http://nshipster.com/nscache/"><span style="color: #339966;">一篇关于NSCache非常不错的文章</span></a></span>。</p>
+
+<p>如果还想知道关于HTTP缓存更多的内容，那么建议阅读一下Google的这篇文章：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://developers.google.com/speed/docs/best-practices/caching" target="_blank"><span style="color: #339966; text-decoration: underline;">best-practices document on HTTP caching</span></a></span></span>。</p>
+
+<ul>
+<li><a name="drawing"></a><br/>
+<span style="color: #008000;">11) 考虑绘制</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2010/09/CoreGraphics101.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2010/09/CoreGraphics101.jpg" width="250" height="195" /></a><p class="wp-caption-text">
+    考虑绘制
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在iOS中制作漂亮的按钮有多种方法。可以使用全尺寸图片，可缩放图片，或者使用CALayer, CoreGraphics， 甚至是OpenGL来手动测量和绘制按钮。</p>
+
+<p>当然，这些方法的复杂程度也不同，并且性能也有所区别。这里有一篇相关文章值得阅读一下：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://robots.thoughtbot.com/post/36591648724/designing-for-ios-graphics-performance" target="_blank"><span style="color: #339966; text-decoration: underline;">关于iOS中图形的性能</span></a></span></span>。其中Andy Matuschak（曾经是苹果的UIKit小组的组员）对这篇文章的评论中，对于不同的方法及其性能权衡有非常好的一个见解。</p>
+
+<p>简单来说，使用预渲染图片技术是最快的，因为iOS中不用等到在屏幕上显示的时候才创建图形和对形状进行绘制（图片已经创建好了!）。这样带来的问题是需要把所有的图片都放到程序bundle中，从而增加了程序的大小。因此使用可伸缩图片在这里将排上用场了：可以移除“浪费”空间的图片——iOS可以重复利用。并且针对不同的元素（例如按钮）不需要创建不同的图片。</p>
+
+<p>不过，使用图片的话会失去代码对图片的控制能力，进而针对不同的程序，就需要重复的生成每一个需要的图片，并反复的放到每个程序中。这个处理过程一般会比较慢。另外一点就是如果你需要一个动画，或者许多图片都要进行轻微的调整（比如多个颜色的覆盖），那么需要在程序中加入许多图片，进而增加了程序bundle的大小。</p>
+
+<p>总的来说，你需要考虑一下什么才是最重要的：绘制性能还是程序大小。一般来说都重要，所以在同一个工程中，应该两种都应考虑。</p>
+
+<p><em id="__mceDel"> <a name="memwarnings"></a><br /> <span style="color: #008000;">12) 处理内存警告</span></em></p>
+
+<p>当系统内存偏低时，iOS会通知所有在运行的程序。<a href="http://developer.apple.com/library/ios/#documentation/iphone/conceptual/iphoneosprogrammingguide/PerformanceTuning/PerformanceTuning.html" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></span></a>中介绍了如何处理低内存警告：</p>
+
+<p><em><span style="color: #999999;">If your app receives this warning, it must free up as much memory as possible. The best way to do this is to remove strong references to caches, image objects, and other data objects that can be recreated later.</span></em></p>
+
+<p><em><span style="color: #999999;">如果程序收到了低内存警告，在程序中必须尽量释放内存。最佳方法就是移除强引用的涉及到的缓存，图片对象，以及其它可以在之后使用时还可以重新创建的数据对象。</span></em></p>
+
+<p>UIKit中提供了如下几种方法来接收低内存（low-memory）警告：</p>
+
+<ul>
+<li>实现app delegate中的applicationDidReceiveMemoryWarning: 方法。</li>
+<li>在UIViewController子类中重写(Override)didReceiveMemoryWarning方法。</li>
+<li>在通知中心里面注册UIApplicationDidReceiveMemoryWarningNotificatio通知。</li>
+</ul>
+
+
+<p>在收到以上任意的警告时，需要立即释放任何不需要的内存。</p>
+
+<p>例如，UIViewController的默认情况是清除掉当前不可见的view；在UIViewController的子类中，可以清除一些额外的数据。程序中不没有显示在当前屏幕中的图片也可以release掉。</p>
+
+<p>当收到低内存警告时，尽量释放内存是非常重要的。否则，运行中的程序有可能会被系统杀掉。</p>
+
+<p>不过，在清除内存时要注意一下：确保被清除的对象之后还可以被创建出来。另外，在开发程序的时候，请使用iOS模拟器中的模拟内存警告功能对程序进行测试！</p>
+
+<p><em id="__mceDel"> <a name="reuseobjects"></a><br /> <span style="color: #008000;">13) 重用花销很大的对象<a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/34659787-250x250.jpg"><img class="alignright" alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/02/34659787-250x250.jpg" width="250" height="250" /></a></span></em></p>
+
+<p>有些对象的初始化非常慢——比如NSDateFormatter和NSCalendar。不过有时候可以避免使用这些对象，例如在解析JSON/XML中的日期时。</p>
+
+<p>当使用这些对象时，为了避免性能上的瓶颈，可以尝试尽量重用这些对象——在类中添加一个属性或者创建一个静态变量。</p>
+
+<p>注意，如果使用静态变量的话，对象会在程序运行的时候一直存在，就像单例一样。</p>
+
+<p>下面的代码演示创建一个延迟加载的日期格式属性。第一次调用属性的时候，会创建一个新的日期格式。之后再调用的话，会返回已经创建好的实例对象：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// in your .h or inside a class extension
+@property (nonatomic, strong) NSDateFormatter *formatter;
+
+// inside the implementation (.m)
+// When you need, just use self.formatter
+- (NSDateFormatter *)formatter {
+    if (! _formatter) {
+        _formatter = [[NSDateFormatter alloc] init];
+        _formatter.dateFormat = @"EEE MMM dd HH:mm:ss Z yyyy"; // twitter date format
+    }
+    return _formatter;
+}</pre>
+
+
+<p>另外，还需要记住的是在设置NSDateFormatter的日期格式时，同样跟创建新的一个NSDateFormatter实例对象时一样慢！因此，在程序中如果需要频繁的处理日期格式，那么对NSDateFormatter进行重用是非常好的。</p>
+
+<ul>
+<li><a name="spritesheets"></a><br/>
+<span style="color: #008000;">14) 使用Sprite Sheets</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn2.raywenderlich.com/wp-content/uploads/2010/11/TexturePackerSmall.jpg"><img alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2010/11/TexturePackerSmall.jpg" width="250" height="264" /></a><p class="wp-caption-text">
+    使用sprite sheets
+  </p>
+</div>
+
+
+<p>你是一个游戏开发者吗？是的话那么sprite sheets是最佳选择之一。使用Sprite sheets跟常用的绘制方法比起来，绘制更快，并且消耗更少的内存。</p>
+
+<p>下面是两个非常不错的sprite sheets教程：</p>
+
+<ol>
+<li><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/32045/how-to-use-animations-and-sprite-sheets-in-cocos2d-2-x" target="_blank"><span style="color: #339966; text-decoration: underline;">如何在Cocos2D中使用动画和Sprite Sheets</span></a></span></span><a href="http://www.raywenderlich.com/32045/how-to-use-animations-and-sprite-sheets-in-cocos2d-2-x" target="_blank"><br /> </a></li>
+<li><a href="http://www.raywenderlich.com/2361/how-to-create-and-optimize-sprite-sheets-in-cocos2d-with-texture-packer-and-pixel-formats" target="_blank"><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">如何在Cocos2D中使用纹理包（Texture Packer）和像素格式来创建并优化Sprite Sheets</span></span></a><a href="http://www.raywenderlich.com/2361/how-to-create-and-optimize-sprite-sheets-in-cocos2d-with-texture-packer-and-pixel-formats" target="_blank"><br /> </a></li>
+</ol>
+
+
+<p>第二个教程详细的介绍了像素格式——在游戏中可以衡量性能的影响。</p>
+
+<p>如果你还不熟悉sprite sheets，那么可以看看这里的介绍：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://www.youtube.com/watch?v=crrFUYabm6E" target="_blank"><span style="color: #339966; text-decoration: underline;">SpriteSheets – 视频, Part 1</span></a></span></span>and <span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://www.youtube.com/watch?v=_KyUqyS5MLA" target="_blank"><span style="color: #339966; text-decoration: underline;">Part 2</span></a>.</span></span> 这两个视频的作者是Andreas Löw, 他是纹理包(Texture Packer)的创建者, 纹理包是创建sprite sheets的重要工具。</p>
+
+<p>除了使用sprite sheets外，这里还介绍了一些用于游戏开发中的技巧，例如，如果你有很多sprite（比如射击类游戏中），那么可以重用sprite，而不用每次都创建sprite。</p>
+
+<p><em id="__mceDel"> <a name="avoidreprocess"></a><br /> <span style="color: #008000;">15) 避免重新处理数据</span></em></p>
+
+<p>许多程序都需要从远程服务器中获取数据，以满足程序的需求。这些数据一般是JSON或XML格式。在请求和接收数据时，使用相同的数据结构非常重要。</p>
+
+<p>为什么呢？在内存中把数据转换为适合程序的数据格式是需要付出额外代价的。</p>
+
+<p>例如，如果你需要在table view中显示一些数据，那么请求和接收的数据格式最好是数组格式的，这样可以避免一些中间操作——将数据转换为适合程序使用的数据结构。</p>
+
+<p>类似的，如果程序是根据键来访问具体的值，那么最好请求和接收一个键/值对字典。</p>
+
+<p>在第一时间获得的数据就是所需要格式的，可以避免将数据转换为适合程序的数据格式带来的额外代价。</p>
+
+<ul>
+<li><a name="chooserightformat"></a><br/>
+<span style="color: #008000;">16) 选择正确的数据格式</span>*</li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2011/10/iOS_feast_JSON.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2011/10/iOS_feast_JSON.jpg" width="250" height="250" /></a><p class="wp-caption-text">
+    选择正确的数据格式
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>将数据从程序传到网络服务器中有多种方法，其中使用的数据格式基本都是JSON和XML。你需要做的就是在程序中选择正确的数据格式。</p>
+
+<p>JSON的解析速度非常快，并且要比XML小得多，也就意味着只需要传输更少数据。并且在iOS5之后，已经有<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://www.raywenderlich.com/5492/working-with-json-in-ios-5" target="_blank"><span style="text-decoration: underline; color: #339966;">内置的JSON反序列化</span></a>API</span></span>了，所以使用JSON是很容易的。</p>
+
+<p>不过XML也有它自己的优势：如果使用SAX方法来解析XML，那么可以边读XML边解析，并不用等到全部的XML获取到了才开始解析，这与JSON是不同的。当处理大量数据时，这种方法可以提升性能并减少内存的消耗。</p>
+
+<p><em id="__mceDel"> <a name="bgimages"></a><br /> <span style="color: #008000;">17) 设置适当的背景图片</span></em></p>
+
+<p>在iOS编码中，跟别的许多东西类似，这里也有两种方法来给view设置一个背景图片：</p>
+
+<ol>
+<li>可以使用UIColor的colorWithPatternImge方法来创建一个颜色，并将这个颜色设置为view的背景颜色。</li>
+<li>可以给view添加一个UIImageView子视图。</li>
+</ol>
+
+
+<p>如果你有一个全尺寸的背景图片，那么应该使用UIImageView，因为UIColor的colorWithPatternImge方法是用来创建小图片的——该图片会被重复使用。此时使用UIImageView会节省很多内存。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">// You could also achieve the same result in Interface Builder
+UIImageView *backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
+[self.view addSubview:backgroundView];</pre>
+
+
+<p>不过，如果你计划用小图片当做背景，那么应该使用UIColor的colorWithPatternImge方法。这种情况下绘制速度会很快，并且不会消耗大量的内存。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]];</pre>
+
+
+<p><em id="__mceDel"> <a name="reduceweb"></a><br /> <span style="color: #008000;">18) 降低Web内容的影响</span></em></p>
+
+<p>UIWebView非常有用。用它可以很容易的显示web内容，甚至可以构建UIKit空间难以显示的内容。</p>
+
+<p>不过，你可以能已经注意到程序中使用的UIWebView组建没有苹果的Safari程序快。这是因为<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank"><span style="color: #339966; text-decoration: underline;">JIT编译</span></a></span></span>限制了WebKit的Nitro引擎的使用。</p>
+
+<p>因此为了获得更加的性能，需要调整一下HTML的大小。首先就是尽量的摆脱JavaScript，并避免使用大的矿建，例如jQuery。有时候使用原始的JavaScript要比别的框架快。</p>
+
+<p>另外，尽量的异步加载JavaScript文件——特别是不直接影响到页面行为时，例如分析脚本。</p>
+
+<p>最后——让使用到的图片，跟实际需要的一样大小。如之前提到的，尽量使用sprite sheets，以此节省内存和提升速度。</p>
+
+<p>更多相关信息，可以看一下： <span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="http://developer.apple.com/videos/wwdc/2012/"><span style="color: #339966; text-decoration: underline;">WWDC 2012 session #601 – 在iOS中优化UIWebView和网站中的Web内容。</span></a></span></span></p>
+
+<p><em id="__mceDel"> <a name="shadowpath"></a><br /> <span style="color: #008000;">19) 设置阴影路径</span></em></p>
+
+<p>如果需要在view活layer中添加一个阴影，该如何处理呢？</p>
+
+<p>大多数开发者首先将QuartzCore框架添加到工程中，然后添加如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;QuartzCore/QuartzCore.h&gt;
+
+// Somewhere later ...
+UIView *view = [[UIView alloc] init];
+
+// Setup the shadow ...
+view.layer.shadowOffset = CGSizeMake(-1.0f, 1.0f);
+view.layer.shadowRadius = 5.0f;
+view.layer.shadowOpacity = 0.6;</pre>
+
+
+<p>看起来非常容易，不是吗？</p>
+
+<p>然而不幸的是上面这种方法有一个问题。Core Animation在渲染阴影效果之前，必须通过做一个离屏(offscreen)才能确定view的形状，而这个离屏操作非常耗费资源。</p>
+
+<p>下面有一种方法可以更容易的让系统进行阴影渲染：设置阴影路径！</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">view.layer.shadowPath = [[UIBezierPath bezierPathWithRect:view.bounds] CGPath];</pre>
+
+
+<p>通过设置阴影路径，iOS就不用总是再计算该如何绘制阴影了。只需要使用你预先计算好的路径即可。有一点不好的是，根据view的格式，自己可能很难计算出路径。另外一个问题就是当view的frame改变时，必须每次都更新一下阴影路径。</p>
+
+<p>如果你想了解更多相关信息，Mark Pospesel写了一篇很棒的文章：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://markpospesel.wordpress.com/2012/04/03/on-the-importance-of-setting-shadowpath/" target="_blank"><span style="color: #339966; text-decoration: underline;">shadowPath</span></a></span></span>。</p>
+
+<p><em id="__mceDel"> <a name="tableviews"></a><br /> <span style="color: #008000;">20) 优化TableView</span></em></p>
+
+<p>Table views需要快速的滚动——如果不能的话，用户会感觉到停顿。</p>
+
+<p>为了让table view平滑的滚动，确保遵循了如下建议：</p>
+
+<ul>
+<li>设置正确的reuseIdentifer以重用cell。</li>
+<li>尽量将view设置为不透明，包括cell本身。</li>
+<li>避免渐变，图像缩放以及离屏绘制。</li>
+<li>如果row的高度不相同，那么将其缓存下来。</li>
+<li>如果cell显示的内容来此网络，那么确保这些内容是通过异步来获取的。</li>
+<li>使用shadowPath来设置阴影。</li>
+<li>减少subview的数量。</li>
+<li>在cellForRowAtIndexPath:中尽量做更少的操作。如果需要做一些处理，那么最好做过一次之后，就将结果缓存起来。</li>
+<li>使用适当的数据结构来保存需要的信息。不同的结构会带来不同的操作代价。</li>
+<li><p>使用rowHeight, sectionFooterHeight 和 sectionHeaderHeight 来设置一个恒定 高度，而不要从delegate中获取。</p></li>
+<li><p><a name="datastorage"></a><br/>
+<span style="color: #008000;">21) 选择正确的数据存储方式</span>*</p></li>
+</ul>
+
+
+<div class="wp-caption alignright" style="width: 313px">
+  <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2010/04/FailedBanksModel.jpg"><img alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2010/04/FailedBanksModel.jpg" width="303" height="136" /></a><p class="wp-caption-text">
+    选择正确的数据存储方式
+  </p>
+</div>
+
+
+<p><em id="__mceDel"><span style="color: #008000;"><br /> </span></em></p>
+
+<p>当需要存储和读取大量的数据时，该如何选择存储方式呢？</p>
+
+<p>有如下选择：</p>
+
+<ul>
+<li>使用<em>NSUserDefaults进行存储</em></li>
+<li>保存为XML，JSON或Plist格式的文件</li>
+<li>利用NSCoding进行归档</li>
+<li>存储到一个本地数据库，例如SQLite。</li>
+<li>使用<em>Core Data</em>.</li>
+</ul>
+
+
+<p>使用<em>NSUserDefaults</em>有什么问题呢? 虽然NSUserDefaults很好并且容易，不过只只针对于存储小量数据（比如你的级别，或者声音是开或关）。如果要存储大量的数据，最好选择别的存储方式。</p>
+
+<p>大量数据保存为结构化的文件也可能会带来问题。一般，在解析这些结构数据之前，需要将内容全部加载到内存中，这是很消耗资源的。虽然可以使用SAX来处理XML文件，但是这有点复杂。另外，加载到内存中的所有对象，不一定全部都需要用到。</p>
+
+<p>那么使用NSCoding来保存大量数据怎么样呢？因为它同样是对文件进行读写，因此依然存在上面说的问题。</p>
+
+<p>要保存大量的数据，最好使用SQLite或Core Data。通过SQLite或Core Data可以进行具体的查询——只需要获取并加载需要的数据对象——避免对数据进行不合理的搜索。在性能方面，SQLite和Core Data差不大。</p>
+
+<p>SQLite和Core Data最大的区别实际上就是用法上。Core Data代表一个对象模型，而SQLite只是一个DBMS。一般，苹果建议使用Core Data，不过如果你有特殊的原因不能使用Core Data的话，可以使用低级别的SQLite。</p>
+
+<p>在程序中，如果选择使用SQLite，这里有个方便的库<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/ccgus/fmdb" target="_blank"><span style="color: #339966; text-decoration: underline;">FMDB</span></a></span></span> ：可以利用该库操作SQLite数据库，而不用深入使用SQLite C API。</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 初级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/?p=263" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 高级篇</span></a></span></span></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[25个增强iOS应用程序性能的提示和技巧 — 初级篇]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2013/04/06/4/"/>
+    <updated>2013-04-06T00:00:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2013/04/06/4</id>
+    <content type="html"><![CDATA[<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<a href="http://www.raywenderlich.com/31166/25-ios-app-performance-tips-tricks" target="_blank">raywenderlich</a><br/>
+转载请注明出处：<a href="http://www.beyondvincent.com" target="_blank">BeyondVincent的博客</a><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+
+<p>在开发iOS应用程序时，让程序具有良好的性能是非常关键的。这也是用户所期望的，如果你的程序运行迟钝或缓慢，会招致用户的差评。</p>
+
+<p>然而由于iOS设备的局限性，有时候要想获得良好的性能，是很困难的。在开发过程中，有许多事项需要记住，并且关于性能影响很容易就忘记。</p>
+
+<p>这就是为什么我要写这篇文章！本文收集了25个关于可以提升程序性能的提示和技巧。</p>
+
+<h2><span style="color: #008000;">目录</span></h2>
+
+<p>我把性能优化技巧分为3个不同的等级：初级、<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=258"><span style="color: #339966; text-decoration: underline;">中级</span></a></span></span>和<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=263"><span style="color: #339966; text-decoration: underline;">高级</span></a></span></span>：</p>
+
+<p><span style="color: #008000;"><strong>初级</strong></span></p>
+
+<p>在开发过程中，下面这些初级技巧需要时刻注意：</p>
+
+<ol>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#arc"><span style="color: #008000; text-decoration: underline;">使用ARC进行内存管理</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#reuse"><span style="color: #008000; text-decoration: underline;">在适当的情况下使用reuseIdentifier</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#opaque"><span style="color: #008000; text-decoration: underline;">尽可能将View设置为不透明（Opaque）</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#smallxibs"><span style="color: #008000; text-decoration: underline;">避免臃肿的XIBs</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#mainthread"><span style="color: #008000; text-decoration: underline;">不要阻塞主线程</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#imageviews"><span style="color: #008000; text-decoration: underline;">让图片的大小跟UIImageView一样</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#collection"><span style="color: #008000; text-decoration: underline;">选择正确的集合</span></a></span></li>
+<li><span style="text-decoration: underline; color: #008000;"><a href="#gzip"><span style="color: #008000; text-decoration: underline;">使用GZIP压缩</span></a></span></li>
+</ol>
+
+
+<p><span style="color: #008000;"><strong> </strong></span></p>
+
+<h2><span style="color: #008000;">初级性能提升</span></h2>
+
+<p>本部分内容介绍几本的程序性能提升技巧。其实所有级别的开发者都能从中获益。</p>
+
+<p><a name="arc"></a><br/>
+<span style="color: #008000;">1) 使用ARC进行内存管理</span></p>
+
+<p>ARC是在iOS 5中发布的，它解决了最常见的内存泄露问题——也是开发者最容易健忘的。</p>
+
+<p>ARC的全称是“Automatic Reference Counting”——自动引用计数，它会自动的在代码中做retain/release工作，开发者不用再手动处理。</p>
+
+<p>下面是创建一个View通用的一些代码块：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">UIView *view = [[UIView alloc] init];
+// ...
+[self.view addSubview:view];
+[view release];</pre>
+
+
+<p>在上面代码结束的地方很容易会忘记调用release。不过当使用ARC时，ARC会在后台自动的帮你调用release。</p>
+
+<p>ARC除了能避免内存泄露外，还有助于程序性能的提升：当程序中的对象不再需要的时候，ARC会自动销毁对象。所以，你应该在工程中使用ARC。</p>
+
+<p>下面是一些学习ARC很棒的一些资源：</p>
+
+<ul>
+<li><span style="text-decoration: underline; color: #339966;"><a href="https://developer.apple.com/library/ios/#releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span></li>
+<li>Matthijs Hollemans的<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.raywenderlich.com/5677/beginning-arc-in-ios-5-part-1"><span style="color: #008000; text-decoration: underline;">初级ARC</span></a></span></span></li>
+<li>Tony Dahbura的<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.raywenderlich.com/23854/arc-and-cocos2d-v2-x"><span style="color: #008000; text-decoration: underline;">如何在Cocos2D 2.X工程中使用ARC</span></a></span></span></li>
+<li>如果你仍然不确定ARC带来的好处，那么看一些这篇文章：<span style="text-decoration: underline;"><span style="color: #008000; text-decoration: underline;"><a href="http://www.learn-cocos2d.com/2012/06/mythbusting-8-reasons-arc/"><span style="color: #008000; text-decoration: underline;">8个关于ARC的神话</span></a></span></span>——这能够让你相信你应该在工程中使用ARC！</li>
+</ul>
+
+
+<p>值得注意的是，ARC并不能避免所有的内存泄露。使用ARC之后，工程中可能还会有内存泄露，不过引起这些内存泄露的主要原因是：block，retain循环，对CoreFoundation对象（通常是C结构）管理不善，以及真的是代码没写好。</p>
+
+<p>这里有一篇文章是介绍<span style="text-decoration: underline; color: #008000;"><a href="http://conradstoll.com/blog/2013/1/19/blocks-operations-and-retain-cycles.html"><span style="color: #008000; text-decoration: underline;">哪些问题是ARC不能解决的</span></a></span> — 以及如何处理这些问题。</p>
+
+<p><a name="reuse"></a><br/>
+<span style="color: #008000;">2) 在适当的情况下使用reuseIdentifier</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/ReuseIdentifier.png" target="_blank"><img class=" " alt="" src="http://cdn2.raywenderlich.com/wp-content/uploads/2013/03/ReuseIdentifier.png" width="250" height="225" /></a><p class="wp-caption-text">
+    在适当的情况使用reuseIdentifier
+  </p>
+</div>
+
+
+<p>在iOS程序开发中一个普遍性的错误就是没有正确的为UITableViewCells、UICollectionViewCells和UITableViewHeaderFooterViews设置reuseIdentifier。</p>
+
+<p>为了获得最佳性能，当在tableView:cellForRowAtIndexPath:方法中返回cell时，table view的数据源一般会重用UITableViewCell对象。table view维护着UITableViewCell对象的一个队列或者列表，这些数据源已经被标记为重用了。</p>
+
+<p>如果没有使用reuseIdentifier会发生什么？</p>
+
+<p>如果你在程序中没有使用reuseIdentifier，table view每次显示一个row时，都会配置一个全新的cell。这其实是一个非常消耗资源的操作，并且会影响程序中table view滚动的效率。</p>
+
+<p>自iOS 6以来，你可能还希望header和footer views，以及UICollectionView的cell和supplementary views。</p>
+
+<p>为了使用reuseIdentifiers，在table view请求一个新的cell时，在数据源中调用下面的方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">static NSString *CellIdentifier = @"Cell";
+UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];</pre>
+
+
+<p>如果table view维护的UITableViewCell队列或列表中有可用的cell，则从队列从移除一个已经存在的cell，如果没有的话，就从之前注册的nib文件或类中创建一个新的cell。如果没有可以重用的cell，并且没有注册nib文件或类，tableview的dequeueReusableCellWithIdentifier:方法会返回一个nil。</p>
+
+<p><a name="opaque"></a><br/>
+<span style="color: #008000;">3) 尽可能将View设置为不透明（Opaque）</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Opaque.png"><img alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/Opaque.png" width="250" height="207" /></a><p class="wp-caption-text">
+    尽量将view设置为Opaque
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>如果view是不透明的，那么应该将其opaque属性设置为YES。</p>
+
+<p>为什么要这样做呢？这样设置可以让系统以最优的方式来绘制view。opaque属性可以在Interface Builder或代码中设置。</p>
+
+<p><span style="text-decoration: underline; color: #339966;"><a href="http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIView_Class/UIView/UIView.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span>对opaque属性有如下解释：</p>
+
+<p><span style="color: #808080;"><em>This property provides a hint to the drawing system as to how it should treat the view. If set to YES, the drawing system treats the view as fully opaque, which allows the drawing system to optimize some drawing operations and improve performance. If set to NO, the drawing system composites the view normally with other content. The default value of this property is YES.</em></span></p>
+
+<p><span style="color: #808080;"><em>（opaque属性提示绘制系统如何处理view。如果opaque设置为YES，绘图系统会将view看为完全不透明，这样绘图系统就可以优化一些绘制操作以提升性能。如果设置为NO，那么绘图系统结合其它内容来处理view。默认情况下，这个属性是YES。）</em></span></p>
+
+<p>&nbsp;</p>
+
+<p>如果屏幕是静止的，那么这个opaque属性的设置与否不是一个大问题。但是，如果view是嵌入到scroll view中的，或者是复杂动画的一部分，不将设置这个属性的话肯定会影响程序的性能！</p>
+
+<p>可以通过模拟器的Debug\Color Blended Layers选项来查看哪些view没有设置为不透明。为了程序的性能，尽可能的将view设置为不透明！</p>
+
+<p>&nbsp;</p>
+
+<p><a name="smallxibs"></a><br/>
+<span style="color: #008000;">4) 避免臃肿的XIBs</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/FatXIB.png"><img alt="" src="http://cdn1.raywenderlich.com/wp-content/uploads/2013/03/FatXIB.png" width="250" height="187" /></a><p class="wp-caption-text">
+    避免臃肿的XIBs
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>在iOS 5中开始使用Storyboards，并且将替代XIBs。不过在有些情况下XIBs仍然有用。如果你的程序需要运行在装有iOS 5之前版本的设备上，或者要自定义可重用的view，那么是避免不了要使用XIBs的。</p>
+
+<p>如果必须要使用XIBs的话，尽量让XIBs文件简单。并且每个view controller对于一个XIB文件，如果可以的话，把一个view controller的view不同的层次单独分到一个XIBs文件中。</p>
+
+<p>注意：当把一个XIB文件加载到内存时，XIB文件中的所有内容都将被加载到内存中，包括图片。如果有一个view还不立即使用的话，就会造成内存的浪费。而这在storyboard中是不会发生的，因为storyboard还在需要的时候才实例化一个view controller。</p>
+
+<p>当加载XIB时，所有涉及到的图片都将被缓存，并且如果是开发的程序是针对OS X的话，声音文件也会被加载。<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html"><span style="color: #339966; text-decoration: underline;">苹果的官方文档</span></a></span></span>这样说：</p>
+
+<p><span style="color: #999999;"><em>When you load a nib file that contains references to image or sound resources, the nib-loading code reads the actual image or sound file into memory and and caches it. In OS X, image and sound resources are stored in named caches so that you can access them later if needed. In iOS, only image resources are stored in named caches. To access images, you use the imageNamed: method of NSImage or UIImage, depending on your platform.</em></span></p>
+
+<p><span style="color: #999999;"><em>（当加载一个nib文件时，也会将nib文件涉及到的图片或声音资源加载到内存中，nib-loading代码会将实际的图片或声音文件读取到内存中，并一直缓存着。在OS X中，图片和声音资源都存储在命名缓存中，这样之后如果需要的话，可以对其进行访问。在iOS中，只有图片资源被存储到命名缓存中。要访问图片的话，使用<em>NSImage或UIImage（根据不同的系统）的imageNamed:方法即可。</em>）</em></span></p>
+
+<p>显然，在使用storyboard时也会发生类似的缓存操作；不过我没有找到相关内容的任何资料。如果你知道的话，可以告诉我哦！</p>
+
+<p>想要学习storyboard的更多知识吗？可以看看Matthijs Hollemans写的iOS 5中：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/5138/beginning-storyboards-in-ios-5-part-1"><span style="color: #339966; text-decoration: underline;">初级Storyboard Part 1</span></a></span></span>和<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/5191/beginning-storyboards-in-ios-5-part-2"><span style="text-decoration: underline; color: #339966;">Part2</span></a></span>。<br/>
+<a name="mainthread"></a><br/>
+<span style="color: #008000;">5) 不要阻塞主线程</span></p>
+
+<div class="wp-caption alignright" style="width: 240px">
+  <a href="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/RainbowWheel.jpg"><img alt="" src="http://cdn3.raywenderlich.com/wp-content/uploads/2013/03/RainbowWheel.jpg" width="230" height="230" /></a><p class="wp-caption-text">
+    不要阻塞主线程
+  </p>
+</div>
+
+
+<p>&nbsp;</p>
+
+<p>永远都不要在主线程做繁重的任务。因为UIKit的任务都在主线程中进行，例如绘制、触摸管理和输入响应。</p>
+
+<p>在主线程做所有任务的风险是：如果你的代码阻塞了主线程，那么程序将出现反应迟钝。这回招致用户在App Store上对程序的差评！</p>
+
+<p>在执行I/O操作中，大多数情况下都会祖塞主线程，这些操作需要从读写外部资源，例如磁盘或者网络。</p>
+
+<p>关于网络操作可以使用NSURLConnection的如下方法，以异步的方式来执行：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)sendAsynchronousRequest:(NSURLRequest *)request queue:(NSOperationQueue *)queue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler</pre>
+
+
+<p>或者使用第三方框架，例如<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/30445/afnetworking-crash-course"><span style="color: #339966; text-decoration: underline;">AFNetworking</span></a></span>。</p>
+
+<p>如果你需要做一些其它类型开销很大的操作（例如执行一个时间密集型的计算或者对磁盘进行读写），那么就使用GCD（Grand Central Dispatch），或NSOperations 和 NSOperationQueues。</p>
+
+<p>下面的代码是使用GCD的一个模板：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // switch to a background thread and perform your expensive operation
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // switch back to the main thread to update your UI
+
+    });
+});</pre>
+
+
+<p>如上代码，为什么在第一个<strong>dispatch_async</strong>里面还嵌套了一个dispatch_async呢？这是因为关于UIKit相关的代码需要在主线程里面执行。</p>
+
+<p>对<strong>NSOperation</strong>和<strong>GCD</strong>感到好奇吗？可以看看Ray Wenderlich中的教程：<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/4295/multithreading-and-grand-central-dispatch-on-ios-for-beginners-tutorial"><span style="color: #339966; text-decoration: underline;">iOS中多线程和GCD—初级</span></a></span>，以及Soheil Azarpour的<span style="text-decoration: underline; color: #339966;"><a href="http://www.raywenderlich.com/19788/how-to-use-nsoperations-and-nsoperationqueues"><span style="color: #339966; text-decoration: underline;">如何使用NSOperations和NSOperationQueues教程</span></a></span>。</p>
+
+<p>&nbsp;</p>
+
+<p><a name="imageviews"></a><br/>
+<span style="color: #008000;">6) 让图片的大小跟UIImageView一样</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/ImageViews.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/ImageViews.png" width="250" height="192" /></a><p class="wp-caption-text">
+    确保图片和UIImageView大小一致
+  </p>
+</div>
+
+
+<p>如果需要将程序bundle中的图片显示到UIImageView中，请确保图片和UIImageView的大小是一样的。因为图片的缩放非常耗费资源，特别是将UIImageView嵌入到UIScrollView中。</p>
+
+<p>如果是从远程服务中下载图片，有时候你控制不了图片的尺寸，或者在下载之前无法在服务器上进行图片的缩放。这种情况，当图片下载完之后，你可以手动进行图片的缩放——做好是在后台线程中！——然后再在UIImageView中使用缩放过的图片。</p>
+
+<p>&nbsp;</p>
+
+<p><a name="collection"></a><br/>
+<span style="color: #008000;">7) 选择正确的集合</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/Collections.png"><img alt="" src="http://cdn4.raywenderlich.com/wp-content/uploads/2013/03/Collections.png" width="250" height="211" /></a><p class="wp-caption-text">
+    选择正确的集合
+  </p>
+</div>
+
+
+<p>学习使用最适合的类或对象是编写高效代码的基础。特别是在处理集合数据时，尤为重要。</p>
+
+<p>苹果的官网上有一篇文章：<span style="text-decoration: underline; color: #339966;"><a href="https://developer.apple.com/library/ios/#documentation/cocoa/conceptual/collections/Collections.html"><span style="color: #339966; text-decoration: underline;">集合编程主题(Collections Programming Topics)</span></a></span>——详细的介绍了在集合数据中可以使用的类，以及什么情况下使用哪个类。在使用集合时，每个开发者都应该阅读一下这个文档。</p>
+
+<p>太长，不想阅读(TLDR)？下面是常见集合类型的一个简介：</p>
+
+<ul>
+<li><span style="color: #339966;"><strong>数组<span style="color: #000000;">：</span></strong><span style="color: #000000;">是一个</span></span>值按顺序排列的一个列表。根据索引可以快速查找，不过根据值进行查找就比较慢，另外插入和删除也比较慢。</li>
+<li><span style="color: #339966;"><strong>字典</strong>:</span>  存储键/值对。根据键可以快速查找。</li>
+<li><span style="color: #339966;"><strong>Sets</strong></span>:  是一个值无序排列的列表，根据值可以快速查找，另外插入和删除也比较快。</li>
+</ul>
+
+
+<p><a name="gzip"></a><br/>
+<span style="color: #008000;">8) 使用GZIP压缩</span></p>
+
+<div class="wp-caption alignright" style="width: 260px">
+  <a href="http://cdn5.raywenderlich.com/wp-content/uploads/2013/03/Gnu_gzip_logo.png"><img alt="" src="http://cdn5.raywenderlich.com/wp-content/uploads/2013/03/Gnu_gzip_logo.png" width="250" height="166" /></a><p class="wp-caption-text">
+    使用GZIP压缩
+  </p>
+</div>
+
+
+<p>越来越多的程序依赖于外部数据，这些数据一般来自远程服务器或者其它的外部APIs。有时候你需要开发一个程序来下载一些数据，这些数据可以是XML，JSON，HTML或者其它一些文本格式。</p>
+
+<p>问题是在移动设备上的网络是不确定的。用户的设备可能在EDGE网络一分钟，然后接着又在3G网络中。不管在什么情况下，都不要让用户等待。</p>
+
+<p>有一个可以优化的选择：使用GZIP对网络传输中的数据进行压缩，这样可以减小文件的大小，并加快下载的速度。压缩对于文本数据特别有用，因为文本具有很高的压缩比。</p>
+
+<p>iOS中，如果使用NSURLConnection，那么默认情况下已经支持GZIP压缩了，并且基于NSURLConnection的框架页支持GZIP压缩，如<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.raywenderlich.com/30445/afnetworking-crash-course" target="_blank"><span style="color: #339966; text-decoration: underline;">AFNetworking</span></a></span></span>。甚至有些云服务提供商已经提供发送经压缩过的响应内容，例如 <span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://developers.google.com/appengine/" target="_blank"><span style="color: #339966; text-decoration: underline;">Google App Engine</span></a></span></span>。</p>
+
+<p>这里有<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/"><span style="color: #339966; text-decoration: underline;">一篇关于GZIP压缩很好的文章</span></a></span></span>，介绍了如何在Apache活IIS服务器中开启支持GZIP压缩。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=258" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 中级篇</span></a></span></span><br/>
+<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=263" target="_blank"><span style="color: #339966; text-decoration: underline;">25个增强iOS应用程序性能的提示和技巧 — 高级篇</span></a></span></span><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://beyondvincent.com/?p=180" target="_blank"><span style="color: #339966; text-decoration: underline;"><br /> </span></a></span></span></p>
+]]></content>
+  </entry>
+  
+</feed>

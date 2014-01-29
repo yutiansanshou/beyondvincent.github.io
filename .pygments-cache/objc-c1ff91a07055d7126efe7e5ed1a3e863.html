@@ -1,0 +1,30 @@
+<div class="highlight"><pre><span class="cp">#import &lt;AVFoundation/AVFoundation.h&gt;</span>
+<span class="cp">#import &quot;MyScene.h&quot;</span>
+ 
+<span class="k">@implementation</span> <span class="nc">MyScene</span> 
+<span class="p">{</span>
+ 
+    <span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">_bear</span><span class="p">;</span>
+    <span class="n">NSArray</span> <span class="o">*</span><span class="n">_bearWalkingFrames</span><span class="p">;</span>
+ 
+<span class="p">}</span>
+ 
+<span class="o">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nl">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="n">size</span> 
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
+        <span class="cm">/* Setup your scene here */</span>
+ 
+        <span class="n">self</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="n">blackColor</span><span class="p">];</span>
+ 
+        <span class="c1">// TODO...</span>
+ 
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+<span class="p">}</span>
+ 
+<span class="o">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">update:</span><span class="p">(</span><span class="n">CFTimeInterval</span><span class="p">)</span><span class="n">currentTime</span> <span class="p">{</span>
+    <span class="cm">/* Called before each frame is rendered */</span>
+<span class="p">}</span>
+ 
+<span class="k">@end</span>
+</pre></div>

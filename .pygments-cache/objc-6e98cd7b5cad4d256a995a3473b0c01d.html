@@ -1,0 +1,5 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">didMoveToView:</span><span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="nv">view</span> <span class="p">{</span>
+    <span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="n">gestureRecognizer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIPanGestureRecognizer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">handlePanFrom:</span><span class="p">)];</span>
+    <span class="p">[[</span><span class="n">self</span> <span class="n">view</span><span class="p">]</span> <span class="nl">addGestureRecognizer:</span><span class="n">gestureRecognizer</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,516 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果 小引 在Windows 8的开始屏幕上全是一些方块，当我们用鼠标或者手去触摸时，会有不同的按下倾斜效果，移动的时候也会有放大+半透明的效果。这效果非常的cool。那么这篇博文，我就在自定义一下Button， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/77/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[048]模仿开始屏幕中磁贴的按下、移动效果</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>小引</h3>
+
+<p>在Windows 8的开始屏幕上全是一些方块，当我们用鼠标或者手去触摸时，会有不同的按下倾斜效果，移动的时候也会有放大+半透明的效果。这效果非常的cool。那么这篇博文，我就在自定义一下Button，让其具有类似的效果（Tile内容更新的效果不在此范围，或许在以后的文章中我会写，此文只讨论按下、移动效果）。</p>
+
+<p>注：我在这里称这样的按钮为TileButton</p>
+
+<h3><a name="t4"></a>自定义TileButton的关键技术</h3>
+
+<p>A、继承自Button，这样会方便很多，只需要做极少部分的处理</p>
+
+<p>B、截获按下事件，首先分析按下位置，然后根据位置做不同的效果</p>
+
+<p>C、移动过程中，对按钮做放大和半透明处理，增加用户体验</p>
+
+<h3><a name="t5"></a>制作步骤</h3>
+
+<p>1、新建空白工程，名称为BV_TileButton</p>
+
+<p>2、在项目工程上单击右键，选择添加->选择类->输入BV_TileButton，然后确定</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/117.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb15.jpg" width="682" height="415" /></a></p>
+
+<p>3、打开BV_TileButton.cs文件：</p>
+
+<p>里面的内容如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">/*
+* ==============================================================================
+* Filename: BV_TileButton.cs
+ * 
+* Description: 
+* TileButton实现了按下、拖动等效果，有点类似开始屏幕那些磁贴的按下、拖动效果、还支持缩放、旋转等。
+ * 还存在的问题：在边界按下时，进行拖动没有效果，暂时不知道如何处理
+ * 
+* Version: 1.0
+* Created: 2012/11/15 21:32:23
+*
+* Author: BeyondVincent(破船)
+* http://weibo.com/beyondvincent
+* qq:77973689
+* ==============================================================================
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+
+namespace BV_TileButton
+{
+    class BV_TileButton : Button
+    {
+        // 翻转效果
+        PlaneProjection projection;
+
+        // 移动、缩放、旋转等转换
+        CompositeTransform transform;
+
+        // 按下时，倾斜的角度
+        int angle = 10;
+
+        // 拖动多远时，开始移动空间
+        double dragoffx = 5;
+        double dragoffy = 5;
+
+        // 构造函数 做一些初始化工作
+        public BV_TileButton()
+        {
+            projection = new PlaneProjection();
+            Projection = projection;
+            transform = new CompositeTransform();
+            RenderTransform = transform;
+
+            ManipulationMode = ManipulationModes.Rotate | ManipulationModes.Scale | ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+        }
+
+        /*
+         * 按下时的事件处理，两个步骤
+         * 1、首先判断当前按下去的位置在控件的那个区域（控件共分为9个区域，详见PressPointLocation定义）
+         * 2、根据按下去的位置，对控件做不同的效果
+         */
+        protected override void OnPointerPressed(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            // 获得当前区域位置
+            PressPointLocation location = GetPointLocation(e.GetCurrentPoint(this).Position);
+
+
+            // 开始对控件做效果处理
+
+            
+            if (location == (PressPointLocation.Left | PressPointLocation.YCenter))
+            {// 左中
+                projection.RotationY = angle;
+                projection.CenterOfRotationX = 1;
+            }
+            else if (location == (PressPointLocation.Left | PressPointLocation.Top))
+            {// 左上
+                projection.RotationX = -angle;
+                projection.RotationY = angle;
+                projection.CenterOfRotationX = 1;
+                projection.CenterOfRotationY = 1;
+
+            }
+            else if (location == (PressPointLocation.Top | PressPointLocation.XCenter))
+            {// 上中
+                projection.RotationX = -angle * 2;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.Top))
+            {// 右上
+                projection.RotationY = projection.RotationX = -angle;
+                projection.CenterOfRotationX = 0;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.YCenter))
+            {// 右中
+                projection.RotationY = -angle;
+                projection.CenterOfRotationX = 0;
+            }
+            else if (location == (PressPointLocation.Right | PressPointLocation.Bottom))
+            {// 右下
+                projection.RotationX = angle;
+                projection.RotationY = -angle;
+
+                projection.CenterOfRotationX = 0;
+                projection.CenterOfRotationY = 0;
+            }
+            else if (location == (PressPointLocation.Bottom | PressPointLocation.XCenter))
+            {// 下中
+                projection.RotationX = angle * 2;
+
+                projection.CenterOfRotationY = 0;
+            }
+            else if (location == (PressPointLocation.Left | PressPointLocation.Bottom))
+            {// 左下
+                projection.RotationY = projection.RotationX = angle;
+
+                projection.CenterOfRotationX = 1;
+                projection.CenterOfRotationY = 1;
+            }
+            else if (location == (PressPointLocation.XCenter | PressPointLocation.YCenter))
+            {// 正中
+                CompositeTransform transform = RenderTransform as CompositeTransform;
+
+                transform.CenterX = ActualWidth/2;
+                transform.CenterY = ActualHeight/2;
+                transform.ScaleX = 0.9;
+                transform.ScaleY = 0.9;
+            }
+        }
+
+        /*
+         * 按下放开时的事件处理
+         * 主要是做一些还原处理（旋转角度归零、缩放还原、透明度设置等）
+         */
+        protected override void OnPointerReleased(Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            projection.RotationX = 0;
+            projection.RotationY = 0;
+
+            CompositeTransform transform = RenderTransform as CompositeTransform;
+
+            transform.CenterX = ActualWidth / 2;
+            transform.CenterY = ActualHeight / 2;
+            transform.ScaleX = 1;
+            transform.ScaleY = 1;
+
+            Opacity = 1;
+
+            dragoffx = 0;
+            dragoffy = 0;
+        }
+
+        /*
+         * 有移动等操作时的事件处理
+         * 主要包括移动、放大、透明等
+         */
+        protected override void OnManipulationDelta(ManipulationDeltaRoutedEventArgs e)
+        {
+            dragoffx += e.Delta.Translation.X;
+            dragoffy += e.Delta.Translation.Y;
+
+            if (-10 &lt;= dragoffx &amp;&amp; dragoffx &lt;= 10 &amp;&amp; -10 &lt;= dragoffy &amp;&amp; dragoffy &lt;= 10)
+                return;
+
+            transform.CenterX = ActualWidth / 2;
+            transform.CenterY = ActualHeight / 2;
+            transform.ScaleX = 1.1;
+            transform.ScaleY = 1.1;
+
+            Opacity = 0.5;
+
+            projection.RotationX = 0;
+            projection.RotationY = 0;
+
+            transform.TranslateX += e.Delta.Translation.X;
+            transform.TranslateY += e.Delta.Translation.Y;
+
+            transform.ScaleX *= e.Delta.Scale;
+            transform.ScaleY *= e.Delta.Scale;
+
+            transform.Rotation += e.Delta.Rotation;
+
+            base.OnManipulationDelta(e);
+        }
+
+        /*
+         * 获取控件所在的区域算法
+         */
+        PressPointLocation GetPointLocation(Point point)
+        {
+            PressPointLocation location = PressPointLocation.None;
+
+            double tempwidth = ActualWidth / 3;
+            if (point.X &lt; tempwidth)
+            {
+                location |= PressPointLocation.Left;
+            }
+            else if (point.X &gt; tempwidth * 2)
+            {
+                location |= PressPointLocation.Right;
+            }
+            else
+            {
+                location |= PressPointLocation.XCenter;
+            }
+
+            double tempheight = ActualHeight / 3;
+            if (point.Y &lt; tempheight)
+            {
+                location |= PressPointLocation.Top;
+            }
+            else if (point.Y &gt; tempheight * 2)
+            {
+                location |= PressPointLocation.Bottom;
+            }
+            else
+            {
+                location |= PressPointLocation.YCenter;
+            }
+            Debug.WriteLine(location.ToString());
+            return location;
+        }
+    }
+
+    public enum PressPointLocation
+    {
+        None = 0,
+        Left = 1,
+        Top = 2,
+        Right = 4,
+        Bottom = 8,
+        XCenter = 16,
+        YCenter = 32
+    }
+
+    /*
+         * 获取指定控件的Rect
+         */
+    public static class BV_ToolAPI
+    {
+        public static Rect GetElementRect(this FrameworkElement element)
+        {
+            GeneralTransform buttonTransform = element.TransformToVisual(null);
+            Point point = buttonTransform.TransformPoint(new Point());
+            return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
+        }
+    }
+}</pre>
+
+
+<p>代码有详细注释，在此不过多讲解。</p>
+
+<p>4、在MainPage.xaml文件中，添加如下代码：</p>
+
+<p>注意：其中3行3列的girid控件是为了演示效果，为控件划分不同的区域。在实际开发中，不需要。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" mc:ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="using:BV_TileButton" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:class="BV_TileButton.MainPage"&gt;
+
+    &lt;grid background="Green"&gt;
+        &lt;local:bv_tilebutton width="310" verticalalignment="Center" height="150" horizontalalignment="Center"&gt;
+            &lt;local:bv_tilebutton.content&gt;
+                &lt;grid margin="0 0 0 0"&gt;
+                   
+                    &lt;img margin="-15,-9,-16,-10" source="Assets/widelogo.png" /&gt;
+                    &lt;img margin="-19,94,234,-6" source="Assets/logo.png" /&gt;
+                    &lt;textblock margin="244,90,0,0" foreground="Red" fontsize="30" text="5"&gt;&lt;/textblock&gt;
+                    &lt;textblock margin="7,20,10,72" foreground="Magenta" fontsize="25" text="读书的女孩子，很好噢" fontfamily="宋体"&gt;&lt;/textblock&gt;
+                    &lt;grid margin="-15,-9,-16,-10" visibility="Visible"&gt;
+                        &lt;grid.columndefinitions&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                            &lt;columndefinition&gt;&lt;/columndefinition&gt;
+                        &lt;/grid.columndefinitions&gt;
+                        &lt;grid.rowdefinitions&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                            &lt;rowdefinition&gt;&lt;/rowdefinition&gt;
+                        &lt;/grid.rowdefinitions&gt;
+                        &lt;border grid.row="0" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="0" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="0" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="1" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="0" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="1" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                        &lt;border grid.row="2" grid.column="2" borderbrush="Red" borderthickness="1"&gt;&lt;/border&gt;
+                    &lt;/grid&gt;
+                &lt;/grid&gt;
+            &lt;/local:bv_tilebutton.content&gt;
+        &lt;/local:bv_tilebutton&gt;
+    &lt;/grid&gt;
+&lt;/page&gt;</pre>
+
+
+<p>5、运行效果展示：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/213.jpg"><img title="2" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb12.jpg" width="402" height="232" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/39.jpg"><img title="3" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb9.jpg" width="390" height="220" /></a> <a href="http://beyondvincent.com/wp-content/uploads/2013/06/49.jpg"><img title="4" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb9.jpg" width="424" height="247" /></a> </p></p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/TileButton" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<p>&#160;</p>
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

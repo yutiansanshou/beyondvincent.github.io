@@ -1,0 +1,29 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">imagePanned:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">sender</span> <span class="nl">isKindOfClass:</span><span class="p">[</span><span class="n">UIPanGestureRecognizer</span> <span class="n">class</span><span class="p">]])</span> <span class="p">{</span>
+        <span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="n">localSender</span> <span class="o">=</span> <span class="n">sender</span><span class="p">;</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">localSender</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateBegan</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingPoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">localSender</span> <span class="nl">translationInView:</span><span class="n">self</span><span class="p">.</span><span class="n">textView</span><span class="p">];</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingCenter</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">imageView</span><span class="p">.</span><span class="n">center</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">localSender</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateChanged</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">CGPoint</span> <span class="n">currentPoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">localSender</span> <span class="nl">translationInView:</span><span class="n">self</span><span class="p">.</span><span class="n">textView</span><span class="p">];</span>
+            
+            <span class="n">CGFloat</span> <span class="n">distanceX</span> <span class="o">=</span> <span class="n">currentPoint</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingPoint</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+            <span class="n">CGFloat</span> <span class="n">distanceY</span> <span class="o">=</span> <span class="n">currentPoint</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingPoint</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+            
+            <span class="n">CGPoint</span> <span class="n">newCenter</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingCenter</span><span class="p">;</span>
+            
+            <span class="n">newCenter</span><span class="p">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">distanceX</span><span class="p">;</span>
+            <span class="n">newCenter</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">distanceY</span><span class="p">;</span>
+            
+            <span class="n">self</span><span class="p">.</span><span class="n">imageView</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">newCenter</span><span class="p">;</span>
+            
+            <span class="n">self</span><span class="p">.</span><span class="n">textView</span><span class="p">.</span><span class="n">textContainer</span><span class="p">.</span><span class="n">exclusionPaths</span> <span class="o">=</span> <span class="err">@</span><span class="p">[[</span><span class="n">self</span> <span class="n">translatedBezierPath</span><span class="p">]];</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">localSender</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateEnded</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingPoint</span> <span class="o">=</span> <span class="n">CGPointZero</span><span class="p">;</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">gestureStartingCenter</span> <span class="o">=</span> <span class="n">CGPointZero</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

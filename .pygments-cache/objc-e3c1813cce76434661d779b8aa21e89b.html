@@ -1,0 +1,6 @@
+<div class="highlight"><pre><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="n">NSSet</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+    <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="n">anyObject</span><span class="p">];</span>
+    <span class="n">CGPoint</span> <span class="n">positionInScene</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nl">locationInNode:</span><span class="n">self</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nl">selectNodeForTouch:</span><span class="n">positionInScene</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>

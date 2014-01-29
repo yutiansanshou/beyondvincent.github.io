@@ -1,0 +1,268 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么 小引 在之前的博文中，我曾对Toast通知进行了介绍，如下链接，建议不清楚Toast通知的可以去看看 Windows Store App开发[009]通知概述(Toast,Tile和Badge) &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/06/06/68/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Windows Store App开发[039]当用户点击Toast通知时，我们可以做些什么</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>小引</h3>
+
+<p>在之前的博文中，我曾对Toast通知进行了介绍，如下链接，建议不清楚Toast通知的可以去看看</p>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91009%e9%80%9a%e7%9f%a5%e6%a6%82%e8%bf%b0toasttile%e5%92%8cbadge/"><u>Windows Store App开发[009]通知概述(Toast,Tile和Badge)</u></a></h4>
+
+<h4><a href="http://beyondvincent.com/2013/06/02/windows-store-app%e5%bc%80%e5%8f%91010%e9%80%9a%e7%9f%a5%e4%bd%bf%e7%94%a8toasttile%e5%92%8cbadge/"><u>Windows Store App开发[010]通知使用(Toast,Tile和Badge)</u></a></h4>
+
+<p>在这篇文章中，我将对Toast通知进行深入的介绍：如何让Toast通知携带参数，并且在程序中如何获取Toast通知的携带的参数。</p>
+
+<p>这个主题在有些时候非常有用：当用户点击Toast通知时，根据Toast通知的内容，直接使程序打开某个特定的画面。</p>
+
+<h3><a name="t4"></a>Toast通知的数据走向步骤</h3>
+
+<p>我们先来看看Toast通知的数据走向步骤</p>
+
+<p>1、程序或者web service创建并发送一个包含launch字符串的toast通知</p>
+
+<p>2、toast通知到达</p>
+
+<p>3、用户选择toast通知(单击或者触摸)</p>
+
+<p>4、OnLaunched事件被触发</p>
+
+<p>5、在程序的OnLaunched处理函数中读取launch字符串</p>
+
+<p>6、程序根据launch字符串做出响应的处理（打开指定画面、进行数据请求等）</p>
+
+<h3><a name="t5"></a>如何创建并发送一个带launch字符串的toast通知</h3>
+
+<p>看下面的代码：注意在这里为了创建toast的方便：使用了NotificationsExtensions，关于NotificationsExtensions的使用，参考下面的链接：</p>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/hh969156.aspx"><u>使用 NotificationsExtensions 填充锁屏提醒、磁贴和 Toast 模板</u></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void sendToast(object sender, RoutedEventArgs e)
+{
+    IToastImageAndText01 toastContent = ToastContentFactory.CreateToastImageAndText01();
+    toastContent.Launch = &quot;this is launch string test&quot;;
+    toastContent.TextBodyWrap.Text = &quot;破船，恭喜你，中500W！&quot;;
+    toastContent.Image.Src = &quot;/Assets/98_avatar_big.jpg&quot;;
+
+    ToastNotificationManager.CreateToastNotifier().Show(toastContent.CreateNotification());
+}</pre>
+
+
+<h3>在程序中获得launch字符串</h3>
+
+<p>当用户点击或者触摸Toast通知，都会启动相应的程序。并触发OnLaunched事件。</p>
+
+<p>一定要注意：如果在toast通知中没有包含launch字符串，那么OnLaunched是不会被触发的。</p>
+
+<p>下面的代码演示了如何在程序中获得launch字符串</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">protected override void OnLaunched(LaunchActivatedEventArgs args)
+{
+    string launchString = args.Arguments
+    ....
+}</pre>
+
+
+<h3>运行效果</h3>
+
+<p>1、发送toast通知</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/114.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb12.jpg" width="404" height="150" /></a></p>
+
+<p>2、触发toast通知</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/210.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb10.jpg" width="471" height="277" /></a></p>
+
+<p>3、获取launch字符串</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/36.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb6.jpg" width="682" height="436" /></a></p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/Toast" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

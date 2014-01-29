@@ -1,0 +1,11 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+    
+    <span class="c1">//创建一个平移手势对象，该对象可以调用imagePanned：方法</span>
+    <span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="n">panGes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIPanGestureRecognizer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">imagePanned:</span><span class="p">)];</span>
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">imageView</span> <span class="nl">addGestureRecognizer:</span><span class="n">panGes</span><span class="p">];</span>
+    
+    <span class="n">self</span><span class="p">.</span><span class="n">textView</span><span class="p">.</span><span class="n">textContainer</span><span class="p">.</span><span class="n">exclusionPaths</span> <span class="o">=</span> <span class="err">@</span><span class="p">[[</span><span class="n">self</span> <span class="n">translatedBezierPath</span><span class="p">]];</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,22 @@
+<div class="highlight"><pre><span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwAdd</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="n">CGPoint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwSub</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="n">CGPoint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwMult</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">,</span> <span class="kt">float</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">float</span> <span class="nf">rwLength</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">sqrtf</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="c1">// Makes a vector have a length of 1</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">CGPoint</span> <span class="nf">rwNormalize</span><span class="p">(</span><span class="n">CGPoint</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">length</span> <span class="o">=</span> <span class="n">rwLength</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">length</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">/</span> <span class="n">length</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

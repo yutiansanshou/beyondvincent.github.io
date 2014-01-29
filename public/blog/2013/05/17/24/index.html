@@ -1,0 +1,319 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>在iOS中使用FlatUIKit - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="在iOS中使用FlatUIKit 简介 FlatUIKit是iOS中具有扁平化风格的UI（Flat UI）组件。FlatUIKit的设计灵感来源于Flat UI和Kyle Miller。FlatUIKit中的组件是通过扩展(category)或继承iOS SDK中已有的UIKit组件来实现的， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/05/17/24/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">在iOS中使用FlatUIKit</h1>
+	<div class="entry-content" itemprop="articleBody"><h2><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-3.png"><img class="alignnone size-full wp-image-647" alt="QQ20130517-3" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-3.png" width="1021" height="334" /></a></h2>
+
+<h2><strong><span style="color: #339966;">简介</span></strong></h2>
+
+<p>FlatUIKit是iOS中具有扁平化风格的UI（Flat UI）组件。FlatUIKit的设计灵感来源于<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://designmodo.github.io/Flat-UI/" target="_blank"><span style="color: #339966; text-decoration: underline;">Flat UI</span></a></span></span>和<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://kylemillercreative.com/#item=grouper" target="_blank"><span style="color: #339966; text-decoration: underline;">Kyle Miller</span></a></span></span>。FlatUIKit中的组件是通过扩展(category)或继承iOS SDK中已有的UIKit组件来实现的，因此在我们的程序中使用FlatUIKit非常方便。</p>
+
+<h2><strong><span style="color: #339966;">安装</span></strong></h2>
+
+<p>可以通过Cocoapods安装FlatUIKit，简单的在Profile文件中添加：pod &#8216;FlatUIKit&#8217;就可以。</p>
+
+<p>关于Cocoapods的使用可以参考本文最后参考部分相关内容。</p>
+
+<p>如果你没有使用CocoaPods，也可以简单的将<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/Grouper/FlatUIKit/archive/master.zip" target="_blank"><span style="color: #339966; text-decoration: underline;">代码</span></a></span></span>下载到本地，并手动添加到你的工程中。</p>
+
+<p>注意：FlatUIKit需要CoreText框架以及iOS > 5.0.</p>
+
+<h2><span style="color: #339966;">FlatUIKit中提供的组件</span></h2>
+
+<h3><span style="color: #339966;">Buttons</span></h3>
+
+<p>FUIButton是UIButton的一个子类，它向外接提供了四个属性：buttonColor, shadowColor, cornerRadius, 和 shadowHeight。</p>
+
+<p>注意：如果如果你设置了其中一个属性的值，那么其它所有的属性你都需要进行设置。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">myButton.buttonColor = [UIColor turquoiseColor];
+myButton.shadowColor = [UIColor greenSeaColor];
+myButton.shadowHeight = 3.0f;
+myButton.cornerRadius = 6.0f;
+myButton.titleLabel.font = [UIFont boldFlatFontOfSize:16];
+[myButton setTitleColor:[UIColor cloudsColor] forState:UIControlStateNormal];
+[myButton setTitleColor:[UIColor cloudsColor] forState:UIControlStateHighlighted];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966.gif"><img alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569627574746f6e2d736d616c6c2e676966.gif" width="127" height="66" /></a></p>
+
+<h3> <strong><span style="color: #339966;">Switchs</span></strong></h3>
+
+<p>FUISwitch并不是UISwitch的一个子类（UISwitch不容易继承），而是重新实现了一个与UISwitch类似的控件，提供了UISwitch具有的所有方法。另外还提供了on/off(UILable)和其它subview的访问。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">mySwitch.onColor = [UIColor turquoiseColor];
+mySwitch.offColor = [UIColor cloudsColor];
+mySwitch.onBackgroundColor = [UIColor midnightBlueColor];
+mySwitch.offBackgroundColor = [UIColor silverColor];
+mySwitch.offLabel.font = [UIFont boldFlatFontOfSize:14];
+mySwitch.onLabel.font = [UIFont boldFlatFontOfSize:14];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-641" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675697377697463682d736d616c6c2e676966.gif" width="113" height="53" /></a></p>
+
+<h3><span style="color: #339966;">Alert Views</span></h3>
+
+<p>跟FUISwitch一样，FUIAlertView对UIAlertView进行了重写，并提供了UIAlertView具有的所有方法（包括delegate方法，在FUIAlertViewDelegate协议中），FUIAlertView的定制要比UIAlertView更加灵活。FUIAlertView中的所有UILabels, UIViews, 和 FUIButtons 都可以定制.</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">FUIAlertView *alertView = [[FUIAlertView alloc] initWithTitle:@"Hello"
+                                                      message:@"This is an alert view"
+                                                     delegate:nil cancelButtonTitle:@"Dismiss"
+                                            otherButtonTitles:@"Do Something", nil];
+alertView.titleLabel.textColor = [UIColor cloudsColor];
+alertView.titleLabel.font = [UIFont boldFlatFontOfSize:16];
+alertView.messageLabel.textColor = [UIColor cloudsColor];
+alertView.messageLabel.font = [UIFont flatFontOfSize:14];
+alertView.backgroundOverlay.backgroundColor = [[UIColor cloudsColor] colorWithAlphaComponent:0.8];
+alertView.alertContainer.backgroundColor = [UIColor midnightBlueColor];
+alertView.defaultButtonColor = [UIColor cloudsColor];
+alertView.defaultButtonShadowColor = [UIColor asbestosColor];
+alertView.defaultButtonFont = [UIFont boldFlatFontOfSize:16];
+alertView.defaultButtonTitleColor = [UIColor asbestosColor];
+[alertView show];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-642" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569616c657274766965772d736d616c6c2e676966.gif" width="316" height="336" /></a></p>
+
+<h3><strong><span style="color: #339966;"> Sliders/Steppers/Progress Views</span></strong></h3>
+
+<p>为了提供扁平风格的UISlider， UIProgressView 和 UIStepper，这里简单的对UISlider/ProgressView/UIStepper进行了扩展，通过适当的颜色/圆角半径就能自动配置它们的外观。在已有的工程中不需要做任何改动就能使用这些组件。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[mySlider configureFlatSliderWithTrackColor:[UIColor silverColor]
+                              progressColor:[UIColor alizarinColor]
+                                 thumbColor:[UIColor pomegranateColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-643" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569736c696465722d736d616c6c2e676966.gif" width="296" height="44" /></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[myProgressView configureFlatProgressViewWithTrackColor:[UIColor silverColor]
+                              progressColor:[UIColor alizarinColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-1.png"><img class="alignnone size-full wp-image-644" alt="QQ20130517-1" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ20130517-1.png" width="294" height="42" /></a></p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[myStepper configureFlatStepperWithColor:[UIColor wisteriaColor]
+                        highlightedColor:[UIColor wisteriaColor]
+                           disabledColor:[UIColor amethystColor]
+                               iconColor:[UIColor cloudsColor]];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-645" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f667569737465707065722d736d616c6c2e676966.gif" width="119" height="51" /></a></p>
+
+<h3><strong><span style="color: #339966;">Bar Button Items</span></strong></h3>
+
+<p>为了定制整个程序中的bar button items（包括back buttons），UIBarButtonItem+FlatUI提供了一个类方法，通过该方法可以只需要一步就能利用UIBarButton Item的外观代理（appearance proxy）：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[UIBarButtonItem configureFlatButtonsWithColor:[UIColor peterRiverColor]
+                              highlightedColor:[UIColor belizeHoleColor]
+                                  cornerRadius:3];</pre>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966.gif"><img class="alignnone size-full wp-image-646" alt="687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966" src="http://beyondvincent.com/wp-content/uploads/2013/05/687474703a2f2f626c6f672e6a6f696e67726f757065722e636f6d2f466c617455494b69742f696d616765732f6675696e61766261722d736d616c6c2e676966.gif" width="322" height="44" /></a></p>
+
+<h3><strong><span style="color: #339966;"> Navigation Bars</span></strong></h3>
+
+<p>跟上面的Bar Button Items一样，对UINavigationBar进行了扩展——利用一个颜色对其进行扁平花的配置。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">self.navigationController.navigationBar configureFlatNavigationBarWithColor:[UIColor midnightBlueColor]];</pre>
+
+
+<h3><strong><span style="color: #339966;">Colors</span></strong></h3>
+
+<p>为了方便，FlatUIKit包含了Flat UI颜色的定义。这里的UIColor+FlatUI对UIColor进行了扩展，可以在UIColor+FlatUI.h/m文件中看到各种Flat UI颜色的定义。使用方法非常简单：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;FlatUIKit/UIColor+FlatUI.h&gt;
+UIColor *myColor = [UIColor turquoiseColor];</pre>
+
+
+<h3><strong><span style="color: #339966;">Fonts</span></strong></h3>
+
+<p>FlatUIKit使用的是Lato字体，改字体是干净，漂亮的开放字体，更多相关Lato信息可以在<span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://www.latofonts.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">这里</span></a></span></span>看到。改字体自动的包含在了FlatUIKit中；按照如下方式使用即可：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "UIFont+FlatUI.h"
+UIFont *myFont = [UIFont flatFontOfSize:16];</pre>
+
+
+<h2></h2>
+
+<h2><strong><span style="color: #339966;">参考</span></strong></h2>
+
+<p>CocoaPods相关：</p>
+
+<p><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://blog.devtang.com/blog/2012/12/02/use-cocoapod-to-manage-ios-lib-dependency/" target="_blank"><span style="color: #339966; text-decoration: underline;">使用CocoaPods来做iOS程序的包依赖管理</span></a> </span></span>来自唐巧的一篇精彩博文<br/>
+<span style="text-decoration: underline; color: #339966;"><span style="text-decoration: underline;"><a href="https://github.com/CocoaPods/CocoaPods" target="_blank"><span style="text-decoration: underline; color: #339966;"> GitHub上的CocoaPods</span></a></span></span></p>
+
+<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<em><em><strong><br/>
+本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://github.com/Grouper/FlatUIKit" target="_blank"><span style="color: #339966; text-decoration: underline;">FlatUIKit</span></a></span></span><br/>
+转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
+_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

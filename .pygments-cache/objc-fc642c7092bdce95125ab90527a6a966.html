@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="n">self</span><span class="p">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSOperationQueue</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+<span class="n">MyOperation</span> <span class="o">*</span><span class="n">operation</span> <span class="o">=</span> <span class="p">[[</span><span class="n">MyOperation</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+<span class="n">operation</span><span class="p">.</span><span class="n">completionBlock</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="n">finishedOperation</span><span class="p">];</span>
+<span class="p">};</span>
+<span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">queue</span> <span class="nl">addOperation:</span><span class="n">operation</span><span class="p">];</span>
+</pre></div>

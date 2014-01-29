@@ -1,0 +1,1399 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="Jun 6th, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[54]Step by Step 第二季 小引：本人2012年曾在DevDiv社区陆陆续续写了一些关于Windows Store App开发的文章（&#160;Windows &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/page/8/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+<div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/06/66/" itemprop="url">Windows Store App开发[54]Step by Step 第二季</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>小引：本人2012年曾在DevDiv社区陆陆续续写了一些关于Windows Store App开发的文章（<a href="http://www.devdiv.com/Windows_Metro-windows_metro_app_step_by_step_-thread-130633-1-1.html" target="_blank">&#160;<span style="text-decoration: underline"><span style="color: #339966; text-decoration: underline">Windows 8 Metro App开发Step by Step</span></span></a>）。由于时间和工作关系，很长时间没有更新了。近期很多读者反映希望继续更新。在这里感谢大家的支持，从今天起，我将继续更新Windows Store apps开发Step by Step系列文章，并且在我的博客<span style="text-decoration: underline"><span style="color: #339966"><a href="http://BeyondVincent.com" target="_blank"><span style="color: #339966; text-decoration: underline">BeyondVincent.com</span></a></span></span>上发表，本系列文章涉及到的代码会放到我的GitHub上：<span style="text-decoration: underline"><span style="color: #339966"><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep" target="_blank"><span style="color: #339966; text-decoration: underline">WindowsStoreAppStepByStep</span></a></span></span>，不再更新至DevDiv社区。 有更新我会在微博上通知大家：<span style="text-decoration: underline"><span style="color: #339966"><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline"><a href="http://www.weibo.com/beyondvincent">http://www.weibo.com/beyondvincent</a></span></a></span></span> 注意：在DevDiv更新至第53篇，所以第二季从第54篇开始。 PS：第55篇内容将介绍如何通过编程的方式设置锁屏画面。 <a href="http://beyondvincent.com/wp-content/uploads/2013/05/QQ%E6%88%AA%E5%9B%BE20130529201429.png"><img class="alignnone size-full wp-image-702" alt="QQ截图20130529201429" src="http://beyondvincent.com/wp-content/uploads/2013/05/QQ截图20130529201429.png" width="1279" height="799" /></a> <div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-05-29</time></span>
+</div></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/65/" itemprop="url">Windows Store App开发[038]FlipView控件的介绍和使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>1、FlipView控件介绍</h3>
+
+<p>FliView控件用来显示集合中的items，用户可以按顺序(往前或往后)的翻转这些item。如下图所示。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/110.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb10.png" width="520" height="307" /></a></p>
+
+<p>FlipView的继承关系如下图</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/29.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb10.png" width="682" height="454" /></a></p>
+
+<h3>2、FlipView控件的使用</h3>
+
+<h4><a name="t6"></a>0）程序的一个草图设计。</h4>
+
+<p>如下图。3个区域，左上角用来显示图片，右上角显示图片介绍，底部显示图片的缩略，起到浏览进度的作用。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/311.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb11.png" width="682" height="454" /></a></p>
+
+<p>&#160;</p>
+
+<h4>1)简单的类图</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/48.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb8.png" width="668" height="587" /></a>
+&#160;</p>
+
+<h4>2）创建工程</h4>
+
+<p>打开VS->文件->新建->项目->选择BlankApp(XAML)</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/55.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb5.png" width="682" height="363" /></a></p>
+
+<h4>3）数据准备</h4>
+
+<p>在工程中添加一个ImageData.cs文件，里面对item进行了定义（ImageData类），代码如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/63.png"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb3.png" width="642" height="378" /></a></p>
+
+<p>再添加一个MainPageViewModel.cs文件，里面定义很简单，就是一个List数据，用来存储将要在界面显示的数据。代码如下：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/71.png"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb1.png" width="682" height="442" /></a></p>
+
+<p>注意：里面的数据是为了演示用的，真实的项目中，可能是从数据库、或者网络中获得的。</p>
+
+<h4>4）界面编写</h4>
+
+<p>数据准备好了，下面就是界面的编写，根据上面的草图，我们的代码分布是这样的：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/81.png"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb1.png" width="482" height="333" /></a></p>
+
+<p>详细代码请参看后面给出的代码示例。</p>
+
+<p>在这里要讲解的一个内容是：底部的GridView与FlipView的SelectedIndex是双向绑定的，这样就可以做到选中项的同步。</p>
+
+<h4><a name="t11"></a>5）运行效果图：</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/91.png"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb.png" width="682" height="386" /></a>
+&#160;</p>
+
+<p>可以点击下图的按钮进行图片的翻转</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/10.png"><img title="10" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="10" src="http://beyondvincent.com/wp-content/uploads/2013/06/10_thumb.png" width="191" height="216" /></a></p>
+
+<p>也可以通过底部的列表进行切换</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/112.png"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb1.png" width="376" height="167" /></a></p>
+
+<h3>6、FlipView参考资料</h3>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/windows.ui.xaml.controls.flipview.aspx">FlipView Class</a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/jj150601.aspx"><u>How to add a flip view (Windows Store apps using C#/VB/C++ and XAML)</u></a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh781233.aspx"></a><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh781233.aspx"><u>Quickstart: Adding FlipView controls (Windows Store apps using C#/VB/C++ and XAML)</u></a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh780630.aspx"><u>Guidelines and checklist for FlipView controls (Windows Store apps)</u></a></p>
+
+<p>&#160;</p>
+
+<p><strong>7、代码下载</strong></p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/FlipView" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-06</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/64/" itemprop="url">Windows Store App开发[037]Windows 8中SemanticZoom控件使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文介绍如何使用SemanticZoom控件</p>
+
+<h3><a name="t2"></a>1、SemanticZoom控件是什么？</h3>
+
+<p>&#160;&#160;&#160; SemanticZoom控件可以让用户缩放具有相同内容的两个不同视图。其中有一个是主视图。另外一个视图可以让用户进行快速导航。例如，当用户查看地址簿时，用户可以放大某个字母以查看与该字母相关的内容。</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/310.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb10.png" width="682" height="169" /></a></p>
+
+<h3>2、如何使用SemanticZoom控件</h3>
+
+<p>&#160;&#160;&#160; SemanticZoom控件需要包含两个其它控件(GridView或ListView)：一个控件提供放大视图，另外一个提供缩小视图。</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;semanticzoom&gt;
+&lt;semanticzoom.zoomedoutview&gt;
+        &lt;!-- 在这里放置GridView(或ListView)以表示缩小视图 --&gt;   
+    &lt;/semanticzoom.zoomedoutview&gt;
+    &lt;semanticzoom.zoomedinview&gt;
+        &lt;!-- 在这里放置GridView(或ListView)以表示放大视图 --&gt;   
+ &lt;/semanticzoom.zoomedinview&gt;
+&lt;/semanticzoom&gt;</pre>
+
+
+<p><strong>3、运行效果图</strong></p>
+
+<p>第一张是zoom out，第二张是zoom in</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/47.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb7.png" width="682" height="369" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/54.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb4.png" width="682" height="369" /></a></p>
+
+<p><strong>4、代码下载</strong></p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/SemanticZoom" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/63/" itemprop="url">Windows Store App开发[036]Windows 8中的Semantic Zoom(语义缩放)介绍</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文首先简单的介绍一下Windows 8中的语义缩放概念，在下一篇文章中，我将介绍如何在程序中添加SemanticZoom控件，以使我们的程序支持语义缩放。</p>
+
+<p>1、语义缩放(Semantic Zoom)概述</p>
+
+<p>&#160;&#160;&#160; 语义缩放(Semantic Zoom)是一项触控优化技术，用于Windows 8中的Windows Store apps，在一个画面中（如相册、程序列表或地址簿）展示和导航大量的数据或内容集合。</p>
+
+<p>&#160;&#160;&#160; 语义缩放使用两种不同的模式来呈现内容：low-level(zoomed in)模式用于在一个平面中显示所有的结构，而high-level(zoomed out)模式则显示分组中的items，使用户可以快速的导航和浏览内容。</p>
+
+<p>&#160;&#160;&#160; 如下图所示：左边是zoom in模式，右边是zoom out模式</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.png" width="682" height="169" /></a></p>
+
+<p>语义缩放的交互方式有如下几种：</p>
+
+<p>&#160;&#160;&#160; A、捏合与拉伸手势(手指移动距离变远为zoom in，手指距离变近则是zoom out)</p>
+
+<p>&#160;&#160;&#160; B、按下Ctrl键，同时滚动鼠标的滚轮</p>
+
+<p>&#160;&#160;&#160; C、按下Ctrl键，同时按下+或者-。</p>
+
+<p>&#160;&#160;&#160; 语义缩放的应用场景</p>
+
+<p>&#160;&#160;&#160; A、地址薄：通讯录以字母顺序组织(或者其它的)，使用字母来展现数据，用户可以将某个字母“放大”，以看到该字母相关联的联系人。</p>
+
+<p>&#160;&#160;&#160; B、相册：以元数据（如日期）来组织图片，用户可以放大（zoom in）某个具体的日期来显示与那个日期相关的图片集合。</p>
+
+<p>&#160;&#160;&#160; C、产品目录：按照类别组织items。</p>
+
+<p>&#160;&#160;&#160; 语义缩放布局示例：</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Zoom in</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.png" width="682" height="463" /></a></p>
+
+<p>&#160;</p>
+
+<p>注意：语义缩放跟光学缩放(参考<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh465307.aspx"><u>Guidelines fore optical zoom and resizing</u></a>)是不同的。虽然它们具有类似的交互方式和基本的行为（基于缩放因子显示更多或者更少的内容），光学缩放是对一个内容区域或者对象（如相片）进行缩放。</p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/62/" itemprop="url">Windows Store App开发[035]如何创建自己的Windows Store账号来提交Apps</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>如果你想要在Windows Store发布或者销售Apps，你需要开一个开发者账号。如果你已经有一个其它Microsoft services账号——如Windows Phone，你同样需要开一个Windows Store开发者账号。</p>
+
+<h3><a name="t2"></a>&#160;&#160;&#160; 注册步骤：</h3>
+
+<p>注意：在注册之前，你需要有一个信用卡。Windows Store需要使用信用卡来开一个开发者账号——即使你有了注册码，你可以看这里：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/jj553414.aspx">保护你的Microsoft账号安全</a>，的信息，这里的安全措施可以帮助你保护你的账号安全。</p>
+
+<h4><a name="t3"></a>1、在下面的链接打开仪表盘（Dashboard）</h4>
+
+<p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/"><u>Windows Dev Center &#8211; Windows Store apps.</u></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/113.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb11.jpg" width="682" height="402" /></a></p>
+
+<h4>2、登录你已有的Microsoft账号，或者注册一个新的Microsoft账号。</h4>
+
+<p>&#160;&#160;&#160; 在这里，想了解Microsoft账号更多的使用情况，请看链接： <a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh868187.aspx"><u>Picking a Microsoft account for the Windows Store</u></a>。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/29.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb9.jpg" width="682" height="409" /></a></p>
+
+<h4>3、如果你没有相关的Microsoft账号，你可以现在创建一个。</h4>
+
+<p>&#160;&#160;&#160; 注意：如果你使用了已有的Microsoft账号，那么你的Microsoft账号信息会被复制到Windows Store开发者账号中。</p>
+
+<p>&#160;&#160;&#160; 登录之后，会看到如下图中的内容：表示注册步骤有：账号类型->账户信息->协议->价格->付款->购买->谢谢</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/35.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb5.jpg" width="682" height="203" /></a></p>
+
+<p>&#160;</p>
+
+<h4>4、选择国家地区和Windows Store开发者账号类型，然后点击下一步。更多关于如何选择账号类型，请阅读：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh868184.aspx#account_type"><u>Registering for a Windows Store developer account</u></a>.</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/47.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb7.jpg" width="682" height="453" /></a></p>
+
+<h4>5、输入你的Windows Store开发者账户信息。</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/55.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb5.jpg" width="682" height="466" /></a></p>
+
+<p>&#160;</p>
+
+<p>如果你注册的是公司类型，你需要填写审批者的姓名、email地址和电话，然后点击下一步。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/64.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb4.jpg" width="554" height="434" /></a></p>
+
+<h4>6、查看使用条款，并点击接受，然后点击下一步。如果你想在注册之前阅读这些条款，请看这里： <a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh694082.aspx"><u>Windows Store agreements</u></a>.</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/74.jpg"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb4.jpg" width="682" height="559" /></a></p>
+
+<h4>7、输入注册码，然后点击下一步</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/84.jpg"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb4.jpg" width="682" height="380" /></a></p>
+
+<p>&#160;</p>
+
+<h4>8、输入你的付款信息，然后点击下一步</h4>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/93.jpg"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb3.jpg" width="682" height="406" /></a>
+&#160;</p>
+
+<h4>9、确认账号和付款信息是否正确，然后点击购买（Purchase）</h4>
+
+<h4><a name="t12"></a>10、微软将会发送一个确认信息到你填写的开发者电子邮件地址中。</h4>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/61/" itemprop="url">Windows Store App开发[034]Part 1：使用Grid App(XAML)模板创建第一个Windows 8 App</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在本系列中，你将会学习到&#8221;Grid App（XAML）&#8221;模板的详细内容，并在理解这个模的基础上创建你的Windows 8 app。</p>
+
+<h3><a name="t5"></a>&#160;&#160;&#160; 在开始之前：</h3>
+
+<ul>
+<li>你需要Windows 8 OS</li>
+<li>Microsoft Visual Studio Express 2012 for Windows 8，在这里可以下载到：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974577.aspx"><u>获取工具</u></a></li>
+<li>需要一个开发者证书，看这里：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx"><u>获取开发者证书</u></a></li>
+</ul>
+
+
+<h3><a name="t6"></a>&#160;&#160;&#160; 摘要：</h3>
+
+<p>&#160;&#160;&#160; 在这里我会使用C#和XAML创建一个简单的Windows 8 style app，在创建好解决方案之后，我会深入分析Visual Studio 2012生成的XAML和代码。我将运行app，并查看它使用的示例数据和相关绑定。在更深入的层次上，你将更好的理解app内导航是如何做的，以及绑定又怎么使用。深入的理解这个模板有助于以更好的方式设计你的程序，并且可以帮助你考虑这个模板是否适用于你的app。</p>
+
+<h3><a name="t7"></a>&#160;&#160;&#160; 下面正式开始：</h3>
+
+<ul>
+<li>&#160;&#160;&#160; 通过输入&#8221;vis&#8221;并选择</li>
+<li><p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/110.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb10.jpg" width="682" height="142" /></a></p></li>
+<li><p>这将会启动visual studio 2012</p></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/28.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb8.jpg" width="682" height="406" /></a></p>
+
+<ul>
+<li>单击文件->新建->项目</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/34.jpg"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/06/3_thumb4.jpg" width="667" height="403" /></a></p>
+
+<ul>
+<li>你将看到新建项目对话框，选择模板->Visual C#，然后选择Windows Metro style(注：在新版本的vs中这里是Windows Store)。然后选择Grid App(XAML)模板。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/46.jpg"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/06/4_thumb6.jpg" width="682" height="434" /></a></p>
+
+<ul>
+<li><p>输入BV_MyGridApp作为程序的名称。然后单击确定以创建项目。注意：在Windows 8中，所有的软件开发都将需要开发者证书。在启动Visual Studio之后，可能会提示你授权你的机器以进行开发。当提示出现时，单击同意。如果Visual Studio要求输入Microsoft账号，那么就输入Hotmail或者live账号，并单击确定。更多消息：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/hh974578.aspx</u></a></p></li>
+<li><p>Visual Studio为你创建的目录结构如下：</p></li>
+<li><p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/54.jpg"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/06/5_thumb4.jpg" width="286" height="513" /></a>
+a、Properties文件夹包含一些程序集信息和项目属性。</p>
+
+<p>&#160;&#160;&#160; b、应用文件夹包含了这个项目需要引用到的其它一些程序集。</p>
+
+<p>&#160;&#160;&#160; c、Assets文件夹包含缺省的logo、SplashScreen图片，你可以在这个目录中添加自己的logo。</p>
+
+<p>&#160;&#160;&#160; d、Common文件夹包含了一些类和XAML styles，这些内容可以简化程序的开发。你可以在这个文件夹添加自己的转换类，Grid App(XAML)模板已经默认提供了两个转换类了。这里还有BindableBase.cs类，它用于所有datamodel类的基类。通过这个基类，你的数据模型类就不需要实现INotifyPropertyChanged接口了，因为BindableBase.cs已经实现了INotifyPropertyChanged接口。有关更多信息，你可以从那个目录下的ReadMe.txt文件获取。除了一般的数据和style外，这个文件夹还有个名字为“SuspensionManager.cs”的文件。SuspensionManager是一个辅助类，可以帮助我们简化app生命周期的管理。它为我们处理了许多事情。它保存和恢复app页面中Frame的导航状态。它序列化页面状态数据 并将其写入一个XML文件中，该文件存储在本地storage中。</p>
+
+<p>&#160;&#160;&#160; e、DataModel文件夹包含一个SampleDataSource.cs文件。这个文件中生成了一些示例数据。</p>
+
+<p>&#160;&#160;&#160; f、App.xaml文件包含xaml以及windows 8 style app需要的资源。App.xaml.cs文件中的App()方法它负责初始化一个Application对象。这里面的代码是首次被执行的，相当于main()或WinMain()。它同样具有这样的方法：当应用程序进入suspended阶段，以及程序被用户正常启动时调用的方法。 OnLaunched和OnSuspending方法。当程序进入suspended或者launch阶段，如果你想执行某个确定的动作，那么你可以在这两个方法中实现。</p>
+
+<p>&#160;&#160;&#160; g、GroupDetailPage.xaml显示一个集合(群组)以及在该集合中的相关项(items)。一般是这样的：用户可以在这个页面看到左边是集合的详细内容，而右边是相关的项，当选择一个项时，可以导航到选中项的全页面视图，即ItemDetailPage.xaml。</p>
+
+<p>&#160;&#160;&#160; h、GroupedItemsPages.xaml文件是当程序启动出现的第一个页面。它负责显示Group集合和对应的项。它相当于主页面。用户可以在这里查看Group集合与各个项，如果选择某项（item）择导航到项全画面视图，而选择group 标签的话择导航至group详情画面。</p>
+
+<p>&#160;&#160;&#160; i、ItemDetailPage.xaml显示单独的一项或者某项的全画面视图。</p>
+
+<p>&#160;&#160;&#160; j、Package.appxmanifest.xaml是一个特殊的文件，它描述了app如何打包、具有的功能、如何展现给用户。也使用了几个图片文件，如启动画面(初始屏幕)图片splashscreen.png,以及SmallLogo.png和Logo.png。如下图</p></li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/111.png"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb.png" width="682" height="407" /></a></p>
+
+<ul>
+<li>我们来运行一下程序,看看默认情况下是什么样子的。选择生成->生成解决方案，然后按F5运行app[注意，再在这里我选择模拟器调试]。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/63.jpg"><img title="6" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/06/6_thumb3.jpg" width="346" height="208" /></a></p>
+
+<p>模拟器是本地计算机中的一个终端服务会话.你可以打开任务管理器,然后选择用户tab,将看到有两个会话.如下图&#8230;&#8230;&#8230;..注意:即使你停止调试和,也不能关闭模拟器,这有利于你多次调试.当然,问题来了:如何关闭模拟器呢?在模拟器窗口上没有关闭按钮:单击最小化按钮不能推出模拟器.你可以在任务管理器中关闭它.</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/73.jpg"><img title="7" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="7" src="http://beyondvincent.com/wp-content/uploads/2013/06/7_thumb3.jpg" width="616" height="309" /></a></p>
+
+<ul>
+<li>程序运行起来，可以看到在Package.appmanifest文件中提到的&#8221;启动画面&#8221;。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/121.png"><img title="12" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="12" src="http://beyondvincent.com/wp-content/uploads/2013/06/12_thumb.png" width="682" height="377" /></a> </p> </p> </p></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>等一会，程序将被加载，主页面显示集合以及items。这里有6个集合，可以左右滚动来显示查看它们。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/83.jpg"><img title="8" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="8" src="http://beyondvincent.com/wp-content/uploads/2013/06/8_thumb3.jpg" width="682" height="420" /></a></p>
+
+<ul>
+<li>单击ItemTitle:1矩形框，你会看到Item Title：1的详细页面。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/92.jpg"><img title="9" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="9" src="http://beyondvincent.com/wp-content/uploads/2013/06/9_thumb2.jpg" width="682" height="420" /></a></p>
+
+<ul>
+<li>现在如果你想移动到item2,那么你可以在画面右边移动/徘徊鼠标，将会看到一个带右箭头的按钮。单击它，会滚动制集合中的下一个item。在左手边，可以单击左箭头按钮往回滚。同样的，如果在触屏设备上，可以水平轻拂画面,以移动到下一项。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/10.jpg"><img title="10" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="10" src="http://beyondvincent.com/wp-content/uploads/2013/06/10_thumb.jpg" width="149" height="261" /></a></p>
+
+<ul>
+<li>点击或者触摸右上角的返回按钮,将回到主画面。</li>
+<li>现在单击“Group Title：1”进入Group Title:1详情,你会看到Group的一个概要画面.</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/112.jpg"><img title="11" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="11" src="http://beyondvincent.com/wp-content/uploads/2013/06/11_thumb1.jpg" width="682" height="420" /></a>
+&#160;</p>
+
+<p>至此，你应该明白了整个工程的结构和其中不同文件的作用,并且知道如何在VS2012中启动app.下面我们开始讲解下一部分:解释这个模板中的每个文件的作用。</p>
+
+<ul>
+<li>从App.xaml开始吧:打开App.xaml文件。看看它是如何包含&#8221;Common/StandardStyles.xaml&#8221;的。这个文件包含的style可以用在整个app中.一旦将style文件添加到ResourceDictionary中,那么在当前项目中的所有文件中都可以使用它.它相当于一个全局变量.</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/122.jpg"><img title="12" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="12" src="http://beyondvincent.com/wp-content/uploads/2013/06/12_thumb1.jpg" width="638" height="442" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>打开App.xaml.cs文件，App.xaml.cs是App.xaml文件的code-behind文件，它是一个partial类.XAML和code-behind一起组成了一个完整的类。App.xaml.cs是程序的入口。它有一个构造函数，调用一个名为InitializeComponent的函数，该函数是由VS自动生成的，它的主要目的是初始化在XAML文件中声明的元素。App.xaml.cs文件同样包含2个处理激活和休眠app的方法：OnLaunched和OnSuspending。如名字所示，当程序进入启动状态时，OnLaunched方法被调用，而程序进入休眠状态时调用OnSuspending方法。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/131.jpg"><img title="13" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="13" src="http://beyondvincent.com/wp-content/uploads/2013/06/13_thumb.jpg" width="682" height="510" /></a></p>
+
+<p>据了解，SuspensionManager类有导航的功能，要使用这个类提供的导航功能，必须注册main app Frame。我们在Onlaunched方法中注册Frame</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/141.jpg"><img title="14" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="14" src="http://beyondvincent.com/wp-content/uploads/2013/06/14_thumb.jpg" width="603" height="335" /></a></p>
+
+<ul>
+<li>LayoutAwarePage文件：在平板电脑中，加速度计是一个重要的功能，可以帮助用户确定它们想要的任何方向。开发者必须在每一个页面中处理这些方向的改变，在code-behind中方向事件会被触发。然而，现在这个功能已经被放到LayoutAwarepage.cs文件中了。LayoutAwarePage类作为每一个页面的基类，它提供了dataViewModel功能。下面是其中的一些方法：</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/151.jpg"><img title="15" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="15" src="http://beyondvincent.com/wp-content/uploads/2013/06/15_thumb.jpg" width="682" height="520" /></a>
+&#160;</p>
+
+<p>在LayoutAwarePage类中，这有一个DefaultViewModel属性。这个类用于xaml控件的数据绑定。你可以去看看GroupedItemPage.xaml.cs文件。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/161.jpg"><img title="16" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="16" src="http://beyondvincent.com/wp-content/uploads/2013/06/16_thumb.jpg" width="682" height="259" /></a></p>
+
+<ul>
+<li>GroupedItemsPage.xaml.cs：打开这个页面，你会看到示例数据中的group集合被添加到DevaultViewModel属性tag中。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/171.jpg"><img title="17" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="17" src="http://beyondvincent.com/wp-content/uploads/2013/06/17_thumb.jpg" width="682" height="100" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>现在打开GroupedItemsPage.xaml文件，你可以看到在Page.Resources标签中，将“Groups”当做CollectionViewSource。这个资源的名称是groupedItemsViewSource</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/181.jpg"><img title="18" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="18" src="http://beyondvincent.com/wp-content/uploads/2013/06/18_thumb.jpg" width="682" height="177" /></a></p>
+
+<p>这个页面使用GridView来显示集合与各项。你可以在这里看到GridView的ItemsSource绑定到groupedItemsViewSource上。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/191.jpg"><img title="19" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="19" src="http://beyondvincent.com/wp-content/uploads/2013/06/19_thumb.jpg" width="573" height="363" /></a></p>
+
+<p>在GrouedItemsPage.xaml.cs文件中，当用户点击某个item时，代码使用frame的Navigate方法，导航至ItemDetailPage页面</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/20.jpg"><img title="20" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="20" src="http://beyondvincent.com/wp-content/uploads/2013/06/20_thumb.jpg" width="570" height="240" /></a></p>
+
+<p>同样在GroupedItemsPage.xaml.cs文件中，当用户点击Group标题，代码使用frame的Navigate方法，导航至GroupDetailPage页面</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/211.jpg"><img title="21" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="21" src="http://beyondvincent.com/wp-content/uploads/2013/06/21_thumb.jpg" width="625" height="248" /></a></p>
+
+<ul>
+<li>打开ItemDetailPage.xaml文件，这个页面使用FlipView控件，可以往前或者往回滚动集合中的items。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/221.jpg"><img title="22" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="22" src="http://beyondvincent.com/wp-content/uploads/2013/06/22_thumb.jpg" width="558" height="198" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>打开ItemDetailPage.xaml.cs文件；它继承自LayoutAwarePage，LayoutAwarePage实现了在页面栈中GoHome和GoBack导航的功能。在LoadState方法中，它绑定了最后一次单击的item（group和group items）。</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/231.jpg"><img title="23" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="23" src="http://beyondvincent.com/wp-content/uploads/2013/06/23_thumb.jpg" width="682" height="215" /></a></p>
+
+<ul>
+<li>打开GroupDetailPage.xaml文件，这个页面的左边显示了分类/群组的图片和文字信息，然后用GridView显示分类/群组的的items。</li>
+</ul>
+
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/241.jpg"><img title="24" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="24" src="http://beyondvincent.com/wp-content/uploads/2013/06/24_thumb.jpg" width="682" height="280" /></a></p>
+
+<p>&#160;</p>
+
+<ul>
+<li>开发GroupDetailPage.xaml.cs文件，它同样继承自LayoutAwarePage，从父类中继承了GoHome和GoBack方法。最后，打开SampleDataSource.cs文件，移至SampleDataSource类的定义。这个类使用假数据创建了集合和items。</li>
+</ul>
+
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/242.jpg"><img title="24" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="24" src="http://beyondvincent.com/wp-content/uploads/2013/06/24_thumb1.jpg" width="682" height="280" /></a></p>
+
+<h3>总结</h3>
+
+<p>&#160;&#160;&#160; 在本文中，介绍了GridView(XAML)模板创建工程的结构，各个文件作用，不同页面间导航，数据如何绑定至Grid控件。希望在Windows 8开发中，对你有帮助。</p>
+
+<p>&#160;</p>
+
+<p>代码下载</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/GridApp" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/60/" itemprop="url">Windows Store App开发[033].NET4.5 获取Caller Function的信息(Caller Attributes)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在调试代码时，大家都会有这样的一个问题“谁调用了我的这个函数？”在很多情况下，知道了调用函数，是开始解决bug的第一步。到目前为止，主要方法是：在Visual Studio中，看看看调用栈信息，或者调试器。在.NET 4.5中，添加了一个新特性：一个函数可以知道它被谁调用了，调用函数的信息包括：函数名、文件名和调用所在的行。开发者现在可以使用这些信息来提供有用的调试信息了。这个特性所在名称空间为：System.Runtime.CompilerServices。下面是一个使用示例：【Windows 8 store apps开发中】</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public void Method([CallerMemberName] string name = &quot;&quot;, [CallerFilePath] string file = &quot;&quot;, [CallerLineNumber] int line = 0) { Debug.WriteLine(name); Debug.WriteLine(file); Debug.WriteLine(line); }</pre>
+
+
+<p>本篇文章的内容虽然少，但是小小功能，非常有用。祝你调戏代码成功！</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/59/" itemprop="url">Windows Store App开发[032]C++/CX Part 2 of [N]: Hat(^)类型</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>注：本文由BeyondVincent(破船)翻译</p>
+
+<p>&#160;</p>
+
+<p>关于本次系列的一个介绍：</p>
+
+<h4><a href="http://beyondvincent.com/2013/06/04/windows-store-app%e5%bc%80%e5%8f%91027ccx-part-1-of-n-%e4%b8%80%e4%b8%aa%e7%ae%80%e5%8d%95%e7%9a%84%e7%b1%bb/"><u>Windows Store App开发[027]C++/CX Part 1 of [n]: 一个简单的类</u></a></h4>
+
+<p>&#160;&#160;&#160; hat(^)是C++/CX中非常明显的一个特征——当第一次看C++/CX代码时，几乎很难不注意到它的存在。那么，hat(^)究竟是什么类型呢？hat类型是这样的一个智能指针：</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; (1)、自动管理Windows Runtime对象的生命周期</p>
+
+<p>&#160;&#160;&#160;&#160;&#160;&#160;&#160; (2)、提供自动类型转换的功能，以简化Windows Runtime对象的使用</p>
+
+<p>&#160;&#160;&#160; 首先，开始讨论如何通过WRL来使用Windows Runtime对象，然后解释C++/CX的hat是如何让事情变得简单。为了演示的目的，我使用如下Number类的修改版本，Number类在Part1中有介绍：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">public interface struct IGetValue
+{
+    int GetValue() = 0;
+};
+
+public interface struct ISetValue
+{
+    void SetValue(int value) = 0;
+};
+
+public ref class Number sealed : public IGetValue, ISetValue
+{
+public:
+    Number() : _value(0) { }
+
+    virtual int  GetValue()          { return _value;  }
+    virtual void SetValue(int value) { _value = value; }
+
+private:
+    int _value;
+};</pre>
+
+
+<p>在被修改的Number类实现中，我定义了一对接口：IGetValue和ISetValue，这是声明了Number的两个成员函数；接着Number实现了这两个接口。其它的，看起来应该很熟悉。</p>
+
+<p>&#160;&#160;&#160; 注意：Number实际上实现了三个Windows Runtime接口：除了IGetValue和ISetValue，编译器仍然会生成__INumberPublicNonVirtuals接口，这个接口由Number实现。因为Number的所有成员都已经被显示的声明在接口中(IGetValue和ISetValue)了，所以编译器生成的__INumberPublicNonVirtuals接口没有声明任何成员。及时这样，这个接口也是必须要有的，因为它是作为Number类的缺省接口。每一个runtime对象都必须有一个缺省接口，并且缺省接口对类来说总是唯一的。稍后，我们会看到为什么缺省接口非常重要。</p>
+
+<h3><a name="t2"></a>生命周期管理</h3>
+
+<p>&#160;&#160;&#160; Windows Runtime引用类型使用引用计数来管理对象的生命周期。所有的Windows Runtime接口(包括Number实现的三个接口)都直接继承自<a href="http://msdn.microsoft.com/en-us/library/br205821.aspx">IInspectable</a>接口，该接口继承自COM <a href="http://msdn.microsoft.com/en-us/library/ms680509.aspx">IUnknown</a>接口。IUnknown有三个成员方法，用于控制对象的生命周期和允许类型转换。</p>
+
+<p>&#160;&#160;&#160; 在MSDN上的一篇文章“<a href="http://msdn.microsoft.com/en-us/library/ms692481.aspx">引用计数管理的规则</a>”全面的概述了IUnknown生命周期管理是如何进行的。规则非常的简单：每次创建一个新的引用对象时，必须调用<a href="http://msdn.microsoft.com/en-us/library/ms691379.aspx">IUnknown::AddRef</a>方法来将对象的引用计数加1；每当销毁一个引用对象时，必须调用IUnknown::Release方法来将对象的引用计数减1。引用计数初始化时为0，之后会有一系列关于AddRef和Release的调用，当引用计数再次为0时，对象将被销毁。&#160;&#160;&#160;</p>
+
+<p>&#160;&#160;&#160; 当然在进行C++编程时，我们应该很少——几乎从来没有——去直接调用AddRef和Release方法。取而代之的是，使用智能指针，可以在需要的时候自动的进行调用。使用智能指针可以确保对象不会因为没有调用Release而泄露，或者过早调用Release而引起对象销毁，从而导致AddRef失败。</p>
+
+<p>&#160;&#160;&#160; ATL包含<a href="http://msdn.microsoft.com/en-us/library/ezzw7k98.aspx">CComPtr</a>和一些相关的智能指针，它们已经长期用于COM编程中对象的自动管理引用计数，同样它们都实现了IUnknown。WRL包含<a href="http://msdn.microsoft.com/en-us/library/br244983.aspx">ComPtr</a>，该指针对CComPtr进行了改进（例如：ComPtr不需要重载运算符&amp;，而CComPtr是需要的）。</p>
+
+<p>&#160;&#160;&#160; 对于那些不常使用COM编程以及不熟悉ComPtrs的开发者：如果你使用的是shared_ptr（包含在C++11，C++ TR1和Boost），ComPtr在生命周期管理上具有同样的作用。机制不相同（ComPtr使用了IUnknown提供的内部引用计数，而shared_ptr支持任意类型，因此必须使用外部引用计数），但是生命周期管理的行为是相同的。</p>
+
+<p>&#160;&#160;&#160; C++/CX hat的生命周期管理语义上跟ComPtr完全相同。当复制一个T^时，AddRef被调用，以将引用计数加1，当T^出了作用域或者被重新赋值，则会调用Release来讲引用计数减1。下面，我们通过一个简单的例子，演示引用计数的行为：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">{
+     T^ t0 = ref new A();
+     T^ t1 = ref new B();
+
+     t0 = t1;
+     t0 = nullptr;
+ }</pre>
+
+
+<p>首先，创建了一个A对象，并将其所有权给t0。这个A对象的引用计数将是1，因为有一个T^对其有一个引用。然后创建了一个B对象，并将其所有权给t1。B对象的引用计数同样是1。</p>
+
+<p>&#160;&#160;&#160; t0 = t1的结果是t0和t1都指向相同的一个对象。这里有三个步骤一定要做。首先，t1->AddRef()会被调用，以使B对象引用计数加1，因为t1具有该对象的所有权。其次，t0-Release()被调用，以释放t0对A对象的所有权，这就会引起A对象的引用计数为0，并且A对象自行销毁。同时，也会引起B对象的引用计数为2。最后，t1被设置为指向B对象。</p>
+
+<p>&#160;&#160;&#160; 然后赋值t0 = nullptr。这回将t0重置为null，也就是说，它会释放对B对象的所有权。这会调用t0->Release()，引起B对象的引用计数减1。</p>
+
+<p>&#160;&#160;&#160; 最后，将执行只代码块的右大括弧：}。在这里，所有的局部变量会被销毁，以相反的顺序进行。首先，t1被销毁（智能指针，不是所指向的对象）。这会调用t1->Release()，引起B对象的引用计数为0，因此B对象自行销毁。然后是t0被销毁，因为t0是null，所以这个没有指向任何对象。</p>
+
+<p>&#160;&#160;&#160; 如果我们只是考虑生命周期，那么完全没必要使用hat(^)：ComPtr<T>可以满足管理对象的生命周期。</p>
+
+<h3><a name="t3"></a>类型转换</h3>
+
+<p>&#160;&#160;&#160; 在C++中，一些类型转换涉及到的类类型是隐式的；其它的一些可能需要使用cast或者一些列的casts。例如，如果Number类以及它实现的接口是普通的C++类型，而不是Windows Runtime类型，那么从Number*转换到IGetValue*将是隐式的，而要将IGetValue*转换为Number*则需要使用static_cast或dynamic_cast。</p>
+
+<p>&#160;&#160;&#160; 这种转换方式在Windows runtime引用类型中是不能使用的，因为引用类型的实现是不透明的，并且引用类型在内存中的布局也是未知的。用C#实现的引用类型，在内存中的布局与用C++实现的引用类型是不同的。因此，当使用Windows Runtime类型时，我们不能依赖于C++语言的特定功能，如隐式的将派生类转换至基类和强制类型转换。</p>
+
+<p>&#160;&#160;&#160; 为了执行这些转换，我们必须使用IUnknown接口的第三个成员方法：<a href="http://msdn.microsoft.com/en-us/library/ms682521.aspx">IUnknown::QueryInterface</a>。这个成员函数被当做与语言无关的转换(dynamic_cast)：它尝试将类转换为特定的接口，并返回是否转换成功。因为每个runtime类型都实现了IUnknown接口，并提供它自己定义的QueryInterface，只要是它实现了的语言和框架，如果需要，都可以返回正确的对应接口指针。</p>
+
+<h3><a name="t4"></a>通过WRL使用对象</h3>
+
+<p>&#160;&#160;&#160; 我们来看看如何通过WRL来使用之前定义的Number类。这个示例接收一个Number实例，并调用SetValue方法进行值的设置，调用GetValue方法获取值。（为了简洁，省略了异常检查。）</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void F(ComPtr&lt;__INumberPublicNonVirtuals&gt; const&amp; numberIf)
+    {
+        // Get a pointer to the object&#039;s ISetValue interface and set the value:
+        ComPtr&lt;isetvalue&gt; setValueIf;
+        numberIf.As(&amp;setValueIf);
+    
+        setValueIf-&gt;SetValue(42);
+    
+        // Get a pointer to the object&#039;s IGetValue interface and get the value:
+        ComPtr&lt;igetvalue&gt; getValueIf;
+        numberIf.As(&amp;getValueIf);
+    
+        int value = 0;
+        getValueIf-&gt;GetValue(&amp;value);
+    }&lt;/igetvalue&gt;&lt;/isetvalue&gt;</pre>
+
+
+<p>WRL ComPtr模板的成员函数As简单的封装了IUnknown::QueryInterface的调用，主要是为了防止常见的编程错误。首先，用它来获得ISetValue接口指针并调用SetValue，然后在获取IGetValue接口指针并调用GetValue。</p>
+
+<p>&#160;&#160;&#160; 如果我们能够获得Number*，并通过该指针调用SetValue和GetValue，将会简单很多。不幸的是，我们不能这样做：之前说过，引用类型的实现是不透明的，我们只能使用一个指向它所实现的接口中的一个接口的指针来与对象进行交互。在Number对象中，只能通过IGetValue*，ISetValue*，或者_INumberPublicNonVirtuals*。</p>
+
+<p>&#160;&#160;&#160; 这里调用两个成员方法使用了许多代码，通过这个示例演示了一个主要的障碍，我们必须要克服它，使Windows Runtime类型的使用更简单。不像COM，Windows Runtime不允许一个接口继承自另外一个Windows Runtime接口；所有的接口必须直接继承自IInspectable。每一个接口都是独立的，我们只能通过这些接口与对象进行交互，如果使用实现了多个接口（大多数类型都是这样的）的一个类型，那么我们不得不写很多非常冗余的类型转换代码，以便于得到正确的接口指针，来调用每一个函数。</p>
+
+<h3><a name="t5"></a>通过C++/CX使用对象</h3>
+
+<p>&#160;&#160;&#160; C++/CX的一个优点是编译器知道哪种类型是Windows Runtime类型。编译器访问Windows Metadata（WinMD）文件，这个文件定义了每一个接口和runtime类型，因此，除了别的事情外，编译器知道每一个runtime类型实现的接口集。例如，编译器知道Number类型实现的ISetValue和IGetValue接口，因为metadata里面有描述。编译器能根据这些类型信息来自动的生成类型转换代码。</p>
+
+<p>&#160;&#160;&#160; 看看下面的C++/CX代码，作用跟上面的WRL示例一样：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
+    {
+        ISetValue^ setValueIf = number;
+        setValueIf-&gt;SetValue(42);
+    
+        IGetValue^ getValueIf = number;
+        int value = getValueIf-&gt;GetValue();
+    }</pre>
+
+
+<p>因为编译器知道Number实现了ISetValue和IGetValue接口，所以它允许隐式的将Number^转换为ISetValue^何IGetValue。这中隐式的转换会引发编译器生成这样的代码：调用IUnknown::QueryInterface来获得正确的接口指针。出了整洁的语法外，这里没有奇怪的行为：编译器只是生成类型转换的代码，否则需要我们自己来写。</p>
+
+<p>&#160;&#160;&#160; 我们同样期待dynamic_cast可用：当然，这是可以的，例如，下面的代码从IsetValue^获取IGetValue^：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
+   {
+       ISetValue^ setValueIf = number;
+       setValueIf-&gt;SetValue(42);
+   
+       IGetValue^ getValueIf = dynamic_cast&lt;igetvalue  ^&gt;(setValueIf);
+       int value = getValueIf-&gt;GetValue();
+   }&lt;/IGETVALUE^&gt;</pre>
+
+
+<p>这个示例的行为与上面那个例子一样，我们只是使用不同的步骤获得相同的行为。如果转换失败，dynamic_cast会返回nullptr。C++/CX同样提供了safe_cast，如果转换失败的话，会抛出一个<a href="http://msdn.microsoft.com/en-us/library/hh755790.aspx">Platform::InvalidCastException</a>异常。</p>
+
+<p>&#160;&#160;&#160; 当我们在讨论上面的WRL示例时，我们注意到，示例中并没有Number*，只能使用接口指针。这引出了一个问题：Number^是什么？在runtime中，Number^是__INumberPublicNonVirtuals^。hat(^)涉及到的runtime类型(不是一个接口)实际上是代表一个指针，该指针指向runtime类型的缺省接口。</p>
+
+<p>&#160;&#160;&#160; 在编译时，编译器将Number^当做整个Number对象。编译器聚集了Number实现的所有的成员接口，并允许通过Number^来直接调用这些成员。我们可以使用Number^来代替IGetValue^和ISetValue，编译器会植入QueryInterface的调用，以执行相关的转换，来完成函数调用。</p>
+
+<p>&#160;&#160;&#160; 因此，我们可以进一步简化C++/CX编程：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">void F(Number^ number)
+   {
+       number-&gt;SetValue(42);
+       int value = number-&gt;GetValue();
+   }</pre>
+
+
+<p>这里的代码做的事情与第一个C++/CX示例和WRL示例一样。这同样没有神奇的地方：编译器简单的生成所有的样式，来对类型进行转换，以使每个函数被调用。</p>
+
+<p>&#160;&#160;&#160; 你可能发现到这个示例代码非常的段，并不像WRL示例那样冗长，这就是我们的开始。:&ndash;)所有的转换代码都不需要我们来写，我们只需要使用^和ref来告诉编译器，我们将要处理Windows Runtime类型——看起来跟C++代码写的普通C++类型非常相似。这是一个点，理想情况下，我们的Windows Runtime类型代码应该竟可能的与C++类型代码相似。</p>
+
+<h3><a name="t6"></a>最后：注意事项</h3>
+
+<p>&#160;&#160;&#160; ComPtr<T>和T^都是无开销的智能指针：每一个智能指针的size跟普通指针的size一样，操作使用它们不需要做任何不必要的工作。如果你需要在C++/CX代码和WRL代码间互操作，你可以简单的使用reinterpret_cast将T^转换为T*：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">ABI::ISetValue* setValuePtr = reinterpret_cast(setValueIf);</pre>
+
+
+<p>（ABI中对象级别的定义是在ABI名称空间下，所有这不会与C++/CX高级别的定义产生冲突，C++/CX定义在全局名称空间。）<a href="http://www.devdiv.com/_DevDiv%E5%8E%9F%E5%88%9B_Windows_8_Metro_App%E5%BC%80%E5%8F%91_19_C___CX_Part_0_of__n___C___CX%E7%AE%80%E4%BB%8B-thread-134499-1-1.html"></a></p>
+
+<p>&#160;&#160;&#160; 除了提供类型转换功能外，hat(^)还提供了其它一些好处，这些好处通过普通的智能指针（如ComPtr）是不能完成的。其中最重要的一个好处就是hat到处都可以使用。后面这段话不太理解，等理解了再来翻译一下吧（A member function that takes an interface pointer as an argument is declared as taking a raw pointer (this is part of the Windows Runtime ABI, which is designed to be simple and language-neutral, and thus knows nothing of what a C++ smart pointer is). So, while one can use</p>
+
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
+  <table cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="line-numbers">
+        <div>
+          1<br />
+        </div>
+      </td>
+      
+      <td>
+        <div class="text codecolorer">
+          ComPtr
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<p>most places, raw pointers still need to be used at the ABI boundary, and there is room for subtle (and not-so-subtle) programming errors.）</p>
+
+<p>&#160;&#160;&#160; 最后一段话我想下面这段话也贴原文吧，是不是太难以理解了，不知道作者表达的意思（With C++/CX, the compiler already transforms member function signatures to translate between exceptions and HRESULTs and the compiler is also able to inject conversions from</p>
+
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
+  <table cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="line-numbers">
+        <div>
+          1<br />
+        </div>
+      </td>
+      
+      <td>
+        <div class="text codecolorer">
+          T^
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<p>to</p>
+
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:650px;">
+  <table cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="line-numbers">
+        <div>
+          1<br />
+        </div>
+      </td>
+      
+      <td>
+        <div class="text codecolorer">
+          T*
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<p>where required, substantially reducing the opportunity for programming errors.）</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/58/" itemprop="url">Windows Store App开发[031]Windows Store中企业账号和个人账号的区</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/27.jpg"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2_thumb7.jpg" width="682" height="211" /></a></p>
+
+<p>微软的Windows商店于2012年9月12日在120个市场上面向所有的开发者(企业和个人)开发，这是一个非常好的消息，意味着个人开发者已经可以开始在商店中提交自己的应用了。更多相关信息，可以通过下面的链接来了解到</p>
+
+<p><a href="http://blogs.msdn.com/b/windowsstore/archive/2012/09/11/windows-store-now-open-to-all-developers.aspx"><u>Windows Store now open to all developers in 120 markets</u></a></p>
+
+<p>下面我再给大家分享几个链接，是关于商店的一些事情，分别是：</p>
+
+<p><a href="http://blogs.msdn.com/b/windowsstore/archive/2012/07/20/making-money-with-your-apps-through-the-windows-store.aspx"><u>Making money with your apps through the Windows Store</u></a></p>
+
+<p><a href="http://blogs.msdn.com/b/windowsstore/archive/2012/08/03/getting-paid-from-the-windows-store.aspx"><u>Getting paid from the Windows Store</u></a></p>
+
+<p><a href="http://blogs.msdn.com/b/windowsstore/"><u>Windows Store for developers</u></a></p>
+
+<p>当然，今天的主题是Windows Store中企业和个人账号的区别。下面就进入主题，我稍微总结一下它们之间的区别：</p>
+
+<p>当你注册Windows商店账号时，可以选择注册公司或者个人账号。那么它们之间的主要却别是什么呢？</p>
+
+<p>1、费用：个人账号需要49美元/年，而企业账号是$99美元/年。</p>
+
+<p>2、验证：为了确保你有创建企业账号权利，企业账号注册时需要提交更多的验证信息</p>
+
+<p>3、桌面程序(Desk application)：只有企业账号可以提交桌面程序至商店中，个人账号是不可以的。</p>
+
+<p>4、不同的功能(capabilities)：以下三个功能只有用企业账号提交才行(更多关于功能的信息，请看<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh464936.aspx"><u>程序功能声明</u></a><u>)</u></p>
+
+<p>&#160;&#160;&#160; a、企业身份验证：使用Windows 证书(credentials)访问到企业内部网（intranet）</p>
+
+<p>&#160;&#160;&#160; b、共享用户证书：允许在程序中，使用软件或硬件证书，或智能卡来鉴别用户</p>
+
+<p>&#160;&#160;&#160; c、文档库访问：允许访问用户的文档库，包括添加、修改和删除文件的功能。</p>
+
+<p>更多信息，请看：<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh868184.aspx"><u>注册Windows商店开发者账号</u></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time data-updated="true" datetime="2013-05-18T17:37:00+08:00">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/06/05/57/" itemprop="url">Windows Store App开发[030]移动控件位置</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文为大家写一个小示例：如何在画面中用手势移动一个控件的位置，就不多说原理，直接上代码和效果图，其实原理也很简单哦。</p>
+
+<p>这里有官方参考资料</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh761498.aspx"><u>http://msdn.microsoft.com/en-us/library/windows/apps/hh761498.aspx</u></a></p>
+
+<p>1、新建一个Blank App</p>
+
+<p>2、在MainPage.xaml文件中添加如下代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="{StaticResource ApplicationPageBackgroundThemeBrush}"&gt;
+    &lt;img source="/Assets/1.jpg" manipulationstarted="Image_ManipulationStarted_1" manipulationdelta="Image_ManipulationDelta_1" manipulationcompleted="Image_ManipulationCompleted_1" manipulationmode="All" margin="342,34,591,337" tapped="Image_Tapped_1" /&gt;
+        &lt;image.rendertransform&gt;
+            &lt;translatetransform x:name="translateTransform" /&gt;
+        &lt;/image.rendertransform&gt;
+    &lt;/img&gt;
+
+    &lt;img height="100" source="/Assets/BeyondVincentWin8Logo.png" manipulationstarted="Image_ManipulationStarted_1" manipulationdelta="Image_ManipulationDelta_1" manipulationcompleted="Image_ManipulationCompleted_1" manipulationmode="All" margin="568,658,0,10" /&gt;
+        &lt;image.rendertransform&gt;
+            &lt;translatetransform x:name="translateTransform1" /&gt;
+        &lt;/image.rendertransform&gt;
+    &lt;/img&gt;
+&lt;/grid&gt;</pre>
+
+
+<p>代码中要注意下面三个东西是添加事件处理</p>
+
+<p>ManipulationStarted</p>
+
+<p>ManipulationDelta</p>
+
+<p>ManipulationCompleted</p>
+
+<p>记得再加上ManipulationMode=&ldquo;All&rdquo;</p>
+
+<p>3、MainPage.xaml.cs文件中，添加如下代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void Image_ManipulationStarted_1(object sender, ManipulationStartedRoutedEventArgs e)
+{
+    e.Handled = true;
+}
+
+private void Image_ManipulationDelta_1(object sender, ManipulationDeltaRoutedEventArgs e)
+{
+    Image image = sender as Image;
+                
+    if (image.RenderTransform.Equals(translateTransform))
+    {
+        this.translateTransform.X += e.Delta.Translation.X;
+        this.translateTransform.Y += e.Delta.Translation.Y;
+    }
+    else
+    {
+        this.translateTransform1.X += e.Delta.Translation.X;
+        this.translateTransform1.Y += e.Delta.Translation.Y;
+    }
+}
+
+private void Image_ManipulationCompleted_1(object sender, ManipulationCompletedRoutedEventArgs e)
+{
+    e.Handled = true;
+}</pre>
+
+
+<p>4、运行效果如下：</p>
+
+<p>用鼠标可以拖动图片</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/19.jpg"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1_thumb9.jpg" width="682" height="420" /></a></p>
+
+<p>&#160;</p>
+
+<p>代码下载：</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/MovePicture" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left">
+  <span style="color: #339966"></span>
+</div>
+
+
+
+
+<div style="text-align: left">
+  <span style="color: #339966">本文由<span style="text-decoration: underline"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-06-05</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
+
+</div>
+<nav id="pagenavi">
+    
+        <a href="/blog/page/7/" class="prev">Prev</a>
+    
+    
+        <a href="/blog/page/9/" class="next">Next</a>
+    
+    <div class="center"><a href="/blog/archives">所有文章</a></div>
+    
+    <script type="text/javascript">
+var duoshuoQuery = {short_name:"beyondvincent"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+</nav>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

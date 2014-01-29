@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">update:</span><span class="p">(</span><span class="n">NSTimeInterval</span><span class="p">)</span><span class="nv">currentTime</span> <span class="p">{</span>
+    <span class="c1">// Handle time delta.</span>
+    <span class="c1">// If we drop below 60fps, we still want everything to move the same distance.</span>
+    <span class="n">CFTimeInterval</span> <span class="n">timeSinceLast</span> <span class="o">=</span> <span class="n">currentTime</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span><span class="p">;</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span> <span class="o">=</span> <span class="n">currentTime</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">timeSinceLast</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// more than a second since last update</span>
+        <span class="n">timeSinceLast</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">;</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">lastUpdateTimeInterval</span> <span class="o">=</span> <span class="n">currentTime</span><span class="p">;</span>
+    <span class="p">}</span>
+ 
+    <span class="p">[</span><span class="n">self</span> <span class="nl">updateWithTimeSinceLastUpdate:</span><span class="n">timeSinceLast</span><span class="p">];</span>
+ 
+<span class="p">}</span>
+</pre></div>

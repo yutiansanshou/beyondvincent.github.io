@@ -1,0 +1,21 @@
+<div class="highlight"><pre><span class="c1">// Add at the bottom of your initWithSize: method</span>
+<span class="c1">// Preload whack sound effect</span>
+<span class="n">self</span><span class="p">.</span><span class="n">laughSound</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">playSoundFileNamed:</span><span class="s">@&quot;laugh.caf&quot;</span> <span class="nl">waitForCompletion:</span><span class="n">NO</span><span class="p">];</span>
+<span class="n">self</span><span class="p">.</span><span class="n">owSound</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">playSoundFileNamed:</span><span class="s">@&quot;ow.caf&quot;</span> <span class="nl">waitForCompletion:</span><span class="n">NO</span><span class="p">];</span>
+ 
+<span class="n">NSURL</span> <span class="o">*</span><span class="n">url</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">URLForResource:</span><span class="s">@&quot;whack&quot;</span> <span class="nl">withExtension:</span><span class="s">@&quot;caf&quot;</span><span class="p">];</span>
+<span class="n">NSError</span> <span class="o">*</span><span class="n">error</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+<span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">AVAudioPlayer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithContentsOfURL:</span><span class="n">url</span> <span class="nl">error:</span><span class="o">&amp;</span><span class="n">error</span><span class="p">];</span>
+ 
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Error creating player: %@&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">audioPlayer</span> <span class="n">play</span><span class="p">];</span>
+ 
+<span class="c1">// Add at bottom of popMole method, change the sequence action to:</span>
+<span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">easeMoveUp</span><span class="p">,</span> <span class="n">setTappable</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughSound</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">laughAnimation</span><span class="p">,</span> <span class="n">unsetTappable</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+ 
+<span class="c1">// Add inside touchesBegan: method, change the sequence action to:</span>
+<span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">owSound</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">hitAnimation</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
+</pre></div>

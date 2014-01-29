@@ -1,0 +1,670 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>iOS中如何利用GDataXML对XML文档进行读写 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="iOS中如何利用GDataXML对XML文档进行读写 &nbsp; &nbsp; 在上一篇文章：在iOS工程中如何选择最佳的XML解析器中，Saliom建议我写一篇文章介绍一下如何使用XML解析器来读写XML文档，并根据XML文档创建自己的对象，以及执行XPath查询。 本文我就告诉你该如何去做 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2013/04/03/3/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS中如何利用GDataXML对XML文档进行读写</h1>
+	<div class="entry-content" itemprop="articleBody"><p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><img class="alignright" style="margin: 12px 0px 12px 24px;" title="Let's read and write this!" alt="Let's read and write this!" src="http://cdn3.raywenderlich.com/wp-content/uploads/2010/03/XMLDocument.jpg" width="250" height="122" /></p>
+
+<p>在上一篇文章：<a href="http://beyondvincent.com/?p=62">在iOS工程中如何选择最佳的XML解析器</a>中，Saliom建议我写一篇文章介绍一下如何使用XML解析器来读写XML文档，并根据XML文档创建自己的对象，以及执行XPath查询。</p>
+
+<p>本文我就告诉你该如何去做！我将创建一个工程，来读取XML示例文档中的内容（包含RPG玩家列表），并基于该XML文档构建我们自己的对象。接着我将在成员列表中添加一个新的玩家，然后再将其保存回磁盘中。</p>
+
+<p>这里我使用的是GDataXML — Google解析XML的一个库。之所选择GDataXML是因为它针对DOM解析的执行效率不错，并且支持XML文档的读写，也很容易集成到工程中。当然，如果你使用别的DOM解析器，大多数操作都是一样的，只不过API的调用有轻微的不同。</p>
+
+<p>特别感谢Saliom建议我写这篇文章！</p>
+
+<h2>我的XML文档</h2>
+
+<p>下图是我在本文中使用到的XML文档示例：</p>
+
+<p><a href="http://www.raywenderlich.com/725/how-to-read-and-write-xml-documents-with-gdataxml/screenshot1-4" rel="attachment wp-att-727"><img title="Screenshot of our XML document" alt="Screenshot of our XML document" src="http://cdn1.raywenderlich.com/wp-content/uploads/2010/03/Screenshot13.jpg" width="217" height="305" /></a></p>
+
+<p>之前我提到过，上面的这个列表代表了一个RPG游戏中玩家。这里我尽量让XML数据简洁，当然，我还添加了一些有趣的数据。</p>
+
+<p>OK，下面我们就开始在工程中对该XML文档内容进行读写吧！</p>
+
+<h2>集成GDataXML</h2>
+
+<p>按照下面的步骤，就可以把GDataXML集成到新的工程中：</p>
+
+<ul>
+<li>选择Project\New Project, 然后选择View-based Application, 将工程命名为XMLTest。</li>
+<li>下载<a href="http://code.google.com/p/gdata-objectivec-client/downloads/list">gdata-objective-c client library</a>。</li>
+<li>解压下载的文件，定位到Source\XMLSupport, 然后将GDataXMLNode.h 和 GDataXMLNode.m两个文件拖入工程中。</li>
+<li>在XCode中, 点击Project\Build Settings 并确保 “All”选中。</li>
+<li>找到Search Paths\Header Search Paths并添加/usr/include/libxml2。</li>
+<li>然后，找到Linking\Other Linker Flags并添加-lxml2到列表中。</li>
+<li>在 XMLTestAppDelegate.h的顶部添加如下代码，可以测试上面的步骤是否正确：</li>
+</ul>
+
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "GDataXMLNode.h"</pre>
+
+
+<p>如果程序能够编译并运行，说明GDataXML集成成功了！</p>
+
+<h2>创建模型类</h2>
+
+<p>下一步，我们创建一组模型类来代表XML文档中的玩家。</p>
+
+<p>首先创建一个Player类。点击File\New File, 选择Cocoa Touch\Objective-C class, 点击Next之后，选择Subclass of NSObject, 然后在点击Next，将文件命名为Player。</p>
+
+<p>然后用下面的代码替换Player.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+typedef enum {
+    RPGClassFighter,
+    RPGClassRogue,
+    RPGClassWizard
+} RPGClass;
+
+@interface Player : NSObject {
+    NSString *_name;
+    int _level;
+    RPGClass _rpgClass;
+}
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) int level;
+@property (nonatomic, assign) RPGClass rpgClass;
+
+- (id)initWithName:(NSString *)name level:(int)level rpgClass:(RPGClass)rpgClass;
+
+@end</pre>
+
+
+<p>接着用下面的代码替换Player.m文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "Player.h"
+
+@implementation Player
+@synthesize name = _name;
+@synthesize level = _level;
+@synthesize rpgClass = _rpgClass;
+
+- (id)initWithName:(NSString *)name level:(int)level rpgClass:(RPGClass)rpgClass {Class:(RPGClass)rpgClass {
+
+    if ((self = [super init])) {
+        self.name = name;
+        self.level = level;
+        self.rpgClass = rpgClass;
+    }    
+    return self;
+
+}
+
+- (void) dealloc {
+    self.name = nil;    
+    [super dealloc];
+}
+
+@end</pre>
+
+
+<p>上面所涉及到的都是Objective-C, 现在没有真正的涉及到XML。为了完整性，这里我将其全部列出来。<br/>
+按照上面创建一个NSObject子类的步骤，在创建一个名为Party的类。然后用下面的代码替换Party.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+@interface Party : NSObject {
+NSMutableArray *_players;
+}
+
+@property (nonatomic, retain) NSMutableArray *players;
+
+@end
+And Party.m with the following:
+#import "Party.h"
+
+@implementation Party
+@synthesize players = _players;
+
+- (id)init {
+
+if ((self = [super init])) {
+self.players = [[[NSMutableArray alloc] init] autorelease];
+}
+return self;
+
+}
+
+- (void) dealloc {
+self.players = nil;
+[super dealloc];
+}
+
+@end</pre>
+
+
+<p>下面我们开始解析XML文件，并创建基于XML文件内容的实例对象。</p>
+
+<h2>使用GDataXML解析XML</h2>
+
+<p>下面我们使用GDataXML来读取XML文档内容，并在内存中创建一棵DOM树。</p>
+
+<p>首先，下载<a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/Party.xml">Party.xml</a>文件，并将其添加到工程中。</p>
+
+<p>接着，创建一个新的类，里面包含了所有相关解析的代码。在工程中添加一个名为PartyParser的新类，该类继承自NSObject</p>
+
+<p>用下面的代码替换PartyParser.h文件:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import &lt;Foundation/Foundation.h&gt;
+
+@class Party;
+
+@interface PartyParser : NSObject {
+
+}
+
++ (Party *)loadParty;
+
+@end</pre>
+
+
+<p>然后用下面的代码替换PartyParser.m文件：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "PartyParser.h"
+#import "Party.h"
+#import "GDataXMLNode.h"
+#import "Player.h"
+
+@implementation PartyParser
+
++ (NSString *)dataFilePath:(BOOL)forSave {
+    return [[NSBundle mainBundle] pathForResource:@"Party" ofType:@"xml"];
+}
+
++ (Party *)loadParty {
+
+    NSString *filePath = [self dataFilePath:FALSE];
+    NSData *xmlData = [[NSMutableData alloc] initWithContentsOfFile:filePath];
+    NSError *error;
+    GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:xmlData 
+        options:0 error:&amp;error];
+    if (doc == nil) { return nil; }
+
+    NSLog(@"%@", doc.rootElement);
+
+    [doc release];
+    [xmlData release];
+    return nil;
+
+}</pre>
+
+
+<p>@end</p>
+
+<p>上面的代码中，我首先创建了一个静态方法dataFilePath，该方法返回添加到工程中（成为程序bundle的一部分）Party.xml文件的路径。注意，该方法有一个boolean参数值，表示我们对该路径中的文件进行读或写—现在还不使用，稍后会用到。</p>
+
+<p>接着，我创建了另外一个静态方法loadParty。该方法会使用NSMutableData的initWithContentsOfFile方法将粗盘中文件的内容以字节的形式加载到内存中，然后将数据传递给GDataXML解析器(通过GDataXMLDocument的initWithData方法)。</p>
+
+<p>如果GDataXML在解析文件过程中遇到了错误（比如缺少结束标记），那么会返回nil和一个NSError对象，该对象有相关错误信息。本文中，如果发生了错误，我只返回一个nil。</p>
+
+<p>在上面的代码中，如果解析成功，我将把XML文档的root元素打印出来。</p>
+
+<p>下面，我们就来使用上面这个方法吧。将XMLTestAppDelegate.h文件按照如下修改：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">#import "XMLTestAppDelegate.h"
+#import "XMLTestViewController.h"
+#import "PartyParser.h"
+#import "Party.h"
+#import "Player.h"
+
+@implementation XMLTestAppDelegate
+
+@synthesize window;
+@synthesize viewController;
+@synthesize party = _party;
+
+- (void)applicationDidFinishLaunching:(UIApplication *)application {    
+
+    self.party = [PartyParser loadParty];    
+
+    // Override point for customization after app launch    
+    [window addSubview:viewController.view];
+    [window makeKeyAndVisible];
+}
+
+- (void)dealloc {
+    self.party = nil;
+    [viewController release];
+    [window release];
+    [super dealloc];
+}
+
+@end</pre>
+
+
+<p>在上面的代码中，我只是import了几个文件，并在applicationDidFinishLaunching方法中调用之前定义的静态方法以加载party，另外在dealloc方法中做了一些清除任务。</p>
+
+<p>现在编译并运行程序，通过Run\Console，并滚到Console窗口底部，将看到类似如下的一些信息：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 11:31:21.467 XMLTest[1568:207] GDataXMLElement 0x3b02530: 
+{type:1 name:Party xml:"Butch
+1Fighter
+Shadow2Rogue
+Crak3
+Wizard"}</pre>
+
+
+<h2>将XML转换为模型对象</h2>
+
+<p>从上面的介绍中，我们可以看到解析器已经开始起作用了，下面我们继续解析整棵DOM树，并创建出我们的模型对象。</p>
+
+<p>将loadParty方法中从NSLog语句开始处，用下面的代码进行替换：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">Party *party = [[[Party alloc] init] autorelease];
+NSArray *partyMembers = [doc.rootElement elementsForName:@"Player"];
+for (GDataXMLElement *partyMember in partyMembers) {
+
+    // Let&#039;s fill these in!
+    NSString *name;
+    int level;
+    RPGClass rpgClass;
+
+    // Name
+    NSArray *names = [partyMember elementsForName:@"Name"];
+    if (names.count &gt; 0) {
+        GDataXMLElement *firstName = (GDataXMLElement *) [names objectAtIndex:0];
+        name = firstName.stringValue;
+    } else continue;
+
+    // Level
+    NSArray *levels = [partyMember elementsForName:@"Level"];
+    if (levels.count &gt; 0) {
+        GDataXMLElement *firstLevel = (GDataXMLElement *) [levels objectAtIndex:0];
+        level = firstLevel.stringValue.intValue;
+    } else continue;
+
+    // Class
+    NSArray *classes = [partyMember elementsForName:@"Class"];
+    if (classes.count &gt; 0) {
+        GDataXMLElement *firstClass = (GDataXMLElement *) [classes objectAtIndex:0];
+        if ([firstClass.stringValue caseInsensitiveCompare:@"Fighter"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassFighter;
+        } else if ([firstClass.stringValue caseInsensitiveCompare:@"Rogue"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassRogue;
+        } else if ([firstClass.stringValue caseInsensitiveCompare:@"Wizard"] 
+            == NSOrderedSame) {
+            rpgClass = RPGClassWizard;
+        } else {
+            continue;
+        }            
+    } else continue;
+
+    Player *player = [[[Player alloc] initWithName:name level:level 
+            rpgClass:rpgClass] autorelease];
+    [party.players addObject:player];
+
+}
+
+[doc release];
+[xmlData release];
+return party;</pre>
+
+
+<p>在上面的代码中，我在root节点上使用GDataXMLElement的elementsForName方法来获取“Party”节点下所有名称为“Player”的节点。</p>
+
+<p>然后，在每个“Player”节点下，我都会去查找“Name节点素。上面的代码中只处理一个名字，所以，如果有多于一个以上的名字，那么我只会去第一个。</p>
+
+<p>同样，针对“Level”和“Class”节点，也做相同的处理，只不过我会把level从字符串转换为一个整型，class转换为枚举。</p>
+
+<p>操作过程中，如果失败了，那么只是忽略掉Player。如果，一切正确的话，那么我将根据从XML中读取出来的数据创建一个Player对象，并将其添加到Party中，最后将Party返回！</p>
+
+<p>下面，我们就来看看上面的方法是否正确。将下面的代码添加到XMLTestAppDelegate.m文件中applicationDidFinishLaunching方法里面的loadParty调用后面：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">if (_party != nil) {
+    for (Player *player in _party.players) {
+        NSLog(@"%@", player.name);
+    }
+}</pre>
+
+
+<p>编译并运行程序，如果一切正常的话，可以在控制台看到如下内容：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 12:33:04.301 XMLTest[2531:207] Butch
+2010-03-17 12:33:04.303 XMLTest[2531:207] Shadow
+2010-03-17 12:33:04.304 XMLTest[2531:207] Crak</pre>
+
+
+<h2>使用XPath进行查询</h2>
+
+<p>XPath是一种简单的语法，可以用来查询XML文档中的内容。掌握XPath的最佳方法就是通过一些示例。</p>
+
+<p>例如，下面的XPath表达式是用来查询XML文档中所有的Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player</pre>
+
+
+<p>而下面的表达式则是查询出XML文档中第一个Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player[1]</pre>
+
+
+<p>最后，下面这个表达式则是查询出名字为Shadow的Player节点：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//Party/Player[Name="Shadow"]</pre>
+
+
+<p>下面我们稍微的修改一下loadParty方法，来看看如何使用XPath。替换一下加载party的代码，如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">//NSArray *partyMembers = [doc.rootElement elementsForName:@"Player"];
+NSArray *partyMembers = [doc nodesForXPath:@"//Party/Player" error:nil];</pre>
+
+
+<p>如果现在运行程序，会看到跟之前一样的结果。其实这并不是XPath的一个优点，因为在这里我们是要读取出XML文档中所有内容，并在内存中构造一个数据模型。</p>
+
+<p>不过，你可以想象一下，如果这里有一个大的，很复杂的XML文档，我们希望迅速的找到指定的节点，但是并不是通过查找A的子节点，然后是B的子节点，直到找到指定节点，那么此时，XPath将非常有用。</p>
+
+<p>如果你对XPath感兴趣的话，可以从<a href="http://www.w3schools.com/XPath/xpath_intro.asp">W2Schools的教程</a>里学到更多相关内容。同样，这里我还发现一个<a href="http://www.whitebeam.org/library/guide/TechNotes/xpathtestbed.rhtm">在线测试XPath表达式的一个网站</a>，非常方便。</p>
+
+<h2>保存回XML</h2>
+
+<p>到现在为止，我们只完成了一半的任务：从XML文档中读取出数据。如果我们想要添加新的player，并将新的文档保存回磁盘中，该如何操作呢？</p>
+
+<p>首先，我们需要做的事情是确定一下将XML文档保存到哪里。之前，我们已经从程序的bundle中加载XML文档了，不过，那是只读的。不过，我们可以将其保存到程序的document目录中。下面就来试试吧。</p>
+
+<p>修改一下PartyParser.m文件中的dataFilePath方法，如下代码：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (NSString *)dataFilePath:(BOOL)forSave {
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
+        NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *documentsPath = [documentsDirectory
+        stringByAppendingPathComponent:@"Party.xml"];
+    if (forSave || 
+        [[NSFileManager defaultManager] fileExistsAtPath:documentsPath]) {
+        return documentsPath;
+    } else {
+        return [[NSBundle mainBundle] pathForResource:@"Party" ofType:@"xml"];
+    }
+
+}</pre>
+
+
+<p>注意，在加载XML时，如果document目录中存在XML文件，那么就从document中加载，否则就从程序的bundle中加载。</p>
+
+<p>下面，我来写一个方法：根据我们的数据模型来构造一个XML文档，并将其保存到磁盘中。如下代码，将新方法添加到PartyParser.m文件中:</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)saveParty:(Party *)party {
+
+    GDataXMLElement * partyElement = [GDataXMLNode elementWithName:@"Party"];
+
+    for(Player *player in party.players) {
+
+        GDataXMLElement * playerElement = 
+            [GDataXMLNode elementWithName:@"Player"];
+        GDataXMLElement * nameElement = 
+            [GDataXMLNode elementWithName:@"Name" stringValue:player.name];
+        GDataXMLElement * levelElement = 
+            [GDataXMLNode elementWithName:@"Level" stringValue:
+                [NSString stringWithFormat:@"%d", player.level]];
+        NSString *classString;
+        if (player.rpgClass == RPGClassFighter) {
+            classString = @"Fighter";
+        } else if (player.rpgClass == RPGClassRogue) {
+            classString = @"Rogue";
+        } else if (player.rpgClass == RPGClassWizard) {
+            classString = @"Wizard";
+        }        
+        GDataXMLElement * classElement = 
+            [GDataXMLNode elementWithName:@"Class" stringValue:classString];
+
+        [playerElement addChild:nameElement];
+        [playerElement addChild:levelElement];
+        [playerElement addChild:classElement];
+        [partyElement addChild:playerElement];
+    }
+
+    GDataXMLDocument *document = [[[GDataXMLDocument alloc] 
+            initWithRootElement:partyElement] autorelease];
+    NSData *xmlData = document.XMLData;
+
+    NSString *filePath = [self dataFilePath:TRUE];
+    NSLog(@"Saving xml data to %@...", filePath);
+    [xmlData writeToFile:filePath atomically:YES];
+
+}</pre>
+
+
+<p>如上代码所示，使用GDataXML来构造XML文档非常的简单和直接。通过elementWithName:或elementWithName:stringValue方法就可以创建节点，并通过addChild就能把这些节点关联起来，然后根据指定的根节点就可以创建一个GDataXMLDocument。最后，获得相关的NSData，并将其保存到磁盘中。</p>
+
+<p>下面，在PartyParser.h文件中声明这个新方法：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">+ (void)saveParty:(Party *)party;</pre>
+
+
+<p>然后在applicationDidFinishLaunching中做一下判断：party != nil，并在列表中添加一个新的玩家：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">[_party.players addObject:[[[Player alloc] initWithName:@"Waldo" level:1 
+    rpgClass:RPGClassRogue] autorelease]];</pre>
+
+
+<p>最后applicationWillTerminate方法中将更新的玩家列表保存起来：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">- (void)applicationWillTerminate:(UIApplication *)application {
+    [PartyParser saveParty:_party];   
+}</pre>
+
+
+<p>编译并运行程序，程序加载完毕之后，退出程序。程序将会打印出XML文件保存的位置。如下：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">2010-03-17 13:34:14.447 XMLTest[3118:207] Saving xml data to 
+/Users/rwenderlich/Library/Application Support/iPhone Simulator/User/
+Applications/BF246A72-7E20-47CF-93FF-AA2CEF50A6B0/Documents/Party.xml..</pre>
+
+
+<p>接着通过Finder找到对应的文件夹，并打开XML文件，如果一切正常的话，在XML文件中已经新增了一个玩家：</p>
+
+<p><img src="http://cdn4.raywenderlich.com/wp-content/uploads/2010/03/Screenshot24.jpg" alt="Screenshot of our Modified XML" /></p>
+
+<p>然后在运行一次程序，并打开控制台窗口，你将看到Waldo玩家！:]</p>
+
+<h2>总结</h2>
+
+<p>这里是本文的<a href="http://d1xzuxjlafny7l.cloudfront.net/downloads/XMLTest.zip">示例代码</a>。注意，该程序不会在GUI中显示任何内容（这并不重要）——只是在控制台显示一些内容。</p>
+
+<p>另外 — 在工程中使用XML之前，应该花点时间考虑一下，为什么要在工程中使用XML，这是最佳选择吗。在这里的示例中，如果我们只是加载和保存一些数据，使用XML可能是大材小用了，使用别的一些序列化格式可能会更好：例如plist，NSCoding或者Core Data。</p>
+
+<p>不过，在多个程序中都使用相同的数据，那么XML是个不错的选择。如果我们用Mac程序生成了一个列表数据，而我们希望iPhone程序能够对该列表进行读写，那么XML将非常有用。这也是为什么XML是数据交换的标准格式（非常容易协同利用）。</p>
+
+<p>至此，在写程序的时候，你计划使用XML了吗？</p>
+
+<p align="right">
+  本文由破船译自：<a href="http://www.raywenderlich.com/725/how-to-read-and-write-xml-documents-with-gdataxml">raywenderlich</a>
+</p>
+
+
+<hr />
+
+<p align="right">
+  <span style="color: #a5a5a5;">2008 大连 星海湾</span>
+</p>
+
+
+
+
+<div class="wlWriterEditableSmartContent" id="scid:8747F07C-CDE8-481f-B0DF-C6CFD074BF67:301dcbd3-4cc4-40f0-b1eb-4b1bf95ca910" style="float: none; margin: 0px; display: inline; padding: 0px;">
+  <a title="2008 大连 星海湾" href="http://beyondvincent.com/wp-content/uploads/2013/04/psu-8x6.jpg" rel="thumbnail"><img alt="" src="http://beyondvincent.com/wp-content/uploads/2013/04/psu1.png" width="642" height="560" border="0" /></a>
+</div>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

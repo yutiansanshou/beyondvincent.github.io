@@ -1,0 +1,326 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>对NSArray中自定义的对象进行排序 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="对NSArray中自定义的对象进行排序 本文译自How to sort NSArray with custom objects。 我们开发的每个程序都会使用到一些数据，而这些数据一般被封装在一个自定义的类中。例如一个音乐程序可能会有一个Song类，聊天程序则又一个Friend类， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">对NSArray中自定义的对象进行排序</h1>
+	<div class="entry-content" itemprop="articleBody"><p><img src="/images/2014/01/20.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自<a href="http://ios-blog.co.uk/tutorials/how-to-sort-nsarray-with-custom-objects/">How to sort NSArray with custom objects</a>。</p>
+
+<p>我们开发的每个程序都会使用到一些数据，而这些数据一般被封装在一个自定义的类中。例如一个音乐程序可能会有一个Song类，聊天程序则又一个Friend类，点菜程序会有一个Recipe类等。有时候我们希望在程序中显示的列表数据是按照一定顺序进行排列的，本文我们就来看看在iOS中有哪些方法可以对NSArray中的对象进行排序。下面是目录：</p>
+
+<ul>
+<li>小引</li>
+<li>使用NSComparator进行排序</li>
+<li>使用NSDescriptor进行排序</li>
+<li>使用selector进行排序</li>
+</ul>
+
+
+<h3>小引</h3>
+
+<p>我们将要排序的对象是一个Persion类，如下定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="nc">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">surname</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">NSDate</span> <span class="o">*</span><span class="n">dateOfBirth</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而数组中包含如下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Smith</span> <span class="n">John</span> <span class="mo">03</span><span class="o">/</span><span class="mo">01</span><span class="o">/</span><span class="mi">1984</span>
+</span><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span> <span class="mi">16</span><span class="o">/</span><span class="mo">03</span><span class="o">/</span><span class="mi">1979</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span> <span class="mi">13</span><span class="o">/</span><span class="mi">09</span><span class="o">/</span><span class="mi">1995</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span> <span class="mi">19</span><span class="o">/</span><span class="mo">07</span><span class="o">/</span><span class="mi">1981</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span> <span class="mi">22</span><span class="o">/</span><span class="mo">02</span><span class="o">/</span><span class="mi">1989</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用NSComparator进行排序</h3>
+
+<p>comparator实际上是用一个block对象作比较操作。它的定义如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">typedef</span> <span class="nf">NSComparisonResult</span> <span class="p">(</span><span class="o">^</span><span class="n">NSComparator</span><span class="p">)(</span><span class="kt">id</span> <span class="n">obj1</span><span class="p">,</span> <span class="kt">id</span> <span class="n">obj2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的参数(obj1、obj2)就是我们将要做比较的对象。block返回的结果为NSComparisonResult类型来表示两个对象的顺序。</p>
+
+<p>要对整个数组做排序，则需要使用NSArray的<code>sortArrayUsingComparator:</code>方法，如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortedArray</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">persons</span> <span class="nl">sortedArrayUsingComparator:</span><span class="o">^</span><span class="n">NSComparisonResult</span><span class="p">(</span><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span><span class="p">,</span> <span class="n">Person</span> <span class="o">*</span><span class="n">p2</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">p1</span><span class="p">.</span><span class="n">surname</span> <span class="nl">compare:</span><span class="n">p2</span><span class="p">.</span><span class="n">surname</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终排序的结果如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">John</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用NSDescriptor进行排序</h3>
+
+<p>Sort descriptor不仅可以用来对数组进行排序，还能指定element在table view中的排序，以及Core Data中对fetch request返回的数据做排序处理。通过sort descriptor可以很方便的对数组进行多个key的排序。下面来看看如何对我们的数组做surname排序，然后在进行name排序：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSSortDescriptor</span> <span class="o">*</span><span class="n">firstDescriptor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSortDescriptor</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithKey:</span><span class="s">@&quot;surname&quot;</span> <span class="nl">ascending:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSSortDescriptor</span> <span class="o">*</span><span class="n">secondDescriptor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSortDescriptor</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithKey:</span><span class="s">@&quot;name&quot;</span> <span class="nl">ascending:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortDescriptors</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObjects:</span><span class="n">firstDescriptor</span><span class="p">,</span> <span class="n">secondDescriptor</span><span class="p">,</span> <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">sortedArray</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">persons</span> <span class="nl">sortedArrayUsingDescriptors:</span><span class="n">sortDescriptors</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面代码的排序结果如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Andersen</span> <span class="n">Jane</span>
+</span><span class='line'><span class="n">Clark</span> <span class="n">Anne</span>
+</span><span class='line'><span class="n">Johnson</span> <span class="n">Rose</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">David</span>
+</span><span class='line'><span class="n">Smith</span> <span class="n">John</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用selector进行排序</h3>
+
+<p>当面，我们也可以定义自己的方法进行两个对象做比较，并将该方法用于数组排序。comparator消息会被发送到数值中的每个对象中，并携带数组中另外的一个对象当做参数。自定义的的方法的返回结果是这样的：如果本身对象小于参数中的对象，就返回<code>NSOrederedAscending</code>，相反，则返回<code>NSOrderedDescending</code>，如果相等，那么返回<code>NSOrderedSame</code>。如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">NSComparisonResult</span><span class="p">)</span><span class="nf">compare:</span><span class="p">(</span><span class="n">Person</span> <span class="o">*</span><span class="p">)</span><span class="nv">otherPerson</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">dateOfBirth</span> <span class="nl">compare:</span><span class="n">otherPerson</span><span class="p">.</span><span class="n">dateOfBirth</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个方法定义在Person类中，用来对person的生日进行排序。</p>
+
+<p>上面所介绍的这些方法都是为了完成相同的事情：对数组做排序处理，你可能在想改选择使用哪个呢？当需要通过多个key进行排序，那么最简单的方法就是使用sort descriptor。如果比较方法很复杂的话，建议在使用外面自己的selector。Block是再iOS 4之后引入的一个强大功能，用block作比较，可以不必使用任何的变量就能完成一个简单的比较方法，当然，你也可以定义一个复杂的block，来替换selector。</p>
+
+<p>最后，其实这里并没有标准答案，你可以跟着自己的感觉走:]</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects/';
+        var disqus_url = 'http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>

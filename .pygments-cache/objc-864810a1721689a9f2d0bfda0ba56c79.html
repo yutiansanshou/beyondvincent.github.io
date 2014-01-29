@@ -1,0 +1,29 @@
+<div class="highlight"><pre><span class="cp">#import &quot;MyScene.h&quot;</span>
+ 
+<span class="c1">// 1</span>
+<span class="k">@interface</span> <span class="nc">MyScene</span> <span class="p">()</span>
+<span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKSpriteNode</span> <span class="o">*</span> <span class="n">player</span><span class="p">;</span>
+<span class="k">@end</span>
+ 
+<span class="k">@implementation</span> <span class="nc">MyScene</span>
+ 
+<span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="p">{</span>    
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithSize:</span><span class="n">size</span><span class="p">])</span> <span class="p">{</span>
+ 
+        <span class="c1">// 2</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Size: %@&quot;</span><span class="p">,</span> <span class="n">NSStringFromCGSize</span><span class="p">(</span><span class="n">size</span><span class="p">));</span>
+ 
+        <span class="c1">// 3</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKColor</span> <span class="nl">colorWithRed:</span><span class="mf">1.0</span> <span class="nl">green:</span><span class="mf">1.0</span> <span class="nl">blue:</span><span class="mf">1.0</span> <span class="nl">alpha:</span><span class="mf">1.0</span><span class="p">];</span>
+ 
+        <span class="c1">// 4</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">player</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithImageNamed:</span><span class="s">@&quot;player&quot;</span><span class="p">];</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">self</span><span class="p">.</span><span class="n">player</span><span class="p">];</span>
+ 
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+<span class="p">}</span>
+ 
+<span class="k">@end</span>
+</pre></div>

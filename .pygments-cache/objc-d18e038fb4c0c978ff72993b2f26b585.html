@@ -1,0 +1,8 @@
+<div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="n">UIBezierPath</span> <span class="o">*</span><span class="p">)</span><span class="nf">translatedBezierPath</span>
+<span class="p">{</span>
+    <span class="n">CGRect</span> <span class="n">butterflyImageRect</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">textView</span> <span class="nl">convertRect:</span><span class="n">self</span><span class="p">.</span><span class="n">imageView</span><span class="p">.</span><span class="n">frame</span> <span class="nl">fromView:</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+    <span class="n">UIBezierPath</span> <span class="o">*</span><span class="n">newButterflyPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIBezierPath</span> <span class="nl">bezierPathWithRect:</span><span class="n">butterflyImageRect</span><span class="p">];</span>
+    
+    <span class="k">return</span> <span class="n">newButterflyPath</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
