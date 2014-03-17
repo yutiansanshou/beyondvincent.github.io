@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-03-17T15:05:15+08:00</updated>
+  <updated>2014-03-17T15:10:07+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -29,7 +29,7 @@
 
 <p>上周苹果release了iOS 7.1，用户升级至此版本，去下载企业级应用时，如果应用不是用https部署的，那么会提示服务器上的证书无效，如下图所示：</p>
 
-<p><img src="http://BeyondVincent.github.io/images/2014/03/11.png" alt="" /></p>
+<p><img src="http://BeyondVincent.github.io/images/2014/03/11.PNG" alt="" /></p>
 
 <p>小引:</p>
 
