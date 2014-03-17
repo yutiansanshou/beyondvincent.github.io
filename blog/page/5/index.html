@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="Jul 5th, 2013 iOS, iOS翻译 打造轻量化的View Controller &nbsp; 本文由破船译自objc转载请注明出处！ 小引 很早以前就看到了这篇文章，该文是Lighter View Controllers中比较重要的一篇，来自http://www.objc.io/% &hellip;">
+	<meta name="description" content="Jul 8th, 2013 iOS, iOS翻译 初识block 本文由破船译自rypress转载请注明出处！ 小引 本周末微博上朋友发了一个关于block的MV，只能说老外太逗了。大家也可以去看看怎么回事： Cocoa Got Blocks。虽然之前也有接触过block， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,46 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-08T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jul 8<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/iosfan-yi/'>iOS翻译</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/07/08/98/" itemprop="url">初识block</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文由<strong><span style="color: #339966;">破船</span></strong>译自<strong><span style="text-decoration: underline;"><span style="color: #339966;"><a href="http://rypress.com/tutorials/objective-c/blocks.html" target="_blank"><span style="color: #339966; text-decoration: underline;">rypress</span></a></span></span></strong>转载请注明出处！</p>
+
+<h2><strong><span style="color: #339966;">小引</span></strong></h2>
+
+<p>本周末微博上朋友发了一个关于block的MV，只能说老外太逗了。大家也可以去看看怎么回事：<a href="http://blog.bignerdranch.com/3001-cocoa-got-blocks/" target="_blank"> <strong><span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;">Cocoa Got Blocks</span></span></strong></a>。虽然之前也有接触过block，不过没有深入完整的学习过，借此机会来学习一下，顺便翻译几篇block相关的文章，本文是第一篇，算是block的入门。本文的最后延伸阅读给出了4篇相关文章，不出意外的话，本周大家能看到对应的中文版。</p>
+
+
+		
+		<a href="/blog/2013/07/08/98/" class="more-link">继续阅读 &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -356,7 +396,7 @@ _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
 
 <h1>联系破船</h1>
 
-<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#111;&#58;&#x42;&#x65;&#x79;&#x6f;&#x6e;&#100;&#86;&#x69;&#110;&#x63;&#x65;&#110;&#116;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;">&#66;&#x65;&#x79;&#111;&#x6e;&#100;&#86;&#105;&#x6e;&#x63;&#x65;&#x6e;&#x74;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a></p>
+<p>你可以发邮件与破船取得联系: <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#x42;&#x65;&#x79;&#x6f;&#110;&#x64;&#86;&#x69;&#110;&#x63;&#101;&#x6e;&#116;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#x42;&#101;&#x79;&#x6f;&#110;&#100;&#x56;&#105;&#x6e;&#99;&#x65;&#x6e;&#116;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#46;&#99;&#111;&#x6d;</a></p>
 
 <p>还可以关注破船的微博: 新浪微博:<a href="http://www.weibo.com/beyondvincent">www.weibo.com/beyondvincent</a></p>
 
@@ -1711,209 +1751,6 @@ Lfunc_end0:
 
 <div>
   本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-17</time>
-</div>
-
-
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-16T00:00:00+08:00" data-updated="true" itemprop="datePublished">Jun 16<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/ios7xin-te-zheng/'>iOS7新特征</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/06/16/88/" itemprop="url">iOS7新特征汇总[05]初窥UIKit动力(UIKit Dynamics)</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>提醒：这里是新特征汇总博文链接：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://beyondvincent.com/2013/06/11/ios7%E6%96%B0%E7%89%B9%E5%BE%81%E6%B1%87%E6%80%BB/" target="_blank"><span style="color: #339966; text-decoration: underline;">iOS7新特征汇总</span></a></strong></span></span></p>
-
-<div id="attachment_1359" class="wp-caption alignnone" style="width: 1141px">
-  <a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-6.png"><img class="size-full wp-image-1359" alt="QQ20130615-6" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-6.png" width="1131" height="564" /></a><p class="wp-caption-text">
-    此图来此WWDC视频
-  </p>
-</div>
-
-
-<h2><strong><span style="color: #339966;">小引</span></strong></h2>
-
-<p>通过之前的4篇文章，笔者把iOS7中的涉及到的一些新特征做了一个简单的介绍。本文将带领大家初窥新特征里面的一个topic：UIKit动力(<span style="color: #339966;">UIKit Dynamics</span>)。</p>
-
-<p><strong><span style="color: #339966;">注1</span></strong>：关于UIKit Dynamics的中文名称：我在这里叫做UIKit动力，也有人叫UIKit动力模型和UIKit动态，总感觉怪怪的——所以大家在看到的时候不要在意即可。<br/>
-<strong><span style="color: #339966;">注2</span></strong>：今天有开发者提起iOS7 beta还处于苹果的<span style="color: #339966;">NDA</span>(Non-Disclosure Agreement)状态，也就是说目前关于iOS7 beta的任何内容除了官方公开发表的信息外，作为开发者最多只能在苹果的开发者论坛上进行讨论交流，禁止在公开场合谈论关于iOS7 beta的信息。关于NDA感觉国外的意识比较好，就跟版权意识一样。由此笔者也在这里友情提醒一下：读者单纯的看本系列文章即可，在iOS7 release之前，<span style="color: #339966;">保持沉默状态</span>。<br/>
-<strong><span style="color: #339966;">注3</span></strong>：本文在写作的时候参考了如下一些内容(具体内容请登录苹果开发者网站查阅)：</p>
-
-<ol>
-<li>WWDC 2013 session 206 — Getting Started with UIKit Dynamics</li>
-<li>UIDynamicAnimator Class Reference</li>
-<li>UIDynamicAnimatorDelegate Protocol Reference</li>
-<li>UIDynamicBehavior Class Reference</li>
-<li>UIDynamicItem Protocol Reference</li>
-<li>UIDynamicItemBehavior Class Reference</li>
-<li>UIKit Dynamics Catalog(Sample Code)</li>
-</ol>
-
-
-<h2><strong><span style="color: #339966;">UIKit动力简介</span></strong></h2>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-5.png"><img alt="QQ20130615-5" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130615-5.png" width="1101" height="338" /></a></p>
-
-<p><img class=" wp-image-1360 alignright" alt="code" src="http://beyondvincent.com/wp-content/uploads/2013/06/code.png" width="115" height="115" /></p>
-
-<p>什么是UIKit动力？—— 一句话：<span style="color: #339966;">UIKit动力提供了一个模拟真实世界中力学相关的动画和交互系统</span>。比如重力、碰撞和吸附等。UIKit动力具有可组合、可重用和声明式的特点。</p>
-
-<p>在程序中利用UIKit提供的接口来实现力学行为，可以减少80%的代码量。</p>
-
-<p>&nbsp;</p>
-
-<h2><span style="color: #339966;"><strong>UIKit动力架构</strong></span></h2>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-8.png"><img class="alignnone size-full wp-image-1363" alt="QQ20130616-8" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-8.png" width="1031" height="459" /></a></p>
-
-<p>如上图所示，UIKit动力系统中，涉及到如下4个内容：<span style="color: #339966;"><br /> </span></p>
-
-<div title="Page 49">
-  <img class=" wp-image-1365 alignright" alt="QQ20130616-9" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-9.png" width="240" height="165" /><span style="color: #339966;">UIDynamicAnimator：<span style="color: #333333;">UIDynamicAnimator介于iOS图形引擎和动力项(View)之间，</span></span><span style="color: #339966;"><span style="color: #333333;">具有如下功效</span>：<br /> </span></p> <ul>
-    <li>
-      提供动力行为的上下文
-    </li>
-    <li>
-      根据ref view确定坐标系
-    </li>
-    <li>
-      控制动力引擎
-    </li>
-    <li>
-      维护着动力行为的状态
-    </li>
-  </ul>
-  
-  <p>
-    UIDynamicAnimatorDelegate是与UIDynamicAnimator相关的一个delegate。主要用于动力行为被启动或者暂定时，做出的回应。也就是说，在动力行为运行期间，有两个事件（启动和暂定）可供我们使用。
-  </p>
-</div>
-
-
-<p><span style="color: #339966;"><a href="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-10.png"><img class=" wp-image-1372 alignright" alt="QQ20130616-10" src="http://beyondvincent.com/wp-content/uploads/2013/06/QQ20130616-10.png" width="247" height="211" /></a>UIDynamicBehavior：<span style="color: #333333;">主要用来描述动力的行为。在iOS7中，默认提供了如下动力行为：</span></span></p>
-
-<ul>
-<li>UIAttachmentBehavior</li>
-<li>UICollisionBehavior</li>
-<li>UIDynamicItemBehavior</li>
-<li>UIGravityBehavior</li>
-<li>UIPushBehavior</li>
-<li>UISnapBehavior objects</li>
-</ul>
-
-
-<p>动力行为可以在任意时间内进行添加或移除。另外动力行为可以是组合的，也可以被继承。</p>
-
-<p>注意：这些动力行为是在二维空间进行的。</p>
-
-<p><span style="color: #339966;">Reference View</span>：该用是用来初始化Animator用的，它的作用是给动力行为提供坐标系。</p>
-
-<p><span style="color: #339966;">View</span>：在UIKit动力中，又称为动力项(dynamic item)。动力项是遵循UIDynamicItem协议的任意对象（可以是SDK中默认提供的，或者开发者自定义的）。在iOS7 beta中，View已经遵循了该协议，所以一般也会将View当做动力项——动力行为实际针对的对象。</p>
-
-<h2><span style="color: #339966;"><strong>代码示例</strong></span></h2>
-
-<p>下面笔者就通过一个例子，演示如何对一个view施加重力行为(UIGravityBehavior)。</p>
-
-<p>上面介绍了一大堆，实际使用过程可能没那么复杂，不过原理才是最重要的。</p>
-
-<p>新建一个Single View Application模板工程：BVGravityBehavior，在工程中，有如下属性：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">@property (nonatomic, weak) IBOutlet UIImageView *square1;
-@property (nonatomic) UIDynamicAnimator* animator;</pre>
-
-
-<p>另外还有两个方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">// 开始重力行为
-- (IBAction)startGravity:(id)sender
-{
-    self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
-    UIGravityBehavior* gravityBeahvior = [[UIGravityBehavior alloc] initWithItems:@[self.square1]];
-    [self.animator addBehavior:gravityBeahvior];
-}</pre>
-
-
-
-
-<pre class="wp-code-highlight prettyprint linenums:1">// 停止重力行为
-- (IBAction)stopGravity:(id)sender
-{
-    [self.animator removeAllBehaviors];
-}</pre>
-
-
-<p>运行程序，效果如下（如图没看到gif动画效果，点击下图，在新窗口中可以看到效果）：</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/1.gif" target="_blank"><img class="alignnone size-full wp-image-1383" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/06/1.gif" width="570" height="700" /></a></p>
-
-<p>&nbsp;</p>
-
-<p>也可以停止当前的动力行为：在重力行为运行过程中，如果点击停止，就可以停止重力行为，view的状态为停止前的状态。</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/06/2.gif" target="_blank"><img class="alignnone size-full wp-image-1384" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/06/2.gif" width="572" height="706" /></a></p>
-
-<p>&nbsp;</p>
-
-<h2><strong><span style="color: #339966;">代码下载</span></strong></h2>
-
-<p><a href="https://github.com/BeyondVincent/iOS7-new-feature/tree/master/code/UIDynamic/BVGravityBehavior" target="_blank"><img class="alignnone size-full wp-image-561" alt="代码下载" src="http://beyondvincent.com/wp-content/uploads/2013/05/5555.png" width="150" height="150" /></a></p>
-
-<p>&nbsp;</p>
-
-<h2><span style="color: #339966;">小结</span></h2>
-
-<p>本文对UIKit动力做了一个入门级别的介绍，并给出了一个小示例，演示了如何给view添加一个重力行为。在下一篇文章中，笔者将继续介绍UIKit动力。</p>
-
-<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_</p>
-
-<h2><span style="color: #339966;"><strong>强烈推荐</strong></span></h2>
-
-<p>来自唐巧的一个微信公众账号：<span style="color: #339966;">iosDevTips</span>——基本每天都会有关于iOS开发的精彩内容分享。<br/>
-来自唐巧的一个Google Group讨论组：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="https://groups.google.com/forum/#!forum/iosdevtips" target="_blank"><span style="color: #339966; text-decoration: underline;">iosDevTips</span></a></span></span></p>
-
-<h2><span style="color: #339966;"><strong>新特征汇总更新通知方式</strong></span></h2>
-
-<p>有新的内容我会通过下面的方式进行通知，欢迎关注：<br/>
-新浪微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://www.weibo.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
-腾讯微博：<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><strong><a href="http://t.qq.com/beyondvincent" target="_blank"><span style="color: #339966; text-decoration: underline;">beyondvincent</span></a></strong></span></span><br/>
-微信公众账号：<strong>破船之家</strong><br/>
-<a href="http://beyondvincent.com/wp-content/uploads/2013/03/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E8%B4%A6%E5%8F%B7-%E7%A0%B4%E8%88%B9%E4%B9%8B%E5%AE%B6.jpg"><img alt="微信公众账号-破船之家" src="http://beyondvincent.com/wp-content/uploads/2013/03/微信公众账号-破船之家-150x150.jpg" width="150" height="150" /></a></p>
-
-<div>
-</div>
-
-
-
-
-<div>
-  本文由<span style="text-decoration: underline;"><span style="color: #339966; text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2013-06-15</time>
 </div>
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[破船之家]]></title>
   <link href="http://BeyondVincent.github.io/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-02-21T15:11:01+08:00</updated>
+  <updated>2014-03-17T14:49:24+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,183 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在iOS上使用自签名的SSL证书]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/03/17/five-tips-for-using-self-signed-ssl-certificates-with-ios/"/>
+    <updated>2014-03-17T14:15:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/03/17/five-tips-for-using-self-signed-ssl-certificates-with-ios</id>
+    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2014/03/09.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自：<a href="http://blog.httpwatch.com/2013/12/12/five-tips-for-using-self-signed-ssl-certificates-with-ios/">Five Tips for Using Self Signed SSL Certificates with iOS</a></p>
+
+<p>小引：</p>
+
+<p>上周苹果release了iOS 7.1，用户升级至此版本，去下载企业级应用时，如果应用不是用https部署的，那么会提示服务器上的证书无效，如下图所示：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/11.png" alt="" /></p>
+
+<p>小引:</p>
+
+<p>在iOS 7.1中需要将plists文件的url路径设置为https才能下载安装，如果之前是用http部署的，这就需要对服务器做一些修改。网上流传着(<a href="http://stackoverflow.com/questions/20276907/enterprise-app-deployment-doesnt-work-on-ios-7-1/22325916#22325916">Enterprise app deployment doesn&rsquo;t work on iOS 7.1</a>)把plist放到公开的具有https功能的文件服务器上即可(dropbox或SkyDrive)，经试验，都是可行的。不过如要企业内部的网络无法访问外网，这又如何是好呢？网上也流传需要受信任的证书才行，这样一来对于某些企业的内部部署就比较麻烦了(局域网、主机名变动等都会引起很麻烦的事情)，各区域可能还要用不同的证书(对应不同的host name)。</p>
+
+<p>经查苹果的相关文档(2014年2月份)，是可以使用http或者https的，后来打电话咨询苹果技术支持人员，告知文档还没来得及更新，不过自签名的证书也可以使用，最好首先要把证书(最好是CA根证书)通过mail或者配置工具安装到iOS设备上，然后根据这个CA构建web 服务器上用到的证书，这样当iOS设备访问web服务器来安装app时，就可以正常进行了。这样的话，我们只需要根据不同的服务器制作对应的自签名证书即可，有问题也方便修改跟进。</p>
+
+<p>下面这篇文章就是介绍如何在iOS上面使用自签名的SSL证书。</p>
+
+<p>先来看看目录：</p>
+
+<ol>
+<li>在iPhone或者iPad上的Safari中不要接受自签名证书</li>
+<li>像安装iOS的Configuration Profile一样安装自签名证书</li>
+<li>不要用IIS创建自签名证书</li>
+<li>利用OpenSSL创建自签名证书</li>
+<li>创建自己的证书颁发机构(CA)</li>
+</ol>
+
+
+<p>虽说SSL证书的购买价格不是太贵，不过有时候我们自行创建的话要更加方便一些，例如我们需要在开发环境配置SSL时、我们的测试服务器有不同的主机名或者开发的系统只有本地局域网才能访问。</p>
+
+<p>实际上我们可以免费的创建<a href="http://en.wikipedia.org/wiki/Self-signed_certificate">自签名SSL证书</a>，并不需要给证书颁发机构(CA)支付任何费用，也不需要遵守任何审计要求。</p>
+
+<p>使用自签名SSL证书的缺点就是浏览器不会自动的信任相关的站点。如果用iPhone或者iPad上的Safari打开相关站点，会看到如下提示界面：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/01.png" alt="" /></p>
+
+<p>这里的HttpWatch iOS app还会有更详细的提示内容：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/02.png" alt="" /></p>
+
+<p>本文剩余内容将介绍如何对iOS做配置，以避免上面遇到的问题，以及如何方便的创建和管理自签名证书。</p>
+
+<h2>在iPhone或者iPad上的Safari中不要接受自签名证书</h2>
+
+<p>当在Safari中第一次访问自签名证书的站点时，会有如下提示(Continue或Details->Accept)：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/03.png" alt="" /></p>
+
+<p>如果你照着选择的话，是可以在Safari中打开站点的，不过这样会有两个明显的缺点：</p>
+
+<ol>
+<li>在Safari中接受证书只会添加一个<code>SSL例外</code>：防止Safari对此站点做出的警告提示。实际上并不会将证书安装到iOS中，以成为可信任的证书。同台设备的其它程序在连接该站点时仍然会失败。</li>
+<li>一旦将<code>SSL例外</code>添加到iOS 7中了，就无法从iOS 7中移除。在之前的版本还可以通过Settings->Safari，选中&#8221;Clear Cookies and Data&#8221;进行删除。在iOS 7中这好像没有效果。&mdash;&mdash;&mdash;除非<code>General &gt; Reset &gt; Reset Settings</code>。</li>
+</ol>
+
+
+<p>当然，苹果官方也提供了一个工具<a href="http://support.apple.com/downloads/#iphone%20configuration%20utility">iPhone configuration utility for Mac and PC</a>，通过该工具可以把证书安装至设备中。如果邮件不可用，或者要批量安装的话，这是一个好方法。</p>
+
+<h2>像安装iOS的Configuration Profile一样安装自签名证书</h2>
+
+<p>要想把SSL证书在iOS设备上安装为可信任的，可以通过发邮件到设备上，并将证书以附件的形式带在邮件中：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/04.png" alt="" /></p>
+
+<p>选择邮件中的附件，以将证书安装至iOS设备中。选择附件之后，选择<code>Install</code>来安装证书。完成安装之后，再在Safari或者其它iOS应用中使用该证书时，就不会有相关提醒了。</p>
+
+<p>并且这与Safari添加的<code>SSL例外</code>有一个很大的区别，你可以在任意时刻通过<code>Settings-&gt;General-&gt;Profiles</code>来查看相关证书，如果有必要的话，还可以将其移除：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/05.png" alt="" /></p>
+
+<p>当然，苹果也提供了一个工具<a href="http://support.apple.com/downloads/#iphone%20configuration%20utility">iPhone configuration utility for Mac and PC</a>，通过该工具可以把证书安装到设备中，如果邮件不可用，或者要批量安装证书的话，可以用这个工具。</p>
+
+<h2>不要用IIS创建自签名证书</h2>
+
+<p>在IIS中创建自签名证书非常的简单。只需要选择菜单中的<code>Create Self-Signed Certificate</code>即可：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/06.png" alt="" /></p>
+
+<p>不过IIS简单的使用计算机名称当做证书的主机名：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/07.png" alt="" /></p>
+
+<p>大多数时候，计算机名称与主机名是不匹配的，这样的话自签名的证书永远都不会受信任——即使已经安装至iOS设备中：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/08.png" alt="" /></p>
+
+<p>要修复这个问题可以安装并运行IIS 6 Toolkit中的SelfSSL。不过，要是使用OpenSSL则非常简单，下面我们就来看看吧。</p>
+
+<h2>利用OpenSSL创建自签名证书</h2>
+
+<p>创建自签名证书最简单的一种方法就是使用<a href="http://www.openssl.org/related/binaries.html">OpenSSL命令行工具</a>，这个工具在许多平台上面都可以使用，并且在Mac OSX上面是默认安装好了的。</p>
+
+<p>首先，创建一个私钥文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl genrsa -out myselfsigned.key 2048</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后创建自签名证书：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl req -new -x509 -key myselfsigned.key -out myselfsigned.cer -days 365
+</span><span class='line'>-subj /CN=www.mysite.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的命令中，关于私钥和证书(cer)的文件名可以是任意的。其中<code>CN</code>参数需要设置为主机名(例如<a href="https://www.mysite.com">https://www.mysite.com</a>)。而<code>days</code>参数则指定证书从创建开始的有效天数。</p>
+
+<p>在Apache服务器上面可以直接使用私钥和证书文件(做相关的SSL配置即可)。在IIS中需要一个PFX文件，通过该文件，可以将证书导入至IIS的Server Certificates中。当然通过OpenSSL可以创建PFX文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl pkcs12 -export -out myselfsigned.pfx -inkey myselfsigned.key
+</span><span class='line'>-in myselfsigned.cer</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>创建自己的证书颁发机构(CA)</h2>
+
+<p>使用自签名证书会有这样的问题：需要为每台设备中用到的每个证书设置相关的信任关系。有一个解决办法就是创建自己的证书颁发机构(CA)根证书，然后基于该根证书创建别的证书。</p>
+
+<p>这样一来就是自己扮演着CA，取代了商业性质的CA。这样做的好处就是自己的CA证书只需要在每台设备上安装一次即可。之后，设备会自动的信任基于CA根证书创建的证书。</p>
+
+<p>创建CA证书只需要两个步骤即可，首先是创建私钥文件(跟之前的一样)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl genrsa -out myCA.key 2048</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是创建证书：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl req -x509 -new -key myCA.key -out myCA.cer -days 730
+</span><span class='line'>-subj /CN="My Custom CA"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面创建的证书(myCA.key)可以公开发布出去，并安装在iOS或者其它OS上，以此当做内置的受信任根CA。自制的CA证书存储在<code>General-&gt;Settings-&gt;Profile</code>：</p>
+
+<p><img src="http://BeyondVincent.github.io/images/2014/03/10.png" alt="" /></p>
+
+<p>其中私钥文件(myCA.key)只用是再创建新的SSL证书时使用。</p>
+
+<p>上面的CA创建好之后，我们可以基于该证书创建许多证书。注意，这里多了一个步骤：必须创建一个CSR(客户端证书请求文件)——就像购买商业的SSL证书一样。</p>
+
+<p>首先需要创建一个私钥文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl genrsa -out mycert1.key 2048</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是创建CSR:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl req -new -out mycert1.req -key mycert1.key -subj /CN=www2.mysite.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着用这个CSR创建证书：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl x509 -req -in mycert1.req -out mycert1.cer -CAkey myCA.key
+</span><span class='line'>-CA myCA.cer -days 365 -CAcreateserial -CAserial serial</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里创建的证书(mycert.cer)可以安装在一台web服务器上，并且已经安装了相关CA证书的iOS设备都可以访问该web服务器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[推荐一本好书：MacTalk 人生元编程]]></title>
@@ -4527,594 +4704,6 @@ mole_laugh1.png, mole_laugh2.png mole_laugh3.png, mole_laugh2.png, mole_laugh3.p
 <p>至此，关于如何制作通用程序的介绍到此结束！</p>
 
 <p>如果你希望学习更多相关Sprite Kit内容，可以看看这本书：<a href="http://www.raywenderlich.com/store/ios-7-by-tutorials">iOS Games by Tutorials</a>。本书会告诉你需要知道的内容——从物理特性，到磁贴地图，以及粒子系统，甚至是制作自己的关卡编辑器。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Sprite Kit教程：制作一个通用程序 1]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1/"/>
-    <updated>2013-10-27T20:30:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2013/10/27/118-sprite-kit-tutorial-making-a-universal-app-part-1</id>
-    <content type="html"><![CDATA[<p><img src="http://BeyondVincent.github.io/images/2013/10/24.png"></p>
-
-<!--more-->
-
-
-<p>注：本文译自<a href="http://www.raywenderlich.com/49695/sprite-kit-tutorial-making-a-universal-app-part-1"><code>Sprite Kit Tutorial: Making a Universal App: Part 1</code></a></p>
-
-<h3><strong>目录</strong></h3>
-
-<ul>
-<li><a href="#msgs">UI规划：概述</a></li>
-<li><a href="#msxj">UI规划：小结</a></li>
-<li><a href="#ks">开始</a></li>
-<li><a href="#wltj">纹理图集</a></li>
-<li><a href="#bjsb">背景设置</a></li>
-<li><a href="#asfz">鼹鼠的放置</a></li>
-<li><a href="#tcas">弹出鼹鼠</a></li>
-<li><a href="#hqhc">何去何从</a></li>
-</ul>
-
-
-<p>本文将介绍如何制作一个通用程序(打鼹鼠的游戏)——可以在iPhone和iPad上运行(包括retina显示的支持。)</p>
-
-<p>学习本文之前，需要掌握以下知识：</p>
-
-<p><a href="http://beyondvincent.com/blog/2013/10/12/114-spritekit-tutorial-for-beginners-3/"><code>Sprite Kit教程：初学者 1</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/29/113-spritekit-tutorial-for-beginners-2/"><code>Sprite Kit教程：初学者 2</code></a>
-<a href="http://beyondvincent.com/blog/2013/09/26/113-spritekit-tutorial-for-beginners-1/"><code>Sprite Kit教程：初学者 3</code></a></p>
-
-<p>英文原文在这里：<a href="http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners"><code>Sprite Kit Tutorial for Beginners</code></a></p>
-
-<p><a href="http://beyondvincent.com/blog/2013/10/16/115-spritekit-tutorial-animations-and-texture-atlases-1/"><code>Sprite Kit教程：动画和纹理图集 1</code></a>
-<a href="http://beyondvincent.com/blog/2013/10/16/116-spritekit-tutorial-animations-and-texture-atlases-2/"><code>Sprite Kit教程：动画和纹理图集 2</code></a></p>
-
-<p>英文原文在这里：<a href="http://www.raywenderlich.com/45152/sprite-kit-tutorial-animations-and-texture-atlases"><code>Sprite Kit Tutorial: Animations and Texture Atlases</code></a></p>
-
-<p><a href="http://beyondvincent.com/blog/2013/10/20/117-spritekit-tutorial-how-to-drag-and-drop-sprites/"><code>Sprite Kit教程：如何拖放Sprites</code></a></p>
-
-<p>英文原文在这里：<a href="http://www.raywenderlich.com/44270/sprite-kit-tutorial-how-to-drag-and-drop-sprites"><code>Sprite Kit Tutorial: How To Drag and Drop Sprites</code></a></p>
-
-<p>如果还没有看上面的这些文章(或者相关的知识)，建议你先去看一下。</p>
-
-<p>本文会有两篇文章。第一篇，会先创建一个基本的游戏——可爱的小鼹鼠聪洞里面弹出来。为了让游戏在iPhone和iPad(支持retina显示)上看起来很优美，本文还花了大量的时间来考虑如何做游戏的美术规划和坐标。</p>
-
-<h3><a id="msgs"></a>UI规划：概述</h3>
-
-<p>我们希望程序可以在iPhone 3.5英寸，4英寸(iPhone 5)和iPad上良好的运行，所以在开始之前，我们需要认真的做好UI规划。</p>
-
-<p>为了搞明白需要什么样的UI尺寸，我们先来看看下面的相关内容：</p>
-
-<ul>
-<li>Retina显示</li>
-<li>4英寸iPhone显示</li>
-<li>iPad和iPhone长宽比</li>
-</ul>
-
-
-<p>下面开始吧！</p>
-
-<h4><code>Retina显示</code></h4>
-
-<p>在iPhone中，non-retina和retina在显示上的最大区别就是retina的分辨率是non-retina的2倍。所以在non-retina上面分辨率为 480 * 320(landscape)，而retina则是960 * 640.</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/26.jpg" alt="" /></p>
-
-<p>同样iPad也分为non-retina和retina，它们的分辨率相差也为2倍，non-retina显示的分辨率是1024 * 768像素，而retina上面则是2048 * 1536像素！</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/27.jpg" alt="" /></p>
-
-<p>稍等，你可能在想：双倍分辨率岂不是打乱了所有已经写好的程序，例如iPhone上的480 * 320和iPad的1024 * 768？这是有可能的，除非是在Sprite Kit中设置尺寸或者坐标，此时实际上是在UIKit中进行设置，并且设置的尺寸单位叫做<code>points</code>，而不是像素(pixels)。</p>
-
-<p>在non-retina显示上，无论是iPhone火iPad，一个point代表一个pixel，而在retina上面，一个point代表2个pixels。所以将位置设置为(10,10)point时，non-retina上将是(10,10)，而retina上则是(20,20)，所以它们依然会显示在相同的偏移量上。不错吧！</p>
-
-<p>当使用苹果提供的控件或者Core Graphics时，苹果已经写好了相关代码，让它们在retina显示起来很好看。</p>
-
-<p>唯一需要注意的就是关于使用的图片。比如在iPhone或iPad程序中又一个200 * 200d 图片。如果什么事情都不做的话，在retina上面会自动的将这个图片放大两倍——这看起来不是太好，因为我们并没有提供相关分辨率的图片。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/28.jpg" alt="" /></p>
-
-<p>因此针对retina显示我们需要提供所有图片的另外一个版本，也就是说需要一个普通的版本，以及另外2倍分辨率的一个版本。如果将2倍分辨率图片命名为&#8221;@2x&#8221;后缀，那么当利用[SKSpriteNode spriteNodeWithImageNamed:&hellip;]或者类似的APIs加载sprite时，它会自动的将@2x图片加载到retina显示上。</p>
-
-<p>所以在开发针对retina显示的Sprite Kit游戏时也很简单——只需要添加@2x的图片，基本上就搞定了。</p>
-
-<h4><code>4英寸iPhone显示</code></h4>
-
-<p>iPhone 5设备在屏幕上显示的分辨率比以前的更大了，对于游戏显示上来说，这非常的好。本文中的处理很简单，只需要将背景图片做一个扩展延伸即可。</p>
-
-<p>iPhone 5的分辨率是1136 * 640——宽高比为16:9。用point来衡量的话则是568 * 320.</p>
-
-<h3><code>iPad和iPhone的宽高比</code></h3>
-
-<p>上面我们已经看到要处理retina显示很容易，但是要想创建一个通用的程序呢(可以运行在iPhone和iPad设备上)。</p>
-
-<p>其实要想创建一个通用的程序还真有一个麻烦的事情——iPhone和iPad的宽高比不一样！</p>
-
-<p>iPhone的比例是1.5(480 * 320 或960 * 640)，而iPad是1.33(768 * 1024或1536 * 2048)。</p>
-
-<p>由于比例不同，如果一副能够在non-retina iPad(768×1024)上完整显示，你希望将其在iPhone上重用，那么不会完整的匹配上，如果将其缩放，按照宽度进行适配(乘以0.9375)，会得到720×960的尺寸，这样就会把高度剪切掉一部分。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/29.jpg" alt="" /></p>
-
-<p>发生这种情况会让人比较烦恼，我们不仅需要处理背景图片的问题，不同的宽高比导致不同设备间使用相同的坐标比较困难。</p>
-
-<p>下面是我了解到的一些对应的处理方法：</p>
-
-<ul>
-<li>在3.5英寸的iPhone retina显示屏幕正中间确定一个<code>可玩区域</code>。这样剩下的区域可以用一个背景图片来覆盖，不要让玩家关注这一剩下的区域。这样一来在不同设备间进行左边的转换和重用要非常方便。本文将利用这种方法。</li>
-<li>让iPad显示内容的宽高比设置为跟iPhone一样：左右留出32points的边距，上下留出64point的边距，此时在正中间的区域就是1024×768 points。这样只要让游戏程序的内容显示在这1024×768的范围内，就可以在每个设备间对图片进行缩放了。</li>
-<li>由于pixel和point是有区别的。那么我们就创建出iPad retina显示的图片(536×2048 px)，然后将该图片除以2，这样也就可以用于non-retina iPad显示了！</li>
-</ul>
-
-
-<h3><code>iOS 模拟器选项</code></h3>
-
-<p>下面这些模拟器可以运行iOS 7：</p>
-
-<ul>
-<li>iPhone Retina (3.5-inch) – iPhone 4 和 4S</li>
-<li>iPhone Retina (4-inch) – iPhone 5, 5C, 和 5S</li>
-<li>iPad – iPad 1, 2, 和 Mini</li>
-<li>iPad Retina – iPad 3 和 4</li>
-</ul>
-
-
-<p>注意：这里并没有non-retina iPhone——因为没有任何一台no-retina iPhone或iPod touch可以运行iOS 7。</p>
-
-<p>另外由于Sprite Kit是在iOS 7中才引入的，所以就不用考虑no-retina iPhone或iPod touch设备了。</p>
-
-<h3><a id="msxj"></a>UI规划：小结</h3>
-
-<p>基于上面的一些讨论，下面是本文的相关计划：</p>
-
-<ul>
-<li>UI设计的范围(可玩区域)在960×640范围内，在retina iPhone(3.5英寸)中全屏显示，4英寸iPhone，iPad和retina iPad中居中显示。</li>
-<li>可用的UI元素放置在纹理图集文件中。@2x表示用于iPad retina显示的图片。</li>
-<li>由于需要全屏显示，所以背景图片是一个特例。创建一个1024x768 point尺寸的图片，这样可以完全显示在iPad中。并且这个图片可以缩放显示在3.5英寸的iPhone上，只不过背景图中的有些内容不能显示出来，但是这关系并不太大。</li>
-<li>4英寸的iPhone将通过代码来使用<code>-568</code>的纹理图集，并将其<code>可玩区域</code>居中。</li>
-<li>iPad和iPad retina通过代码使用<code>-ipad</code>的纹理图集，并将其坐标转换到<code>可玩区域</code>中，另外在使用适当的字体大小等。</li>
-</ul>
-
-
-<p>来这里可以下载到本文的<a href="http://cdn4.raywenderlich.com/downloads/WhackAMoleSKArt.zip">UI资源</a>。解压出下载到的文件，可以看到如下一些内容：</p>
-
-<ul>
-<li>在TextureAtlases中又3个文件夹。每个文件夹中的UI元素针对不同的显示(3.5英寸iPhone, 4英寸iPhone, 和 iPad)。</li>
-<li>iPad纹理图集文件夹中包含的图片是针对non-retina和retina iPad的。</li>
-<li>在foreground文件夹中，有两个前景图片(下部和上部的图片)。被分为了两部分，这样可以将鼹鼠放置在下部和上部，看起来鼹鼠就像到地下了一样。</li>
-<li>4英寸的iPhone是另外一个特列。因此在这里另外构建了新的前景图，以利用上更多的空间。</li>
-<li>在background文件夹中，虽然iPad的宽高比是1.33，但这里做的背景图宽高比为一半,这样做是因为背景图片基本上可以忽略不计（只是3个鼹鼠洞）。所以不值得在这上面耗费，因为只需要用小纹理的图片替代即可，在需要放大的时候放大一下。</li>
-<li>在sprite文件夹中，所有的sprite尺寸都适合显示在960×640大小的可玩区域中。注意，这里有一个鼹鼠和两个相关动画(鼹鼠笑和被打)。</li>
-</ul>
-
-
-<p>上面搞了这么多，现在终于可以开始了！</p>
-
-<h3><a id="ks"></a>开始</h3>
-
-<p>打开Xcode，选择File > New > Project…，然后选中Sprite Kit Game并单击Next。将工程命名为WhackAMole，devices选中universal，接着再单击Next。选择一个路径来保存工程，然后单击Create。</p>
-
-<p>当工程打开之后，应该能看到Project Navigator中的工程文件已经被选中了，如果没有选中，那么将其选中，然后在target中选中WhackAModle，以及选中顶部的General，在Deployment info里面可以看到一些设备朝向的勾选框。在这里我们的游戏是landscape的，所以勾选上iPhone和iPad的Landscape Left和Landscape Right。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/30.png" alt="" /></p>
-
-<p>另外，为了让朝向正确，还需要对代码做一些修改。打开ViewController.m文件并用下面的viewWillLayoutSubviews:方法替换viewDidLoad方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewWillLayoutSubviews</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewWillLayoutSubviews</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Configure the view.</span>
-</span><span class='line'>    <span class="n">SKView</span> <span class="o">*</span> <span class="n">skView</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKView</span> <span class="o">*</span><span class="p">)</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skView</span><span class="p">.</span><span class="n">scene</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">skView</span><span class="p">.</span><span class="n">showsFPS</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">skView</span><span class="p">.</span><span class="n">showsNodeCount</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Create and configure the scene.</span>
-</span><span class='line'>        <span class="n">SKScene</span> <span class="o">*</span> <span class="n">scene</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyScene</span> <span class="nl">sceneWithSize:</span><span class="n">skView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">];</span>
-</span><span class='line'>        <span class="n">scene</span><span class="p">.</span><span class="n">scaleMode</span> <span class="o">=</span> <span class="n">SKSceneScaleModeAspectFill</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Present the scene.</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">skView</span> <span class="nl">presentScene:</span><span class="n">scene</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>为什么要这样做呢？默认情况下View Controller views是以竖直的方式加载，所以横屏模式下，当viewDidLoad被调用的时候不能保证尺寸是正确的，不过当viewWillLayoutSubviews被调用的时候view的size将是正确的。如上代码所示，大多数代码与viewdidLoad中的相同。需要关注的就是if语句中关于skView.scene的配置。当然在这里需要判断一下skView.scene是否已经存在(viewWillLayoutSubviews方法可能会被多次调用)。</p>
-
-<h3><a id="wltj"></a>纹理图集</h3>
-
-<p>纹理图集的配置非常简单。首选创建一个文件夹并且文件名已<code>.atlas</code>结尾。接着将那些UI元素拷贝到这个文件夹里面。然后在Xcode工程中添加这个文件夹即可！</p>
-
-<p>简单吧！当在编译程序的时候，Xcode会把<code>.atlas</code>结尾的文件夹中的图片生成纹理图集。</p>
-
-<p>注意：添加到<code>.atlas</code>文件夹中的图片尺寸不能超过2048×2048 pixels，否则会出错——2048×2048 pixels是自动生成纹理图集的最大尺寸。</p>
-
-<p>下面看看具体如何做。找到之前下载的压缩文件，在压缩文件中有一个名为TextureAtlases的文件夹。这个文件夹中包含了3中设备类型的UI元素(iPad, iPhone, 和 WidescreeniPhone)。这些文件家中都包含有<code>.atlas</code>文件夹。我们将TextureAtlases文件夹拖至工程中，确保勾选上<code>Copy items into destination group’s folder (if needed)</code>。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/31.png" alt="" /></p>
-
-<p>本文中为了让一切变得简单点，我们为每种类型的设备准备了一套纹理图集(iPhone 3.5-inch, iPhone 4-inch 和 iPads)。在iPhone 4英寸中可以重用iPhone3.5英寸中的一些纹理图集，</p>
-
-<h3><a id="bjsb"></a>背景设置</h3>
-
-<p>在开始修改scene中显示内容之前，我们需要添加一个宏以及一个helper方法。打开MyScene.m文件，并在文件的头部添加如下一行代码(在#import下面)：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define IS_WIDESCREEN ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) &lt; DBL_EPSILON )</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这个宏可以判断程序是否允许在4英寸的屏幕中，该宏将被用在helper方法中，如果要了解上面宏的详细内容，<a href="http://stackoverflow.com/questions/12446990/how-to-detect-iphone-5-widescreen-devices">看这里</a>。</p>
-
-<p>接着添加一个helper方法——为运行程序的设备获取正确的SKTextureAtla。这个方法接收一个文件名，并在文件名尾部添加一个正确的标示符，然后返回正确的一个SKTextureAtla。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="p">)</span><span class="nf">textureAtlasNamed:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">fileName</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">UI_USER_INTERFACE_IDIOM</span><span class="p">()</span> <span class="o">==</span> <span class="n">UIUserInterfaceIdiomPhone</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">IS_WIDESCREEN</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="c1">// iPhone Retina 4-inch</span>
-</span><span class='line'>            <span class="n">fileName</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;%@-568&quot;</span><span class="p">,</span> <span class="n">fileName</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>            <span class="c1">// iPhone Retina 3.5-inch</span>
-</span><span class='line'>            <span class="n">fileName</span> <span class="o">=</span> <span class="n">fileName</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">fileName</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;%@-ipad&quot;</span><span class="p">,</span> <span class="n">fileName</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="n">textureAtlas</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKTextureAtlas</span> <span class="nl">atlasNamed:</span><span class="n">fileName</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">textureAtlas</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码做了些什么？</p>
-
-<ul>
-<li>首选判断设备是否为一台iPhone。</li>
-<li>如果是一台iPhone，然后利用之前定义的IS_WIDESCREEN宏判断是否为4英寸显示屏。如果是的话，就在文件名尾部添加<code>-568</code>。</li>
-<li>如果设备是iPad或iPad retina，那么在文件尾部添加<code>-ipad</code>。</li>
-<li>根据文件名创建并返回一个新的SKTextureAtlas。</li>
-</ul>
-
-
-<p>接着找到initWithSize:方法。移除掉设置背景颜色和创建Hell World lable的6行代码，然后用下面的代码替换之：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Add background</span>
-</span><span class='line'><span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="n">backgroundAtlas</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">textureAtlasNamed:</span><span class="s">@&quot;background&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">dirt</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="p">[</span><span class="n">backgroundAtlas</span> <span class="nl">textureNamed:</span><span class="s">@&quot;bg_dirt&quot;</span><span class="p">]];</span>
-</span><span class='line'><span class="n">dirt</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
-</span><span class='line'><span class="n">dirt</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span> <span class="n">CGRectGetMidY</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">));</span>
-</span><span class='line'><span class="n">dirt</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">dirt</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Add foreground</span>
-</span><span class='line'><span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="n">foregroundAtlas</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">textureAtlasNamed:</span><span class="s">@&quot;foreground&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">upper</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="p">[</span><span class="n">foregroundAtlas</span> <span class="nl">textureNamed:</span><span class="s">@&quot;grass_upper&quot;</span><span class="p">]];</span>
-</span><span class='line'><span class="n">upper</span><span class="p">.</span><span class="n">anchorPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
-</span><span class='line'><span class="n">upper</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span> <span class="n">CGRectGetMidY</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">));</span>
-</span><span class='line'><span class="n">upper</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">upper</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">lower</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="p">[</span><span class="n">foregroundAtlas</span> <span class="nl">textureNamed:</span><span class="s">@&quot;grass_lower&quot;</span><span class="p">]];</span>
-</span><span class='line'><span class="n">lower</span><span class="p">.</span><span class="n">anchorPoint</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
-</span><span class='line'><span class="n">lower</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span> <span class="n">CGRectGetMidY</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">frame</span><span class="p">));</span>
-</span><span class='line'><span class="n">lower</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">lower</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Add more here later...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们来看看上面的代码都做了什么。</p>
-
-<ul>
-<li><code>Add background</code> 这部分代码使用之前的helper方法创建一个背景纹理图集。接着从背景纹理图集中构建一个dirt sprite。最后将其缩小2倍，并将其添加到scene正中间。将其缩小的目的是为了节省空间。</li>
-<li><code>Add foreground</code> 这部分代码跟上面background中的十分相似，只不过这两个foreground sprite在同一个纹理图集中罢了。这里用了一种方便的方法来放置图片：设置anchor point(顶部图片设置middle/bottom，底部图片设置middle/top)。这种方法不需要做复杂的数学运算，就能在所有的设备上做出正确的显示。另外需要注意的是iPhone上的背景图片有一部分将不会显示出来，不过在这里并没有太大的影响。另外需要留意的是设置了图片的zPosition值，这样可以确保图片的正确排序。</li>
-<li><code>SKSpriteNode的zPosition属性</code> 这个数学用来决定每个sprite在scene所处层次的位置。可以将其看做一个蛋糕，其中dirt sprite处于最底层，所以使用最小的一个值。添加别的层时增加相应的值，所以上半部分前景图设置为1，而下半部分设置为3，那么2呢？这个值是留给鼹鼠的——因为鼹鼠将出现在上部前景图上面，而在下部前景图后面。</li>
-</ul>
-
-
-<p>在运行程序之前，再做一点清理工作。找到touchesBegan:方法，并将其删除掉。</p>
-
-<p>编译并运行程序，现在可以看到屏幕上显示出了背景图和前景图！并且在iPhone和iPad模拟器中运行，也能正确的显示！如下图所示：</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/32.png" alt="" /></p>
-
-<h3><a id="asfz"></a>鼹鼠的放置</h3>
-
-<p>在这个游戏中，我们将添加3个鼹鼠到scene中——上图中的每个洞放一个。鼹鼠默认是在地下的，偶尔会弹出来，当弹出来时，我们可以打击它们。</p>
-
-<p>首先我们先将鼹鼠放到每个洞中。为了确保鼹鼠位置的正确，最好先把鼹鼠显示在最上面，等调好位置之后，在将其放到后台去。</p>
-
-<p>打开MyScene.h文件，并按照如下代码进行修改：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;SpriteKit/SpriteKit.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@interface</span> <span class="nc">MyScene</span> : <span class="nc">SKScene</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSMutableArray</span> <span class="o">*</span><span class="n">moles</span><span class="p">;</span>
-</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">SKTexture</span> <span class="o">*</span><span class="n">moleTexture</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">@end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码添加了一个SKTexture和一个数组。创建鼹鼠的时候会用到SKTexture，创建好的每个鼹鼠会被添加到数组中，这样方便之后循环获得每个鼹鼠。</p>
-
-<p>在添加鼹鼠之前，首先定位到MyScene.m的顶部，并将下面这行代码添加到<code>@implementation MyScene</code>之前。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">const</span> <span class="kt">float</span> <span class="n">kMoleHoleOffset</span> <span class="o">=</span> <span class="mf">155.0</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是一个float类型的常量，用来对鼹鼠进行定位。</p>
-
-<p>接着，将如下代码添加到initWithSize:方法最后面：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// Load sprites</span>
-</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">moles</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableArray</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
-</span><span class='line'><span class="n">SKTextureAtlas</span> <span class="o">*</span><span class="n">spriteAtlas</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">textureAtlasNamed:</span><span class="s">@&quot;sprites&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">moleTexture</span> <span class="o">=</span> <span class="p">[</span><span class="n">spriteAtlas</span> <span class="nl">textureNamed:</span><span class="s">@&quot;mole_1.png&quot;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kt">float</span> <span class="n">center</span> <span class="o">=</span> <span class="mf">240.0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">UI_USER_INTERFACE_IDIOM</span><span class="p">()</span> <span class="o">==</span> <span class="n">UIUserInterfaceIdiomPhone</span> <span class="o">&amp;&amp;</span> <span class="n">IS_WIDESCREEN</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">center</span> <span class="o">=</span> <span class="mf">284.0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">mole1</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="n">self</span><span class="p">.</span><span class="n">moleTexture</span><span class="p">];</span>
-</span><span class='line'><span class="n">mole1</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertPoint:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="n">center</span> <span class="o">-</span> <span class="n">kMoleHoleOffset</span><span class="p">,</span> <span class="mf">85.0</span><span class="p">)];</span>
-</span><span class='line'><span class="n">mole1</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">999</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole1</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;Mole&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole1</span><span class="p">.</span><span class="n">userData</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableDictionary</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">mole1</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">moles</span> <span class="nl">addObject:</span><span class="n">mole1</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">mole2</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="n">self</span><span class="p">.</span><span class="n">moleTexture</span><span class="p">];</span>
-</span><span class='line'><span class="n">mole2</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertPoint:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="mf">85.0</span><span class="p">)];</span>
-</span><span class='line'><span class="n">mole2</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">999</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole2</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;Mole&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole2</span><span class="p">.</span><span class="n">userData</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableDictionary</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">mole2</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">moles</span> <span class="nl">addObject:</span><span class="n">mole2</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">mole3</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKSpriteNode</span> <span class="nl">spriteNodeWithTexture:</span><span class="n">self</span><span class="p">.</span><span class="n">moleTexture</span><span class="p">];</span>
-</span><span class='line'><span class="n">mole3</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">convertPoint:</span><span class="n">CGPointMake</span><span class="p">(</span><span class="n">center</span> <span class="o">+</span> <span class="n">kMoleHoleOffset</span><span class="p">,</span> <span class="mf">85.0</span><span class="p">)];</span>
-</span><span class='line'><span class="n">mole3</span><span class="p">.</span><span class="n">zPosition</span> <span class="o">=</span> <span class="mi">999</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole3</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;Mole&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">mole3</span><span class="p">.</span><span class="n">userData</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableDictionary</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChild:</span><span class="n">mole3</span><span class="p">];</span>
-</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">moles</span> <span class="nl">addObject:</span><span class="n">mole3</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码首先创建并加载一个SKTextureAtlas。接着根据sprite纹理图集中的mole_1.png 创建一个SKTexture，这将用来创建3个鼹鼠。Texture的重用性可以让Sprite Kit处理和渲染sprite更加高效。</p>
-
-<p>接下来的这个值用来设置center。如果设备是4英寸的iPhone，那么这个center值将反映出额外的尺寸。</p>
-
-<p>接着为每个鼹鼠创建对应的sprite，并将它们放置到scene中，还把它们添加到鼹鼠数组中。注意，每个鼹鼠的位置是利用center位置和文件头部定义的常量决定的。针对iPhone 3.5英寸的设备，鼹鼠位置处在480×320的可玩区域，而如何是iPad，相关位置需要做转换，所以下面写了一个helper方法convertPoint。</p>
-
-<p>将下面这个方法添加到initWithSize:方法后面：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nf">convertPoint:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">point</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">UI_USER_INTERFACE_IDIOM</span><span class="p">()</span> <span class="o">==</span> <span class="n">UIUserInterfaceIdiomPad</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">32</span> <span class="o">+</span> <span class="n">point</span><span class="p">.</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">point</span><span class="p">.</span><span class="n">y</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">point</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这个方法将可玩区域的point转换到iPad上适当的位置。记住：</p>
-
-<ul>
-<li>iPad的屏幕尺寸更大，所有的point都是双倍。</li>
-<li>由于是将960×640的区域转换为1024×786的iPad区域，所以需要将左右边距分别设置为32point，而上下边距则各位64。</li>
-</ul>
-
-
-<p>就这样，上面的方法就是简单的给出iPad中正确的位置。</p>
-
-<p>编译并运行程序，可以看到scene中有3个鼹鼠，它们的位置已经设置正确！你最好在iPhone 3.5-inch, iPhone 4-inch, iPad, 和 iPad Retina设备上都运行一下，以确保位置的正确。</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/33.png" alt="" /></p>
-
-<h3><a id="tcas"></a>弹出鼹鼠</h3>
-
-<p>至此，我们已经把鼹鼠放置好了，下面我们添加一些代码让鼹鼠从洞里面跳出来吧。</p>
-
-<p>首先，将这些sprite(鼹鼠)的zPosition从999设置为2，这样就可以把鼹鼠藏起来了。</p>
-
-<p>然后，将下面的代码添加到update:方法中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="n">mole</span> <span class="k">in</span> <span class="n">self</span><span class="p">.</span><span class="n">moles</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">arc4random</span><span class="p">()</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">mole</span><span class="p">.</span><span class="n">hasActions</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="p">[</span><span class="n">self</span> <span class="nl">popMole:</span><span class="n">mole</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>需要注意的是每帧的显示都会调用update方法。该方法被调用的时候我们都会尝试着弹出一些鼹鼠。在代码中循环遍历处理了每个鼹鼠，并给每个鼹鼠1/3的机会从洞中弹出来。不过记住我们只能弹出那么还没有弹出来的鼹鼠——很简单的一个判断方法就是检查一下sprite的属性hasActions返回的值，如果还有action在运行，那么hasActions将返回YES。</p>
-
-<p>接着，实现一下popMole方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">popMole:</span><span class="p">(</span><span class="n">SKSpriteNode</span> <span class="o">*</span><span class="p">)</span><span class="nv">mole</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveUp</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">mole</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">easeMoveUp</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">easeMoveDown</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">moveToY:</span><span class="n">mole</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="nl">duration:</span><span class="mf">0.2f</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">easeMoveDown</span><span class="p">.</span><span class="n">timingMode</span> <span class="o">=</span> <span class="n">SKActionTimingEaseInEaseOut</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">delay</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">waitForDuration:</span><span class="mf">0.5f</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">SKAction</span> <span class="o">*</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">SKAction</span> <span class="nl">sequence:</span><span class="err">@</span><span class="p">[</span><span class="n">easeMoveUp</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">easeMoveDown</span><span class="p">]];</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">mole</span> <span class="nl">runAction:</span><span class="n">sequence</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码使用了Sprite Kit中的一些action，让鼹鼠弹出洞来，并暂停半秒钟，然后在弹回去。我们来细看一下上面代码的意思：</p>
-
-<ol>
-<li>创建一个action来将鼹鼠沿着Y轴移动鼹鼠高度的距离，这样就能将鼹鼠正好放置到洞上面。</li>
-<li>为了让移动行为看起来更自然一点，将action的timingMode设置为SKActionTimingEaseInEaseOut。这样可以让action在开始和结束时速度慢一点，这样鼹鼠看起来会有加速和减速的效果，看起来就会更自然一点了。</li>
-<li>创建一个action将鼹鼠移回原处，这个action跟上一个类似，只不过使用鼹鼠当前Y轴的位置。</li>
-<li>创建一个action，该action会让鼹鼠停留在洞口半秒钟。</li>
-<li>按顺序运行这些action：move up，delay和move down。</li>
-</ol>
-
-
-<p>搞定！编译并运行程序，可以看到鼹鼠会从它们的洞口弹出来！</p>
-
-<p><img src="http://BeyondVincent.github.io/images/2013/10/34.png" alt="" /></p>
-
-<h3><a id="hqhc"></a>何去何从</h3>
-
-<p>本文的代码工程在<a href="http://cdn3.raywenderlich.com/downloads/WhackAMoleSK1.zip">这里</a>。</p>
-
-<p>下一篇文章<code>Sprite Kit教程：制作一个通用程序 2</code>中会给鼹鼠添加一些可爱的动画(笑和被击中)，并添加一个玩法——打击鼹鼠，并赚取点数，并添加一些音效。</p>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-02-21T15:11:01+08:00</updated>
+  <updated>2014-03-17T14:49:24+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,179 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在iOS上使用自签名的SSL证书]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/03/17/five-tips-for-using-self-signed-ssl-certificates-with-ios/"/>
+    <updated>2014-03-17T14:15:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/03/17/five-tips-for-using-self-signed-ssl-certificates-with-ios</id>
+    <content type="html"><![CDATA[<p><img src="/images/2014/03/09.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自：<a href="http://blog.httpwatch.com/2013/12/12/five-tips-for-using-self-signed-ssl-certificates-with-ios/">Five Tips for Using Self Signed SSL Certificates with iOS</a></p>
+
+<p>小引：</p>
+
+<p>上周苹果release了iOS 7.1，用户升级至此版本，去下载企业级应用时，如果应用不是用https部署的，那么会提示服务器上的证书无效，如下图所示：</p>
+
+<p><img src="/images/2014/03/11.png" alt="" /></p>
+
+<p>小引:</p>
+
+<p>在iOS 7.1中需要将plists文件的url路径设置为https才能下载安装，如果之前是用http部署的，这就需要对服务器做一些修改。网上流传着(<a href="http://stackoverflow.com/questions/20276907/enterprise-app-deployment-doesnt-work-on-ios-7-1/22325916#22325916">Enterprise app deployment doesn&rsquo;t work on iOS 7.1</a>)把plist放到公开的具有https功能的文件服务器上即可(dropbox或SkyDrive)，经试验，都是可行的。不过如要企业内部的网络无法访问外网，这又如何是好呢？网上也流传需要受信任的证书才行，这样一来对于某些企业的内部部署就比较麻烦了(局域网、主机名变动等都会引起很麻烦的事情)，各区域可能还要用不同的证书(对应不同的host name)。</p>
+
+<p>经查苹果的相关文档(2014年2月份)，是可以使用http或者https的，后来打电话咨询苹果技术支持人员，告知文档还没来得及更新，不过自签名的证书也可以使用，最好首先要把证书(最好是CA根证书)通过mail或者配置工具安装到iOS设备上，然后根据这个CA构建web 服务器上用到的证书，这样当iOS设备访问web服务器来安装app时，就可以正常进行了。这样的话，我们只需要根据不同的服务器制作对应的自签名证书即可，有问题也方便修改跟进。</p>
+
+<p>下面这篇文章就是介绍如何在iOS上面使用自签名的SSL证书。</p>
+
+<p>先来看看目录：</p>
+
+<ol>
+<li>在iPhone或者iPad上的Safari中不要接受自签名证书</li>
+<li>像安装iOS的Configuration Profile一样安装自签名证书</li>
+<li>不要用IIS创建自签名证书</li>
+<li>利用OpenSSL创建自签名证书</li>
+<li>创建自己的证书颁发机构(CA)</li>
+</ol>
+
+
+<p>虽说SSL证书的购买价格不是太贵，不过有时候我们自行创建的话要更加方便一些，例如我们需要在开发环境配置SSL时、我们的测试服务器有不同的主机名或者开发的系统只有本地局域网才能访问。</p>
+
+<p>实际上我们可以免费的创建<a href="http://en.wikipedia.org/wiki/Self-signed_certificate">自签名SSL证书</a>，并不需要给证书颁发机构(CA)支付任何费用，也不需要遵守任何审计要求。</p>
+
+<p>使用自签名SSL证书的缺点就是浏览器不会自动的信任相关的站点。如果用iPhone或者iPad上的Safari打开相关站点，会看到如下提示界面：</p>
+
+<p><img src="/images/2014/03/01.png" alt="" /></p>
+
+<p>这里的HttpWatch iOS app还会有更详细的提示内容：</p>
+
+<p><img src="/images/2014/03/02.png" alt="" /></p>
+
+<p>本文剩余内容将介绍如何对iOS做配置，以避免上面遇到的问题，以及如何方便的创建和管理自签名证书。</p>
+
+<h2>在iPhone或者iPad上的Safari中不要接受自签名证书</h2>
+
+<p>当在Safari中第一次访问自签名证书的站点时，会有如下提示(Continue或Details->Accept)：</p>
+
+<p><img src="/images/2014/03/03.png" alt="" /></p>
+
+<p>如果你照着选择的话，是可以在Safari中打开站点的，不过这样会有两个明显的缺点：</p>
+
+<ol>
+<li>在Safari中接受证书只会添加一个<code>SSL例外</code>：防止Safari对此站点做出的警告提示。实际上并不会将证书安装到iOS中，以成为可信任的证书。同台设备的其它程序在连接该站点时仍然会失败。</li>
+<li>一旦将<code>SSL例外</code>添加到iOS 7中了，就无法从iOS 7中移除。在之前的版本还可以通过Settings->Safari，选中"Clear Cookies and Data"进行删除。在iOS 7中这好像没有效果。&mdash;&mdash;&mdash;除非<code>General &gt; Reset &gt; Reset Settings</code>。</li>
+</ol>
+
+
+<p>当然，苹果官方也提供了一个工具<a href="http://support.apple.com/downloads/#iphone%20configuration%20utility">iPhone configuration utility for Mac and PC</a>，通过该工具可以把证书安装至设备中。如果邮件不可用，或者要批量安装的话，这是一个好方法。</p>
+
+<h2>像安装iOS的Configuration Profile一样安装自签名证书</h2>
+
+<p>要想把SSL证书在iOS设备上安装为可信任的，可以通过发邮件到设备上，并将证书以附件的形式带在邮件中：</p>
+
+<p><img src="/images/2014/03/04.png" alt="" /></p>
+
+<p>选择邮件中的附件，以将证书安装至iOS设备中。选择附件之后，选择<code>Install</code>来安装证书。完成安装之后，再在Safari或者其它iOS应用中使用该证书时，就不会有相关提醒了。</p>
+
+<p>并且这与Safari添加的<code>SSL例外</code>有一个很大的区别，你可以在任意时刻通过<code>Settings-&gt;General-&gt;Profiles</code>来查看相关证书，如果有必要的话，还可以将其移除：</p>
+
+<p><img src="/images/2014/03/05.png" alt="" /></p>
+
+<p>当然，苹果也提供了一个工具<a href="http://support.apple.com/downloads/#iphone%20configuration%20utility">iPhone configuration utility for Mac and PC</a>，通过该工具可以把证书安装到设备中，如果邮件不可用，或者要批量安装证书的话，可以用这个工具。</p>
+
+<h2>不要用IIS创建自签名证书</h2>
+
+<p>在IIS中创建自签名证书非常的简单。只需要选择菜单中的<code>Create Self-Signed Certificate</code>即可：</p>
+
+<p><img src="/images/2014/03/06.png" alt="" /></p>
+
+<p>不过IIS简单的使用计算机名称当做证书的主机名：</p>
+
+<p><img src="/images/2014/03/07.png" alt="" /></p>
+
+<p>大多数时候，计算机名称与主机名是不匹配的，这样的话自签名的证书永远都不会受信任——即使已经安装至iOS设备中：</p>
+
+<p><img src="/images/2014/03/08.png" alt="" /></p>
+
+<p>要修复这个问题可以安装并运行IIS 6 Toolkit中的SelfSSL。不过，要是使用OpenSSL则非常简单，下面我们就来看看吧。</p>
+
+<h2>利用OpenSSL创建自签名证书</h2>
+
+<p>创建自签名证书最简单的一种方法就是使用<a href="http://www.openssl.org/related/binaries.html">OpenSSL命令行工具</a>，这个工具在许多平台上面都可以使用，并且在Mac OSX上面是默认安装好了的。</p>
+
+<p>首先，创建一个私钥文件：</p>
+
+<p><code>
+openssl genrsa -out myselfsigned.key 2048
+</code></p>
+
+<p>然后创建自签名证书：</p>
+
+<p><code>
+openssl req -new -x509 -key myselfsigned.key -out myselfsigned.cer -days 365
+-subj /CN=www.mysite.com
+</code></p>
+
+<p>上面的命令中，关于私钥和证书(cer)的文件名可以是任意的。其中<code>CN</code>参数需要设置为主机名(例如<a href="https://www.mysite.com">https://www.mysite.com</a>)。而<code>days</code>参数则指定证书从创建开始的有效天数。</p>
+
+<p>在Apache服务器上面可以直接使用私钥和证书文件(做相关的SSL配置即可)。在IIS中需要一个PFX文件，通过该文件，可以将证书导入至IIS的Server Certificates中。当然通过OpenSSL可以创建PFX文件：</p>
+
+<p><code>
+openssl pkcs12 -export -out myselfsigned.pfx -inkey myselfsigned.key
+-in myselfsigned.cer
+</code></p>
+
+<h2>创建自己的证书颁发机构(CA)</h2>
+
+<p>使用自签名证书会有这样的问题：需要为每台设备中用到的每个证书设置相关的信任关系。有一个解决办法就是创建自己的证书颁发机构(CA)根证书，然后基于该根证书创建别的证书。</p>
+
+<p>这样一来就是自己扮演着CA，取代了商业性质的CA。这样做的好处就是自己的CA证书只需要在每台设备上安装一次即可。之后，设备会自动的信任基于CA根证书创建的证书。</p>
+
+<p>创建CA证书只需要两个步骤即可，首先是创建私钥文件(跟之前的一样)：</p>
+
+<p><code>
+openssl genrsa -out myCA.key 2048
+</code></p>
+
+<p>然后是创建证书：</p>
+
+<p><code>
+openssl req -x509 -new -key myCA.key -out myCA.cer -days 730
+-subj /CN="My Custom CA"
+</code></p>
+
+<p>上面创建的证书(myCA.key)可以公开发布出去，并安装在iOS或者其它OS上，以此当做内置的受信任根CA。自制的CA证书存储在<code>General-&gt;Settings-&gt;Profile</code>：</p>
+
+<p><img src="/images/2014/03/10.png" alt="" /></p>
+
+<p>其中私钥文件(myCA.key)只用是再创建新的SSL证书时使用。</p>
+
+<p>上面的CA创建好之后，我们可以基于该证书创建许多证书。注意，这里多了一个步骤：必须创建一个CSR(客户端证书请求文件)——就像购买商业的SSL证书一样。</p>
+
+<p>首先需要创建一个私钥文件：</p>
+
+<p><code>
+openssl genrsa -out mycert1.key 2048
+</code></p>
+
+<p>然后是创建CSR:</p>
+
+<p><code>
+openssl req -new -out mycert1.req -key mycert1.key -subj /CN=www2.mysite.com
+</code></p>
+
+<p>接着用这个CSR创建证书：</p>
+
+<p><code>
+openssl x509 -req -in mycert1.req -out mycert1.cer -CAkey myCA.key
+-CA myCA.cer -days 365 -CAcreateserial -CAserial serial
+</code></p>
+
+<p>这里创建的证书(mycert.cer)可以安装在一台web服务器上，并且已经安装了相关CA证书的iOS设备都可以访问该web服务器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS 7中实现模糊效果]]></title>
@@ -1454,86 +1627,6 @@ static inline float AngleFromNorth(CGPoint p1, CGPoint p2, BOOL flipped) {
 <p><a href="https://github.com/ariok/TB_CircularSlider"><img src="/images/2013/11/34.jpg" alt="" /></a></p>
 
 <p>本文由破船译自<a href="http://www.thinkandbuild.it/how-to-build-a-custom-control-in-ios/">How to build a custom control in iOS</a>。大家要是有什么问题，可以直接在<a href="https://twitter.com/bitwaker">twitter</a>上联系原作者，当然也可以在下面的评论中回复我。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[给tableview cell添加动画]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2014/01/13/animation-tableview-cell/"/>
-    <updated>2014-01-13T17:30:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2014/01/13/animation-tableview-cell</id>
-    <content type="html"><![CDATA[<p><img src="/images/2014/01/5.png" alt="" /></p>
-
-<!--more-->
-
-
-<h3>小引</h3>
-
-<p>本文介绍如何利用给tableview cell添加动画。其实只需要很少的代码量就可以。本文参考<a href="http://www.thinkandbuild.it/animating-uitableview-cells/">Animating UITableView cells</a></p>
-
-<p>下面先来看看最终的效果：</p>
-
-<iframe height=498 width=510 src="http://player.youku.com/embed/XNjYxMTgxOTQw" frameborder=0 allowfullscreen></iframe>
-
-
-<p>从上面的视频中，可以看出，当cell显示出来的时候，是在Y和Z轴上进行3D旋转。</p>
-
-<p>下面来看看是如何实现的：</p>
-
-<p>首先假设你已经能够熟练使用UITableView了。那么我们只需要实现UITableViewDelegate中的tableView:WillDisplayCell:ForRowAtIndexPath:即可。当cell显示之前，会先调用该方法，因此给cell添加动画，在这个方法里面即可。</p>
-
-<p>如下代码所示：</p>
-
-<p>```objc
-&ndash;(void)tableView:(UITableView <em>)tableView willDisplayCell:(UITableViewCell </em>)cell forRowAtIndexPath:(NSIndexPath *)indexPath{</p>
-
-<pre><code>// 1. 配置CATransform3D的内容
-CATransform3D transform;
-transform = CATransform3DMakeRotation( (90.0*M_PI)/180, 0.0, 0.7, 0.4);
-transform.m34 = 1.0/ -600;
-
-// 2. 定义cell的初始状态
-cell.layer.shadowColor = [[UIColor blackColor]CGColor];
-cell.layer.shadowOffset = CGSizeMake(10, 10);
-cell.alpha = 0;
-
-cell.layer.transform = transform;
-cell.layer.anchorPoint = CGPointMake(0, 0.5);
-
-// 3. 定义cell的最终状态，并提交动画
-[UIView beginAnimations:@"transform" context:NULL];
-[UIView setAnimationDuration:0.5];
-cell.layer.transform = CATransform3DIdentity;
-cell.alpha = 1;
-cell.layer.shadowOffset = CGSizeMake(0, 0);
-cell.frame = CGRectMake(0, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
-[UIView commitAnimations];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>第一步：使用CATransform3D在Y和Z轴上做旋转设置。</p>
-
-<p>第二步：定义cell的初始状态，添加了一些阴影，并将第一步中的transform设置给cell中layer的transform matrix。然后将anchor设置为0.0, 0.5，也就是说让cell围绕着左边进行旋转。</p>
-
-<p>第三步：通过动画，将cell设置为原始状态。此处利用了UIView的beginAnimations:context方法来更新cell中layer的值。当然还有别的方法来执行动画，不过这种方法比较简单，我们可以设置持续时间。代码里面将transform设置为CATransform3DIdentity。</p>
-
-<p>这样通过第二步和第三步的状态就能够引导动画，以此完成最终效果。</p>
-
-<p>完整代码工程下载地址：
-<a href="https://github.com/BeyondVincent/BVTableViewAnimation">BVTableViewAnimation</a></p>
-
-<p>下面是网上看到的两个内容，可以参考：</p>
-
-<p><a href="http://www.raywenderlich.com/49311/advanced-table-view-animations-tutorial-drop-in-cards">From RW：Table View Animations Tutorial: Drop-In Cards</a><a href="http://weibo.com/522056706"><code>@bluesea哈哈哈</code></a>推荐本链接</p>
-
-<p><a href="http://maniacdev.com/2013/05/library-allowing-you-to-create-table-views-with-wacky-highly-detailed-ripple-cell-animations">Library Allowing You To Create Table Views With Wacky Highly Detailed Ripple Cell Animations
-</a></p>
-
-<p><a href="http://maniacdev.com/2012/05/drop-in-open-source-library-for-creating-wacky-animated-uitableviews">Drop-In Open Source Library For Creating Wacky Animated UITableViews</a></p>
-
-<p>希望上面介绍对你有帮助，如果有问题，可以在下面的回复我。</p>
 ]]></content>
   </entry>
   
