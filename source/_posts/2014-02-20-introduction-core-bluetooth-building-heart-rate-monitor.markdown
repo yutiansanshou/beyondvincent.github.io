@@ -12,6 +12,8 @@ published: false
 
 <!--more-->
 
+本文译自：[Introduction to Core Bluetooth: Building a Heart Rate Monitor](http://www.raywenderlich.com/52080/introduction-core-bluetooth-building-heart-rate-monitor)
+
 * 蓝牙中的中心和外设
 * 中心如何与外设通讯
 * 外设数据的结构
