@@ -7,7 +7,7 @@
 	<meta name="author" content="破船(BeyondVincent)">
 
 	
-	<meta name="description" content="May 31st, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[002]开发环境搭建与HelloWorld 今天我们展开Windows 8 Metro App开发之HelloWorld。本次主题会包含以下内容： 1、Windows 8 &hellip;">
+	<meta name="description" content="May 31st, 2013 Step by Step, Windows商店应用开发 Windows Store App开发[003]应用程序栏(AppBar)的使用 今天我们来学习一下Windows 8 AppBar的使用。本次主题会包含以下内容： 1、Windows 8 AppBar介绍 2 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,341 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/step-by-step/'>Step by Step</a>, <a class='category' href='/blog/categories/windowsshang-dian-ying-yong-kai-fa/'>Windows商店应用开发</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/05/31/29/" itemprop="url">Windows Store App开发[003]应用程序栏(AppBar)的使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>今天我们来学习一下Windows 8 AppBar的使用。本次主题会包含以下内容：</p>
+
+<p><strong>1、Windows 8 AppBar介绍</strong></p>
+
+<p><strong>2、Windows 8 AppBar定义[预定义和自定义按钮风格的使用]</strong></p>
+
+<p><strong>3、AppBar中按钮事件的处理</strong></p>
+
+<p><strong>4、Demo演示与代码下载</strong></p>
+
+<p>&#160;</p>
+
+<p><strong>1、Windows 8 AppBar介绍</strong></p>
+
+<p>&#160;&#160;&#160; 在Windows 8设备上，当用户做一个向上滑动的手势或者点击鼠标右键，应用程序栏(AppBar)会出现在屏幕的底部，Metro Ui强调在主布局中尽量少出现控件，主要依托AppBar进行交互。如下图所示，就是开始程序的AppBar。</p>
+
+<p>&#160;&#160;&#160; 注意，在这里体现了Metro App UI设计风格：选中项对应的操作按钮放在AppBar的左边，其它的按钮则放在右边。</p>
+
+<p>&#160;&#160;&#160; 如下图，我选中了Video程序。左边出现了对应的从“开始”屏幕取消固定，卸载，缩小，右边则是所有应用。</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/1.png"><img title="1" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="1" src="http://beyondvincent.com/wp-content/uploads/2013/05/1_thumb.png" width="682" height="428" /></a></p>
+
+<p>&#160;</p>
+
+<p>提示：在屏幕的顶部也有相似的控件——导航栏(NavBar)，用于Metro程序中不同画面的导航。在后面的学习系列中，我会进行介绍。</p>
+
+<p><strong>2、Windows 8 AppBar定义[预定义和自定义按钮风格的使用]</strong></p>
+
+<p>创建AppBar最简单的方法就是在XAML文件中声明AppBar。在这里我使用Blank App模版创建了一个程序，如下图：</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/2.png"><img title="2" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="2" src="http://beyondvincent.com/wp-content/uploads/2013/05/2_thumb.png" width="682" height="433" /></a>
+&#160;</p>
+
+<p>在其中的MainPage.xaml中，我添加了如下代码</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/3.png"><img title="3" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="3" src="http://beyondvincent.com/wp-content/uploads/2013/05/3_thumb.png" width="300" height="246" /></a></p>
+
+<p>代码添加在</Grid>之后</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;grid background="PaleGoldenrod"&gt;
+
+&lt;/grid&gt;
+&lt;page.bottomappbar&gt;
+    &lt;appbar&gt;
+        &lt;grid width="1346" background="Firebrick" horizontalalignment="Left"&gt;
+            &lt;grid.columndefinitions&gt;
+                &lt;columndefinition width="425*"&gt;
+                &lt;/columndefinition&gt;
+                &lt;columndefinition width="248*" /&gt;
+            &lt;/grid.columndefinitions&gt;
+            &lt;stackpanel grid.column="0" horizontalalignment="Left" orientation="Horizontal"&gt;
+                &lt;button x:name="AppBarSearchButton" click="AppBarButtonClick" automationproperties.name="搜索"&gt;
+                &lt;button x:name="AppBarMoreButton" click="AppBarButtonClick" automationproperties.name="更多"&gt;
+            &lt;/stackpanel&gt;
+            &lt;stackpanel grid.column="1" horizontalalignment="Right" orientation="Horizontal"&gt;
+                &lt;button x:name="AppBarHomeButton" click="AppBarButtonClick"&gt;
+            &lt;/stackpanel&gt;
+        &lt;/grid&gt;
+    &lt;/appbar&gt;
+&lt;/page.bottomappbar&gt;
+&lt;pre&gt;</pre>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>&#160;&#160;&#160; 从上面的代码中，看出，我在Page.BottomAppBar属性中声明了AppBar控件。也就是说，通过上面的代码，创建了一个AppBar和相关内容，并把AppBar赋值给了MainPage页面的BottomAppBar属性。</p>
+
+<p>提示：在Page.TopAppBar属性里面可以通过声明AppBar来创建NavBar，当然，在后面的学习系列中，我会详细讲解。</p>
+
+<p>为了遵循Metro App Ui关于 AppBar的设计准则，我在AppBar控件里面添加了一个一行两列的网格(Grid),每列包含一个栈面板(StackPanel)。</p>
+
+<p>&#160;&#160;&#160; 下面我们来看看栈面板里面的内容，也就是按钮的添加。按钮的风格添加有两种方法，这里我会进行使用讲解。</p>
+
+<p>第一种方法：我在第一个栈面板中定义的两个按钮搜索和更多。他们使用了StandardStyles.xaml里面系统提供的风格。StandardStyles.xaml为我们的程序提供了许多风格，如下是定义了搜索按钮的风格：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;style x:key="SearchAppBarButtonStyle" targettype="Button" basedon="{StaticResource AppBarButtonStyle}"&gt;
+    &lt;setter property="AutomationProperties.AutomationId" value="SearchAppBarButton"/&gt;
+    &lt;setter property="AutomationProperties.Name" value="Search"/&gt;
+    &lt;setter property="Content" value=""/&gt;
+&lt;/style&gt;</pre>
+
+
+<p>所有这些预定义的按钮风格都是继承自 AppBarButtonStyle，AppBarButtonStyle 定义了AppBar按钮的基本特征。在下一节中创建自定义按钮也会继承自这个风格。提示：在文件 StandardStyles.xaml 中已经定义了 29 中应用程序按钮风格，但是来自 XAML小组的微软项目经理提供了非正式的替代文件，该文件定义了 150 种不同的风格。该文件可以在下面的连接中看到：</p>
+
+<p><a href="http://timheuer.com/blog/archive/2012/03/05/visualizing-appbar-command-styles-windows-8.aspx">XAML AppBar Button Styles for Windows 8</a></p>
+
+<p>区分不同按钮的两个属性是 AutomationProperties.Name 和 Content。</p>
+
+<p>AutomationProperties.Name 属性指定了按钮显示的文本</p>
+
+<p>Content 属性指定会被用到的 icon。这个属性(Content)的值来自 Segoe UI Symbol 字体的编码。可以通过 Windows 8 提供的字符表(Character Map)工具来查看这种字体定义的 icon。值 E10B对应的是一个勾号。</p>
+
+<p>下面的代码给出了AppBar使用预定义的SearchAppBarButtonStyle风格：</p>
+
+<p>[注：在StandardStyles.xaml文件定义的Name是Search，为了显示中文，我在这里修改为了搜索]</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;button x:name="AppBarSearchButton" click="AppBarButtonClick" automationproperties.name="搜索"&gt;
+&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p>第二种方法：使用自定义的风格。</p>
+
+<p>我在工程中添加了一个文件夹：Resources，并添加了一个字典资源文件：MyDictionary.xaml，如下图所示</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/4.png"><img title="4" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="4" src="http://beyondvincent.com/wp-content/uploads/2013/05/4_thumb.png" width="682" height="433" /></a></p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/5.png"><img title="5" style="border-left-width: 0px; border-right-width: 0px; border-bottom-width: 0px; display: inline; border-top-width: 0px" border="0" alt="5" src="http://beyondvincent.com/wp-content/uploads/2013/05/5_thumb.png" width="327" height="316" /></a></p>
+
+<p>在MyDictionary.xaml文件中，我定义了DoneAppBarButtonStyle风格，代码如下所示：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;?XML:NAMESPACE PREFIX = &quot;[default] http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; NS = &quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; /&gt;&lt;resourcedictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:local="using:DevDiv_AppBar.Resources" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
+    
+&lt;resourcedictionary.mergeddictionaries&gt;
+        &lt;resourcedictionary source="/Common/StandardStyles.xaml"&gt;&lt;/resourcedictionary&gt;
+    &lt;/resourcedictionary.mergeddictionaries&gt;
+    
+&lt;style x:key="DoneAppBarButtonStyle" targettype="Button" basedon="{StaticResource AppBarButtonStyle}"&gt;
+        &lt;setter property="AutomationProperties.Name" value="完成"/&gt;
+        &lt;setter property="Content" value=""/&gt;
+    &lt;/style&gt;
+    
+&lt;/resourcedictionary&gt;</pre>
+
+
+<p>这里有个小插曲，代码中需要添加如下代码，才能够正确运行，否则运行时会出错。[为什么还不太清楚，高手来过招吧][搞明白了，原来DoneAppBarButtonStyle里面有BasedOn=&ldquo;{StaticResource AppBarButtonStyle}&rdquo; ，就是说DoneAppBarButtonStyle 继承自AppBarButtonStyle ，AppBarButtonStyle&#160; 定义了AppBar按钮的默认风格。破船@2012/07/26</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;resourcedictionary.mergeddictionaries&gt;
+        &lt;resourcedictionary source="/Common/StandardStyles.xaml" /&gt;
+    &lt;/resourcedictionary.mergeddictionaries&gt;</pre>
+
+
+<p>定义了字典文件之后，还需要在App.xaml文件中把该字典文件关联起来，也就是还需要在App.xaml文件中添加如下代码</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;resourcedictionary source="Resources/MyDictionary.xaml" /&gt;</pre>
+
+
+<p>到这里，我们的AppBar风格自定义就完成了，我们只需要在使用到的地方如同使用系统预定义好的一样即可。如下代码在第二个栈面板中：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">&lt;button x:name="AppBarHomeButton" click="AppBarButtonClick"&gt;&lt;pre&gt;</pre>
+
+
+<p></p></p>
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<p></button></p>
+
+<p><strong>3、AppBar中按钮事件的处理</strong></p>
+
+<p>至此，我们的控件已经添加完毕，但是还需要响应事件才行。细心的读者可能已经在帖子刚开始给出代码的地方看到这样的语句：</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">Click=&quot;AppBarButtonClick&quot;</pre>
+
+
+<p>没错，这就是通过xaml文件给按钮添加事件的处理方法。在这里声明之后，我们还需要到MainPage.xaml.cs文件中把AppBarButtonClick函数实现一下。如下代码，为了说明事件的处理，我只是简单的写了一个函数，并判断了一下发起者</p>
+
+<pre class="wp-code-highlight prettyprint linenums:1">private void AppBarButtonClick(object sender, RoutedEventArgs e)
+{
+    if (e.OriginalSource == AppBarDoneButton)
+    {
+    }
+}</pre>
+
+
+<p>这样我们的程序代码就基本写完了。</p>
+
+<p><strong>4、Demo演示与代码下载</strong></p>
+
+<p>下面我运行一下程序，并把程序画面和代码附上，供大家参考。</p>
+
+<p>大家可能看到颜色的不同，在这里我说明一下</p>
+
+<p>在MainPage.xaml中有如下定义：</p>
+
+<p>主布局：Grid Background =&ldquo;PaleGoldenrod&rdquo;</p>
+
+<p>AppBar：Grid Background=&ldquo;Firebrick&rdquo;&#160;&#160; <br/>
+相信你应该知道如何设置 Grid的颜色了</p>
+
+<p>&#160;</p>
+
+<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/6.png"><img title="6" style="border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px; display: inline" border="0" alt="6" src="http://beyondvincent.com/wp-content/uploads/2013/05/6_thumb.png" width="682" height="386" /></a></p>
+
+<p>下载示例代码</p>
+
+<p><a href="https://github.com/BeyondVincent/WindowsStoreAppStepByStep/tree/master/AppBar" target="_blank"><img src="http://beyondvincent.com/wp-content/uploads/2013/05/code_xaml.png" /></a></p>
+
+<div style="text-align: left;">
+  <span style="color: #339966;">本文由<span style="text-decoration: underline;"><a href="http://beyondvincent.com/"><span style="color: #339966; text-decoration: underline;">破船</span></a></span>原创●转载请注明出处●<time datetime="2013-05-18T17:37:00+08:00" data-updated="true">2012-05-31</time></span>
+</div>
+
+
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2065,87 +2400,6 @@ return sharedInstance; \</pre>
 本文由破船原创<br/>
 转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
 _</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong></em></em></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-08T00:00:00+08:00" data-updated="true" itemprop="datePublished">May 8<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios/'>iOS</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/05/08/19/" itemprop="url">Framed: 一个UIView的Category</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg"><img class="alignnone size-full wp-image-545" alt="UIView_Easing_Frame" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIView_Easing_Frame.jpg" width="1200" height="620" /></a></p>
-
-<h1><strong><span style="color: #339966;">当开发iOS的用户界面时，总会涉及到frame，如果用苹果提供的原生方法，即使是一个简单的界面布局，都不能通过简单的方法来实现。</span></strong></h1>
-
-<p>如果要在代码中创建如下一个界面布局，你会怎么做呢？</p>
-
-<p><a href="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png"><img class="alignnone size-full wp-image-546" alt="UIViewCategory2" src="http://beyondvincent.com/wp-content/uploads/2013/05/UIViewCategory2.png" width="744" height="396" /></a></p>
-
-<p>下面是一种方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
-
-CGRect blueViewFrame = self.blueView.frame;
-blueViewFrame.origin.x = self.whiteView.frame.origin.x + offset;
-blueViewFrame.origin.y = self.whiteView.frame.origin.y + offset;
-self.blueView.frame = blueViewFrame;
-
-CGRect greyViewFrame = self.greyView.frame;
-greyViewFrame.origin.x = self.whiteView.frame.origin.x + self.whiteView.frame.size.width - self.greyView.frame.size.width - offset;
-greyViewFrame.origin.y = self.whiteView.frame.origin.y + self.whiteView.frame.size.height - self.greyView.frame.size.height - offset;
-self.greyView.frame = greyViewFrame;</pre>
-
-
-<p>上面的方法可以达到目的，但看起来非常的笨拙；要弄清楚如何设置frame需要一定的计算，这样的代码可读性不高。</p>
-
-<p>下面是一种非常简单的方法：</p>
-
-<pre class="wp-code-highlight prettyprint linenums:1">CGFloat offset = 20.0f;
-
-self.blueView.deFrameLeft = self.whiteView.deFrameLeft + offset;
-self.blueView.deFrameTop = self.whiteView.deFrameTop + offset;
-
-self.greyView.deFrameRight = self.whiteView.deFrameRight - offset;
-self.greyView.deFrameBottom = self.whiteView.deFrameBottom - offset;</pre>
-
-
-<p>如上所示，对界面布局的设置更加方便，并且还减少了不少代码。</p>
-
-<p>上面的方法是定义了UIView的一个category，并暴露出一些设置frame的属性。这些属性对UIView的frame属性进行了简单的封装，每个属性都定义了getter和setter方法。通过这些属性，使用很少的几行代码就可以更加方便的设置UIView（以及UIView的子类）的frame。</p>
-
-<p>上面代码涉及到的category可以到这里下载：<span style="text-decoration: underline;"><span style="color: #339966;"><a href="https://gist.github.com/BeyondVincent/5540827" target="_blank"><span style="color: #339966; text-decoration: underline;">UIView+DEFrameAdditions</span></a></span></span>。将两个代码文件添加到你的工程中，就可以使用啦。</p>
-
-<p>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
-
-<p>本文由破船译自：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.doubleencore.com/2013/05/a-uiview-category/" target="_blank"><span style="color: #339966; text-decoration: underline;">doubleencore</span></a></strong></span></span><br/>
-转载请注明出处：<span style="text-decoration: underline;"><span style="color: #339966;"><strong><a href="http://www.beyondvincent.com/" target="_blank"><span style="color: #339966; text-decoration: underline;">BeyondVincent的博客</span></a></strong></span></span><br/>
-_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_<strong>_</strong>_____</p>
 
 		
 		
