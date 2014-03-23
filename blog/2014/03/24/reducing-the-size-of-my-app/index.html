@@ -1,0 +1,252 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>减小iOS应用程序的大小 - 破船之家</title>
+	<meta name="author" content="破船(BeyondVincent)">
+
+	
+	<meta name="description" content="减小iOS应用程序的大小 本文译自：Reducing the size of my App Q: 怎样才能让我的程序安装包小一点，让程序的下载和安装更快速？ A: 本文收集了一些减小程序安装包大小的相关技巧(当第一次下载和安装程序时)。如果是针对升级程序的话，可以看这篇文章( &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="破船之家" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://BeyondVincent.github.io/blog/2014/03/24/reducing-the-size-of-my-app/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("beyondvincent@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">破船之家</a></h1>
+<p class="subtitle">宠辱不惊，闲看庭前花开花落<br>去留无意，漫随天外云卷云舒<br>不妄取，不妄予，不妄想，不妄求<br>与人方便，随遇而安</p>
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/about">关于我</a></li>
+</ul>
+</nav>
+欢迎关注我的微信公众账号<br>
+<div align=center><img width="100" height="100" src="http://beyondvincent.com/images/2013/12/qrcode_bv.jpg"></div>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="weibo" href="http://www.weibo.com/beyondvincent" title="Weibo">Weibo</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">减小iOS应用程序的大小</h1>
+	<div class="entry-content" itemprop="articleBody"><p><img src="/images/2014/03/22.png" alt="" /></p>
+
+<!--more-->
+
+
+<p>本文译自：<a href="https://developer.apple.com/library/ios/qa/qa1795/_index.html#//apple_ref/doc/uid/DTS40014195">Reducing the size of my App</a></p>
+
+<p>Q: 怎样才能让我的程序安装包小一点，让程序的下载和安装更快速？</p>
+
+<p>A: 本文收集了一些减小程序安装包大小的相关技巧(当第一次下载和安装程序时)。如果是针对升级程序的话，可以看这篇文章(<a href="https://developer.apple.com/library/ios/qa/qa1779/">减小iOS应用程序升级时所需下载的大小</a>)(这与第一次安装使用的工作原理有所不同)。</p>
+
+<h2>检查应用程序</h2>
+
+<p>首先是检查<code>.app bundle</code>，看一下程序包里面哪些文件占的空间最大。</p>
+
+<p>在做任何相关优化之前，我们需要做一些权衡。通过权衡，可以知道把优化的重点集中在什么地方。本文提到的一些技术缺点我们也需要做出考虑，我们必须考虑相关影响，以确保做出正确的决定。如果不做权衡的话，我们无法知道需要对程序做出什么样的改变。</p>
+
+<p>当第一安装iOS程序时，需要下载完整的一个<code>.ipa</code>文件。(注意这<a href="https://developer.apple.com/library/ios/qa/qa1779/">不同于升级</a>)。实际上<code>.ipa</code>文件就是一个<code>.zip</code>结构。</p>
+
+<p>我们可以通过这样的方法来找出程序的<code>.ipa</code>文件：从App Store下载应用，然后利用iTunes对iOS设备做同步处理，接着查看目录：<code>~/Music/iTunes/iTunes Music/Mobile Applications</code>，就能找到<code>.ipa</code>文件了。</p>
+
+<p>当让我们也可以通过使用: <a href="https://developer.apple.com/library/ios/qa/qa1764/">Xcode的Archive命令来构造出<code>.ipa</code>文件——该文件与提交到App Store上的格式基本一致</a>。</p>
+
+<h3>检查<code>.ipa</code>文件</h3>
+
+<p>简单的将后缀为<code>.ipa</code>文件修改为<code>.zip</code>，然后利用Finder将其解压出来。右键单击解压出来的<code>.app bundle</code>，选择<code>显示包内容</code>，以查看里面的资源文件。通过该方法我们可以看到哪些文件占的空间最大。记住：<code>.app bundle</code>是经过压缩的，并且有些文件的压缩效果要比别的文件好，所以压缩后的效果才是才是最重要的。不过一般情况下在压缩前最大的文件，在压缩后依旧是最大的文件。我们可以将某个文件删除，然后在Finder中右键单击，选择<code>压缩</code>，这样可以更加精确的测量文件压缩效果。</p>
+
+<h3>iOS App Store相关因素</h3>
+
+<p>作为提交到App Store中app里的可执行文件是被加过密的。加密的副作用是可执行文件的压缩效果没有之前的好了，因为加密会隐藏一些细节问题。因此，从App Store下载下来的.ipa文件大小要比从本地build出来的.ipa文件大。</p>
+
+<p>注意：将<code>长文本内容</code>和<code>表数据</code>等从代码中移除，并添加到外部文件中，这样可以减小最终安装包下载的大小——因为这些文件的压缩效果更好。</p>
+
+<p>如果你选择Organizer window中的某个archived，然后点击<code>Estimate Size</code>，Xcode可以对最终分发的程序尺寸做出一个评估。这里并不考虑Mac App Store上面的和企业级部署的iOS程序。</p>
+
+<h2>Build Settings</h2>
+
+<h3>编译选项</h3>
+
+<p>将build setting中的<code>Optimization Level</code>设置为<code>Fastest, Smallest [-Os]</code>; 将build setting 中的<code>Strip Debug Symbols During Copy</code>设置为<code>YES</code>(COPY_PHASE_STRIP = YES)，这样可以减小编译出二进制文件的尺寸。这里提到的这些设置在Xcode工程中对于<code>Release</code>的配置是默认的。</p>
+
+<p>警告：这些设置会让你的程序很难debug。在一般开发环境build中不建议这样设置，</p>
+
+<h3>Target针对较少的CPUs</h3>
+
+<p>默认情况下，Xcode工程都配置为：对程序指定的特定CPU类型做优化处理，以生成相对于的可执行文件。不同的硬件，将运行不同的可执行代码。虽然这样优化后的程序，只能针对某些设备运行，但是这大大减小可执行程序的大小。</p>
+
+<p>要想只设定特定类型的CPUs，可以修改build setting中的<code>Architectures</code>，将其从<code>Standard $(ARCHS_STANDARD)</code>修改为你希望支持的列表中对应的特定类型CPU。有效的CPU名称列在<code>Valid Architectures (VALID_ARCHS)</code> build setting中。请不要修改<code>Valid Architectures</code>设置项，最好由Xcode管理。</p>
+
+<h2>Assets</h2>
+
+<h3>对应用程序做一个完整性检查</h3>
+
+<p>利用<a href="https://developer.apple.com/library/ios/qa/qa1795/_index.html#//apple_ref/doc/uid/DTS40014195-CH1-MEASURE">Inspecting Your App</a>中介绍的流程，对.app bundle做一个全面的检查，以了解那些是真正需要用到的。在程序中，经常会包含一些额外的文件，例如readme之类的，这些从来都不会被用到。</p>
+
+<h3>将数据从代码中剥离出来</h3>
+
+<p>将所有的资源(例如很长的字符串)从代码中剥离出来，并存入外部文件，这样会减小最终文件下载的大小，因为这些文件的压缩效果更好。(参考<a href="https://developer.apple.com/library/ios/qa/qa1795/_index.html#//apple_ref/doc/uid/DTS40014195-CH1-FAIRPLAY">iOS App Store Specific Considerations</a>中的完整介绍。)</p>
+
+<h2>Image Assets</h2>
+
+<h3>尽量使用8-bit图片</h3>
+
+<p>使用8-bit的PNG图片，比32-bit的图片能减少4倍的压缩率。由于8-bit的图片支持最多256种不同的颜色，所以8-bit的图片一般只应该用于一小部分的颜色图片。例如灰度图片最好使用8-bit。</p>
+
+<h3>针对32-bit的图片尽量使用高压缩的比率</h3>
+
+<p>利用Adobe Photoshop的<code>Save For Web</code>可以减小JPEG和PNG的图片大小。在Xcode中，默认情况下，会自动的使用<a href="https://developer.apple.com/library/ios/qa/qa1681/">pngcrush</a>来压缩.png图片。</p>
+
+<h2>Audio Assets</h2>
+
+<h3>音频的压缩</h3>
+
+<p>参考WWDC中的<a href="https://developer.apple.com/videos/wwdc/2011/?id=404">Audio Development for Games</a>，里面介绍了如何有效的处理音频。常规来说，我们要使用AAC或MP3来压缩音频，并且可以尝试降低一下音频的比特率。有时候44.1khz的采样是没有必要的，稍微低一点的比特率也不会降低音频的质量。</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<!-- JiaThis Button BEGIN -->
+    <div class="jiathis_style_32x32">
+        <a class="jiathis_button_tsina"></a>
+        <a class="jiathis_button_tqq"></a>
+        <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+        <a class="jiathis_counter_style"></a>
+    </div>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1371195888343945" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    
+    
+</div>
+
+
+
+
+<section>
+    <h1>评论</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread" data-author-key=“1”></div>
+<script type="text/javascript">
+    var duoshuoQuery = {short_name:"beyondvincent"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = 'http://static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+<!-- Duoshuo Comment END --></div>
+</section>
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2014 - 破船(BeyondVincent) -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'beyondvincent001';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://BeyondVincent.github.io/blog/2014/03/24/reducing-the-size-of-my-app/';
+        var disqus_url = 'http://BeyondVincent.github.io/blog/2014/03/24/reducing-the-size-of-my-app/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42893468-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1a3c98825a726bfbf68a83ba97e0b9be' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+		</div>
+	</div>
+</body>
+</html>
