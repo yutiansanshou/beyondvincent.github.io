@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS探索 | 破船之家]]></title>
   <link href="http://BeyondVincent.github.io/blog/categories/iostan-suo/atom.xml" rel="self"/>
   <link href="http://BeyondVincent.github.io/"/>
-  <updated>2014-03-24T00:11:12+08:00</updated>
+  <updated>2014-03-26T02:29:47+08:00</updated>
   <id>http://BeyondVincent.github.io/</id>
   <author>
     <name><![CDATA[破船(BeyondVincent)]]></name>
@@ -12,6 +12,206 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[利用长按手势移动 Table View Cells]]></title>
+    <link href="http://BeyondVincent.github.io/blog/2014/03/26/cookbook-moving-table-view-cells-with-a-long-press-gesture/"/>
+    <updated>2014-03-26T02:30:00+08:00</updated>
+    <id>http://BeyondVincent.github.io/blog/2014/03/26/cookbook-moving-table-view-cells-with-a-long-press-gesture</id>
+    <content type="html"><![CDATA[<p><img src="/images/2014/03/24.png" alt="" /></p>
+
+<!--more-->
+
+
+<p><img src="/images/2014/03/23.gif" alt="" /></p>
+
+<p>本文译自：<a href="http://www.raywenderlich.com/63089/cookbook-moving-table-view-cells-with-a-long-press-gesture">Cookbook: Moving Table View Cells with a Long Press Gesture</a></p>
+
+<p>目录：</p>
+
+<ul>
+<li>你需要什么？</li>
+<li>如何做？</li>
+<li>如何将其利用至UICollectionView上？</li>
+<li>何去何从？</li>
+</ul>
+
+
+<p>本次的 cookbook-style 教程中介绍如何通过长按手势来移动 table view中的cell，这种操作方式就像苹果自家的天气 App 一样。</p>
+
+<p>你可以直接把本文中的到吗添加到你的工程中，或者将其添加到我为你创建好的 <a href="https://github.com/moayes/UDo/tree/UDo.Starter">starter project</a> 中，也可以下载本文的<a href="https://github.com/moayes/UDo/tree/master">完整示例工程</a>。</p>
+
+<h2>你需要什么？</h2>
+
+<ul>
+<li>UILongGestureRecognizer</li>
+<li>UITableView (可以用 UICollectionView 替代之)</li>
+<li>UITableViewController (可以用 UIViewController 或 UICollectionViewController 替代之)</li>
+<li>5 分钟。</li>
+</ul>
+
+
+<h2>如何做？</h2>
+
+<p>首先给 table view 添加一个 <code>UILongGestureRecognizer</code>。可以在 table view controller 的 <code>viewDidLoad</code> 方法中添加。</p>
+
+<p><code>objc
+UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+  initWithTarget:self action:@selector(longPressGestureRecognized:)];
+[self.tableView addGestureRecognizer:longPress];
+</code></p>
+
+<p>记者为 gesture recognizer 添加 action 方法。该方法首先应该获取到在 table view 中长按的位置，然后找出这个位置对应的 cell 的 index。记住：这里获取到的 index path 有可能为 nil(例如，如果用户长按在 table view的section header上)。</p>
+
+<p>```objc
+&ndash; (IBAction)longPressGestureRecognized:(id)sender {</p>
+
+<p>  UILongPressGestureRecognizer <em>longPress = (UILongPressGestureRecognizer </em>)sender;
+  UIGestureRecognizerState state = longPress.state;</p>
+
+<p>  CGPoint location = [longPress locationInView:self.tableView];
+  NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];</p>
+
+<p>  // More coming soon&hellip;
+}
+```</p>
+
+<p>接着你需要处理<code>UIGestureRecognizerStateBegan</code>分支。如果获取到一个有效的 index path(non-nil)，就去获取对应的 <code>UITableViewCell</code>，并利用一个 helper 方法获取这个 table view cell 的 snapshot  view。然后将这个 snapshot  view 添加到 table view 中，并将其 center 到对应的 cell上。</p>
+
+<p>为了更好的用户体验，以及更自然的效果，在这里我把原始 cell 的背景设置为黑色，并给 snapshot  view 增加淡入效果，让 snapshot view 比 原始 cell 稍微大一点，将它的Y坐标偏移量与手势的位置的Y轴对齐。这样处理之后，cell 就像从 table view 中跳出，然后浮在上面，并捕捉到用户的手指。</p>
+
+<p>```objc
+static UIView       <em>snapshot = nil;        ///&lt; A snapshot of the row user is moving.
+static NSIndexPath  </em>sourceIndexPath = nil; ///&lt; Initial index path, where gesture begins.</p>
+
+<p>switch (state) {
+  case UIGestureRecognizerStateBegan: {</p>
+
+<pre><code>if (indexPath) {
+  sourceIndexPath = indexPath;
+
+  UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+
+  // Take a snapshot of the selected row using helper method.
+  snapshot = [self customSnapshotFromView:cell];
+
+  // Add the snapshot as subview, centered at cell's center...
+  __block CGPoint center = cell.center;
+  snapshot.center = center;
+  snapshot.alpha = 0.0;
+  [self.tableView addSubview:snapshot];
+  [UIView animateWithDuration:0.25 animations:^{
+
+    // Offset for gesture location.
+    center.y = location.y;
+    snapshot.center = center;
+    snapshot.transform = CGAffineTransformMakeScale(1.05, 1.05);
+    snapshot.alpha = 0.98;
+
+    // Black out.
+    cell.backgroundColor = [UIColor blackColor];
+  } completion:nil];
+}
+break;
+</code></pre>
+
+<p>  }
+  // More coming soon&hellip;
+}
+```</p>
+
+<p>将下面的方法添加到 .m 文件的尾部。该方法会根据传入的 view，返回一个对应的 snapshot view。</p>
+
+<p>```objc
+&ndash; (UIView <em>)customSnapshotFromView:(UIView </em>)inputView {</p>
+
+<p>  UIView *snapshot = [inputView snapshotViewAfterScreenUpdates:YES];
+  snapshot.layer.masksToBounds = NO;
+  snapshot.layer.cornerRadius = 0.0;
+  snapshot.layer.shadowOffset = CGSizeMake(-5.0, 0.0);
+  snapshot.layer.shadowRadius = 5.0;
+  snapshot.layer.shadowOpacity = 0.4;</p>
+
+<p>  return snapshot;
+}
+```</p>
+
+<p>当手势移动的时候，也就是<code>UIGestureRecognizerStateChanged</code>分支，此时需要移动 snapshot view(只需要设置它的 Y 轴偏移量即可)。如果手势移动的距离对应到另外一个 index path，就需要告诉 table view，让其移动 rows。同时，你需要对 data source 进行更新：</p>
+
+<p>```objc
+case UIGestureRecognizerStateChanged: {
+  CGPoint center = snapshot.center;
+  center.y = location.y;
+  snapshot.center = center;</p>
+
+<p>  // Is destination valid and is it different from source?
+  if (indexPath &amp;&amp; ![indexPath isEqual:sourceIndexPath]) {</p>
+
+<pre><code>// ... update data source.
+[self.objects exchangeObjectAtIndex:indexPath.row withObjectAtIndex:sourceIndexPath.row];
+
+// ... move the rows.
+[self.tableView moveRowAtIndexPath:sourceIndexPath toIndexPath:indexPath];
+
+// ... and update source so it is in sync with UI changes.
+sourceIndexPath = indexPath;
+</code></pre>
+
+<p>  }
+  break;
+}
+// More coming soon&hellip;
+```</p>
+
+<p>最后，当手势结束或者取消时，table view 和 data source 都是最新的。你所需要做的事情就是将 snapshot view 从 table view 中移除，并把 cell 的背景色还原为白色。</p>
+
+<p>为了提升用户体验，我们将 snapshot view 淡出，并让其尺寸变小至与 cell 一样。这样看起来就像把 cell 放回原处一样。</p>
+
+<p>```objc
+default: {
+  // Clean up.
+  UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:sourceIndexPath];
+  [UIView animateWithDuration:0.25 animations:^{</p>
+
+<pre><code>snapshot.center = cell.center;
+snapshot.transform = CGAffineTransformIdentity;
+snapshot.alpha = 0.0;
+
+// Undo the black-out effect we did.
+cell.backgroundColor = [UIColor whiteColor];
+</code></pre>
+
+<p>  } completion:^(BOOL finished) {</p>
+
+<pre><code>[snapshot removeFromSuperview];
+snapshot = nil;
+</code></pre>
+
+<p>  }];
+  sourceIndexPath = nil;
+  break;
+}
+```</p>
+
+<p>就这样，搞定了！编译并运行程序，现在可以通过长按手势对 tableview cells重新排序！</p>
+
+<p>你可以在 GitHub 上下载到<a href="https://github.com/moayes/UDo/tree/master">完整的示例工程</a>。</p>
+
+<h2>如何将其利用至UICollectionView上？</h2>
+
+<p>假设你已经有一个示例工程使用了 <code>UICollectionView</code>，那么你可以很简单的就使用上本文之前介绍的代码。所需要做的事情就是用 <code>self.collectionView</code>替换掉 <code>self.tableView</code>，并更新一下获取和移动 <code>UICollectionViewCell</code> 的调用方法。</p>
+
+<p>这里有个练习，从 GitHub上 checkout 出 <a href="https://github.com/moayes/UDo/tree/UDo.UICollectionView.Starter">UICollectionView 的starter project</a>，然后将 tap-和-hold 手势添加进去以对 cells 进行重排。这里可以下载到已经实现好了<a href="https://github.com/moayes/UDo/tree/UDo.UICollectionView">工程</a>。</p>
+
+<h2>何去何从？</h2>
+
+<p>我们深深的希望你喜欢这篇文章！如果以后你想要看到类似更多 cookbook-style 的文章，可以告诉我们。</p>
+
+<p>另外，如果你愿意观看本文的视频版，可以来<a href="http://www.raywenderlich.com/68102/video-tutorial-table-views-moving-rows">这里</a>看。</p>
+
+<p>另外，我很乐意听到你的意见和问题！</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[减小iOS应用程序的大小]]></title>
@@ -1080,127 +1280,6 @@ return self;
 <p>可以在<a href="http://cdn3.raywenderlich.com/wp-content/uploads/2014/01/Video-Blurring-Final1.zip">这里</a>下载到完整的工程。</p>
 
 <p>本文不仅指导你在程序中使用iOS 7的模糊效果，还介绍了如何使用<code>GPUImage</code>框架，这个框架也是我非常希望你能看到的东西。重要的是，本文指出了为什么要使用模糊，什么时候使用模糊效果是合适的，这在iOS 7的新设计语言中是一个关键的概念。当然也希望在未来的版本中，苹果能够将相关APIs提供给开发者使用，不过在那之前，<code>GPUImage</code>是一个不错的替代品。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[对NSArray中自定义的对象进行排序]]></title>
-    <link href="http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects/"/>
-    <updated>2014-01-26T16:00:00+08:00</updated>
-    <id>http://BeyondVincent.github.io/blog/2014/01/26/how-to-sort-nsarray-with-custom-objects</id>
-    <content type="html"><![CDATA[<p><img src="/images/2014/01/20.png" alt="" /></p>
-
-<!--more-->
-
-
-<p>本文译自<a href="http://ios-blog.co.uk/tutorials/how-to-sort-nsarray-with-custom-objects/">How to sort NSArray with custom objects</a>。</p>
-
-<p>我们开发的每个程序都会使用到一些数据，而这些数据一般被封装在一个自定义的类中。例如一个音乐程序可能会有一个Song类，聊天程序则又一个Friend类，点菜程序会有一个Recipe类等。有时候我们希望在程序中显示的列表数据是按照一定顺序进行排列的，本文我们就来看看在iOS中有哪些方法可以对NSArray中的对象进行排序。下面是目录：</p>
-
-<ul>
-<li>小引</li>
-<li>使用NSComparator进行排序</li>
-<li>使用NSDescriptor进行排序</li>
-<li>使用selector进行排序</li>
-</ul>
-
-
-<h3>小引</h3>
-
-<p>我们将要排序的对象是一个Persion类，如下定义：</p>
-
-<p>```objc
-@interface Person : NSObject</p>
-
-<p>@property (nonatomic, copy) NSString <em>name;
-@property (nonatomic, copy) NSString </em>surname;
-@property (nonatomic, strong) NSDate *dateOfBirth;</p>
-
-<p>@end
-```</p>
-
-<p>而数组中包含如下内容：</p>
-
-<p><code>objc
-Smith John 03/01/1984
-Andersen Jane 16/03/1979
-Clark Anne 13/09/1995
-Smith David 19/07/1981
-Johnson Rose 22/02/1989
-</code></p>
-
-<h3>使用NSComparator进行排序</h3>
-
-<p>comparator实际上是用一个block对象作比较操作。它的定义如下所示：</p>
-
-<p><code>objc
-typedef NSComparisonResult (^NSComparator)(id obj1, id obj2);
-</code></p>
-
-<p>上面的参数(obj1、obj2)就是我们将要做比较的对象。block返回的结果为NSComparisonResult类型来表示两个对象的顺序。</p>
-
-<p>要对整个数组做排序，则需要使用NSArray的<code>sortArrayUsingComparator:</code>方法，如下代码所示：</p>
-
-<p>```objc
-NSArray <em>sortedArray = [self.persons sortedArrayUsingComparator:^NSComparisonResult(Person </em>p1, Person *p2){</p>
-
-<pre><code>return [p1.surname compare:p2.surname];
-</code></pre>
-
-<p>}];
-```</p>
-
-<p>最终排序的结果如下所示：</p>
-
-<p><code>objc
-Andersen Jane
-Clark Anne
-Johnson Rose
-Smith John
-Smith David
-</code></p>
-
-<h3>使用NSDescriptor进行排序</h3>
-
-<p>Sort descriptor不仅可以用来对数组进行排序，还能指定element在table view中的排序，以及Core Data中对fetch request返回的数据做排序处理。通过sort descriptor可以很方便的对数组进行多个key的排序。下面来看看如何对我们的数组做surname排序，然后在进行name排序：</p>
-
-<p>```objc
-NSSortDescriptor <em>firstDescriptor = [[NSSortDescriptor alloc] initWithKey:@&ldquo;surname&rdquo; ascending:YES];
-NSSortDescriptor </em>secondDescriptor = [[NSSortDescriptor alloc] initWithKey:@&ldquo;name&rdquo; ascending:YES];</p>
-
-<p>NSArray *sortDescriptors = [NSArray arrayWithObjects:firstDescriptor, secondDescriptor, nil];</p>
-
-<p>NSArray *sortedArray = [self.persons sortedArrayUsingDescriptors:sortDescriptors];
-```</p>
-
-<p>上面代码的排序结果如下所示：</p>
-
-<p><code>objc
-Andersen Jane
-Clark Anne
-Johnson Rose
-Smith David
-Smith John
-</code></p>
-
-<h3>使用selector进行排序</h3>
-
-<p>当面，我们也可以定义自己的方法进行两个对象做比较，并将该方法用于数组排序。comparator消息会被发送到数值中的每个对象中，并携带数组中另外的一个对象当做参数。自定义的的方法的返回结果是这样的：如果本身对象小于参数中的对象，就返回<code>NSOrederedAscending</code>，相反，则返回<code>NSOrderedDescending</code>，如果相等，那么返回<code>NSOrderedSame</code>。如下代码所示：</p>
-
-<p>```objc
-&ndash; (NSComparisonResult)compare:(Person *)otherPerson {</p>
-
-<pre><code>return [self.dateOfBirth compare:otherPerson.dateOfBirth];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这个方法定义在Person类中，用来对person的生日进行排序。</p>
-
-<p>上面所介绍的这些方法都是为了完成相同的事情：对数组做排序处理，你可能在想改选择使用哪个呢？当需要通过多个key进行排序，那么最简单的方法就是使用sort descriptor。如果比较方法很复杂的话，建议在使用外面自己的selector。Block是再iOS 4之后引入的一个强大功能，用block作比较，可以不必使用任何的变量就能完成一个简单的比较方法，当然，你也可以定义一个复杂的block，来替换selector。</p>
-
-<p>最后，其实这里并没有标准答案，你可以跟着自己的感觉走:]</p>
 ]]></content>
   </entry>
   
